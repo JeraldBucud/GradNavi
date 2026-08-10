@@ -4,45 +4,132 @@ GradNavi is an AI-Powered Career Guidance System for students.
 
 The planned responsive web application will analyse a student's skills, interests, education, experience, projects, and career goals. It will provide ranked career recommendations, readiness scores, skill-gap analysis, learning suggestions, career roadmaps, employment-preparation tools, and basic administration functions.
 
+## Project overview
+
+GradNavi uses a structured student profile containing skills, education, interests, experience, projects, and career goals.
+
+The planned system includes:
+
+- Secure student and administrator authentication
+- Student profile management
+- Ranked career recommendations using documented weighted rules
+- Recommendation scores and explanations
+- Career-readiness scoring
+- Skill-gap analysis
+- Job-description analysis and matching
+- Editable resume drafts
+- Job-specific cover-letter drafts
+- Text-based interview preparation and written feedback
+- Learning suggestions
+- Career-development roadmaps
+- Progress tracking
+- Administrator management of users, careers, skills, learning resources, audit records, and reports
+
+Numerical recommendation and readiness scores are intended to come from documented rule-based logic. Generative AI supports explanations and editable text rather than independently determining numerical scores.
+
 ## Repository purpose
 
-This repository currently stores the project-management baseline and the approved requirement drafts for the GradNavi capstone project.
+This repository stores the GradNavi capstone project baseline and implementation work.
 
-The formal Assessment 1 submission remains the Microsoft Word group proposal. These Markdown files support team coordination, requirement ownership, task tracking, and contribution evidence.
+The repository currently includes:
 
-## Current repository scope
+- Assessment 1 group project proposal
+- Project overview and team documentation
+- Functional and non-functional requirements
+- Requirement assignment records
+- Work Breakdown Structure and product backlog
+- Risk and quality planning
+- Responsibility and task-lead records
+- Delivery planning and Microsoft Project schedule
+- System architecture diagram
+- Entity Relationship diagram
+- Use case diagram
+- Context diagram
+- Initial Django backend scaffold
+- Contribution and communication records
 
-Included now:
+## Main assessment and design artefacts
 
-- Project overview
-- Team members and roles
-- Functional requirements
-- Non-functional requirements
-- Requirement assignments
-- Work Breakdown Structure
-- Product backlog
-- Roadmap and milestones
-- Risk register
-- Quality plan
-- Responsibility matrix
-- Task leads
-- Tools and resources
-- Communication plan
-- Leadership rotation
-- Meeting-minutes template
-- Contribution log
+- [Assessment 1 Group Project Proposal](docs/project-management/COIT20273%20Assessment%201.docx)
+- [GradNavi System Architecture Diagram](docs/project-management/GradNavi%20architecture%20diagram.png)
+- [GradNavi ER Diagram](docs/project-management/GrandNavi%20ER%20diagram.png)
+- [GradNavi Use Case Diagram](docs/project-management/Use%20Case%20GradNavi.drawio.png)
+- [GradNavi Context Diagram](docs/project-management/Context%20Diagram%20GradNavi.drawio.png)
+- [GradNavi Final Microsoft Project Plan](docs/project-management/GradNavi_Final_Project_Plan.mpp)
 
-Excluded for now:
+Note: the current repository filename for the ER diagram is `GrandNavi ER diagram.png`.
 
-- Frontend source code
-- Backend source code
-- Database structure
-- Implementation test folders
-- Deployment configuration
-- API documentation
-- Detailed test results
+## Project documentation
 
-Joyee will add the frontend structure through her own GitHub branch and pull request. Md Enamul will add the backend, database, and backend-testing structures through his own branches and pull requests.
+- [Project Overview](docs/01-project-overview.md)
+- [Team Members and Roles](docs/02-team-members-and-roles.md)
+
+## Requirements
+
+- [Functional Requirements](docs/requirements/functional-requirements.md)
+- [Non-Functional Requirements](docs/requirements/non-functional-requirements.md)
+- [Requirements Assignment Matrix](docs/requirements/requirements-assignment-matrix.md)
+
+## Project management
+
+- [Communication Plan](docs/project-management/communication-plan.md)
+- [Contribution Log](docs/project-management/contribution-log.md)
+- [Leadership Rotation](docs/project-management/leadership-rotation.md)
+- [Meeting Minutes Template](docs/project-management/meeting-minutes-template.md)
+- [Product Backlog](docs/project-management/product-backlog.md)
+- [Quality Plan](docs/project-management/quality-plan.md)
+- [Responsibility Matrix](docs/project-management/responsibility-matrix.md)
+- [Risk Register](docs/project-management/risk-register.md)
+- [Roadmap and Milestones](docs/project-management/roadmap-and-milestones.md)
+- [Task Leads](docs/project-management/task-leads.md)
+- [Tools and Resources](docs/project-management/tools-and-resources.md)
+- [Work Breakdown Structure](docs/project-management/work-breakdown-structure.md)
+
+## Planning images
+
+- [Delivery Roadmap](docs/project-management/images/delivery-roadmap.png)
+- [Risk Matrix](docs/project-management/images/risk-matrix.png)
+
+## System actors and external entities
+
+The current GradNavi requirements identify the following main system actors and external entities:
+
+| Actor or entity | Role |
+|---|---|
+| Student | Maintains a profile, receives career guidance, analyses skill gaps, prepares application material, practises interviews, and tracks progress |
+| System Administrator | Manages users, careers, skills, learning resources, reports, audit records, and reference data |
+| OpenAI API | Provides structured explanations and editable generated content through the Django backend |
+| Public Career and Learning Sources | Supply reference information that is reviewed before being entered into GradNavi |
+
+Career Adviser access is outside the current V1 scope.
+
+## High-level student use cases
+
+The current project proposal identifies these student use cases:
+
+1. Register and authenticate
+2. Manage student profile
+3. Receive career recommendations
+4. View recommendation scores and explanations
+5. Perform skill-gap analysis
+6. View career-readiness score
+7. Match a job description
+8. Generate a resume draft
+9. Generate a cover-letter draft
+10. Practise interview questions
+11. Receive learning suggestions
+12. View career path roadmap
+13. Track progress
+14. Review, edit, and save generated content
+15. Delete saved content or request profile deletion
+
+The visual use case diagram is stored in the project-management folder.
+
+## Shared team workspace
+
+The team also uses the CQU Microsoft 365 shared workspace for collaborative files, working documents, and supporting project evidence.
+
+[Open the GradNavi OneDrive / SharePoint workspace](https://cqu365-my.sharepoint.com/shared?listurl=https%3A%2F%2Fcqu365%2Dmy%2Esharepoint%2Ecom%2Fpersonal%2Fmdenamul%5Fhaque%5Fcqumail%5Fcom%2FDocuments&id=%2Fpersonal%2Fmdenamul%5Fhaque%5Fcqumail%5Fcom%2FDocuments%2FCOIT20273%20Software%20Design%20and%20Development%20Project%20%28HT2%2C%202026%29&ct=1786405156473&or=Teams%2DHL&shareLink=1&ga=1&LOF=1)
 
 ## Team
 
@@ -64,20 +151,90 @@ Joyee will add the frontend structure through her own GitHub branch and pull req
 | Communication | Microsoft Teams |
 | Deployment | Vercel, Railway, Railway PostgreSQL |
 
-## Delivery approach
+## Current implementation status
 
-GradNavi will use Scrum with four two-week Sprints.
+The repository includes an initial Django backend scaffold under `backend/`.
 
-| Phase | Dates |
-|---|---|
-| Setup and planning | Up to 9 August 2026 |
-| Sprint 1 | 10 to 23 August 2026 |
-| Sprint 2 | 24 August to 6 September 2026 |
-| Sprint 3 | 7 to 20 September 2026 |
-| Sprint 4 | 21 September to 4 October 2026 |
-| Finalisation | 5 to 11 October 2026 |
-| Final report and presentation | 12 October 2026 |
+The current backend is an early development foundation. The planned application database is PostgreSQL. Frontend implementation, full PostgreSQL integration, API integration, AI integration, deployment configuration, and detailed implementation test evidence will be added as development progresses.
+
+## Delivery planning
+
+GradNavi uses iterative Scrum delivery followed by a finalisation and release period.
+
+The detailed task-level schedule, dependencies, resources, milestones, and Gantt planning are stored in:
+
+- [GradNavi Final Microsoft Project Plan](docs/project-management/GradNavi_Final_Project_Plan.mpp)
+- [Roadmap and Milestones](docs/project-management/roadmap-and-milestones.md)
+- [Work Breakdown Structure](docs/project-management/work-breakdown-structure.md)
+- [Product Backlog](docs/project-management/product-backlog.md)
+
+The Microsoft Project schedule and the formal assessment report should be kept aligned whenever sprint dates, milestones, or task dependencies change.
+
+## Repository structure
+
+```text
+GradNavi/
+├── backend/
+│   ├── gradnavi/
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   ├── asgi.py
+│   │   └── wsgi.py
+│   └── manage.py
+├── docs/
+│   ├── 01-project-overview.md
+│   ├── 02-team-members-and-roles.md
+│   ├── requirements/
+│   │   ├── functional-requirements.md
+│   │   ├── non-functional-requirements.md
+│   │   └── requirements-assignment-matrix.md
+│   └── project-management/
+│       ├── COIT20273 Assessment 1.docx
+│       ├── Context Diagram GradNavi.drawio.png
+│       ├── GradNavi architecture diagram.png
+│       ├── GradNavi_Final_Project_Plan.mpp
+│       ├── GrandNavi ER diagram.png
+│       ├── Use Case GradNavi.drawio.png
+│       ├── communication-plan.md
+│       ├── contribution-log.md
+│       ├── leadership-rotation.md
+│       ├── meeting-minutes-template.md
+│       ├── product-backlog.md
+│       ├── quality-plan.md
+│       ├── responsibility-matrix.md
+│       ├── risk-register.md
+│       ├── roadmap-and-milestones.md
+│       ├── task-leads.md
+│       ├── tools-and-resources.md
+│       ├── work-breakdown-structure.md
+│       └── images/
+│           ├── delivery-roadmap.png
+│           └── risk-matrix.png
+└── README.md
+```
+
+## Project scope limits
+
+GradNavi is a student capstone prototype.
+
+The current V1 scope excludes:
+
+- Native mobile applications
+- Live job-board or applicant-tracking-system integration
+- Video, audio, or webcam interview simulation
+- Payments or subscriptions
+- Training or hosting a custom machine-learning model
+- Automatic job application submission
+- University-system or single-sign-on integration
+- Formal accessibility certification
+- Multilingual support
+- Production-scale infrastructure and disaster recovery
+
+Career guidance generated by GradNavi provides decision support. Students review AI-generated material before saving or using it.
 
 ## Document status
 
-The files in this repository form a working project baseline. The team must review requirement wording, assignments, estimates, dependencies, risk ratings, and task leads before treating them as final.
+The repository is an active project workspace.
+
+Requirements, diagrams, task ownership, architecture decisions, database design, sprint planning, testing evidence, deployment records, and assessment documents should stay aligned with the latest approved project baseline.
+
