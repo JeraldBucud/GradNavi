@@ -2,7 +2,10 @@ from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from gradnavi.exceptions import ConflictError
 
 
 User = get_user_model()
@@ -25,7 +28,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("id", "role")
         extra_kwargs = {
-            "email": {"required": True},
+            "email": {"required": True, "validators": []},
             "first_name": {"required": True, "allow_blank": False},
             "last_name": {"required": True, "allow_blank": False},
         }
@@ -34,7 +37,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         email = User.objects.normalize_email(value).lower()
 
         if User.objects.filter(email__iexact=email).exists():
-            raise serializers.ValidationError("A user with this email already exists.")
+            raise ConflictError(
+                {
+                    "message": "A user with this email already exists.",
+                    "details": {
+                        "email": ["A user with this email already exists."],
+                    },
+                }
+            )
 
         return email
 
@@ -86,7 +96,10 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(request=request, email=email, password=password)
 
         if user is None:
-            self.fail("invalid_credentials")
+            raise AuthenticationFailed(
+                self.error_messages["invalid_credentials"],
+                code="invalid_credentials",
+            )
 
         refresh = RefreshToken.for_user(user)
 

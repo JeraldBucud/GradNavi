@@ -9,6 +9,15 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 User = get_user_model()
 
 
+def assert_error_envelope(test_case, response, code, details_key=None):
+    test_case.assertIn("error", response.data)
+    test_case.assertEqual(response.data["error"]["code"], code)
+    test_case.assertIn("message", response.data["error"])
+    if details_key is not None:
+        test_case.assertIn("details", response.data["error"])
+        test_case.assertIn(details_key, response.data["error"]["details"])
+
+
 class RegistrationAPITests(APITestCase):
     def setUp(self):
         self.url = "/api/v1/auth/register/"
@@ -72,8 +81,8 @@ class RegistrationAPITests(APITestCase):
 
         response = self.client.post(self.url, payload, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("email", response.data)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        assert_error_envelope(self, response, "conflict", "email")
 
     def test_password_mismatch_is_rejected(self):
         payload = {
@@ -84,7 +93,7 @@ class RegistrationAPITests(APITestCase):
         response = self.client.post(self.url, payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("password_confirm", response.data)
+        assert_error_envelope(self, response, "validation_error", "password_confirm")
         self.assertFalse(User.objects.exists())
 
     def test_weak_password_is_rejected(self):
@@ -97,7 +106,7 @@ class RegistrationAPITests(APITestCase):
         response = self.client.post(self.url, payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("password", response.data)
+        assert_error_envelope(self, response, "validation_error", "password")
         self.assertFalse(User.objects.exists())
 
     def test_required_fields_are_rejected_when_missing(self):
@@ -117,7 +126,7 @@ class RegistrationAPITests(APITestCase):
                 response = self.client.post(self.url, payload, format="json")
 
                 self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-                self.assertIn(field, response.data)
+                assert_error_envelope(self, response, "validation_error", field)
 
     def test_public_registration_cannot_create_privileged_user(self):
         payload = {
@@ -214,9 +223,9 @@ class LoginAPITests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("non_field_errors", response.data)
-        self.assertNotIn("email", response.data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "invalid_credentials")
+        self.assertNotIn("email", response.data["error"].get("details", {}))
 
     def test_nonexistent_email_is_rejected_with_same_safe_error(self):
         response = self.client.post(
@@ -228,9 +237,36 @@ class LoginAPITests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("non_field_errors", response.data)
-        self.assertNotIn("email", response.data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "invalid_credentials")
+        self.assertNotIn("email", response.data["error"].get("details", {}))
+
+    def test_wrong_password_and_nonexistent_email_return_same_error(self):
+        wrong_password_response = self.client.post(
+            self.url,
+            {
+                "email": "student1@gradnavi.test",
+                "password": "WrongPassword123!",
+            },
+            format="json",
+        )
+        nonexistent_email_response = self.client.post(
+            self.url,
+            {
+                "email": "missing@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            wrong_password_response.status_code,
+            nonexistent_email_response.status_code,
+        )
+        self.assertEqual(
+            wrong_password_response.data["error"],
+            nonexistent_email_response.data["error"],
+        )
 
     def test_missing_credentials_are_rejected(self):
         for payload, missing_field in (
@@ -241,7 +277,12 @@ class LoginAPITests(APITestCase):
                 response = self.client.post(self.url, payload, format="json")
 
                 self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-                self.assertIn(missing_field, response.data)
+                assert_error_envelope(
+                    self,
+                    response,
+                    "validation_error",
+                    missing_field,
+                )
 
     def test_inactive_user_is_rejected(self):
         self.user.is_active = False
@@ -256,8 +297,8 @@ class LoginAPITests(APITestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("non_field_errors", response.data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "invalid_credentials")
 
     def test_login_response_does_not_leak_password_or_privileged_fields(self):
         response = self.client.post(
