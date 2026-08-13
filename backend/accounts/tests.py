@@ -456,3 +456,122 @@ class TokenRefreshAPITests(APITestCase):
             resolve("/api/v1/auth/token/refresh/").url_name,
             "token-refresh",
         )
+
+
+class CurrentUserAPITests(APITestCase):
+    def setUp(self):
+        self.url = "/api/v1/auth/me/"
+        self.password = "GradNaviTest123!"
+        self.user = User.objects.create_user(
+            email="student1@gradnavi.test",
+            password=self.password,
+            first_name="Test",
+            last_name="Student",
+        )
+        self.other_user = User.objects.create_user(
+            email="other@gradnavi.test",
+            password=self.password,
+            first_name="Other",
+            last_name="Student",
+        )
+        self.login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email": "student1@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+        self.access_token = self.login_response.data["access"]
+        self.refresh_token = self.login_response.data["refresh"]
+
+    def test_valid_access_token_returns_current_user(self):
+        response = self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data,
+            {
+                "id": self.user.id,
+                "email": "student1@gradnavi.test",
+                "first_name": "Test",
+                "last_name": "Student",
+                "role": User.Role.STUDENT,
+            },
+        )
+
+    def test_current_user_response_contains_safe_fields_only(self):
+        response = self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            set(response.data.keys()),
+            {"id", "email", "first_name", "last_name", "role"},
+        )
+        response_text = str(response.data)
+        self.assertNotIn("password", response.data)
+        self.assertNotIn("password", response_text)
+        self.assertNotIn(self.user.password, response_text)
+        self.assertNotIn("refresh", response.data)
+        self.assertNotIn("is_staff", response.data)
+        self.assertNotIn("is_superuser", response.data)
+        self.assertNotIn("groups", response.data)
+        self.assertNotIn("permissions", response.data)
+
+    def test_missing_authorization_header_is_rejected(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "not_authenticated")
+
+    def test_malformed_token_is_rejected(self):
+        response = self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION="Bearer not-a-valid-token",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "token_not_valid")
+
+    def test_refresh_token_cannot_authenticate_current_user_endpoint(self):
+        response = self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION=f"Bearer {self.refresh_token}",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "token_not_valid")
+
+    def test_another_users_access_token_returns_that_user(self):
+        other_login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email": "other@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+
+        response = self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION=f"Bearer {other_login_response.data['access']}",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["id"], self.other_user.id)
+        self.assertEqual(response.data["email"], "other@gradnavi.test")
+        self.assertEqual(response.data["first_name"], "Other")
+        self.assertNotEqual(response.data["id"], self.user.id)
+
+    def test_current_user_route_is_registered(self):
+        self.assertEqual(resolve("/api/v1/auth/me/").url_name, "me")
+
+    def test_legacy_current_user_route_is_not_registered(self):
+        with self.assertRaises(Resolver404):
+            resolve("/api/auth/me/")
