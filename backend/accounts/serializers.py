@@ -3,6 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from gradnavi.exceptions import ConflictError
@@ -115,3 +116,23 @@ class LoginSerializer(serializers.Serializer):
             "refresh": instance["refresh"],
             "user": UserSummarySerializer(instance["user"]).data,
         }
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(required=True, write_only=True, trim_whitespace=False)
+
+    default_error_messages = {
+        "invalid_token": "Refresh token is invalid or expired.",
+    }
+
+    def validate(self, attrs):
+        try:
+            token = RefreshToken(attrs["refresh"])
+            token.blacklist()
+        except TokenError:
+            raise AuthenticationFailed(
+                self.error_messages["invalid_token"],
+                code="token_not_valid",
+            )
+
+        return attrs

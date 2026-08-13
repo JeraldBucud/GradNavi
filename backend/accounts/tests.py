@@ -575,3 +575,114 @@ class CurrentUserAPITests(APITestCase):
     def test_legacy_current_user_route_is_not_registered(self):
         with self.assertRaises(Resolver404):
             resolve("/api/auth/me/")
+
+
+class LogoutAPITests(APITestCase):
+    def setUp(self):
+        self.url = "/api/v1/auth/logout/"
+        self.password = "GradNaviTest123!"
+        self.user = User.objects.create_user(
+            email="logout@gradnavi.test",
+            password=self.password,
+            first_name="Logout",
+            last_name="Student",
+        )
+        self.login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email": "logout@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+        self.access_token = self.login_response.data["access"]
+        self.refresh_token = self.login_response.data["refresh"]
+
+    def authenticated_post(self, payload):
+        return self.client.post(
+            self.url,
+            payload,
+            format="json",
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
+        )
+
+    def test_successful_logout_blacklists_submitted_refresh_token(self):
+        response = self.authenticated_post({"refresh": self.refresh_token})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"message": "Logged out successfully."})
+
+        refresh_response = self.client.post(
+            "/api/v1/auth/token/refresh/",
+            {"refresh": self.refresh_token},
+            format="json",
+        )
+        self.assertEqual(refresh_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, refresh_response, "token_not_valid")
+
+    def test_missing_bearer_authentication_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {"refresh": self.refresh_token},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "not_authenticated")
+
+    def test_invalid_bearer_authentication_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {"refresh": self.refresh_token},
+            format="json",
+            HTTP_AUTHORIZATION="Bearer not-a-valid-token",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "token_not_valid")
+
+    def test_missing_refresh_token_is_rejected(self):
+        response = self.authenticated_post({})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error", "refresh")
+
+    def test_malformed_refresh_token_is_rejected(self):
+        response = self.authenticated_post({"refresh": "not-a-valid-token"})
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "token_not_valid")
+
+    def test_access_token_cannot_be_used_as_refresh_token(self):
+        response = self.authenticated_post({"refresh": self.access_token})
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "token_not_valid")
+
+    def test_already_blacklisted_refresh_token_is_safely_rejected(self):
+        first_response = self.authenticated_post({"refresh": self.refresh_token})
+        self.assertEqual(first_response.status_code, status.HTTP_200_OK)
+
+        second_response = self.authenticated_post({"refresh": self.refresh_token})
+
+        self.assertEqual(second_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, second_response, "token_not_valid")
+
+    def test_existing_access_token_remains_usable_until_expiry_after_logout(self):
+        logout_response = self.authenticated_post({"refresh": self.refresh_token})
+        self.assertEqual(logout_response.status_code, status.HTTP_200_OK)
+
+        current_user_response = self.client.get(
+            "/api/v1/auth/me/",
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
+        )
+
+        self.assertEqual(current_user_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(current_user_response.data["id"], self.user.id)
+
+    def test_logout_route_is_registered(self):
+        self.assertEqual(resolve("/api/v1/auth/logout/").url_name, "logout")
+
+    def test_legacy_logout_route_is_not_registered(self):
+        with self.assertRaises(Resolver404):
+            resolve("/api/auth/logout/")
