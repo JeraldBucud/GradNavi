@@ -1,5 +1,10 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.core import mail
+from django.test import override_settings
 from django.urls import Resolver404, resolve
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.exceptions import TokenError
@@ -686,3 +691,246 @@ class LogoutAPITests(APITestCase):
     def test_legacy_logout_route_is_not_registered(self):
         with self.assertRaises(Resolver404):
             resolve("/api/auth/logout/")
+
+
+@override_settings(
+    EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+    MAILERS={"default": {"BACKEND": "django.core.mail.backends.locmem.EmailBackend"}},
+)
+class PasswordResetAPITests(APITestCase):
+    def setUp(self):
+        self.reset_url = "/api/v1/auth/password/reset/"
+        self.confirm_url = "/api/v1/auth/password/reset/confirm/"
+        self.old_password = "GradNaviOld123!"
+        self.new_password = "GradNaviNew123!"
+        self.user = User.objects.create_user(
+            email="reset@gradnavi.test",
+            password=self.old_password,
+            first_name="Reset",
+            last_name="Student",
+        )
+
+    def make_reset_credentials(self, user=None):
+        user = user or self.user
+        return {
+            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+            "token": default_token_generator.make_token(user),
+        }
+
+    def assert_standard_message_response(self, response):
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data,
+            {"message": "If the email is registered, a password reset email has been sent."},
+        )
+
+    def test_existing_email_request_succeeds_and_sends_one_email(self):
+        response = self.client.post(
+            self.reset_url,
+            {"email": "reset@gradnavi.test"},
+            format="json",
+        )
+
+        self.assert_standard_message_response(response)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ["reset@gradnavi.test"])
+
+    def test_unknown_email_request_returns_same_safe_response_and_sends_no_email(self):
+        existing_response = self.client.post(
+            self.reset_url,
+            {"email": "reset@gradnavi.test"},
+            format="json",
+        )
+        mail.outbox.clear()
+
+        unknown_response = self.client.post(
+            self.reset_url,
+            {"email": "missing@gradnavi.test"},
+            format="json",
+        )
+
+        self.assertEqual(existing_response.status_code, unknown_response.status_code)
+        self.assertEqual(existing_response.data, unknown_response.data)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_reset_request_response_does_not_expose_uid_or_token(self):
+        response = self.client.post(
+            self.reset_url,
+            {"email": "reset@gradnavi.test"},
+            format="json",
+        )
+
+        response_text = str(response.data).lower()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn("uid", response_text)
+        self.assertNotIn("token", response_text)
+
+    def test_missing_or_malformed_email_is_rejected(self):
+        for payload in ({}, {"email": "not-an-email"}):
+            with self.subTest(payload=payload):
+                response = self.client.post(self.reset_url, payload, format="json")
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                assert_error_envelope(self, response, "validation_error", "email")
+
+    def test_valid_reset_confirm_changes_password(self):
+        credentials = self.make_reset_credentials()
+        response = self.client.post(
+            self.confirm_url,
+            {
+                **credentials,
+                "password": self.new_password,
+                "password_confirm": self.new_password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"message": "Password has been reset successfully."})
+
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.check_password(self.old_password))
+        self.assertTrue(self.user.check_password(self.new_password))
+
+    def test_old_password_login_fails_and_new_password_login_succeeds_after_reset(self):
+        credentials = self.make_reset_credentials()
+        reset_response = self.client.post(
+            self.confirm_url,
+            {
+                **credentials,
+                "password": self.new_password,
+                "password_confirm": self.new_password,
+            },
+            format="json",
+        )
+        self.assertEqual(reset_response.status_code, status.HTTP_200_OK)
+
+        old_login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {"email": "reset@gradnavi.test", "password": self.old_password},
+            format="json",
+        )
+        new_login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {"email": "reset@gradnavi.test", "password": self.new_password},
+            format="json",
+        )
+
+        self.assertEqual(old_login_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(new_login_response.status_code, status.HTTP_200_OK)
+        self.assertIn("access", new_login_response.data)
+        self.assertIn("refresh", new_login_response.data)
+
+    def test_used_reset_token_cannot_be_reused(self):
+        credentials = self.make_reset_credentials()
+        payload = {
+            **credentials,
+            "password": self.new_password,
+            "password_confirm": self.new_password,
+        }
+
+        first_response = self.client.post(self.confirm_url, payload, format="json")
+        second_response = self.client.post(self.confirm_url, payload, format="json")
+
+        self.assertEqual(first_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(second_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, second_response, "invalid_reset_token")
+
+    def test_invalid_token_is_rejected(self):
+        credentials = self.make_reset_credentials()
+        response = self.client.post(
+            self.confirm_url,
+            {
+                **credentials,
+                "token": "invalid-token",
+                "password": self.new_password,
+                "password_confirm": self.new_password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "invalid_reset_token")
+
+    def test_malformed_uid_is_rejected(self):
+        credentials = self.make_reset_credentials()
+        response = self.client.post(
+            self.confirm_url,
+            {
+                **credentials,
+                "uid": "not-a-valid-uid",
+                "password": self.new_password,
+                "password_confirm": self.new_password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "invalid_reset_token")
+
+    def test_weak_password_is_rejected(self):
+        credentials = self.make_reset_credentials()
+        response = self.client.post(
+            self.confirm_url,
+            {
+                **credentials,
+                "password": "password",
+                "password_confirm": "password",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error", "password")
+
+    def test_password_mismatch_is_rejected(self):
+        credentials = self.make_reset_credentials()
+        response = self.client.post(
+            self.confirm_url,
+            {
+                **credentials,
+                "password": self.new_password,
+                "password_confirm": "DifferentPassword123!",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error", "password_confirm")
+
+    def test_reset_confirm_missing_required_fields_are_rejected(self):
+        required_fields = ("uid", "token", "password", "password_confirm")
+        credentials = self.make_reset_credentials()
+        payload = {
+            **credentials,
+            "password": self.new_password,
+            "password_confirm": self.new_password,
+        }
+
+        for field in required_fields:
+            with self.subTest(field=field):
+                invalid_payload = payload.copy()
+                invalid_payload.pop(field)
+                response = self.client.post(self.confirm_url, invalid_payload, format="json")
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                assert_error_envelope(self, response, "validation_error", field)
+
+    def test_password_reset_routes_are_registered(self):
+        self.assertEqual(
+            resolve("/api/v1/auth/password/reset/").url_name,
+            "password-reset",
+        )
+        self.assertEqual(
+            resolve("/api/v1/auth/password/reset/confirm/").url_name,
+            "password-reset-confirm",
+        )
+
+    def test_legacy_password_reset_routes_are_not_registered(self):
+        for path in (
+            "/api/auth/password/reset/",
+            "/api/auth/password/reset/confirm/",
+        ):
+            with self.subTest(path=path):
+                with self.assertRaises(Resolver404):
+                    resolve(path)
