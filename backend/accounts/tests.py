@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+from django.urls import Resolver404, resolve
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 
 User = get_user_model()
@@ -9,7 +11,7 @@ User = get_user_model()
 
 class RegistrationAPITests(APITestCase):
     def setUp(self):
-        self.url = reverse("accounts:register")
+        self.url = "/api/v1/auth/register/"
         self.valid_payload = {
             "email": "student@example.com",
             "password": "StrongPassword123!",
@@ -133,3 +135,173 @@ class RegistrationAPITests(APITestCase):
         self.assertEqual(user.role, User.Role.STUDENT)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
+
+
+class LoginAPITests(APITestCase):
+    def setUp(self):
+        self.url = "/api/v1/auth/login/"
+        self.password = "GradNaviTest123!"
+        self.user = User.objects.create_user(
+            email="student1@gradnavi.test",
+            password=self.password,
+            first_name="Test",
+            last_name="Student",
+        )
+
+    def test_successful_login_returns_tokens_and_safe_user_information(self):
+        response = self.client.post(
+            self.url,
+            {
+                "email": "student1@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(set(response.data.keys()), {"access", "refresh", "user"})
+        self.assertEqual(
+            set(response.data["user"].keys()),
+            {"id", "email", "first_name", "last_name", "role"},
+        )
+        self.assertEqual(response.data["user"]["id"], self.user.id)
+        self.assertEqual(response.data["user"]["email"], "student1@gradnavi.test")
+        self.assertEqual(response.data["user"]["first_name"], "Test")
+        self.assertEqual(response.data["user"]["last_name"], "Student")
+        self.assertEqual(response.data["user"]["role"], User.Role.STUDENT)
+
+    def test_successful_login_accepts_email_case_insensitively(self):
+        response = self.client.post(
+            self.url,
+            {
+                "email": "STUDENT1@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["user"]["email"], "student1@gradnavi.test")
+
+    def test_successful_login_issues_valid_jwt_tokens(self):
+        response = self.client.post(
+            self.url,
+            {
+                "email": "student1@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        try:
+            access = AccessToken(response.data["access"])
+            refresh = RefreshToken(response.data["refresh"])
+        except TokenError as exc:
+            self.fail(f"Login returned invalid JWT tokens: {exc}")
+
+        self.assertEqual(access["user_id"], str(self.user.id))
+        self.assertEqual(refresh["user_id"], str(self.user.id))
+
+    def test_wrong_password_is_rejected_with_safe_error(self):
+        response = self.client.post(
+            self.url,
+            {
+                "email": "student1@gradnavi.test",
+                "password": "WrongPassword123!",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("non_field_errors", response.data)
+        self.assertNotIn("email", response.data)
+
+    def test_nonexistent_email_is_rejected_with_same_safe_error(self):
+        response = self.client.post(
+            self.url,
+            {
+                "email": "missing@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("non_field_errors", response.data)
+        self.assertNotIn("email", response.data)
+
+    def test_missing_credentials_are_rejected(self):
+        for payload, missing_field in (
+            ({"password": self.password}, "email"),
+            ({"email": "student1@gradnavi.test"}, "password"),
+        ):
+            with self.subTest(missing_field=missing_field):
+                response = self.client.post(self.url, payload, format="json")
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                self.assertIn(missing_field, response.data)
+
+    def test_inactive_user_is_rejected(self):
+        self.user.is_active = False
+        self.user.save(update_fields=["is_active"])
+
+        response = self.client.post(
+            self.url,
+            {
+                "email": "student1@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("non_field_errors", response.data)
+
+    def test_login_response_does_not_leak_password_or_privileged_fields(self):
+        response = self.client.post(
+            self.url,
+            {
+                "email": "student1@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_text = str(response.data)
+        self.assertNotIn("password", response.data["user"])
+        self.assertNotIn("password", response_text)
+        self.assertNotIn(self.user.password, response_text)
+        self.assertNotIn("is_staff", response.data["user"])
+        self.assertNotIn("is_superuser", response.data["user"])
+
+    def test_login_does_not_modify_user_role(self):
+        self.assertEqual(self.user.role, User.Role.STUDENT)
+
+        response = self.client.post(
+            self.url,
+            {
+                "email": "student1@gradnavi.test",
+                "password": self.password,
+                "role": User.Role.ADMIN,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.role, User.Role.STUDENT)
+
+
+class AuthenticationURLRoutingTests(APITestCase):
+    def test_v1_registration_and_login_routes_are_registered(self):
+        self.assertEqual(resolve("/api/v1/auth/register/").url_name, "register")
+        self.assertEqual(resolve("/api/v1/auth/login/").url_name, "login")
+
+    def test_legacy_auth_routes_are_not_registered(self):
+        for path in ("/api/auth/register/", "/api/auth/login/"):
+            with self.subTest(path=path):
+                with self.assertRaises(Resolver404):
+                    resolve(path)

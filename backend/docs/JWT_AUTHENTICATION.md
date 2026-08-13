@@ -29,29 +29,29 @@ through an authorised backend/admin process.
   -------------------------------------------------------------------------------------------
   Method            Endpoint                              Access            Purpose
   ----------------- ------------------------------------- ----------------- -----------------
-  POST              `/api/auth/register/`                 Public            Create a student
+  POST              `/api/v1/auth/register/`              Public            Create a student
                                                                             account
 
-  POST              `/api/auth/login/`                    Public            Login with
+  POST              `/api/v1/auth/login/`                 Public            Login with
                                                                             email/password
                                                                             and issue JWT
                                                                             tokens
 
-  POST              `/api/auth/token/refresh/`            Refresh token     Obtain new
+  POST              `/api/v1/auth/token/refresh/`         Refresh token     Obtain new
                                                                             token(s)
 
-  GET               `/api/auth/me/`                       Access token      Get the current
+  GET               `/api/v1/auth/me/`                    Access token      Get the current
                                                                             authenticated
                                                                             user
 
-  POST              `/api/auth/logout/`                   Auth/refresh as   Invalidate the
+  POST              `/api/v1/auth/logout/`                Auth/refresh as   Invalidate the
                                                           implemented       supplied refresh
                                                                             token
 
-  POST              `/api/auth/password/reset/`           Public            Start password
+  POST              `/api/v1/auth/password/reset/`        Public            Start password
                                                                             recovery
 
-  POST              `/api/auth/password/reset/confirm/`   Reset token       Complete password
+  POST              `/api/v1/auth/password/reset/confirm/` Reset token      Complete password
                                                                             reset
   -------------------------------------------------------------------------------------------
 
@@ -108,7 +108,7 @@ Authorization: Bearer <access_token>
 Example:
 
 ``` http
-GET /api/auth/me/
+GET /api/v1/auth/me/
 Authorization: Bearer eyJ...
 ```
 
@@ -119,7 +119,7 @@ containing real credentials, or shared screenshots.
 
 When the access token expires, the frontend uses the refresh token with:
 
-`POST /api/auth/token/refresh/`
+`POST /api/v1/auth/token/refresh/`
 
 Conceptual body:
 
@@ -179,7 +179,7 @@ Passwords must never be stored as plaintext or manually hashed by React.
 
 React developers should:
 
-1.  Use the agreed `/api/auth/...` endpoints.
+1.  Use the agreed `/api/v1/auth/...` endpoints.
 2.  Login with email + password.
 3.  Send access tokens as `Authorization: Bearer <access_token>`.
 4.  Refresh when the access token expires.
@@ -241,7 +241,7 @@ Still to implement/test:
 -   Registration API
 -   Login API
 -   Refresh endpoint routing
--   `/api/auth/me/`
+-   `/api/v1/auth/me/`
 -   Logout API
 -   Password-reset APIs
 -   Full automated authentication tests
