@@ -346,3 +346,113 @@ class AuthenticationURLRoutingTests(APITestCase):
             with self.subTest(path=path):
                 with self.assertRaises(Resolver404):
                     resolve(path)
+
+
+class TokenRefreshAPITests(APITestCase):
+    def setUp(self):
+        self.url = "/api/v1/auth/token/refresh/"
+        self.password = "GradNaviTest123!"
+        self.user = User.objects.create_user(
+            email="refresh@gradnavi.test",
+            password=self.password,
+            first_name="Refresh",
+            last_name="Student",
+        )
+        self.login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email": "refresh@gradnavi.test",
+                "password": self.password,
+            },
+            format="json",
+        )
+        self.refresh_token = self.login_response.data["refresh"]
+        self.access_token = self.login_response.data["access"]
+
+    def test_valid_refresh_token_succeeds_and_returns_rotated_tokens(self):
+        response = self.client.post(
+            self.url,
+            {"refresh": self.refresh_token},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(set(response.data.keys()), {"access", "refresh"})
+        self.assertNotEqual(response.data["refresh"], self.refresh_token)
+
+        try:
+            access = AccessToken(response.data["access"])
+            refresh = RefreshToken(response.data["refresh"])
+        except TokenError as exc:
+            self.fail(f"Refresh returned invalid JWT tokens: {exc}")
+
+        self.assertEqual(access["user_id"], str(self.user.id))
+        self.assertEqual(refresh["user_id"], str(self.user.id))
+
+    def test_original_refresh_token_cannot_be_reused_after_rotation(self):
+        first_response = self.client.post(
+            self.url,
+            {"refresh": self.refresh_token},
+            format="json",
+        )
+        self.assertEqual(first_response.status_code, status.HTTP_200_OK)
+
+        second_response = self.client.post(
+            self.url,
+            {"refresh": self.refresh_token},
+            format="json",
+        )
+
+        self.assertEqual(second_response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, second_response, "token_not_valid")
+
+    def test_new_rotated_refresh_token_can_be_used_for_another_refresh(self):
+        first_response = self.client.post(
+            self.url,
+            {"refresh": self.refresh_token},
+            format="json",
+        )
+        self.assertEqual(first_response.status_code, status.HTTP_200_OK)
+
+        second_response = self.client.post(
+            self.url,
+            {"refresh": first_response.data["refresh"]},
+            format="json",
+        )
+
+        self.assertEqual(second_response.status_code, status.HTTP_200_OK)
+        self.assertIn("access", second_response.data)
+        self.assertIn("refresh", second_response.data)
+        self.assertNotEqual(second_response.data["refresh"], first_response.data["refresh"])
+
+    def test_malformed_refresh_token_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {"refresh": "not-a-valid-token"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "token_not_valid")
+
+    def test_access_token_cannot_be_used_as_refresh_token(self):
+        response = self.client.post(
+            self.url,
+            {"refresh": self.access_token},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "token_not_valid")
+
+    def test_missing_refresh_field_is_rejected(self):
+        response = self.client.post(self.url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error", "refresh")
+
+    def test_refresh_route_is_registered(self):
+        self.assertEqual(
+            resolve("/api/v1/auth/token/refresh/").url_name,
+            "token-refresh",
+        )
