@@ -288,7 +288,7 @@ Authentication endpoint details will be aligned with the implementation being co
 
 ## 9.1 Authentication API
 
-Status: Endpoint structure and V1 base path confirmed by backend developer.
+**Status:** Sprint 1 authentication API contract. Endpoint structure and V1 base path confirmed. Detailed request and response contracts remain subject to team review if implementation identifies a required change.
 
 The Authentication API supports account registration, login, JWT token management, logout, password recovery, and retrieval of the currently authenticated user.
 
@@ -296,35 +296,127 @@ Final request and response fields will be aligned with the implemented authentic
 
 ### 9.1.1 Register Account
 
-Endpoint:
+### 9.1.1 Register Account
 
-```http
-POST /api/v1/auth/register/
-```
+**Endpoint**
 
-Purpose:
+`POST /api/v1/auth/register/`
 
-Creates a new GradNavi user account.
+**Purpose**
 
-Authentication:
+Creates a new GradNavi Student account.
+
+**Authentication**
 
 Not required.
 
-The request body, validation rules, response structure, and final account fields will be aligned with the authentication implementation.
+**Request Body**
 
-Expected success status:
-
-```text
-201 Created
+```json
+{
+  "email": "student@example.com",
+  "password": "ExamplePassword123!",
+  "password_confirm": "ExamplePassword123!"
+}
 ```
 
-Expected errors:
+**Request Fields**
 
-```text
-400 Bad Request
-409 Conflict
-500 Internal Server Error
+| Field | Required | Description |
+| --- | --- | --- |
+| `email` | Yes | Must contain a valid email address and must not already belong to an existing GradNavi account. |
+| `password` | Yes | Must satisfy the password validation rules configured by the Django backend. |
+| `password_confirm` | Yes | Must match the submitted `password` value. |
+
+The React frontend may perform basic validation to improve usability, but the Django backend is responsible for authoritative validation.
+
+**Account Role**
+
+Public registration creates a Student account.
+
+The registration request must not accept a client-controlled `role` value. Users must not be able to register themselves as an Administrator or assign other protected permissions.
+
+**Successful Response**
+
+`201 Created`
+
+```json
+{
+  "data": {
+    "id": 1,
+    "email": "student@example.com",
+    "role": "student"
+  }
+}
 ```
+
+The registration response must not return:
+
+- `password`
+- `password_confirm`
+- password hashes
+- JWT signing information
+- password-reset credentials
+- authentication secrets
+- internal authentication data
+
+A successful registration creates the account but does not automatically return JWT credentials.
+
+Authentication tokens are issued through the Login endpoint unless the approved backend implementation later changes this behaviour.
+
+**Validation Behaviour**
+
+| Scenario | HTTP Status |
+| --- | --- |
+| Missing required field | `400 Bad Request` |
+| Invalid email format | `400 Bad Request` |
+| Passwords do not match | `400 Bad Request` |
+| Password fails configured backend password-validation rules | `400 Bad Request` |
+| Email already exists | `409 Conflict` |
+| Unexpected backend failure | `500 Internal Server Error` |
+
+Validation failures must follow the standard GradNavi API error structure.
+
+**Example Validation Response**
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "The request contains invalid data.",
+    "details": {
+      "password_confirm": [
+        "The passwords do not match."
+      ]
+    }
+  }
+}
+```
+
+**Example Duplicate Email Response**
+
+```json
+{
+  "error": {
+    "code": "conflict",
+    "message": "An account with this email address already exists.",
+    "details": {
+      "email": [
+        "This email address is already registered."
+      ]
+    }
+  }
+}
+```
+
+**Security Requirements**
+
+- Registration data must be treated as untrusted input.
+- Passwords must be processed using the approved Django authentication and password-hashing mechanisms.
+- Plain-text passwords must never be stored.
+- The backend must enforce all registration validation even when the React frontend has already validated the form.
+- The backend must control the account role and permissions assigned during registration.
+- Registration responses and application logs must not expose passwords, password hashes, secrets, or internal authentication information.
 
 ### 9.1.2 Login
 
