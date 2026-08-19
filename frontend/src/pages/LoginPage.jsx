@@ -5,6 +5,7 @@ function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -15,6 +16,10 @@ function LoginPage() {
     }
 
     setError('')
+    setIsLoading(true)
+
+    // API integration will be added later
+    setisLoading(false) 
   }
 
   return (
@@ -44,7 +49,9 @@ function LoginPage() {
 
         {error && <p>{error}</p>}
 
-        <button type="submit">Login</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
 
       <p>
