@@ -161,16 +161,31 @@ Skills use the `StudentSkill` join entity and shared `Skill` reference data.
 
 The final API representation for a skill should support more than a plain string if proficiency information is required by readiness and skill-gap calculations.
 
-A future structured representation may look like:
+The Student Profile API should represent a student skill using a structured object so the frontend and later scoring functions receive both the shared Skill information and the student's proficiency level.
 
-    {
-      "id": 12,
-      "name": "Python",
-      "category": "Programming",
-      "proficiency_level": "Intermediate"
-    }
+Example:
 
-This structure is conceptual until the backend implementation and scoring requirements confirm the final fields.
+```json
+{
+  "id": 12,
+  "name": "Python",
+  "category": "Programming",
+  "proficiency_level": "proficient"
+}
+```
+
+The approved values for `proficiency_level` are:
+
+| Display Label | API Value |
+| --- | --- |
+| Foundational | `foundational` |
+| Developing | `developing` |
+| Proficient | `proficient` |
+| Advanced | `advanced` |
+
+The backend must reject unsupported proficiency values.
+
+The React frontend should display the user-friendly labels while using the lowercase API values when reading or updating Student Profile skill data.
 
 ## 9. Interest Mapping
 
@@ -309,7 +324,7 @@ API validation should be applied before Student Profile changes are stored.
 | Ownership | Authenticated User must own StudentProfile |
 | Skill reference | Referenced Skill must exist |
 | Interest reference | Referenced Interest must exist |
-| Proficiency | Must use an approved value once the scale is confirmed |
+| Proficiency | Must be one of `foundational`, `developing`, `proficient`, or `advanced` |
 | Duplicate skills | Prevent duplicate StudentSkill relationships where appropriate |
 | Duplicate interests | Prevent duplicate StudentInterest relationships where appropriate |
 | Dates | Validate format and logical ranges |
