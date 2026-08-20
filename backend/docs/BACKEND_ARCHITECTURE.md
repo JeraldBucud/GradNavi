@@ -211,13 +211,13 @@ V1 supports: - Student - Administrator
 
   Method   Endpoint                              Purpose
   -------- ------------------------------------- ------------------------------------
-  POST     `/api/auth/register/`                 Register student account
-  POST     `/api/auth/login/`                    Authenticate and issue JWT tokens
-  POST     `/api/auth/token/refresh/`            Obtain a new access token
-  POST     `/api/auth/logout/`                   Invalidate/blacklist refresh token
-  POST     `/api/auth/password/reset/`           Start password recovery
-  POST     `/api/auth/password/reset/confirm/`   Complete password reset
-  GET      `/api/auth/me/`                       Return current authenticated user
+  POST     `/api/v1/auth/register/`                 Register student account
+  POST     `/api/v1/auth/login/`                    Authenticate and issue JWT tokens
+  POST     `/api/v1/auth/token/refresh/`            Obtain a new access token
+  POST     `/api/v1/auth/logout/`                   Invalidate/blacklist refresh token
+  POST     `/api/v1/auth/password/reset/`           Start password recovery
+  POST     `/api/v1/auth/password/reset/confirm/`   Complete password reset
+  GET      `/api/v1/auth/me/`                       Return current authenticated user
 
 Passwords use Django's password hashing mechanisms and are never stored
 or returned as plaintext.

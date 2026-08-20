@@ -192,6 +192,8 @@ This allows:
 
 ### 4.4 Planned StudentSkill Fields
 
+### 4.4 Planned StudentSkill Fields
+
 The conceptual StudentSkill fields are:
 
 | Field | Purpose |
@@ -203,15 +205,31 @@ The conceptual StudentSkill fields are:
 | `created_at` | Records when the skill was added to the profile |
 | `updated_at` | Records when the StudentSkill record was last updated |
 
-The allowed values for `proficiency_level` require team confirmation before implementation.
+The approved GradNavi skill proficiency scale uses four ordered levels:
 
-Possible values for discussion include:
+| Display Label | API Value | Meaning |
+| --- | --- | --- |
+| Foundational | `foundational` | Introductory knowledge with limited practical experience |
+| Developing | `developing` | Working knowledge with some practical experience and occasional guidance |
+| Proficient | `proficient` | Able to use the skill independently for typical tasks and projects |
+| Advanced | `advanced` | Able to use the skill independently for complex tasks and deeper technical work |
 
-- Beginner.
-- Intermediate.
-- Advanced.
+The `proficiency_level` field must use one of these four approved API values.
 
-These values are examples only and are not yet treated as the final scoring scale.
+The frontend should display the user-friendly labels while sending the lowercase API values to the backend.
+
+For later comparison and scoring logic, the proficiency levels may be represented internally as an ordered scale:
+
+| API Value | Internal Ordinal Value |
+| --- | ---: |
+| `foundational` | 1 |
+| `developing` | 2 |
+| `proficient` | 3 |
+| `advanced` | 4 |
+
+These numeric values are intended for internal comparison and scoring logic. They are not student-facing scores.
+
+The exact scoring weights and career-readiness calculations remain outside the scope of the Student Profile data design.
 
 ### 4.5 Why a Join Entity Is Used
 
