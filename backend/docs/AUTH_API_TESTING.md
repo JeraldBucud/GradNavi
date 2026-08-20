@@ -650,7 +650,7 @@ Before handing off authentication changes, verify:
 
 ## 20. Known Notes / Contract Differences
 
-- `docs/rest-api-design.md` defines the authentication endpoint paths and expected statuses but leaves some response bodies and detailed request fields to implementation.
+- `docs/system-design/rest-api-design.md` defines the authentication endpoint paths and expected statuses but leaves some response bodies and detailed request fields to implementation.
 - Password reset confirm currently uses `uid`, `token`, `password`, and `password_confirm`.
 - Logout success is implemented as `200 OK` with `{ "message": "Logged out successfully." }`, which is allowed by the REST design because it permits `200 OK` or `204 No Content`.
 - The production password-reset frontend URL and email provider are not yet specified.
