@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 
 function RegisterPage() {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -11,7 +13,7 @@ function RegisterPage() {
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!email || !password || !passwordConfirm) {
+    if (!firstName || !lastName || !email || !password || !passwordConfirm) {
       setError('All fields are required.')
       return
     }
@@ -33,6 +35,26 @@ function RegisterPage() {
       <h1>Register</h1>
 
       <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="first-name">First Name</label>
+          <input
+            id="first-name"
+            type="text"
+            value={firstName}
+            onChange={(event) => setFirstName(event.target.value)}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="last-name">Last Name</label>
+          <input
+            id="last-name"
+            type="text"
+            value={lastName}
+            onChange={(event) => setLastName(event.target.value)}
+          />
+        </div>
+
         <div>
           <label htmlFor="email">Email</label>
           <input

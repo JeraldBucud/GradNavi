@@ -316,7 +316,9 @@ Not required.
 {
   "email": "student@example.com",
   "password": "ExamplePassword123!",
-  "password_confirm": "ExamplePassword123!"
+  "password_confirm": "ExamplePassword123!",
+  "first_name": "Test",
+  "last_name": "Student"
 }
 ```
 
@@ -327,6 +329,8 @@ Not required.
 | `email` | Yes | Must contain a valid email address and must not already belong to an existing GradNavi account. |
 | `password` | Yes | Must satisfy the password validation rules configured by the Django backend. |
 | `password_confirm` | Yes | Must match the submitted `password` value. |
+| `first_name` | Yes | Student's first name. Must not be blank. |
+| `last_name` | Yes | Student's last name. Must not be blank. |
 
 The React frontend may perform basic validation to improve usability, but the Django backend is responsible for authoritative validation.
 
@@ -342,11 +346,11 @@ The registration request must not accept a client-controlled `role` value. Users
 
 ```json
 {
-  "data": {
-    "id": 1,
-    "email": "student@example.com",
-    "role": "student"
-  }
+  "id": 1,
+  "email": "student@example.com",
+  "first_name": "Test",
+  "last_name": "Student",
+  "role": "student"
 }
 ```
 
@@ -369,11 +373,14 @@ Authentication tokens are issued through the Login endpoint unless the approved 
 | Scenario | HTTP Status |
 | --- | --- |
 | Missing required field | `400 Bad Request` |
+| First name is blank | `400 Bad Request` |
+| Last name is blank | `400 Bad Request` |
 | Invalid email format | `400 Bad Request` |
 | Passwords do not match | `400 Bad Request` |
 | Password fails configured backend password-validation rules | `400 Bad Request` |
 | Email already exists | `409 Conflict` |
 | Unexpected backend failure | `500 Internal Server Error` |
+
 
 Validation failures must follow the standard GradNavi API error structure.
 
@@ -399,10 +406,10 @@ Validation failures must follow the standard GradNavi API error structure.
 {
   "error": {
     "code": "conflict",
-    "message": "An account with this email address already exists.",
+    "message": "A user with this email already exists.",
     "details": {
       "email": [
-        "This email address is already registered."
+        "A user with this email already exists."
       ]
     }
   }
