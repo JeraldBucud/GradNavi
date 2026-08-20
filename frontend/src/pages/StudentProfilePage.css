@@ -1,0 +1,73 @@
+/*
+ * Temporary Sprint 1 styling for the Student Profile.
+ *
+ * These styles provide basic layout, readability, and usability
+ * during frontend development and testing.
+ *
+ * This is not the final GradNavi UI design.
+ * Replace or update these styles once the approved UI design
+ * is provided and implemented.
+ */
+
+ .profile-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.profile-header {
+  margin-bottom: 2rem;
+}
+
+.profile-section {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.profile-section h2 {
+  margin-top: 0;
+}
+
+.profile-section form {
+  display: grid;
+  gap: 1rem;
+}
+
+.profile-section label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.profile-section input,
+.profile-section select,
+.profile-section textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.profile-section textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.profile-section button {
+  width: fit-content;
+  padding: 0.7rem 1rem;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.profile-item {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+}

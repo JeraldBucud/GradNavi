@@ -45,7 +45,7 @@ function EducationSection() {
   }
 
   return (
-    <section>
+    <section className="profile-section">
       <h2>Education</h2>
 
       <form onSubmit={handleSubmit}>
@@ -124,7 +124,9 @@ function EducationSection() {
           <h3>Education History</h3>
 
           {educationItems.map((education, index) => (
-            <article key={`${education.institution_name}-${index}`}>
+            <article
+            className="profile-item"
+            key={`${education.institution_name}-${index}`}>
               <h4>{education.qualification}</h4>
               <p>{education.institution_name}</p>
               <p>{education.field_of_study}</p>

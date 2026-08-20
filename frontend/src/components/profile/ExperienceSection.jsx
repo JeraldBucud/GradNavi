@@ -55,7 +55,7 @@ function ExperienceSection() {
   }
 
   return (
-    <section>
+    <section className="profile-section">
       <h2>Experience</h2>
 
       <form onSubmit={handleSubmit}>
@@ -136,7 +136,9 @@ function ExperienceSection() {
           <h3>Experience History</h3>
 
           {experienceItems.map((experience, index) => (
-            <article key={`${experience.company}-${experience.job_title}-${index}`}>
+            <article
+            className="profile-item"
+            key={`${experience.company}-${experience.job_title}-${index}`}>
               <h4>{experience.job_title}</h4>
 
               <p>{experience.company}</p>

@@ -43,7 +43,7 @@ function ProjectSection() {
   }
 
   return (
-    <section>
+    <section className="profile-section">
       <h2>Projects</h2>
 
       <form onSubmit={handleSubmit}>
@@ -110,7 +110,9 @@ function ProjectSection() {
           <h3>Project History</h3>
 
           {projectItems.map((project, index) => (
-            <article key={`${project.name}-${index}`}>
+            <article
+            className="profile-item"
+            key={`${project.name}-${index}`}>
               <h4>{project.name}</h4>
 
               {project.project_url && (

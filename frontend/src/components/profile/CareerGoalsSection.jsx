@@ -37,7 +37,7 @@ function CareerGoalsSection() {
   }
 
   return (
-    <section>
+    <section className="profile-section">
       <h2>Career Goals</h2>
 
       <form onSubmit={handleSubmit}>
@@ -71,7 +71,9 @@ function CareerGoalsSection() {
           <h3>Career Goals</h3>
 
           {careerGoalItems.map((careerGoal, index) => (
-            <article key={`${careerGoal.target_role}-${index}`}>
+            <article
+            className="profile-item"
+            key={`${careerGoal.target_role}-${index}`}>
               <h4>{careerGoal.target_role}</h4>
 
               {careerGoal.description && (
