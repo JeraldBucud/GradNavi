@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import {
+  Link,
+  useNavigate,
+} from 'react-router'
 
 import { registerAccount } from '../services/authService'
+import './AuthPage.css'
 
 function RegisterPage() {
   const navigate = useNavigate()
@@ -41,104 +45,121 @@ function RegisterPage() {
 
       navigate('/login')
     } catch (requestError) {
-  const errorDetails = requestError.data?.error?.details
+      const errorDetails = requestError.data?.error?.details
 
-  if (errorDetails?.password?.length) {
-    setError(errorDetails.password.join(' '))
-    return
-  }
+      if (errorDetails?.password?.length) {
+        setError(errorDetails.password.join(' '))
+        return
+      }
 
-  if (errorDetails?.email?.length) {
-    setError(errorDetails.email.join(' '))
-    return
-  }
+      if (errorDetails?.email?.length) {
+        setError(errorDetails.email.join(' '))
+        return
+      }
 
-  if (errorDetails?.first_name?.length) {
-    setError(errorDetails.first_name.join(' '))
-    return
-  }
+      if (errorDetails?.first_name?.length) {
+        setError(errorDetails.first_name.join(' '))
+        return
+      }
 
-  if (errorDetails?.last_name?.length) {
-    setError(errorDetails.last_name.join(' '))
-    return
-  }
+      if (errorDetails?.last_name?.length) {
+        setError(errorDetails.last_name.join(' '))
+        return
+      }
 
-  if (errorDetails?.password_confirm?.length) {
-    setError(errorDetails.password_confirm.join(' '))
-    return
-  }
+      if (errorDetails?.password_confirm?.length) {
+        setError(errorDetails.password_confirm.join(' '))
+        return
+      }
 
-  setError(requestError.message)
+      setError(requestError.message)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <main>
-      <h1>Register</h1>
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="first-name">First Name</label>
-          <input
-            id="first-name"
-            type="text"
-            value={firstName}
-            onChange={(event) => setFirstName(event.target.value)}
-          />
+    <main className="auth-page">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1>Create Account</h1>
+          <p>Create your GradNavi student account.</p>
         </div>
 
-        <div>
-          <label htmlFor="last-name">Last Name</label>
-          <input
-            id="last-name"
-            type="text"
-            value={lastName}
-            onChange={(event) => setLastName(event.target.value)}
-          />
-        </div>
+        <form
+          className="auth-form"
+          onSubmit={handleSubmit}
+        >
+          <div className="auth-field">
+            <label htmlFor="first-name">First Name</label>
+            <input
+              id="first-name"
+              type="text"
+              value={firstName}
+              onChange={(event) => setFirstName(event.target.value)}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </div>
+          <div className="auth-field">
+            <label htmlFor="last-name">Last Name</label>
+            <input
+              id="last-name"
+              type="text"
+              value={lastName}
+              onChange={(event) => setLastName(event.target.value)}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </div>
+          <div className="auth-field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="password-confirm">Confirm Password</label>
-          <input
-            id="password-confirm"
-            type="password"
-            value={passwordConfirm}
-            onChange={(event) => setPasswordConfirm(event.target.value)}
-          />
-        </div>
+          <div className="auth-field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
 
-        {error && <p>{error}</p>}
+          <div className="auth-field">
+            <label htmlFor="password-confirm">Confirm Password</label>
+            <input
+              id="password-confirm"
+              type="password"
+              value={passwordConfirm}
+              onChange={(event) => setPasswordConfirm(event.target.value)}
+            />
+          </div>
 
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Creating account...' : 'Register'}
-        </button>
-      </form>
+          {error && (
+            <p className="auth-error">
+              {error}
+            </p>
+          )}
 
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+          <button
+            className="auth-button"
+            type="submit"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Creating account...' : 'Register'}
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          Already have an account?{' '}
+          <Link to="/login">Login</Link>
+        </p>
+      </div>
     </main>
   )
 }

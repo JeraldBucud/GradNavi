@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import {
   Link,
@@ -6,6 +7,7 @@ import {
 } from 'react-router'
 
 import { loginAccount } from '../services/authService'
+import './AuthPage.css'
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -41,40 +43,47 @@ function LoginPage() {
   }
 
   return (
-    <main>
-      <h1>Login</h1>
+    <main className="auth-page">
+      <div className="auth-card">
+          <div className="auth-header">
+        <h1>Login</h1>
+          </div>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </div>
+        <form
+        className="auth-form"
+        onSubmit={handleSubmit}
+        >
+          <div className="auth-field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </div>
+          <div className="auth-field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
 
-        {error && <p>{error}</p>}
+          {error && <p className="auth-error">{error}</p>}
 
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
 
-      <p>
-        Don&apos;t have an account? <Link to="/register">Register</Link>
-      </p>
+        <p className="auth-footer">
+          Don&apos;t have an account? <Link to="/register">Register</Link>
+        </p>
+      </div>
     </main>
   )
 }

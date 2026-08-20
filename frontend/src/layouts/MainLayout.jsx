@@ -10,6 +10,7 @@ import {
   getStoredUser,
   logoutAccount,
 } from '../services/authService'
+import './MainLayout.css'
 
 function MainLayout() {
   const navigate = useNavigate()
@@ -30,9 +31,15 @@ function MainLayout() {
 
   return (
     <>
-      <header>
-        <nav>
-          <Link to="/">GradNavi</Link>
+      <header className="main-header">
+        <nav className="main-nav">
+          <Link
+            className="main-brand"
+            to="/"
+          >
+            GradNavi
+          </Link>
+
           <Link to="/">Home</Link>
 
           {currentUser ? (
@@ -40,6 +47,7 @@ function MainLayout() {
               <Link to="/profile">Student Profile</Link>
 
               <button
+                className="main-logout"
                 type="button"
                 onClick={handleLogout}
               >
