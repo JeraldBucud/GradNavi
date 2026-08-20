@@ -608,6 +608,38 @@ The profile contains the structured information required by GradNavi, including 
 
 All Student Profile endpoints require authentication.
 
+### Student Skill Representation
+
+Skills in the Student Profile use shared Skill reference data together with the authenticated student's proficiency level.
+
+A Student Profile skill should use the following structure:
+
+```json
+{
+  "id": 12,
+  "name": "Python",
+  "category": "Programming",
+  "proficiency_level": "proficient"
+}
+```
+
+The approved `proficiency_level` values are:
+
+| Display Label | API Value |
+| --- | --- |
+| Foundational | `foundational` |
+| Developing | `developing` |
+| Proficient | `proficient` |
+| Advanced | `advanced` |
+
+The backend must validate `proficiency_level` and reject unsupported values with `400 Bad Request`.
+
+The frontend should display the user-friendly labels while sending and receiving the lowercase API values.
+
+Skill reference information such as `id`, `name`, and `category` comes from shared Skill data. The authenticated student's proficiency is stored through the StudentSkill relationship.
+
+The frontend must not use a client-supplied user identifier to control Student Profile ownership.
+
 ### 9.2.1 Retrieve Student Profile
 
 Endpoint:
@@ -630,7 +662,14 @@ Successful response:
 {
   "data": {
     "profile": {
-      "skills": [],
+      "skills": [
+          {
+            "id": 12,
+            "name": "Python",
+            "category": "Programming",
+            "proficiency_level": "proficient"
+          }
+      ]
       "interests": [],
       "education": [],
       "experience": [],
@@ -694,11 +733,15 @@ Successful response:
 {
   "data": {
     "profile": {
-      "skills": [],
-      "interests": [
-        "Artificial Intelligence",
-        "Backend Development"
-      ],
+    "skills": [
+      {
+        "id": 12,
+        "name": "Python",
+        "category": "Programming",
+        "proficiency_level": "proficient"
+      }
+    ],
+"interests": [],
       "education": [],
       "experience": [],
       "projects": [],
