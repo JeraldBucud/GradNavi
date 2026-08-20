@@ -1,13 +1,24 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from 'react-router'
+
+import { loginAccount } from '../services/authService'
 
 function LoginPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const destination = location.state?.from || '/profile'
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
     if (!email || !password) {
@@ -18,8 +29,15 @@ function LoginPage() {
     setError('')
     setIsLoading(true)
 
-    // API integration will be added later
-    setisLoading(false) 
+    try {
+      await loginAccount(email, password)
+
+      navigate(destination, { replace: true })
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
