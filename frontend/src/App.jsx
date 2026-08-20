@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router'
 
+import ProtectedRoute from './components/auth/ProtectedRoute'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -14,7 +15,11 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/profile" element={<StudentProfilePage />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<StudentProfilePage />} />
+        </Route>
+
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

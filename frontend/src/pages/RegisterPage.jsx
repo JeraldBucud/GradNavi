@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+
+import { registerAccount } from '../services/authService'
 
 function RegisterPage() {
+  const navigate = useNavigate()
+
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -10,7 +14,7 @@ function RegisterPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
     if (!firstName || !lastName || !email || !password || !passwordConfirm) {
@@ -26,8 +30,48 @@ function RegisterPage() {
     setError('')
     setIsLoading(true)
 
-    // API integration will be added later.
-    setIsLoading(false)
+    try {
+      await registerAccount({
+        email,
+        password,
+        password_confirm: passwordConfirm,
+        first_name: firstName,
+        last_name: lastName,
+      })
+
+      navigate('/login')
+    } catch (requestError) {
+  const errorDetails = requestError.data?.error?.details
+
+  if (errorDetails?.password?.length) {
+    setError(errorDetails.password.join(' '))
+    return
+  }
+
+  if (errorDetails?.email?.length) {
+    setError(errorDetails.email.join(' '))
+    return
+  }
+
+  if (errorDetails?.first_name?.length) {
+    setError(errorDetails.first_name.join(' '))
+    return
+  }
+
+  if (errorDetails?.last_name?.length) {
+    setError(errorDetails.last_name.join(' '))
+    return
+  }
+
+  if (errorDetails?.password_confirm?.length) {
+    setError(errorDetails.password_confirm.join(' '))
+    return
+  }
+
+  setError(requestError.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
