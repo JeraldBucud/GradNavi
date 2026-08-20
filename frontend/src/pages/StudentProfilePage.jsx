@@ -1,6 +1,7 @@
 import EducationSection from '../components/profile/EducationSection'
 import ExperienceSection from '../components/profile/ExperienceSection'
 import ProjectSection from '../components/profile/ProjectSection'
+import CareerGoalsSection from '../components/profile/CareerGoalsSection'
 
 function StudentProfilePage() {
   return (
@@ -29,15 +30,7 @@ function StudentProfilePage() {
 
       <ProjectSection />
 
-      <section>
-        <h2>Projects</h2>
-        <p>Add and manage projects that demonstrate your skills and experience.</p>
-      </section>
-
-      <section>
-        <h2>Career Goals</h2>
-        <p>Add and manage the roles you want to work toward.</p>
-      </section>
+      <CareerGoalsSection />
 
       <section>
         <h2>Personality Responses</h2>
