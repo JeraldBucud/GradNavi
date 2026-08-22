@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import {
   Link,
   Outlet,
@@ -16,16 +15,11 @@ function MainLayout() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [currentUser, setCurrentUser] = useState(getStoredUser())
-
-  useEffect(() => {
-    setCurrentUser(getStoredUser())
-  }, [location.pathname])
+  const currentUser = getStoredUser()
 
   async function handleLogout() {
     await logoutAccount()
 
-    setCurrentUser(null)
     navigate('/login', { replace: true })
   }
 
@@ -63,7 +57,7 @@ function MainLayout() {
         </nav>
       </header>
 
-      <Outlet />
+      <Outlet key={location.pathname} />
     </>
   )
 }
