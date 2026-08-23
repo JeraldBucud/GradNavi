@@ -1,6 +1,6 @@
 # GradNavi Sprint 1 Test Plan
 
-Status: Working test plan, pending frontend and Student Profile backend implementation updates
+Status: Active Sprint 1 test plan. Frontend authentication integration, security verification, PostgreSQL connectivity, migration verification, and authentication regression testing have been completed. Student Profile backend and frontend-to-profile integration testing remain pending.
 
 ## 1. Purpose
 
@@ -79,6 +79,18 @@ Other relevant design documents include:
 - `docs/system-design/student-profile-data-design.md`
 - `docs/system-design/student-profile-api-model-mapping.md`
 - `docs/system-design/sprint-1-integration-plan.md`
+- `docs/testing/sprint-1-test-cases.xlsx`
+- `docs/testing/evidence/sprint-1/`
+
+The Sprint 1 Test Case Tracker records test ownership, execution status, actual results, testers, evidence IDs, blocked dependencies, and defect references.
+
+Sprint 1 screenshots and supporting test evidence are stored under:
+
+    docs/testing/evidence/sprint-1/
+
+Detailed backend authentication testing remains documented separately under:
+
+    backend/docs/AUTH_API_TESTING.md
 
 ## 5. Testing Levels
 
@@ -184,13 +196,59 @@ Testing should include:
 
 Real student passwords or sensitive personal information should not be used as test data.
 
+### 7.1 Current Sprint 1 Test Execution Status
+
+Sprint 1 testing is in progress.
+
+The current Sprint 1 Test Case Tracker contains 61 test cases.
+
+At the current testing checkpoint:
+
+- Pass: 12
+- Blocked: 23
+- Not Run: 26
+- Fail: 0
+
+Completed testing areas include:
+
+- Frontend authentication integration.
+- Frontend registration validation.
+- Frontend login validation.
+- Protected route behaviour.
+- Authentication session behaviour.
+- Authentication logout behaviour.
+- Security verification.
+- CORS verification.
+- PostgreSQL connectivity.
+- Django migration verification.
+- Authentication regression testing.
+
+Student Profile API, ownership, related profile data, profile persistence, frontend profile integration, and full Sprint 1 regression testing remain dependent on the Student Profile backend implementation.
+
+Detailed results and evidence IDs are maintained in:
+
+    docs/testing/sprint-1-test-cases.xlsx
+
 ## 8. Authentication Test Area
 
 Authentication testing should verify the implemented `/api/v1/auth/` endpoints.
 
-The backend developer has reported implementation of seven authentication endpoints with automated and manual testing.
+The authentication backend has been implemented and merged.
 
-Final test evidence should be taken from the reviewed and merged backend implementation rather than relying only on the reported development status.
+Detailed backend authentication implementation testing remains maintained separately by the backend developer.
+
+Frontend authentication integration testing has been completed for:
+
+- Registration.
+- Login.
+- Invalid login handling.
+- Current-user integration.
+- JWT access-token refresh behaviour.
+- Logout.
+- Protected routing.
+- Authentication session behaviour.
+
+Frontend authentication results and evidence are recorded in the Sprint 1 Test Case Tracker and Evidence Index.
 
 ### 8.1 Registration
 
@@ -267,11 +325,21 @@ Student Profile testing should focus on:
     GET /api/v1/profile/
     PATCH /api/v1/profile/
 
-The exact related-resource behaviour should be updated once the Student Profile backend implementation is confirmed.
+The Student Profile backend implementation is currently pending.
+
+Student Profile API, ownership, persistence, validation, and frontend integration tests remain Blocked or Not Run until the required backend endpoints are available.
+
+Testing will begin with:
+
+    GET /api/v1/profile/
+
+once the endpoint is stable.
+
+Testing will then continue with PATCH behaviour and related-resource integration according to the implemented Student Profile API contract.
 
 ## 10. Student Profile Retrieval Tests
 
-### SP-GET-01: Authenticated Profile Retrieval
+### PROF-GET-01: Authenticated Student Retrieves Own Profile
 
 Precondition:
 
@@ -290,7 +358,11 @@ Expected result:
 - Response follows the approved API structure.
 - Only data owned by the authenticated Student is returned.
 
-### SP-GET-02: Missing Authentication
+Status:
+
+Blocked pending Student Profile backend implementation.
+
+### PROF-GET-02: Profile Request Without Authentication
 
 Action:
 
@@ -303,21 +375,15 @@ Expected result:
 - Request is rejected.
 - Expected authentication status code is returned.
 - Standard error structure is used.
+- No protected Student Profile data is returned.
 
-### SP-GET-03: Invalid Authentication
+Status:
 
-Action:
+Blocked pending Student Profile backend implementation.
 
-Send the profile request using invalid authentication.
+### PROF-GET-03: Profile Response Contains Approved Collections
 
-Expected result:
-
-- Request is rejected.
-- No Student Profile data is returned.
-
-### SP-GET-04: Profile Relationship Data
-
-Where related records exist, verify the response correctly represents approved profile areas such as:
+Where related records exist, verify the profile response correctly represents approved Student Profile areas such as:
 
 - Skills.
 - Interests.
@@ -327,11 +393,18 @@ Where related records exist, verify the response correctly represents approved p
 - Career goals.
 - Personality responses where implemented.
 
-The expected structure should match the final Student Profile API contract.
+Expected result:
+
+- Response structure matches the implemented Student Profile API contract.
+- Related records belong to the authenticated Student Profile.
+
+Status:
+
+Blocked pending Student Profile backend implementation.
 
 ## 11. Student Profile Update Tests
 
-### SP-PATCH-01: Valid Partial Update
+### PROF-PAT-01: Valid Partial Profile Update
 
 Precondition:
 
@@ -340,16 +413,19 @@ Precondition:
 
 Action:
 
-Submit a valid partial update.
+Submit a valid partial profile update.
 
 Expected result:
 
 - Request succeeds.
 - Submitted information is updated.
 - Unsubmitted profile information is preserved.
-- Updated data persists in PostgreSQL.
 
-### SP-PATCH-02: Invalid Field Value
+Status:
+
+Blocked pending Student Profile backend implementation.
+
+### PROF-PAT-02: Invalid Profile Field Value
 
 Action:
 
@@ -361,7 +437,11 @@ Expected result:
 - Validation error is returned.
 - Invalid data is not stored.
 
-### SP-PATCH-03: Empty Partial Request
+Status:
+
+Blocked pending Student Profile backend implementation.
+
+### PROF-PAT-03: Empty Partial Request
 
 Action:
 
@@ -369,33 +449,45 @@ Submit an empty PATCH request.
 
 Expected result:
 
-- Behaviour follows the approved serializer and REST API contract.
-- No unintended profile data is removed.
+- Behaviour follows the implemented serializer and REST API contract.
+- No unintended profile information is removed.
 
-### SP-PATCH-04: Server-Controlled Fields
+Status:
+
+Blocked pending Student Profile backend implementation.
+
+### PROF-PAT-04: Attempt Ownership-Field Change
 
 Action:
 
-Attempt to change server-controlled ownership information such as:
+Attempt to modify server-controlled ownership information such as:
 
     user_id
 
 Expected result:
 
 - Ownership is not changed.
-- The backend ignores or rejects unauthorised ownership changes according to the final serializer design.
+- The backend ignores or rejects unauthorised ownership changes according to the implemented serializer design.
 
-### SP-PATCH-05: Persistence
+Status:
+
+Blocked pending Student Profile backend implementation.
+
+### PROF-PAT-05: Profile Update Persists
 
 Action:
 
 1. Update valid Student Profile information.
-2. Retrieve the profile again.
+2. Retrieve the Student Profile again.
 
 Expected result:
 
-- The new values are returned.
+- Updated values are returned.
 - Changes persist in PostgreSQL.
+
+Status:
+
+Blocked pending Student Profile backend implementation.
 
 ## 12. Student Profile Ownership Tests
 
@@ -413,48 +505,94 @@ Example:
         v
     StudentProfile B
 
-### SP-OWN-01: Student A Reads Own Profile
+### OWN-01: Student A Reads Own Profile
 
 Expected result:
 
-- Access succeeds.
+- Student A can retrieve StudentProfile A.
+- Student A does not receive Student B's protected profile data.
 
-### SP-OWN-02: Student B Reads Own Profile
+Status:
 
-Expected result:
+Blocked pending Student Profile backend implementation.
 
-- Access succeeds.
-
-### SP-OWN-03: Cross-Student Access
-
-Attempt to access another student's protected profile through any available client-controlled identifier or route.
+### OWN-02: Student B Reads Own Profile
 
 Expected result:
 
-- Access is rejected or the route does not expose cross-student selection.
-- No other Student's protected profile information is returned.
+- Student B can retrieve StudentProfile B.
+- Student B does not receive Student A's protected profile data.
 
-### SP-OWN-04: Ownership Modification
+Status:
 
-Attempt to submit another user's identifier as part of an update.
+Blocked pending Student Profile backend implementation.
+
+### OWN-03: Cross-Student Access Blocked
+
+Attempt to access another Student's protected profile through any available client-controlled identifier or route.
 
 Expected result:
 
-- The backend does not transfer profile ownership.
-- Student A cannot cause data to become owned by Student B through client input.
+- Access is rejected or the API does not expose cross-student profile selection.
+- No protected profile information belonging to another Student is returned.
+
+Status:
+
+Blocked pending Student Profile backend implementation.
+
+### OWN-04: Cross-Student Ownership Modification Blocked
+
+Attempt to submit another Student's identifier as part of a profile update.
+
+Expected result:
+
+- The backend does not transfer Student Profile ownership.
+- Student A cannot cause profile information to become owned by Student B through client input.
+
+Status:
+
+Blocked pending Student Profile backend implementation.
 
 ## 13. Skill Validation Tests
 
-Once StudentSkill behaviour is implemented, verify:
+The approved Student Skill proficiency values are:
 
-- Valid Skill references are accepted.
-- Invalid Skill references are rejected.
-- Approved proficiency values are accepted.
-- Invalid proficiency values are rejected.
-- Duplicate StudentSkill relationships are prevented where required.
-- StudentSkill records belong to the authenticated StudentProfile.
+- Foundational.
+- Developing.
+- Proficient.
+- Advanced.
 
-Final proficiency tests depend on team confirmation of the proficiency scale.
+Testing must confirm that approved proficiency values are accepted and values outside the approved set are rejected.
+
+### SKILL-01: Add Valid Student Skill
+
+Expected result:
+
+- Valid Skill reference is accepted.
+- Approved proficiency value is accepted.
+- StudentSkill belongs to the authenticated StudentProfile.
+
+### SKILL-02: Reject Invalid Skill Reference
+
+Expected result:
+
+- Invalid Skill reference is rejected.
+- Invalid StudentSkill data is not stored.
+
+### SKILL-03: Reject Invalid Proficiency Level
+
+Expected result:
+
+- Values outside the approved proficiency set are rejected.
+- Invalid proficiency information is not stored.
+
+### SKILL-04: Prevent Duplicate Student Skill
+
+Expected result:
+
+- Duplicate StudentSkill relationships are prevented according to the implemented data rules.
+
+Student Skill API tests remain pending until the Student Profile backend and related Skill behaviour are available.
 
 ## 14. Interest Validation Tests
 
@@ -540,103 +678,179 @@ Tests should verify both the status code and response structure.
 
 ## 21. Frontend Authentication Integration Tests
 
-Once the React authentication interface is available, verify the complete frontend flow.
+The React authentication interface is implemented and integrated with the Django authentication API.
 
-### FE-AUTH-01: Registration
+### FE-AUTH-01: Frontend Registration Flow
+
+Verify:
+
+- Valid registration through the React interface.
+- Backend registration response handling.
+- Backend validation feedback.
+- Weak-password validation.
+- Password-confirmation validation.
+- Duplicate-email handling.
 
 Expected result:
 
-- Student submits valid registration information.
-- Frontend sends the expected API request.
-- Backend response is handled correctly.
-- Student receives appropriate success or next-step behaviour.
+- Valid registration succeeds.
+- Successful backend response is handled correctly.
+- Backend validation messages are displayed.
+- Password mismatch is rejected before successful submission.
+- Duplicate registration does not produce a false success state.
 
-### FE-AUTH-02: Invalid Registration
+Execution status:
 
-Expected result:
+Pass.
 
-- Backend validation errors are displayed appropriately.
-- The interface does not report success.
+### FE-AUTH-02: Frontend Login Flow
 
-### FE-AUTH-03: Login
+Verify:
+
+- Valid login.
+- Authenticated application state.
+- Protected routing.
+- Current-user retrieval.
+- Return to requested route after authentication.
+- Session behaviour after browser refresh.
 
 Expected result:
 
 - Valid login succeeds.
-- Frontend receives the expected authentication response.
-- Authenticated interface state is established.
+- Authenticated state is established.
+- Protected Student functions become available.
+- Current-user verification succeeds.
+- A user redirected from a protected route returns to the requested route after successful login.
+- Authentication state survives a normal browser refresh.
 
-### FE-AUTH-04: Invalid Login
+Execution status:
 
-Expected result:
+Pass.
 
-- Login fails.
-- Controlled error information is displayed.
-- User is not treated as authenticated.
+### FE-AUTH-03: Frontend Invalid Login Error
 
-### FE-AUTH-05: Current User
+Verify:
 
-Expected result:
-
-- Frontend retrieves current-user information through `/api/v1/auth/me/`.
-- Correct authenticated user information is displayed or stored in application state.
-
-### FE-AUTH-06: Expired Access Token
+- Wrong password.
+- Nonexistent account.
+- Missing required login fields.
 
 Expected result:
 
-- Behaviour follows the approved frontend JWT strategy.
-- The application either performs the approved refresh flow or returns the user to an unauthenticated state.
+- Invalid login does not establish authenticated state.
+- Controlled error feedback is displayed.
+- Wrong-password and nonexistent-account responses do not reveal whether an account exists.
+- Required-field validation prevents incomplete submission.
 
-### FE-AUTH-07: Logout
+Execution status:
+
+Pass.
+
+### FE-AUTH-04: Frontend Token Refresh Behaviour
+
+Verify:
+
+- Expired access-token behaviour.
+- Refresh-token request.
+- Replacement access-token handling.
+- Protected request retry.
+- Failed refresh cleanup.
 
 Expected result:
 
-- Backend logout behaviour is completed where required.
+- Expired access token causes the protected request to return `401 Unauthorized`.
+- Frontend submits the stored refresh token.
+- Successful refresh stores replacement authentication information.
+- Protected current-user request is retried.
+- Authenticated Student stays on the protected route after successful refresh.
+- Failed refresh clears authentication state and returns the user to Login.
+
+Execution status:
+
+Pass.
+
+### FE-AUTH-05: Frontend Logout Flow
+
+Verify:
+
+- Logout request.
+- Frontend authentication cleanup.
+- Local authentication storage cleanup.
+- Logged-out navigation.
+- Protected route behaviour after logout.
+
+Expected result:
+
+- Logout completes the required backend request.
 - Frontend authentication state is cleared.
-- Protected Student functions are no longer available through the authenticated interface.
+- Stored access token, refresh token, and user information are removed.
+- Logged-out navigation is displayed.
+- Protected Student functions are no longer available after logout.
+
+Execution status:
+
+Pass.
+
+Frontend authentication evidence is stored under:
+
+    docs/testing/evidence/sprint-1/
+
+Relevant evidence is recorded in the Sprint 1 Evidence Index.
 
 ## 22. Frontend Student Profile Integration Tests
 
-Once the React Student Profile interface is available, verify:
+The Student Profile frontend interface exists.
 
-### FE-PROFILE-01: Load Profile
+Formal frontend-to-backend Student Profile integration testing remains pending until the Student Profile backend API is available.
+
+### FE-PROF-01: Load Profile in UI
 
 Expected result:
 
 - Authenticated Student opens the Student Profile interface.
 - Frontend requests `/api/v1/profile/`.
-- Correct Student data is displayed.
+- Correct Student Profile information is displayed.
 
-### FE-PROFILE-02: Update Profile
+Status:
+
+Blocked pending Student Profile backend API.
+
+### FE-PROF-02: Update Profile in UI
 
 Expected result:
 
 - Student edits approved profile information.
-- Frontend sends the expected PATCH request.
-- Backend validates and stores the update.
+- Frontend submits the expected update request.
+- Backend stores the change.
 - Updated information appears in the interface.
 
-### FE-PROFILE-03: Validation Error
+Status:
+
+Blocked pending Student Profile backend API.
+
+### FE-PROF-03: Display Profile Validation Error
 
 Expected result:
 
-- Invalid data is rejected by the backend.
+- Invalid profile data is rejected.
 - Frontend displays useful validation feedback.
-- Invalid data is not presented as successfully saved.
+- Invalid information is not presented as successfully saved.
 
-### FE-PROFILE-04: Authentication Failure
+Status:
 
-Expected result:
+Blocked pending Student Profile backend API.
 
-- Protected profile requests fail when authentication is invalid.
-- Protected Student Profile information is not displayed.
-
-### FE-PROFILE-05: Refresh After Update
+### FE-PROF-04: Profile Remains After Reload
 
 Expected result:
 
-- Updated profile data persists after the page or profile data is reloaded.
+- Successful profile updates persist.
+- Reloading or refetching the profile returns the updated values.
+- Persisted information appears again in the interface.
+
+Status:
+
+Blocked pending Student Profile backend API.
 
 ## 23. Database Verification
 
@@ -653,6 +867,19 @@ Database verification should confirm:
 
 Database passwords and connection secrets must not be committed to the repository.
 
+### Current Database Test Status
+
+- DB-01: Django connects to PostgreSQL - Pass.
+- DB-02: Migrations apply successfully - Pass.
+- DB-03: Profile relationships persist - Not Run.
+
+DB-03 remains pending Student Profile backend implementation.
+
+Evidence for completed database checks is recorded in:
+
+- EV-020.
+- EV-021.
+
 ## 24. Security Verification
 
 Sprint 1 security testing should verify at minimum:
@@ -668,6 +895,22 @@ Sprint 1 security testing should verify at minimum:
 - Shared reference-data permissions follow the approved design.
 
 Detailed security controls remain documented in the Security Architecture.
+
+### Current Security Test Status
+
+- SEC-01: Protected endpoint rejects missing JWT - Pass.
+- SEC-02: API errors hide internal details - Pass.
+- SEC-03: Frontend contains no backend secrets - Pass.
+- SEC-04: CORS limited to approved origins - Pass.
+
+Relevant evidence is recorded under:
+
+- EV-016.
+- EV-017.
+- EV-018.
+- EV-019.
+- EV-022.
+- EV-023.
 
 ## 25. Negative Testing
 
@@ -711,6 +954,21 @@ Before Sprint 1 review, rerun the completed tests for:
 
 Previously passing functionality should continue to pass after integration changes.
 
+### Current Regression Test Status
+
+- REG-01: Authentication regression - Pass.
+- REG-02: Student Profile regression - Not Run.
+- REG-03: End-to-end Sprint 1 regression - Not Run.
+
+REG-02 and REG-03 remain pending Student Profile backend and frontend integration.
+
+Authentication regression evidence includes:
+
+- EV-024.
+- EV-025.
+
+Earlier frontend authentication evidence also supports the regression result.
+
 ## 27. Test Evidence
 
 Sprint 1 test evidence should be retained where practical.
@@ -728,6 +986,20 @@ Evidence may include:
 Evidence should identify what was tested and whether the test passed or failed.
 
 Sensitive information should be removed from screenshots or other test evidence.
+
+Sprint 1 test evidence is stored under:
+
+    docs/testing/evidence/sprint-1/
+
+The current Evidence Index contains:
+
+    EV-001 through EV-025
+
+Evidence IDs, descriptions, test mappings, file paths, testers, and execution dates are maintained in:
+
+    docs/testing/sprint-1-test-cases.xlsx
+
+Evidence should remain free from passwords, database credentials, JWT values, private keys, and other sensitive information.
 
 ## 28. Defect Handling
 
@@ -763,22 +1035,32 @@ Sprint 1 testing should be considered complete when:
 
 ## 30. Pending Test Areas
 
-The following test details are pending implementation confirmation:
+The following test details remain pending Student Profile implementation and design confirmation:
 
 1. Final Student Profile serializer structure.
-2. Final proficiency values.
-3. Final Skill API representation.
-4. Final Interest API representation.
-5. Nested profile updates versus dedicated related-resource endpoints.
-6. StudentProfile creation timing.
-7. Final frontend JWT storage and refresh strategy.
-8. Final frontend form structure.
-9. Final personality questionnaire.
+2. Final Skill API representation.
+3. Final Interest API representation.
+4. Nested Student Profile updates versus dedicated related-resource endpoints.
+5. StudentProfile creation timing.
+6. Final related-resource persistence behaviour.
+7. Final Student Profile ownership and permission behaviour.
+8. Final Student Profile frontend form structure.
+9. Final personality questionnaire and approved response values.
 10. Final deletion behaviour for related Student Profile records.
-11. Final local CORS origins.
-12. Final behaviour when an authenticated Student has no StudentProfile.
+11. Final behaviour when an authenticated Student has no StudentProfile.
 
-These items should be updated when the relevant implementation is available.
+The Student Skill proficiency scale is no longer pending.
+
+The approved proficiency values are:
+
+- Foundational.
+- Developing.
+- Proficient.
+- Advanced.
+
+The frontend JWT storage and refresh strategy is also no longer pending because the Sprint 1 authentication integration has been implemented and tested.
+
+The local Sprint 1 CORS configuration is also no longer pending because approved and unapproved origins have been verified through SEC-04.
 
 ## 31. Test Plan Maintenance
 
