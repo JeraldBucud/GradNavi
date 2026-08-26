@@ -37,15 +37,21 @@ The repository currently includes:
 - Project overview and team documentation
 - Functional and non-functional requirements
 - Requirement assignment records
-- Work Breakdown Structure and product backlog
+- Microsoft Project-aligned Work Breakdown Structure
+- Product backlog and Sprint planning records
 - Risk and quality planning
 - Responsibility and task-lead records
-- Delivery planning and Microsoft Project schedule
-- System architecture diagram
+- Delivery roadmap and Microsoft Project schedule
+- System architecture documentation
 - Entity Relationship diagram
 - Use case diagram
 - Context diagram
-- Initial Django backend scaffold
+- Django REST Framework backend
+- React frontend
+- JWT authentication implementation
+- PostgreSQL configuration and migrations
+- Frontend and backend integration work
+- Sprint testing plans, test cases, and evidence
 - Contribution and communication records
 
 ## Main assessment and design artefacts
@@ -84,11 +90,20 @@ Note: the current repository filename for the ER diagram is `GrandNavi ER diagra
 - [Task Leads](docs/project-management/task-leads.md)
 - [Tools and Resources](docs/project-management/tools-and-resources.md)
 - [Work Breakdown Structure](docs/project-management/work-breakdown-structure.md)
+- [Sprint 1 Test Plan](docs/testing/sprint-1-test-plan.md)
+- [Sprint 1 Test Case Tracker](docs/testing/sprint-1-test-cases.xlsx)
 
 ## Planning images
 
-- [Delivery Roadmap](docs/project-management/images/delivery-roadmap.png)
 - [Risk Matrix](docs/project-management/images/risk-matrix.png)
+
+The previous delivery-roadmap image is not used as the current planning baseline.
+
+The current delivery schedule is documented in:
+
+- [Microsoft Project Plan](docs/project-management/GradNavi_Final_Project_Plan.mpp)
+- [Roadmap and Milestones](docs/project-management/roadmap-and-milestones.md)
+- [Work Breakdown Structure](docs/project-management/work-breakdown-structure.md)
 
 ## System actors and external entities
 
@@ -139,79 +154,132 @@ The team also uses the CQU Microsoft 365 shared workspace for collaborative file
 | Joyee Chakraborty | 12286715 | Frontend Lead |
 | Md Enamul Haque | 12280315 | Backend Lead and Requirements Lead |
 
-## Planned technology stack
+## Technology Stack
 
 | Area | Technology |
-|---|---|
-| Frontend | React, JavaScript, Vite, Material UI |
+| --- | --- |
+| Frontend | React, JavaScript, Vite, React Router |
+| Frontend quality | Oxlint |
 | Backend | Python, Django, Django REST Framework |
-| Database | PostgreSQL |
-| Artificial intelligence | OpenAI API through the Django backend |
-| Planning | Scrum, GitHub Projects, Microsoft Project |
+| Authentication | Django authentication and Simple JWT |
+| Database | PostgreSQL through Psycopg |
+| CORS | django-cors-headers |
+| Artificial intelligence | OpenAI API through the Django backend, planned for later Sprints |
+| Planning | Scrum, Trello, GitHub, Microsoft Project |
 | Communication | Microsoft Teams |
-| Deployment | Vercel, Railway, Railway PostgreSQL |
+| Planned deployment | Vercel frontend, Railway backend and PostgreSQL |
 
 ## Current implementation status
 
-The repository includes an initial Django backend scaffold under `backend/`.
+GradNavi has completed substantial Sprint 1 foundation work and has entered Sprint 2 development.
 
-The current backend is an early development foundation. The planned application database is PostgreSQL. Frontend implementation, full PostgreSQL integration, API integration, AI integration, deployment configuration, and detailed implementation test evidence will be added as development progresses.
+Completed or implemented foundation work includes:
+
+- Django REST Framework backend foundation.
+- React frontend foundation and routing.
+- PostgreSQL development database configuration.
+- Django migrations.
+- Student account model and authentication backend.
+- Registration.
+- Login.
+- JWT access and refresh handling.
+- Logout.
+- Current authenticated-user endpoint.
+- Password reset backend flow.
+- Frontend registration and login integration.
+- Protected frontend routes.
+- Authentication session handling.
+- CORS configuration for approved local frontend origins.
+- Sprint 1 authentication, security, database, and regression test evidence.
+
+Student Profile frontend work exists, but full Student Profile frontend-to-backend integration remains dependent on the Student Profile backend implementation.
+
+Sprint 2 focuses on:
+
+- Career and skill reference data.
+- Weighted recommendation scoring.
+- Career recommendation API.
+- Skill-gap analysis.
+- Career-readiness scoring.
+- Recommendation and readiness interface.
+- Learning suggestions.
+- Career roadmap.
+
+AI service integration, deployment, and later feature areas remain scheduled for later Sprints.
 
 ## Delivery planning
 
-GradNavi uses iterative Scrum delivery followed by a finalisation and release period.
+GradNavi follows a five-Sprint Scrum implementation schedule.
 
-The detailed task-level schedule, dependencies, resources, milestones, and Gantt planning are stored in:
+| Sprint | Dates | Main Outcome |
+| --- | --- | --- |
+| Sprint 1 | 10 August to 21 August 2026 | Foundation, authentication, Student Profile, and initial integration |
+| Sprint 2 | 24 August to 4 September 2026 | Career recommendations, skill gaps, readiness scoring, and learning roadmap |
+| Sprint 3 | 7 September to 18 September 2026 | Resume, cover-letter, and interview-preparation functions |
+| Sprint 4 | 21 September to 2 October 2026 | Job matching, administration, permissions, audit behaviour, and AI integration |
+| Sprint 5 | 5 October to 9 October 2026 | Stabilisation, regression testing, deployment, documentation, and closure |
+| Final Presentation | 12 October 2026 | Final demonstration and presentation |
+
+The Microsoft Project schedule is the authoritative planning baseline.
+
+The detailed task-level schedule, dependencies, ownership, resources, milestones, and planning records are documented in:
 
 - [GradNavi Final Microsoft Project Plan](docs/project-management/GradNavi_Final_Project_Plan.mpp)
 - [Roadmap and Milestones](docs/project-management/roadmap-and-milestones.md)
 - [Work Breakdown Structure](docs/project-management/work-breakdown-structure.md)
+- [Task Leads](docs/project-management/task-leads.md)
+- [Responsibility Matrix](docs/project-management/responsibility-matrix.md)
 - [Product Backlog](docs/project-management/product-backlog.md)
+- [Requirements Assignment Matrix](docs/requirements/requirements-assignment-matrix.md)
 
-The Microsoft Project schedule and the formal assessment report should be kept aligned whenever sprint dates, milestones, or task dependencies change.
+When Sprint dates, ownership, dependencies, or milestones change, Microsoft Project should be updated first. Related GitHub planning documents should then be updated to match.
 
-## Repository structure
+## Repository Structure
 
 ```text
 GradNavi/
 ├── backend/
+│   ├── accounts/
+│   ├── docs/
 │   ├── gradnavi/
-│   │   ├── settings.py
-│   │   ├── urls.py
-│   │   ├── asgi.py
-│   │   └── wsgi.py
-│   └── manage.py
+│   ├── manage.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
+│
 ├── docs/
 │   ├── 01-project-overview.md
 │   ├── 02-team-members-and-roles.md
+│   │
 │   ├── requirements/
 │   │   ├── functional-requirements.md
 │   │   ├── non-functional-requirements.md
 │   │   └── requirements-assignment-matrix.md
-│   └── project-management/
-│       ├── COIT20273 Assessment 1.docx
-│       ├── Context Diagram GradNavi.drawio.png
-│       ├── GradNavi architecture diagram.png
-│       ├── GradNavi_Final_Project_Plan.mpp
-│       ├── GrandNavi ER diagram.png
-│       ├── Use Case GradNavi.drawio.png
-│       ├── communication-plan.md
-│       ├── contribution-log.md
-│       ├── leadership-rotation.md
-│       ├── meeting-minutes-template.md
-│       ├── product-backlog.md
-│       ├── quality-plan.md
-│       ├── responsibility-matrix.md
-│       ├── risk-register.md
-│       ├── roadmap-and-milestones.md
-│       ├── task-leads.md
-│       ├── tools-and-resources.md
-│       ├── work-breakdown-structure.md
-│       └── images/
-│           ├── delivery-roadmap.png
-│           └── risk-matrix.png
+│   │
+│   ├── project-management/
+│   │   ├── product-backlog.md
+│   │   ├── responsibility-matrix.md
+│   │   ├── risk-register.md
+│   │   ├── roadmap-and-milestones.md
+│   │   ├── task-leads.md
+│   │   ├── work-breakdown-structure.md
+│   │   └── GradNavi_Final_Project_Plan.mpp
+│   │
+│   ├── system-design/
+│   │   ├── rest-api-design.md
+│   │   ├── security-architecture.md
+│   │   └── student-profile-api-model-mapping.md
+│   │
+│   └── testing/
+│       ├── sprint-1-test-plan.md
+│       ├── sprint-1-test-cases.xlsx
+│       └── evidence/
+│
+├── .gitignore
 └── README.md
-```
 
 ## Project scope limits
 
