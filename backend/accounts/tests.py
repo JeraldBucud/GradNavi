@@ -10,6 +10,8 @@ from rest_framework.test import APITestCase
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
+from profiles.models import CareerGoal, StudentProfile
+
 
 User = get_user_model()
 
@@ -54,6 +56,21 @@ class RegistrationAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(User.objects.filter(email="student@example.com").exists())
+
+    def test_successful_registration_creates_exactly_one_empty_student_profile(self):
+        response = self.client.post(self.url, self.valid_payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        user = User.objects.get(email="student@example.com")
+        profile = StudentProfile.objects.get(user=user)
+        self.assertEqual(StudentProfile.objects.filter(user=user).count(), 1)
+        self.assertFalse(profile.student_skills.exists())
+        self.assertFalse(profile.student_interests.exists())
+        self.assertFalse(profile.education.exists())
+        self.assertFalse(profile.experience.exists())
+        self.assertFalse(profile.projects.exists())
+        self.assertFalse(profile.career_goals.exists())
+        self.assertFalse(profile.personality_responses.exists())
 
     def test_password_is_hashed_and_checkable(self):
         response = self.client.post(self.url, self.valid_payload, format="json")
@@ -100,6 +117,7 @@ class RegistrationAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         assert_error_envelope(self, response, "validation_error", "password_confirm")
         self.assertFalse(User.objects.exists())
+        self.assertFalse(StudentProfile.objects.exists())
 
     def test_weak_password_is_rejected(self):
         payload = {
@@ -149,6 +167,76 @@ class RegistrationAPITests(APITestCase):
         self.assertEqual(user.role, User.Role.STUDENT)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
+
+    def test_registration_response_remains_compatible_after_profile_creation(self):
+        response = self.client.post(self.url, self.valid_payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            set(response.data.keys()),
+            {"id", "email", "first_name", "last_name", "role"},
+        )
+        self.assertNotIn("student_profile", response.data)
+        self.assertNotIn("profile", response.data)
+
+    def test_newly_registered_student_can_get_empty_profile_then_patch_and_refetch(self):
+        register_response = self.client.post(self.url, self.valid_payload, format="json")
+        self.assertEqual(register_response.status_code, status.HTTP_201_CREATED)
+
+        login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email": self.valid_payload["email"],
+                "password": self.valid_payload["password"],
+            },
+            format="json",
+        )
+        self.assertEqual(login_response.status_code, status.HTTP_200_OK)
+        access_token = login_response.data["access"]
+
+        profile_response = self.client.get(
+            "/api/v1/profile/",
+            HTTP_AUTHORIZATION=f"Bearer {access_token}",
+        )
+        self.assertEqual(profile_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            profile_response.data["data"]["profile"],
+            {
+                "skills": [],
+                "interests": [],
+                "education": [],
+                "experience": [],
+                "projects": [],
+                "career_goals": [],
+                "personality_responses": [],
+            },
+        )
+
+        patch_response = self.client.patch(
+            "/api/v1/profile/",
+            {"career_goals": ["Software Engineer"]},
+            format="json",
+            HTTP_AUTHORIZATION=f"Bearer {access_token}",
+        )
+        self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
+
+        refetch_response = self.client.get(
+            "/api/v1/profile/",
+            HTTP_AUTHORIZATION=f"Bearer {access_token}",
+        )
+        self.assertEqual(refetch_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            refetch_response.data["data"]["profile"]["career_goals"],
+            [
+                {
+                    "id": CareerGoal.objects.get(
+                        student_profile__user__email="student@example.com"
+                    ).id,
+                    "target_role": "Software Engineer",
+                    "description": "",
+                }
+            ],
+        )
 
 
 class LoginAPITests(APITestCase):
