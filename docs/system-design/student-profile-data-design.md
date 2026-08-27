@@ -190,7 +190,6 @@ This allows:
 - One skill to belong to many students.
 - Additional information to be stored about the student's relationship with the skill.
 
-### 4.4 Planned StudentSkill Fields
 
 ### 4.4 Planned StudentSkill Fields
 

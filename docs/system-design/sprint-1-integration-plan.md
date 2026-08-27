@@ -1,6 +1,6 @@
 # GradNavi Sprint 1 Integration Plan
 
-Status: Working plan, pending frontend and backend implementation updates
+Status: Active Sprint 1 integration plan. Authentication backend and frontend authentication integration are implemented and tested. Student Profile backend implementation and frontend-to-profile integration remain pending.
 
 ## 1. Purpose
 
@@ -61,17 +61,29 @@ The completed flow should allow a student to:
 
 ## 3. Current Integration Status
 
-At the time of writing:
+At the current Sprint 1 checkpoint:
 
 - The REST API Design is available as the shared API contract.
 - The Security Architecture is available for authentication, authorization, ownership, and security rules.
 - The Student Profile Data Design and ERD are available.
 - The Student Profile API and Model Mapping is available.
-- Backend authentication has been reported as implemented on `feature/backend-auth`, but the final merged implementation is still pending review.
-- Final Student Profile backend implementation details are not yet confirmed.
-- Final React authentication and Student Profile frontend implementation details are not yet confirmed.
+- The Django authentication backend is implemented and merged.
+- Student registration is implemented.
+- Login and JWT token issuance are implemented.
+- JWT access-token refresh is implemented.
+- Authenticated logout and refresh-token blacklisting are implemented.
+- Password-reset request and confirmation flows are implemented.
+- `/api/v1/auth/me/` is implemented.
+- The React registration and login interfaces are connected to the Django backend.
+- Frontend authentication state and protected-route behaviour are implemented.
+- Approved local CORS origins are configured.
+- PostgreSQL connectivity and migrations have been verified.
+- Authentication integration and regression testing have been completed.
+- The Student Profile frontend interface exists.
+- The Student Profile backend implementation is not yet merged.
+- Student Profile frontend-to-backend integration remains pending until the backend API is available.
 
-This document therefore defines the intended integration contract without assuming unverified implementation details.
+The remaining Sprint 1 integration work therefore focuses on the Student Profile backend, Student Profile API integration, ownership verification, persistence, and final Sprint 1 regression testing.
 
 ## 4. Integration Components
 
@@ -190,16 +202,13 @@ The planned registration flow is:
        v
     User Account
 
-The final behaviour after registration must follow the implemented authentication contract.
+The implemented registration flow creates a Student account without automatically authenticating the new user.
 
-The team should confirm whether successful registration:
+After successful registration, the React frontend redirects the student to `/login`.
 
-- Automatically authenticates the user.
-- Redirects the user to login.
-- Creates StudentProfile automatically.
-- Leaves StudentProfile creation until first profile access or update.
+JWT access and refresh tokens are issued through the Login endpoint rather than through the Registration endpoint.
 
-This decision must be confirmed before final frontend integration.
+StudentProfile creation timing remains dependent on the final WBS 4.6 backend implementation and must stay aligned with the Student Profile API contract.
 
 ## 7. Current User Integration
 
@@ -294,20 +303,41 @@ The exact handling of nested Education, Experience, Project, Skill, Interest, Ca
 
 ## 10. JWT Integration
 
-Protected frontend requests should use the approved JWT access-token format:
+Protected frontend requests use the approved JWT access-token format:
 
-    Authorization: Bearer <access_token>
+```http
+Authorization: Bearer <access_token>
+```
 
-The integration must support:
+The current React authentication implementation stores the following authentication information in browser `localStorage`:
 
-- Valid access tokens.
-- Expired access tokens.
-- Refresh-token flow.
-- Invalid authentication.
-- Logout behaviour.
-- Revoked or blacklisted refresh tokens where implemented.
+- JWT access token.
+- JWT refresh token.
+- Current authenticated-user information.
 
-The exact frontend token storage strategy should be reviewed once the React authentication implementation is available.
+The current frontend storage keys are:
+
+```text
+gradnavi_access_token
+gradnavi_refresh_token
+gradnavi_user
+```
+
+The integration supports:
+
+- Login and initial JWT issuance.
+- Authenticated API requests using the access token.
+- Retrieval of the current authenticated user.
+- Access-token refresh using the stored refresh token.
+- Refresh-token rotation where returned by the backend.
+- Logout through the Django authentication API.
+- Clearing locally stored authentication information after logout.
+- Protected frontend routing.
+- Rejection of missing or invalid authentication.
+
+The backend remains responsible for validating JWT credentials and enforcing permissions.
+
+The frontend authentication state does not replace backend authentication or authorization checks.
 
 ## 11. Error Handling Integration
 
@@ -345,14 +375,22 @@ The frontend should not rely on hidden buttons or routes as the only protection.
 
 ## 13. CORS and Development Environment
 
-During local development, the React frontend and Django backend may run on different local origins.
+During local development, the React frontend and Django backend run on separate local origins.
 
-The Django backend should allow only the local frontend origins required by the team.
+The Django backend currently allows the approved React development origins:
 
-The final local development values should be documented after the frontend development server configuration is confirmed.
+```text
+http://localhost:5173
+http://127.0.0.1:5173
+```
 
-Deployed CORS behaviour will be handled separately during deployment work.
+CORS configuration is handled through `django-cors-headers`.
 
+Requests from approved local frontend origins are permitted according to the backend configuration.
+
+Unapproved origins must not receive an `Access-Control-Allow-Origin` response authorising frontend access.
+
+Production CORS configuration will be reviewed separately during deployment work.
 ## 14. Integration Order
 
 The recommended Sprint 1 integration order is:
@@ -432,22 +470,28 @@ Integration tasks blocked by unfinished components should be recorded rather tha
 
 ## 17. Known Integration Decisions Pending
 
-The following decisions are still pending:
+The following Student Profile integration decisions remain pending:
 
-1. Final authentication response fields.
-2. Final frontend JWT storage approach.
-3. StudentProfile creation timing.
-4. Final Student Profile serializer structure.
-5. Final Skill JSON structure.
-6. Final Interest JSON structure.
-7. Final proficiency scale.
-8. Nested profile updates versus dedicated related-resource endpoints.
-9. Handling deletion of nested Student Profile records.
-10. Final frontend form field structure.
-11. Final local frontend origin for CORS.
-12. Final Student Profile error behaviour where no profile exists.
+1. StudentProfile creation timing.
+2. Final Student Profile serializer structure.
+3. Final Skill JSON structure used by the implemented Student Profile API.
+4. Final Interest JSON structure used by the implemented Student Profile API.
+5. Nested profile updates versus dedicated related-resource endpoints.
+6. Handling deletion of related Student Profile records.
+7. Final Student Profile form-to-API field mapping after backend implementation.
+8. Final Student Profile error behaviour where no profile exists.
+9. Final personality-response structure.
+10. Final serializer nesting strategy.
 
-These items should be updated as implementation information becomes available.
+The following Sprint 1 integration decisions are already established and are no longer treated as pending:
+
+- Authentication response behaviour.
+- Frontend JWT storage approach.
+- Approved Student Skill proficiency scale.
+- Local frontend CORS origins.
+- Registration redirect behaviour.
+
+Remaining Student Profile decisions should be confirmed against the WBS 4.6 backend implementation before WBS 4.8 integration is considered complete.
 
 ## 18. Integration Completion Criteria
 
@@ -483,8 +527,22 @@ Changes affecting the shared API contract should also be reflected in the GradNa
 
 ## 20. Plan Status
 
-This is a working Sprint 1 integration plan.
+This is the active Sprint 1 integration plan.
 
-The plan defines the intended full-team integration flow while the final frontend and backend implementations are still pending.
+Authentication backend implementation, frontend authentication integration, JWT session handling, CORS configuration, PostgreSQL connectivity, migration verification, and authentication regression testing have been completed.
 
-Unverified implementation details are intentionally recorded as pending decisions rather than treated as completed behaviour.
+The remaining Sprint 1 integration work depends primarily on the Student Profile backend implementation.
+
+Once the Student Profile API is available, the team must:
+
+1. Review the implemented models and API against the approved Student Profile design.
+2. Confirm the final Student Profile request and response contract.
+3. Connect the React Student Profile interface to the Django API.
+4. Verify Student Profile retrieval and updates.
+5. Verify ownership and permission behaviour.
+6. Verify PostgreSQL persistence.
+7. Complete the remaining Sprint 1 integration and regression tests.
+8. Record final Sprint 1 evidence.
+9. Complete the Sprint 1 review and retrospective.
+
+Implementation details that are still unavailable should remain recorded as pending rather than being documented as completed behaviour.
