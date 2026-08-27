@@ -284,17 +284,28 @@ This section defines the detailed API contracts for Sprint 1 functionality.
 
 The contracts specify endpoint paths, HTTP methods, authentication requirements, request and response formats, expected status codes, validation behaviour, and permission requirements.
 
-Authentication endpoint details will be aligned with the implementation being completed by MD before this section is finalised.
+The Sprint 1 authentication endpoints are implemented and merged. The contracts in this section reflect the current Django REST Framework authentication implementation and should be updated if later implementation changes affect the shared frontend-backend contract.
 
 ## 9.1 Authentication API
 
-**Status:** Sprint 1 authentication API contract. Endpoint structure and V1 base path confirmed. Detailed request and response contracts remain subject to team review if implementation identifies a required change.
+**Status:** Implemented Sprint 1 authentication API contract.
 
 The Authentication API supports account registration, login, JWT token management, logout, password recovery, and retrieval of the currently authenticated user.
 
-Final request and response fields will be aligned with the implemented authentication model once backend authentication development and testing are complete.
+The current authentication implementation is merged into the GradNavi backend and integrated with the React frontend.
 
-### 9.1.1 Register Account
+The implemented authentication contract includes:
+
+- Public Student registration.
+- Email and password login.
+- JWT access and refresh tokens.
+- Access-token refresh.
+- Authenticated logout with refresh-token blacklisting.
+- Password-reset request.
+- Password-reset confirmation.
+- Retrieval of the current authenticated user through `/api/v1/auth/me/`.
+
+Authentication request and response fields in this section should remain aligned with the implemented Django serializers, views, frontend authentication service, and automated tests.
 
 ### 9.1.1 Register Account
 
@@ -486,40 +497,102 @@ Expected errors:
 
 ### 9.1.4 Logout
 
-Endpoint:
+### 9.1.4 Logout
+
+**Endpoint**
 
 ```http
 POST /api/v1/auth/logout/
 ```
 
-Purpose:
+**Purpose**
 
-Ends the authenticated session and invalidates the submitted refresh token where supported by the authentication implementation.
+Ends the authenticated session by invalidating the submitted refresh token through the JWT token blacklist.
 
-Authentication:
+**Authentication**
 
 Required.
 
-Expected success status:
+The request must include a valid JWT access token in the `Authorization` header.
 
-```text
-200 OK
+```http
+Authorization: Bearer <access_token>
 ```
 
-or:
+**Request Body**
 
-```text
-204 No Content
+```json
+{
+  "refresh": "<refresh_token>"
+}
 ```
 
-The final response behaviour will be aligned with the backend implementation.
+**Request Fields**
 
-Expected errors:
+| Field | Required | Description |
+| --- | --- | --- |
+| `refresh` | Yes | The refresh token associated with the authenticated user's session. |
 
-```text
-400 Bad Request
-401 Unauthorized
+The backend validates the submitted refresh token before adding it to the JWT blacklist.
+
+**Successful Response**
+
+`200 OK`
+
+```json
+{
+  "message": "Logged out successfully."
+}
 ```
+
+After the logout request completes, the React frontend clears its locally stored authentication session, including:
+
+- Access token.
+- Refresh token.
+- Current authenticated-user information.
+
+**Expected Errors**
+
+| Scenario | HTTP Status |
+| --- | --- |
+| Missing authentication | `401 Unauthorized` |
+| Invalid or expired access token | `401 Unauthorized` |
+| Missing refresh token | `400 Bad Request` |
+| Invalid or expired refresh token | `401 Unauthorized` |
+| Previously blacklisted refresh token | `401 Unauthorized` |
+| Unexpected backend failure | `500 Internal Server Error` |
+
+Authentication and validation failures must follow the standard GradNavi API error structure.
+
+**Example Invalid Token Response**
+
+```json
+{
+  "error": {
+    "code": "token_not_valid",
+    "message": "Refresh token is invalid or expired.",
+    "details": {}
+  }
+}
+```
+
+**Logout Behaviour**
+
+The Django backend is responsible for invalidating the submitted refresh token.
+
+The React frontend is responsible for clearing the authentication information stored in the browser after the logout operation finishes.
+
+Removing authentication information from the frontend alone does not invalidate a refresh token. Backend token blacklisting provides the server-side logout control.
+
+**Security Requirements**
+
+- Logout requires an authenticated request.
+- The submitted refresh token must be validated by the Django backend.
+- Valid refresh tokens are added to the Simple JWT token blacklist.
+- Blacklisted refresh tokens must not be accepted for future access-token refresh requests.
+- Authentication tokens must not appear in URLs, application logs, or API error responses.
+- The frontend must clear locally stored authentication information after logout.
+- Backend authentication and authorization checks stay authoritative regardless of frontend state.
 
 ### 9.1.5 Request Password Reset
 
