@@ -1,11 +1,21 @@
 import { useState } from 'react'
 
-function CareerGoalsSection() {
-  const [careerGoalItems, setCareerGoalItems] = useState([])
-  const [careerGoalForm, setCareerGoalForm] = useState({
+function createEmptyCareerGoalForm() {
+  return {
     target_role: '',
     description: '',
-  })
+  }
+}
+
+function CareerGoalsSection({
+  items,
+  onChange,
+}) {
+  const [careerGoalForm, setCareerGoalForm] = useState(
+    createEmptyCareerGoalForm,
+  )
+  const [editingIndex, setEditingIndex] = useState(null)
+  const [error, setError] = useState('')
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -14,26 +24,91 @@ function CareerGoalsSection() {
       ...currentForm,
       [name]: value,
     }))
+
+    setError('')
   }
 
   function handleSubmit(event) {
     event.preventDefault()
 
-    setCareerGoalItems((currentItems) => [
-      ...currentItems,
-      careerGoalForm,
-    ])
+    if (!careerGoalForm.target_role.trim()) {
+      setError('Target role is required.')
+      return
+    }
+
+    const nextCareerGoal = {
+      target_role:
+        careerGoalForm.target_role.trim(),
+      description:
+        careerGoalForm.description.trim(),
+    }
+
+    if (editingIndex === null) {
+      onChange([
+        ...items,
+        nextCareerGoal,
+      ])
+    } else {
+      onChange(
+        items.map((careerGoal, index) => {
+          if (index !== editingIndex) {
+            return careerGoal
+          }
+
+          return {
+            ...careerGoal,
+            ...nextCareerGoal,
+          }
+        }),
+      )
+    }
+
+    setCareerGoalForm(
+      createEmptyCareerGoalForm(),
+    )
+    setEditingIndex(null)
+    setError('')
+  }
+
+  function handleEdit(index) {
+    const careerGoal = items[index]
 
     setCareerGoalForm({
-      target_role: '',
-      description: '',
+      target_role:
+        careerGoal.target_role || '',
+      description:
+        careerGoal.description || '',
     })
+
+    setEditingIndex(index)
+    setError('')
   }
 
   function handleRemove(indexToRemove) {
-    setCareerGoalItems((currentItems) =>
-      currentItems.filter((_, index) => index !== indexToRemove),
+    onChange(
+      items.filter(
+        (_, index) => index !== indexToRemove,
+      ),
     )
+
+    if (editingIndex === indexToRemove) {
+      handleCancelEdit()
+    } else if (
+      editingIndex !== null &&
+      editingIndex > indexToRemove
+    ) {
+      setEditingIndex(
+        (currentIndex) => currentIndex - 1,
+      )
+    }
+  }
+
+  function handleCancelEdit() {
+    setCareerGoalForm(
+      createEmptyCareerGoalForm(),
+    )
+    setEditingIndex(null)
+    setError('')
   }
 
   return (
@@ -42,7 +117,10 @@ function CareerGoalsSection() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="target_role">Target Role</label>
+          <label htmlFor="target_role">
+            Target Role
+          </label>
+
           <input
             id="target_role"
             name="target_role"
@@ -54,7 +132,10 @@ function CareerGoalsSection() {
         </div>
 
         <div>
-          <label htmlFor="career_goal_description">Description</label>
+          <label htmlFor="career_goal_description">
+            Description
+          </label>
+
           <textarea
             id="career_goal_description"
             name="description"
@@ -63,22 +144,50 @@ function CareerGoalsSection() {
           />
         </div>
 
-        <button type="submit">Add Career Goal</button>
+        {error && (
+          <p role="alert">{error}</p>
+        )}
+
+        <button type="submit">
+          {editingIndex === null
+            ? 'Add Career Goal'
+            : 'Update Career Goal'}
+        </button>
+
+        {editingIndex !== null && (
+          <button
+            type="button"
+            onClick={handleCancelEdit}
+          >
+            Cancel Edit
+          </button>
+        )}
       </form>
 
-      {careerGoalItems.length > 0 && (
+      {items.length > 0 && (
         <div>
           <h3>Career Goals</h3>
 
-          {careerGoalItems.map((careerGoal, index) => (
+          {items.map((careerGoal, index) => (
             <article
-            className="profile-item"
-            key={`${careerGoal.target_role}-${index}`}>
+              className="profile-item"
+              key={
+                careerGoal.id ||
+                `${careerGoal.target_role}-${index}`
+              }
+            >
               <h4>{careerGoal.target_role}</h4>
 
               {careerGoal.description && (
                 <p>{careerGoal.description}</p>
               )}
+
+              <button
+                type="button"
+                onClick={() => handleEdit(index)}
+              >
+                Edit
+              </button>
 
               <button
                 type="button"

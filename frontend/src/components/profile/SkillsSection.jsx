@@ -1,7 +1,11 @@
 import { useState } from 'react'
 
-function SkillsSection() {
-  const [skillItems, setSkillItems] = useState([])
+import { SPRINT_1_SKILLS } from '../../data/profileReferenceData'
+
+function SkillsSection({
+  items,
+  onChange,
+}) {
   const [skillForm, setSkillForm] = useState({
     name: '',
     proficiency_level: '',
@@ -15,21 +19,36 @@ function SkillsSection() {
       ...currentForm,
       [name]: value,
     }))
+
+    setError('')
   }
 
   function handleSubmit(event) {
     event.preventDefault()
 
-    const trimmedSkillName = skillForm.name.trim()
-
-    if (!trimmedSkillName || !skillForm.proficiency_level) {
-      setError('Skill name and proficiency level are required.')
+    if (
+      !skillForm.name ||
+      !skillForm.proficiency_level
+    ) {
+      setError(
+        'Skill and proficiency level are required.',
+      )
       return
     }
 
-    const duplicateSkill = skillItems.some(
+    const selectedSkill = SPRINT_1_SKILLS.find(
+      (skill) => skill.name === skillForm.name,
+    )
+
+    if (!selectedSkill) {
+      setError('Select a valid skill.')
+      return
+    }
+
+    const duplicateSkill = items.some(
       (skill) =>
-        skill.name.toLowerCase() === trimmedSkillName.toLowerCase(),
+        skill.name.toLowerCase() ===
+        selectedSkill.name.toLowerCase(),
     )
 
     if (duplicateSkill) {
@@ -37,11 +56,13 @@ function SkillsSection() {
       return
     }
 
-    setSkillItems((currentItems) => [
-      ...currentItems,
+    onChange([
+      ...items,
       {
-        name: trimmedSkillName,
-        proficiency_level: skillForm.proficiency_level,
+        name: selectedSkill.name,
+        category: selectedSkill.category,
+        proficiency_level:
+          skillForm.proficiency_level,
       },
     ])
 
@@ -54,8 +75,10 @@ function SkillsSection() {
   }
 
   function handleRemove(indexToRemove) {
-    setSkillItems((currentItems) =>
-      currentItems.filter((_, index) => index !== indexToRemove),
+    onChange(
+      items.filter(
+        (_, index) => index !== indexToRemove,
+      ),
     )
   }
 
@@ -76,54 +99,101 @@ function SkillsSection() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="skill-name">Skill</label>
-          <input
+          <label htmlFor="skill-name">
+            Skill
+          </label>
+
+          <select
             id="skill-name"
             name="name"
-            type="text"
             value={skillForm.name}
             onChange={handleChange}
-          />
+          >
+            <option value="">
+              Select a skill
+            </option>
+
+            {SPRINT_1_SKILLS.map((skill) => (
+              <option
+                key={skill.name}
+                value={skill.name}
+              >
+                {skill.name} ({skill.category})
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
-          <label htmlFor="proficiency-level">Proficiency Level</label>
+          <label htmlFor="proficiency-level">
+            Proficiency Level
+          </label>
+
           <select
             id="proficiency-level"
             name="proficiency_level"
             value={skillForm.proficiency_level}
             onChange={handleChange}
           >
-            <option value="">Select proficiency</option>
-            <option value="foundational">Foundational</option>
-            <option value="developing">Developing</option>
-            <option value="proficient">Proficient</option>
-            <option value="advanced">Advanced</option>
+            <option value="">
+              Select proficiency
+            </option>
+            <option value="foundational">
+              Foundational
+            </option>
+            <option value="developing">
+              Developing
+            </option>
+            <option value="proficient">
+              Proficient
+            </option>
+            <option value="advanced">
+              Advanced
+            </option>
           </select>
         </div>
 
-        {error && <p>{error}</p>}
+        {error && (
+          <p role="alert">{error}</p>
+        )}
 
-        <button type="submit">Add Skill</button>
+        <button type="submit">
+          Add Skill
+        </button>
       </form>
 
-      {skillItems.length > 0 && (
+      {items.length > 0 && (
         <div>
           <h3>My Skills</h3>
 
-          {skillItems.map((skill, index) => (
+          {items.map((skill, index) => (
             <article
-            className="profile-item"
-            key={`${skill.name}-${index}`}>
+              className="profile-item"
+              key={
+                skill.id ||
+                `${skill.name}-${index}`
+              }
+            >
               <h4>{skill.name}</h4>
 
+              {skill.category && (
+                <p>
+                  Category: {skill.category}
+                </p>
+              )}
+
               <p>
-                Proficiency: {getProficiencyLabel(skill.proficiency_level)}
+                Proficiency:{' '}
+                {getProficiencyLabel(
+                  skill.proficiency_level,
+                )}
               </p>
 
               <button
                 type="button"
-                onClick={() => handleRemove(index)}
+                onClick={() =>
+                  handleRemove(index)
+                }
               >
                 Remove
               </button>

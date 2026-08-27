@@ -1,62 +1,71 @@
 import { useState } from 'react'
 
-function InterestsSection() {
-  const [interestItems, setInterestItems] = useState([])
-  const [interestForm, setInterestForm] = useState({
-    name: '',
-    category: '',
-  })
+import {
+  SPRINT_1_INTERESTS,
+} from '../../data/profileReferenceData'
+
+function InterestsSection({
+  items,
+  onChange,
+}) {
+  const [selectedInterest, setSelectedInterest] =
+    useState('')
   const [error, setError] = useState('')
 
-  function handleChange(event) {
-    const { name, value } = event.target
-
-    setInterestForm((currentForm) => ({
-      ...currentForm,
-      [name]: value,
-    }))
+  function handleInterestChange(event) {
+    setSelectedInterest(event.target.value)
+    setError('')
   }
 
   function handleSubmit(event) {
     event.preventDefault()
 
-    const trimmedInterestName = interestForm.name.trim()
-    const trimmedCategory = interestForm.category.trim()
-
-    if (!trimmedInterestName) {
-      setError('Interest name is required.')
+    if (!selectedInterest) {
+      setError('Select an interest.')
       return
     }
 
-    const duplicateInterest = interestItems.some(
+    const interestReference =
+      SPRINT_1_INTERESTS.find(
+        (interest) =>
+          interest.name === selectedInterest,
+      )
+
+    if (!interestReference) {
+      setError('Select a valid interest.')
+      return
+    }
+
+    const duplicateInterest = items.some(
       (interest) =>
-        interest.name.toLowerCase() === trimmedInterestName.toLowerCase(),
+        interest.name.toLowerCase() ===
+        interestReference.name.toLowerCase(),
     )
 
     if (duplicateInterest) {
-      setError('This interest has already been added.')
+      setError(
+        'This interest has already been added.',
+      )
       return
     }
 
-    setInterestItems((currentItems) => [
-      ...currentItems,
+    onChange([
+      ...items,
       {
-        name: trimmedInterestName,
-        category: trimmedCategory,
+        name: interestReference.name,
+        category: interestReference.category,
       },
     ])
 
-    setInterestForm({
-      name: '',
-      category: '',
-    })
-
+    setSelectedInterest('')
     setError('')
   }
 
   function handleRemove(indexToRemove) {
-    setInterestItems((currentItems) =>
-      currentItems.filter((_, index) => index !== indexToRemove),
+    onChange(
+      items.filter(
+        (_, index) => index !== indexToRemove,
+      ),
     )
   }
 
@@ -66,49 +75,79 @@ function InterestsSection() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="interest-name">Interest</label>
-          <input
+          <label htmlFor="interest-name">
+            Interest
+          </label>
+
+          <select
             id="interest-name"
-            name="name"
-            type="text"
-            value={interestForm.name}
-            onChange={handleChange}
-          />
+            value={selectedInterest}
+            onChange={handleInterestChange}
+          >
+            <option value="">
+              Select an interest
+            </option>
+
+            {SPRINT_1_INTERESTS.map(
+              (interest) => (
+                <option
+                  key={interest.name}
+                  value={interest.name}
+                >
+                  {interest.name}
+                </option>
+              ),
+            )}
+          </select>
         </div>
 
-        <div>
-          <label htmlFor="interest-category">Category</label>
-          <input
-            id="interest-category"
-            name="category"
-            type="text"
-            value={interestForm.category}
-            onChange={handleChange}
-          />
-        </div>
+        {selectedInterest && (
+          <p>
+            Category:{' '}
+            {
+              SPRINT_1_INTERESTS.find(
+                (interest) =>
+                  interest.name ===
+                  selectedInterest,
+              )?.category
+            }
+          </p>
+        )}
 
-        {error && <p>{error}</p>}
+        {error && (
+          <p role="alert">{error}</p>
+        )}
 
-        <button type="submit">Add Interest</button>
+        <button type="submit">
+          Add Interest
+        </button>
       </form>
 
-      {interestItems.length > 0 && (
+      {items.length > 0 && (
         <div>
           <h3>My Interests</h3>
 
-          {interestItems.map((interest, index) => (
+          {items.map((interest, index) => (
             <article
-            className="profile-item" 
-            key={`${interest.name}-${index}`}>
+              className="profile-item"
+              key={
+                interest.id ||
+                `${interest.name}-${index}`
+              }
+            >
               <h4>{interest.name}</h4>
 
               {interest.category && (
-                <p>Category: {interest.category}</p>
+                <p>
+                  Category: {interest.category}
+                </p>
               )}
 
               <button
                 type="button"
-                onClick={() => handleRemove(index)}
+                onClick={() =>
+                  handleRemove(index)
+                }
               >
                 Remove
               </button>
