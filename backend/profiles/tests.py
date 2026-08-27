@@ -792,6 +792,102 @@ class StudentProfilePatchAPITests(APITestCase):
         self.assertEqual(url_response.status_code, status.HTTP_400_BAD_REQUEST)
         assert_error_envelope(self, url_response, "validation_error")
 
+    def test_education_start_date_only_update_validates_existing_end_date(self):
+        education = Education.objects.create(
+            student_profile=self.profile,
+            institution_name="Central Queensland University",
+            qualification="Graduate Diploma",
+            field_of_study="Information Technology",
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 12, 31),
+        )
+
+        response = self.authenticated_patch(
+            {"education": [{"id": education.id, "start_date": "2025-01-01"}]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error")
+        education.refresh_from_db()
+        self.assertEqual(education.start_date, date(2024, 1, 1))
+        self.assertEqual(education.end_date, date(2024, 12, 31))
+
+    def test_education_end_date_only_update_validates_existing_start_date(self):
+        education = Education.objects.create(
+            student_profile=self.profile,
+            institution_name="Central Queensland University",
+            qualification="Graduate Diploma",
+            field_of_study="Information Technology",
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 12, 31),
+        )
+
+        response = self.authenticated_patch(
+            {"education": [{"id": education.id, "end_date": "2023-12-31"}]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error")
+        education.refresh_from_db()
+        self.assertEqual(education.start_date, date(2024, 1, 1))
+        self.assertEqual(education.end_date, date(2024, 12, 31))
+
+    def test_experience_partial_date_update_validates_effective_final_range(self):
+        experience = Experience.objects.create(
+            student_profile=self.profile,
+            job_title="Developer",
+            company="GradNavi Labs",
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 12, 31),
+        )
+
+        response = self.authenticated_patch(
+            {"experience": [{"id": experience.id, "start_date": "2025-01-01"}]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error")
+        experience.refresh_from_db()
+        self.assertEqual(experience.start_date, date(2024, 1, 1))
+        self.assertEqual(experience.end_date, date(2024, 12, 31))
+
+    def test_project_partial_date_update_validates_effective_final_range(self):
+        project = Project.objects.create(
+            student_profile=self.profile,
+            name="Career Planner",
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 12, 31),
+        )
+
+        response = self.authenticated_patch(
+            {"projects": [{"id": project.id, "end_date": "2023-12-31"}]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error")
+        project.refresh_from_db()
+        self.assertEqual(project.start_date, date(2024, 1, 1))
+        self.assertEqual(project.end_date, date(2024, 12, 31))
+
+    def test_valid_partial_date_update_succeeds(self):
+        education = Education.objects.create(
+            student_profile=self.profile,
+            institution_name="Central Queensland University",
+            qualification="Graduate Diploma",
+            field_of_study="Information Technology",
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 12, 31),
+        )
+
+        response = self.authenticated_patch(
+            {"education": [{"id": education.id, "end_date": "2025-12-31"}]}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        education.refresh_from_db()
+        self.assertEqual(education.start_date, date(2024, 1, 1))
+        self.assertEqual(education.end_date, date(2025, 12, 31))
+
     def test_failed_nested_validation_does_not_partially_modify_profile(self):
         CareerGoal.objects.create(student_profile=self.profile, target_role="Existing Goal")
 

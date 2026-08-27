@@ -227,8 +227,15 @@ class OwnedModelWriteSerializer(RejectUnknownFieldsMixin, serializers.ModelSeria
         return value
 
     def validate(self, attrs):
-        start_date = attrs.get("start_date")
-        end_date = attrs.get("end_date")
+        instance = self._get_existing_instance(attrs)
+        start_date = attrs.get(
+            "start_date",
+            getattr(instance, "start_date", None),
+        )
+        end_date = attrs.get(
+            "end_date",
+            getattr(instance, "end_date", None),
+        )
 
         if start_date and end_date and end_date < start_date:
             raise serializers.ValidationError(
@@ -236,6 +243,16 @@ class OwnedModelWriteSerializer(RejectUnknownFieldsMixin, serializers.ModelSeria
             )
 
         return attrs
+
+    def _get_existing_instance(self, attrs):
+        item_id = attrs.get("id")
+        if item_id is None:
+            return None
+
+        return self.Meta.model.objects.get(
+            pk=item_id,
+            student_profile=self.context["profile"],
+        )
 
 
 class EducationWriteSerializer(OwnedModelWriteSerializer):
@@ -432,13 +449,17 @@ class StudentProfileUpdateSerializer(RejectUnknownFieldsMixin, serializers.Seria
         )
 
     def _validate_model_items(self, items, serializer_class, profile):
-        serializer = serializer_class(
-            data=items,
-            many=True,
-            context={"profile": profile},
-        )
-        serializer.is_valid(raise_exception=True)
-        validated_items = serializer.validated_data
+        validated_items = []
+
+        for item in items:
+            serializer = serializer_class(
+                data=item,
+                context={"profile": profile},
+                partial="id" in item,
+            )
+            serializer.is_valid(raise_exception=True)
+            validated_items.append(serializer.validated_data)
+
         self._validate_unique_item_ids(validated_items, serializer_class.Meta.model.__name__)
         return validated_items
 
