@@ -280,6 +280,7 @@ GradNavi/
 │
 ├── .gitignore
 └── README.md
+```
 
 ## Project scope limits
 
