@@ -4,6 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.mail import send_mail
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.conf import settings
+from django.db import transaction
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import serializers
@@ -12,6 +13,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from gradnavi.exceptions import ConflictError
+from profiles.models import StudentProfile
 
 
 User = get_user_model()
@@ -72,7 +74,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop("password")
-        return User.objects.create_user(password=password, **validated_data)
+        with transaction.atomic():
+            user = User.objects.create_user(password=password, **validated_data)
+            StudentProfile.objects.get_or_create(user=user)
+            return user
 
 
 class UserSummarySerializer(serializers.ModelSerializer):
