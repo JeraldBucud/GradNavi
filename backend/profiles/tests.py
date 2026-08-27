@@ -427,3 +427,418 @@ class StudentProfileReadAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         assert_error_envelope(self, response, "not_found")
         self.assertFalse(StudentProfile.objects.filter(user=self.user).exists())
+
+
+class StudentProfilePatchAPITests(APITestCase):
+    def setUp(self):
+        self.url = "/api/v1/profile/"
+        self.password = "StrongPassword123!"
+        self.user = User.objects.create_user(
+            email="patch-a@gradnavi.test",
+            password=self.password,
+            first_name="Patch",
+            last_name="A",
+        )
+        self.other_user = User.objects.create_user(
+            email="patch-b@gradnavi.test",
+            password=self.password,
+            first_name="Patch",
+            last_name="B",
+        )
+        self.profile = StudentProfile.objects.create(user=self.user)
+        self.other_profile = StudentProfile.objects.create(user=self.other_user)
+        self.access_token = str(RefreshToken.for_user(self.user).access_token)
+        self.other_access_token = str(RefreshToken.for_user(self.other_user).access_token)
+
+    def authenticated_patch(self, payload, token=None, path=None):
+        return self.client.patch(
+            path or self.url,
+            payload,
+            format="json",
+            HTTP_AUTHORIZATION=f"Bearer {token or self.access_token}",
+        )
+
+    def authenticated_get(self):
+        return self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
+        )
+
+    def make_full_payload(self):
+        skill = Skill.objects.create(name="Python", category="Programming")
+        interest = Interest.objects.create(name="Artificial Intelligence", category="Technology")
+        return {
+            "skills": [
+                {
+                    "id": skill.id,
+                    "proficiency_level": StudentSkill.ProficiencyLevel.PROFICIENT,
+                }
+            ],
+            "interests": ["Artificial Intelligence"],
+            "education": [
+                {
+                    "institution_name": "Central Queensland University",
+                    "qualification": "Master of Information Technology",
+                    "field_of_study": "Information Technology",
+                    "start_date": "2025-03-01",
+                    "end_date": "2026-11-30",
+                    "description": "Postgraduate study.",
+                }
+            ],
+            "experience": [
+                {
+                    "job_title": "Junior Developer",
+                    "company": "GradNavi Labs",
+                    "start_date": "2025-06-01",
+                    "is_current": True,
+                    "description": "Backend development.",
+                }
+            ],
+            "projects": [
+                {
+                    "name": "Career Planner",
+                    "description": "Student career-planning project.",
+                    "project_url": "https://example.com/project",
+                    "start_date": "2025-07-01",
+                }
+            ],
+            "career_goals": ["Software Engineer"],
+            "personality_responses": [
+                {
+                    "question_key": "work_style",
+                    "response_value": "collaborative",
+                }
+            ],
+            "_skill": skill,
+            "_interest": interest,
+        }
+
+    def test_patch_requires_authentication(self):
+        response = self.client.patch(self.url, {"career_goals": []}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        assert_error_envelope(self, response, "not_authenticated")
+
+    def test_patch_returns_success_structure_and_persists_to_get(self):
+        payload = self.make_full_payload()
+        skill = payload.pop("_skill")
+        interest = payload.pop("_interest")
+
+        response = self.authenticated_patch(payload)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        profile = response.data["data"]["profile"]
+        self.assertEqual(profile["skills"][0]["name"], skill.name)
+        self.assertEqual(profile["skills"][0]["proficiency_level"], "proficient")
+        self.assertEqual(profile["interests"][0]["name"], interest.name)
+        self.assertEqual(profile["education"][0]["qualification"], "Master of Information Technology")
+        self.assertEqual(profile["experience"][0]["job_title"], "Junior Developer")
+        self.assertEqual(profile["projects"][0]["name"], "Career Planner")
+        self.assertEqual(profile["career_goals"][0]["target_role"], "Software Engineer")
+        self.assertEqual(profile["personality_responses"][0]["response_value"], "collaborative")
+
+        get_response = self.authenticated_get()
+        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(get_response.data, response.data)
+
+    def test_omitted_sections_remain_unchanged(self):
+        skill = Skill.objects.create(name="Django", category="Backend")
+        StudentSkill.objects.create(
+            student_profile=self.profile,
+            skill=skill,
+            proficiency_level=StudentSkill.ProficiencyLevel.DEVELOPING,
+        )
+        Education.objects.create(
+            student_profile=self.profile,
+            institution_name="Existing University",
+            qualification="Graduate Diploma",
+            field_of_study="Information Technology",
+            start_date=date(2024, 3, 1),
+        )
+
+        response = self.authenticated_patch({"career_goals": ["Software Engineer"]})
+        profile = response.data["data"]["profile"]
+
+        self.assertEqual(profile["career_goals"][0]["target_role"], "Software Engineer")
+        self.assertEqual(profile["skills"][0]["name"], "Django")
+        self.assertEqual(profile["education"][0]["institution_name"], "Existing University")
+
+    def test_supplied_collections_replace_existing_values_and_empty_arrays_clear(self):
+        old_skill = Skill.objects.create(name="Old Skill")
+        new_skill = Skill.objects.create(name="New Skill")
+        old_interest = Interest.objects.create(name="Old Interest")
+        StudentSkill.objects.create(
+            student_profile=self.profile,
+            skill=old_skill,
+            proficiency_level=StudentSkill.ProficiencyLevel.FOUNDATIONAL,
+        )
+        StudentInterest.objects.create(student_profile=self.profile, interest=old_interest)
+        CareerGoal.objects.create(student_profile=self.profile, target_role="Old Goal")
+
+        response = self.authenticated_patch(
+            {
+                "skills": [
+                    {
+                        "name": "New Skill",
+                        "proficiency_level": StudentSkill.ProficiencyLevel.ADVANCED,
+                    }
+                ],
+                "interests": [],
+                "career_goals": [],
+            }
+        )
+        profile = response.data["data"]["profile"]
+
+        self.assertEqual(profile["skills"][0]["name"], "New Skill")
+        self.assertEqual(profile["skills"][0]["proficiency_level"], "advanced")
+        self.assertEqual(profile["interests"], [])
+        self.assertEqual(profile["career_goals"], [])
+        self.assertFalse(self.profile.student_skills.filter(skill=old_skill).exists())
+        self.assertFalse(self.profile.student_interests.exists())
+        self.assertFalse(self.profile.career_goals.exists())
+
+    def test_existing_nested_records_can_be_updated_by_owned_id(self):
+        education = Education.objects.create(
+            student_profile=self.profile,
+            institution_name="Old University",
+            qualification="Old Qualification",
+            field_of_study="IT",
+            start_date=date(2024, 1, 1),
+        )
+        experience = Experience.objects.create(
+            student_profile=self.profile,
+            job_title="Old Role",
+            company="Old Company",
+            start_date=date(2024, 2, 1),
+        )
+        project = Project.objects.create(
+            student_profile=self.profile,
+            name="Old Project",
+            start_date=date(2024, 3, 1),
+        )
+        career_goal = CareerGoal.objects.create(
+            student_profile=self.profile,
+            target_role="Old Goal",
+        )
+        personality_response = PersonalityResponse.objects.create(
+            student_profile=self.profile,
+            question_key="old_key",
+            response_value="old_value",
+        )
+
+        response = self.authenticated_patch(
+            {
+                "education": [
+                    {
+                        "id": education.id,
+                        "institution_name": "New University",
+                        "qualification": "New Qualification",
+                        "field_of_study": "Software Engineering",
+                        "start_date": "2025-01-01",
+                    }
+                ],
+                "experience": [
+                    {
+                        "id": experience.id,
+                        "job_title": "New Role",
+                        "company": "New Company",
+                        "start_date": "2025-02-01",
+                        "is_current": False,
+                    }
+                ],
+                "projects": [
+                    {
+                        "id": project.id,
+                        "name": "New Project",
+                        "description": "Updated project.",
+                        "project_url": "",
+                        "start_date": "2025-03-01",
+                    }
+                ],
+                "career_goals": [
+                    {
+                        "id": career_goal.id,
+                        "target_role": "New Goal",
+                        "description": "Updated goal.",
+                    }
+                ],
+                "personality_responses": [
+                    {
+                        "id": personality_response.id,
+                        "question_key": "new_key",
+                        "response_value": "new_value",
+                    }
+                ],
+            }
+        )
+        profile = response.data["data"]["profile"]
+
+        self.assertEqual(profile["education"][0]["institution_name"], "New University")
+        self.assertEqual(profile["experience"][0]["job_title"], "New Role")
+        self.assertEqual(profile["projects"][0]["name"], "New Project")
+        self.assertEqual(profile["career_goals"][0]["target_role"], "New Goal")
+        self.assertEqual(profile["personality_responses"][0]["question_key"], "new_key")
+
+    def test_client_supplied_ownership_identifiers_are_rejected(self):
+        response = self.authenticated_patch(
+            {
+                "user_id": self.other_user.id,
+                "career_goals": ["Software Engineer"],
+            }
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error")
+        self.assertFalse(self.profile.career_goals.exists())
+
+    def test_cross_user_nested_id_is_rejected_without_modifying_other_profile(self):
+        other_goal = CareerGoal.objects.create(
+            student_profile=self.other_profile,
+            target_role="Other Goal",
+        )
+
+        response = self.authenticated_patch(
+            {
+                "career_goals": [
+                    {
+                        "id": other_goal.id,
+                        "target_role": "Hijacked Goal",
+                    }
+                ],
+            }
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error")
+        other_goal.refresh_from_db()
+        self.assertEqual(other_goal.target_role, "Other Goal")
+
+    def test_duplicate_skill_and_interest_inputs_are_rejected(self):
+        skill = Skill.objects.create(name="Python")
+        interest = Interest.objects.create(name="Cybersecurity")
+
+        skill_response = self.authenticated_patch(
+            {
+                "skills": [
+                    {
+                        "id": skill.id,
+                        "proficiency_level": StudentSkill.ProficiencyLevel.DEVELOPING,
+                    },
+                    {
+                        "name": "Python",
+                        "proficiency_level": StudentSkill.ProficiencyLevel.ADVANCED,
+                    },
+                ]
+            }
+        )
+        interest_response = self.authenticated_patch(
+            {"interests": [{"id": interest.id}, {"name": "Cybersecurity"}]}
+        )
+
+        self.assertEqual(skill_response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, skill_response, "validation_error")
+        self.assertEqual(interest_response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, interest_response, "validation_error")
+
+    def test_invalid_proficiency_and_missing_reference_are_rejected(self):
+        skill = Skill.objects.create(name="Java")
+
+        invalid_proficiency = self.authenticated_patch(
+            {"skills": [{"id": skill.id, "proficiency_level": "expert"}]}
+        )
+        missing_reference = self.authenticated_patch(
+            {
+                "interests": [
+                    {
+                        "id": 999999,
+                    }
+                ]
+            }
+        )
+
+        self.assertEqual(invalid_proficiency.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, invalid_proficiency, "validation_error")
+        self.assertEqual(missing_reference.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, missing_reference, "validation_error")
+
+    def test_invalid_date_range_and_project_url_are_rejected(self):
+        date_response = self.authenticated_patch(
+            {
+                "education": [
+                    {
+                        "institution_name": "Central Queensland University",
+                        "qualification": "Graduate Diploma",
+                        "field_of_study": "Information Technology",
+                        "start_date": "2026-01-01",
+                        "end_date": "2025-01-01",
+                    }
+                ]
+            }
+        )
+        url_response = self.authenticated_patch(
+            {
+                "projects": [
+                    {
+                        "name": "Invalid URL Project",
+                        "project_url": "not-a-url",
+                        "start_date": "2025-01-01",
+                    }
+                ]
+            }
+        )
+
+        self.assertEqual(date_response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, date_response, "validation_error")
+        self.assertEqual(url_response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, url_response, "validation_error")
+
+    def test_failed_nested_validation_does_not_partially_modify_profile(self):
+        CareerGoal.objects.create(student_profile=self.profile, target_role="Existing Goal")
+
+        response = self.authenticated_patch(
+            {
+                "career_goals": ["New Goal"],
+                "projects": [
+                    {
+                        "name": "Invalid URL Project",
+                        "project_url": "not-a-url",
+                        "start_date": "2025-01-01",
+                    }
+                ],
+            }
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert_error_envelope(self, response, "validation_error")
+        self.assertEqual(
+            list(self.profile.career_goals.values_list("target_role", flat=True)),
+            ["Existing Goal"],
+        )
+        self.assertFalse(self.profile.projects.exists())
+
+    def test_missing_student_profile_patch_returns_not_found_without_creating_profile(self):
+        self.profile.delete()
+
+        response = self.authenticated_patch({"career_goals": ["Software Engineer"]})
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        assert_error_envelope(self, response, "not_found")
+        self.assertFalse(StudentProfile.objects.filter(user=self.user).exists())
+
+    def test_authenticated_user_cannot_patch_another_profile_with_query_parameters(self):
+        CareerGoal.objects.create(student_profile=self.other_profile, target_role="Other Goal")
+
+        response = self.authenticated_patch(
+            {"career_goals": ["Own Goal"]},
+            path=f"{self.url}?user_id={self.other_user.id}&profile_id={self.other_profile.id}",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            list(self.profile.career_goals.values_list("target_role", flat=True)),
+            ["Own Goal"],
+        )
+        self.assertEqual(
+            list(self.other_profile.career_goals.values_list("target_role", flat=True)),
+            ["Other Goal"],
+        )
