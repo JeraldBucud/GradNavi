@@ -1,6 +1,6 @@
 # GradNavi Sprint 1 Test Plan
 
-Status: Active Sprint 1 test plan. Frontend authentication integration, security verification, PostgreSQL connectivity, migration verification, and authentication regression testing have been completed. Student Profile backend and frontend-to-profile integration testing remain pending.
+Status: Active Sprint 1 test plan. Authentication integration, Student Profile backend implementation, frontend Student Profile integration, security verification, PostgreSQL connectivity, migration verification, and core Sprint 1 integration testing have been completed. Remaining negative, ownership, validation, database relationship, and regression test cases are tracked as Not Run in the Sprint 1 Test Case Tracker.
 
 ## 1. Purpose
 
@@ -204,9 +204,9 @@ The current Sprint 1 Test Case Tracker contains 61 test cases.
 
 At the current testing checkpoint:
 
-- Pass: 12
-- Blocked: 23
-- Not Run: 26
+- Pass: 25
+- Blocked: 0
+- Not Run: 36
 - Fail: 0
 
 Completed testing areas include:
@@ -222,8 +222,15 @@ Completed testing areas include:
 - PostgreSQL connectivity.
 - Django migration verification.
 - Authentication regression testing.
+- Student Profile authenticated retrieval.
+- Student Profile update integration.
+- Student Profile persistence after refresh.
+- Student Profile edit persistence.
+- Student Profile deletion persistence.
+- Frontend Student Profile integration.
+- Core end-to-end Sprint 1 happy-path regression.
 
-Student Profile API, ownership, related profile data, profile persistence, frontend profile integration, and full Sprint 1 regression testing remain dependent on the Student Profile backend implementation.
+Remaining Not Run cases include negative Student Profile validation, cross-student ownership checks, selected Skill and Interest validation cases, direct database relationship verification, and remaining detailed regression cases.
 
 Detailed results and evidence IDs are maintained in:
 
@@ -320,22 +327,16 @@ Detailed password-reset cases should remain in the backend authentication testin
 
 ## 9. Student Profile API Test Area
 
-Student Profile testing should focus on:
+Student Profile testing focuses on:
 
     GET /api/v1/profile/
     PATCH /api/v1/profile/
 
-The Student Profile backend implementation is currently pending.
+The Student Profile backend has been implemented and integrated with the React Student Profile interface.
 
-Student Profile API, ownership, persistence, validation, and frontend integration tests remain Blocked or Not Run until the required backend endpoints are available.
+Completed testing confirms authenticated profile retrieval, valid profile updates, frontend-to-backend communication, save behaviour, persistence after refresh, edit persistence, and deletion persistence.
 
-Testing will begin with:
-
-    GET /api/v1/profile/
-
-once the endpoint is stable.
-
-Testing will then continue with PATCH behaviour and related-resource integration according to the implemented Student Profile API contract.
+Remaining Student Profile test cases focus on negative validation, unauthenticated access, ownership isolation, invalid references, and other detailed cases recorded as Not Run in the Sprint 1 Test Case Tracker.
 
 ## 10. Student Profile Retrieval Tests
 
@@ -360,7 +361,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Pass. Authenticated Student Profile retrieval was verified through GET /api/v1/profile/. Evidence: EV-027 and EV-028.
 
 ### PROF-GET-02: Profile Request Without Authentication
 
@@ -379,7 +380,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run. The endpoint is implemented, but the unauthenticated profile request test has not yet been executed as a dedicated test case.
 
 ### PROF-GET-03: Profile Response Contains Approved Collections
 
@@ -400,7 +401,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Pass. The implemented profile collections were returned and displayed through the Student Profile integration flow. Evidence: EV-028, EV-029, and EV-030.
 
 ## 11. Student Profile Update Tests
 
@@ -423,7 +424,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Pass. A valid authenticated profile update was completed and persisted through the integrated React and Django flow. Evidence: EV-029.
 
 ### PROF-PAT-02: Invalid Profile Field Value
 
@@ -439,7 +440,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run.
 
 ### PROF-PAT-03: Empty Partial Request
 
@@ -454,7 +455,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run.
 
 ### PROF-PAT-04: Attempt Ownership-Field Change
 
@@ -471,7 +472,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run.
 
 ### PROF-PAT-05: Profile Update Persists
 
@@ -487,7 +488,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Pass. Profile changes persisted after successful PATCH requests and subsequent profile retrieval. Evidence: EV-026, EV-028, EV-029, and EV-030.
 
 ## 12. Student Profile Ownership Tests
 
@@ -514,7 +515,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run. The Student Profile backend and frontend integration are available, but this dedicated ownership test remains pending execution.
 
 ### OWN-02: Student B Reads Own Profile
 
@@ -525,7 +526,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run. The Student Profile backend and frontend integration are available, but this dedicated ownership test remains pending execution.
 
 ### OWN-03: Cross-Student Access Blocked
 
@@ -538,7 +539,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run. The Student Profile backend and frontend integration are available, but this dedicated ownership test remains pending execution.
 
 ### OWN-04: Cross-Student Ownership Modification Blocked
 
@@ -551,7 +552,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run. The Student Profile backend and frontend integration are available, but this dedicated ownership test remains pending execution.
 
 ## 13. Skill Validation Tests
 
@@ -592,11 +593,13 @@ Expected result:
 
 - Duplicate StudentSkill relationships are prevented according to the implemented data rules.
 
-Student Skill API tests remain pending until the Student Profile backend and related Skill behaviour are available.
+SKILL-01 has been verified through the WBS 4.8 integration flow using the prepared Python Skill reference and an approved proficiency value. Evidence: EV-028.
+
+SKILL-02, SKILL-03, and SKILL-04 remain Not Run and require dedicated negative or duplicate validation testing.
 
 ## 14. Interest Validation Tests
 
-Once StudentInterest behaviour is implemented, verify:
+StudentInterest behaviour is implemented. Testing should verify:
 
 - Valid Interest references are accepted.
 - Invalid Interest references are rejected.
@@ -604,9 +607,11 @@ Once StudentInterest behaviour is implemented, verify:
 - StudentInterest records belong to the authenticated StudentProfile.
 - Student Profile operations do not provide unintended permission to modify shared Interest reference data.
 
+INT-01 has passed through WBS 4.8 integration testing. INT-02 and INT-03 remain Not Run.
+
 ## 15. Education Tests
 
-Once Education behaviour is implemented, verify:
+Education behaviour is implemented. Testing should verify:
 
 - Valid Education records are accepted.
 - Required fields are enforced.
@@ -616,9 +621,11 @@ Once Education behaviour is implemented, verify:
 - Updates do not modify another Student's Education records.
 - Deletion behaviour follows the final API contract.
 
+EDU-01 has passed through the WBS 4.8 persistence and edit flow. EDU-02 remains Not Run.
+
 ## 16. Experience Tests
 
-Once Experience behaviour is implemented, verify:
+Experience behaviour is implemented. Testing should verify:
 
 - Valid Experience records are accepted.
 - Required fields are enforced.
@@ -627,9 +634,11 @@ Once Experience behaviour is implemented, verify:
 - Experience records belong to the authenticated StudentProfile.
 - Another Student's Experience records cannot be modified.
 
+EXP-01 has passed through the WBS 4.8 profile flow. EXP-02 remains Not Run because the available evidence does not verify current-role date validation.
+
 ## 17. Project Tests
 
-Once Project behaviour is implemented, verify:
+Project behaviour is implemented. Testing should verify:
 
 - Valid Project records are accepted.
 - Invalid project URLs are rejected where URL validation applies.
@@ -638,26 +647,32 @@ Once Project behaviour is implemented, verify:
 - Projects belong to the authenticated StudentProfile.
 - Another Student's Project records cannot be modified.
 
+PROJ-01 has passed through the WBS 4.8 profile flow, including persisted deletion. PROJ-02 remains Not Run.
+
 ## 18. Career Goal Tests
 
-Once CareerGoal behaviour is implemented, verify:
+CareerGoal behaviour is implemented. Testing should verify:
 
 - Valid career goals are accepted.
 - Required fields are enforced.
 - CareerGoal records belong to the authenticated StudentProfile.
 - Another Student's CareerGoal records cannot be modified.
 
+GOAL-01 remains Not Run because the available WBS 4.8 screenshots do not clearly prove a persisted Career Goal record.
+
 ## 19. Personality Response Tests
 
-PersonalityResponse testing depends on the final questionnaire design.
+The Sprint 1 personality questionnaire interface and response structure are available.
 
-Once implemented, verify:
+Testing should verify:
 
 - Approved question identifiers are accepted.
 - Approved response values are accepted.
 - Invalid response values are rejected where restrictions exist.
 - Responses belong to the authenticated StudentProfile.
 - Another Student's responses cannot be retrieved or modified through Student operations.
+
+PERS-01 remains Not Run because the available WBS 4.8 evidence does not clearly prove persisted Personality Response values.
 
 ## 20. API Error Response Tests
 
@@ -799,9 +814,9 @@ Relevant evidence is recorded in the Sprint 1 Evidence Index.
 
 ## 22. Frontend Student Profile Integration Tests
 
-The Student Profile frontend interface exists.
+The React Student Profile interface is integrated with the Django Student Profile API.
 
-Formal frontend-to-backend Student Profile integration testing remains pending until the Student Profile backend API is available.
+WBS 4.8 integration testing verified authenticated profile loading, successful profile updates, persistence after browser refresh, edit persistence, and deletion persistence.
 
 ### FE-PROF-01: Load Profile in UI
 
@@ -813,7 +828,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend API.
+Pass. Evidence: EV-028.
 
 ### FE-PROF-02: Update Profile in UI
 
@@ -826,7 +841,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend API.
+Pass. Evidence: EV-026, EV-027, EV-029, and EV-030.
 
 ### FE-PROF-03: Display Profile Validation Error
 
@@ -838,7 +853,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend API.
+Not Run. Dedicated invalid-profile frontend validation testing remains pending execution.
 
 ### FE-PROF-04: Profile Remains After Reload
 
@@ -850,7 +865,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend API.
+Pass. Evidence: EV-028, EV-029, and EV-030.
 
 ## 23. Database Verification
 
@@ -865,15 +880,13 @@ Database verification should confirm:
 - Student ownership relationships are preserved.
 - No frontend component connects directly to PostgreSQL.
 
-Database passwords and connection secrets must not be committed to the repository.
+DB-03 remains Not Run. The WBS 4.8 screenshots verify persistence through the application flow but do not provide direct database relationship inspection evidence.
 
 ### Current Database Test Status
 
 - DB-01: Django connects to PostgreSQL - Pass.
 - DB-02: Migrations apply successfully - Pass.
 - DB-03: Profile relationships persist - Not Run.
-
-DB-03 remains pending Student Profile backend implementation.
 
 Evidence for completed database checks is recorded in:
 
@@ -938,36 +951,26 @@ Expected failures should return controlled API responses rather than unexpected 
 
 ## 26. Regression Test Checklist
 
-Before Sprint 1 review, rerun the completed tests for:
-
-- Registration.
-- Login.
-- Token refresh.
-- Logout.
-- Current-user retrieval.
-- Student Profile retrieval.
-- Student Profile update.
-- Student Profile validation.
-- Student Profile ownership.
-- React authentication integration.
-- React Student Profile integration.
-
-Previously passing functionality should continue to pass after integration changes.
-
 ### Current Regression Test Status
 
 - REG-01: Authentication regression - Pass.
 - REG-02: Student Profile regression - Not Run.
-- REG-03: End-to-end Sprint 1 regression - Not Run.
+- REG-03: End-to-end Sprint 1 regression - Pass.
 
-REG-02 and REG-03 remain pending Student Profile backend and frontend integration.
+REG-03 passed through the core Sprint 1 happy-path flow covering registration, login, current-user retrieval, Student Profile GET, Student Profile PATCH, refresh persistence, and previously verified logout behaviour.
+
+REG-02 remains Not Run because the full Student Profile regression set includes ownership, validation, and negative cases that have not all been executed.
 
 Authentication regression evidence includes:
 
 - EV-024.
 - EV-025.
 
-Earlier frontend authentication evidence also supports the regression result.
+WBS 4.8 integration evidence supporting REG-03 includes:
+
+- EV-027.
+- EV-028.
+- EV-030.
 
 ## 27. Test Evidence
 
@@ -993,7 +996,15 @@ Sprint 1 test evidence is stored under:
 
 The current Evidence Index contains:
 
-    EV-001 through EV-025
+    EV-001 through EV-030
+
+WBS 4.8 Student Profile integration evidence includes:
+
+- EV-026: Profile save success.
+- EV-027: Authentication and profile API flow.
+- EV-028: Profile persistence after refresh.
+- EV-029: Profile edit persistence.
+- EV-030: Profile deletion persistence.
 
 Evidence IDs, descriptions, test mappings, file paths, testers, and execution dates are maintained in:
 
@@ -1035,32 +1046,31 @@ Sprint 1 testing should be considered complete when:
 
 ## 30. Pending Test Areas
 
-The following test details remain pending Student Profile implementation and design confirmation:
+The Student Profile backend and frontend integration are implemented.
 
-1. Final Student Profile serializer structure.
-2. Final Skill API representation.
-3. Final Interest API representation.
-4. Nested Student Profile updates versus dedicated related-resource endpoints.
-5. StudentProfile creation timing.
-6. Final related-resource persistence behaviour.
-7. Final Student Profile ownership and permission behaviour.
-8. Final Student Profile frontend form structure.
-9. Final personality questionnaire and approved response values.
-10. Final deletion behaviour for related Student Profile records.
-11. Final behaviour when an authenticated Student has no StudentProfile.
+Remaining Sprint 1 testing focuses on test cases that have not yet received dedicated execution evidence.
 
-The Student Skill proficiency scale is no longer pending.
+Pending areas include:
 
-The approved proficiency values are:
+1. Student Profile request without authentication.
+2. Invalid Student Profile field validation.
+3. Empty PATCH request behaviour.
+4. Ownership-field modification protection.
+5. Cross-student ownership and access isolation.
+6. Invalid Skill reference validation.
+7. Invalid Skill proficiency validation.
+8. Duplicate Student Skill validation.
+9. Invalid Interest reference validation.
+10. Shared Interest permission testing.
+11. Invalid Education date validation.
+12. Current Experience date handling.
+13. Invalid Project URL validation.
+14. Career Goal persistence verification.
+15. Personality Response persistence verification.
+16. Direct PostgreSQL relationship inspection.
+17. Full Student Profile regression testing.
 
-- Foundational.
-- Developing.
-- Proficient.
-- Advanced.
-
-The frontend JWT storage and refresh strategy is also no longer pending because the Sprint 1 authentication integration has been implemented and tested.
-
-The local Sprint 1 CORS configuration is also no longer pending because approved and unapproved origins have been verified through SEC-04.
+These items are tracked as Not Run rather than Blocked because the required Student Profile implementation is now available.
 
 ## 31. Test Plan Maintenance
 
@@ -1079,8 +1089,17 @@ Test cases should stay aligned with the implemented system rather than preservin
 
 This is a working Sprint 1 Test Plan.
 
-Authentication implementation has been reported as completed by the backend developer, but final results should be confirmed against the reviewed and merged implementation.
+The authentication backend, Student Profile backend, frontend authentication integration, and frontend Student Profile integration are implemented.
 
-Student Profile backend and frontend implementation details are still pending.
+The current Sprint 1 Test Case Tracker records 61 test cases:
 
-Test areas depending on unfinished implementation are therefore defined as planned tests and should be updated when those components become available.
+- Pass: 25
+- Fail: 0
+- Blocked: 0
+- Not Run: 36
+
+WBS 4.8 has verified the core authenticated Student Profile integration flow, including profile loading, successful profile updates, persistence after refresh, edit persistence, and deletion persistence.
+
+Remaining Not Run cases focus on negative validation, ownership isolation, direct database relationship verification, and detailed regression coverage.
+
+Test cases and this plan should continue to be updated as the remaining Sprint 1 tests are executed.

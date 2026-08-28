@@ -1,23 +1,43 @@
 import { useState } from 'react'
 
-function ExperienceSection() {
-  const [experienceItems, setExperienceItems] = useState([])
-  const [experienceForm, setExperienceForm] = useState({
+function createEmptyExperienceForm() {
+  return {
     job_title: '',
     company: '',
     start_date: '',
     end_date: '',
     is_current: false,
     description: '',
-  })
+  }
+}
+
+function ExperienceSection({
+  items,
+  onChange,
+}) {
+  const [experienceForm, setExperienceForm] = useState(
+    createEmptyExperienceForm,
+  )
+  const [editingIndex, setEditingIndex] = useState(null)
+  const [error, setError] = useState('')
 
   function handleChange(event) {
-    const { name, value, type, checked } = event.target
+    const {
+      name,
+      value,
+      type,
+      checked,
+    } = event.target
 
     setExperienceForm((currentForm) => ({
       ...currentForm,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]:
+        type === 'checkbox'
+          ? checked
+          : value,
     }))
+
+    setError('')
   }
 
   function handleCurrentRoleChange(event) {
@@ -26,32 +46,137 @@ function ExperienceSection() {
     setExperienceForm((currentForm) => ({
       ...currentForm,
       is_current: isCurrent,
-      end_date: isCurrent ? '' : currentForm.end_date,
+      end_date:
+        isCurrent
+          ? ''
+          : currentForm.end_date,
     }))
+
+    setError('')
+  }
+
+  function validateForm() {
+    if (
+      !experienceForm.job_title.trim() ||
+      !experienceForm.company.trim() ||
+      !experienceForm.start_date
+    ) {
+      return 'Job title, company, and start date are required.'
+    }
+
+    if (
+      !experienceForm.is_current &&
+      experienceForm.end_date &&
+      experienceForm.end_date <
+        experienceForm.start_date
+    ) {
+      return 'End date must not be earlier than start date.'
+    }
+
+    return ''
   }
 
   function handleSubmit(event) {
     event.preventDefault()
 
-    setExperienceItems((currentItems) => [
-      ...currentItems,
-      experienceForm,
-    ])
+    const validationError = validateForm()
+
+    if (validationError) {
+      setError(validationError)
+      return
+    }
+
+    const nextExperience = {
+      job_title:
+        experienceForm.job_title.trim(),
+      company:
+        experienceForm.company.trim(),
+      start_date:
+        experienceForm.start_date,
+      end_date:
+        experienceForm.is_current
+          ? ''
+          : experienceForm.end_date,
+      is_current:
+        experienceForm.is_current,
+      description:
+        experienceForm.description.trim(),
+    }
+
+    if (editingIndex === null) {
+      onChange([
+        ...items,
+        nextExperience,
+      ])
+    } else {
+      onChange(
+        items.map((experience, index) => {
+          if (index !== editingIndex) {
+            return experience
+          }
+
+          return {
+            ...experience,
+            ...nextExperience,
+          }
+        }),
+      )
+    }
+
+    setExperienceForm(
+      createEmptyExperienceForm(),
+    )
+    setEditingIndex(null)
+    setError('')
+  }
+
+  function handleEdit(index) {
+    const experience = items[index]
 
     setExperienceForm({
-      job_title: '',
-      company: '',
-      start_date: '',
-      end_date: '',
-      is_current: false,
-      description: '',
+      job_title:
+        experience.job_title || '',
+      company:
+        experience.company || '',
+      start_date:
+        experience.start_date || '',
+      end_date:
+        experience.end_date || '',
+      is_current:
+        Boolean(experience.is_current),
+      description:
+        experience.description || '',
     })
+
+    setEditingIndex(index)
+    setError('')
   }
 
   function handleRemove(indexToRemove) {
-    setExperienceItems((currentItems) =>
-      currentItems.filter((_, index) => index !== indexToRemove),
+    onChange(
+      items.filter(
+        (_, index) => index !== indexToRemove,
+      ),
     )
+
+    if (editingIndex === indexToRemove) {
+      handleCancelEdit()
+    } else if (
+      editingIndex !== null &&
+      editingIndex > indexToRemove
+    ) {
+      setEditingIndex(
+        (currentIndex) => currentIndex - 1,
+      )
+    }
+  }
+
+  function handleCancelEdit() {
+    setExperienceForm(
+      createEmptyExperienceForm(),
+    )
+    setEditingIndex(null)
+    setError('')
   }
 
   return (
@@ -60,7 +185,10 @@ function ExperienceSection() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="job_title">Job Title</label>
+          <label htmlFor="job_title">
+            Job Title
+          </label>
+
           <input
             id="job_title"
             name="job_title"
@@ -72,7 +200,10 @@ function ExperienceSection() {
         </div>
 
         <div>
-          <label htmlFor="company">Company</label>
+          <label htmlFor="company">
+            Company
+          </label>
+
           <input
             id="company"
             name="company"
@@ -84,13 +215,17 @@ function ExperienceSection() {
         </div>
 
         <div>
-          <label htmlFor="experience_start_date">Start Date</label>
+          <label htmlFor="experience_start_date">
+            Start Date
+          </label>
+
           <input
             id="experience_start_date"
             name="start_date"
             type="date"
             value={experienceForm.start_date}
             onChange={handleChange}
+            required
           />
         </div>
 
@@ -107,7 +242,10 @@ function ExperienceSection() {
         </div>
 
         <div>
-          <label htmlFor="experience_end_date">End Date</label>
+          <label htmlFor="experience_end_date">
+            End Date
+          </label>
+
           <input
             id="experience_end_date"
             name="end_date"
@@ -119,7 +257,10 @@ function ExperienceSection() {
         </div>
 
         <div>
-          <label htmlFor="experience_description">Description</label>
+          <label htmlFor="experience_description">
+            Description
+          </label>
+
           <textarea
             id="experience_description"
             name="description"
@@ -128,17 +269,38 @@ function ExperienceSection() {
           />
         </div>
 
-        <button type="submit">Add Experience</button>
+        {error && (
+          <p role="alert">{error}</p>
+        )}
+
+        <button type="submit">
+          {editingIndex === null
+            ? 'Add Experience'
+            : 'Update Experience'}
+        </button>
+
+        {editingIndex !== null && (
+          <button
+            type="button"
+            onClick={handleCancelEdit}
+          >
+            Cancel Edit
+          </button>
+        )}
       </form>
 
-      {experienceItems.length > 0 && (
+      {items.length > 0 && (
         <div>
           <h3>Experience History</h3>
 
-          {experienceItems.map((experience, index) => (
+          {items.map((experience, index) => (
             <article
-            className="profile-item"
-            key={`${experience.company}-${experience.job_title}-${index}`}>
+              className="profile-item"
+              key={
+                experience.id ||
+                `${experience.company}-${experience.job_title}-${index}`
+              }
+            >
               <h4>{experience.job_title}</h4>
 
               <p>{experience.company}</p>
@@ -147,10 +309,20 @@ function ExperienceSection() {
                 {experience.start_date} to{' '}
                 {experience.is_current
                   ? 'Present'
-                  : experience.end_date || 'Not specified'}
+                  : experience.end_date ||
+                    'Not specified'}
               </p>
 
-              <p>{experience.description}</p>
+              {experience.description && (
+                <p>{experience.description}</p>
+              )}
+
+              <button
+                type="button"
+                onClick={() => handleEdit(index)}
+              >
+                Edit
+              </button>
 
               <button
                 type="button"
