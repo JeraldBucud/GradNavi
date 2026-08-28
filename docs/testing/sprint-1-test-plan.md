@@ -440,7 +440,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run.
 
 ### PROF-PAT-03: Empty Partial Request
 
@@ -455,7 +455,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run.
 
 ### PROF-PAT-04: Attempt Ownership-Field Change
 
@@ -472,7 +472,7 @@ Expected result:
 
 Status:
 
-Blocked pending Student Profile backend implementation.
+Not Run.
 
 ### PROF-PAT-05: Profile Update Persists
 
@@ -512,6 +512,7 @@ Expected result:
 
 - Student A can retrieve StudentProfile A.
 - Student A does not receive Student B's protected profile data.
+
 Status:
 
 Not Run. The Student Profile backend and frontend integration are available, but this dedicated ownership test remains pending execution.
@@ -571,7 +572,6 @@ Expected result:
 - Valid Skill reference is accepted.
 - Approved proficiency value is accepted.
 - StudentSkill belongs to the authenticated StudentProfile.
-
 
 ### SKILL-02: Reject Invalid Skill Reference
 
@@ -662,9 +662,9 @@ GOAL-01 remains Not Run because the available WBS 4.8 screenshots do not clearly
 
 ## 19. Personality Response Tests
 
-PersonalityResponse testing depends on the final questionnaire design.
+The Sprint 1 personality questionnaire interface and response structure are available.
 
-Once implemented, verify:
+Testing should verify:
 
 - Approved question identifiers are accepted.
 - Approved response values are accepted.
@@ -888,8 +888,6 @@ DB-03 remains Not Run. The WBS 4.8 screenshots verify persistence through the ap
 - DB-02: Migrations apply successfully - Pass.
 - DB-03: Profile relationships persist - Not Run.
 
-DB-03 remains pending Student Profile backend implementation.
-
 Evidence for completed database checks is recorded in:
 
 - EV-020.
@@ -974,21 +972,6 @@ WBS 4.8 integration evidence supporting REG-03 includes:
 - EV-028.
 - EV-030.
 
-### Current Regression Test Status
-
-- REG-01: Authentication regression - Pass.
-- REG-02: Student Profile regression - Not Run.
-- REG-03: End-to-end Sprint 1 regression - Not Run.
-
-REG-02 and REG-03 remain pending Student Profile backend and frontend integration.
-
-Authentication regression evidence includes:
-
-- EV-024.
-- EV-025.
-
-Earlier frontend authentication evidence also supports the regression result.
-
 ## 27. Test Evidence
 
 Sprint 1 test evidence should be retained where practical.
@@ -1014,6 +997,14 @@ Sprint 1 test evidence is stored under:
 The current Evidence Index contains:
 
     EV-001 through EV-030
+
+WBS 4.8 Student Profile integration evidence includes:
+
+- EV-026: Profile save success.
+- EV-027: Authentication and profile API flow.
+- EV-028: Profile persistence after refresh.
+- EV-029: Profile edit persistence.
+- EV-030: Profile deletion persistence.
 
 Evidence IDs, descriptions, test mappings, file paths, testers, and execution dates are maintained in:
 
