@@ -33,3 +33,6 @@ Thumbs.db
 # Local AI/development instructions
 backend/AGENTS.md
 backend/enam.local/
+# External reference-data downloads
+# Large raw OSCA, O*NET, and ESCO files stay local.
+data/reference/raw/

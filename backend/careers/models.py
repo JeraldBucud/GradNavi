@@ -673,6 +673,11 @@ class CareerSkillEvidence(models.Model):
         default=False,
     )
 
+    recommend_suppress = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
     source_updated_at = models.DateTimeField(
         blank=True,
         null=True,
