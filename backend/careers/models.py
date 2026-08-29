@@ -588,11 +588,11 @@ class CareerSkill(models.Model):
 
 class CareerSkillEvidence(models.Model):
     """
-    Preserves source-native evidence supporting a CareerSkill
-    relationship.
+    Stores source evidence supporting a CareerSkill relationship.
 
-    Raw values stay available alongside GradNavi-normalized values.
-    This provides traceability for reference-data transformations.
+    Evidence records preserve external occupation and skill identifiers,
+    raw source ratings, normalized ratings, source-specific scale ranges,
+    source quality flags, and source metadata.
     """
 
     career_skill = models.ForeignKey(
@@ -641,6 +641,20 @@ class CareerSkillEvidence(models.Model):
         null=True,
     )
 
+    importance_scale_minimum = models.DecimalField(
+        max_digits=10,
+        decimal_places=4,
+        blank=True,
+        null=True,
+    )
+
+    importance_scale_maximum = models.DecimalField(
+        max_digits=10,
+        decimal_places=4,
+        blank=True,
+        null=True,
+    )
+
     raw_level = models.DecimalField(
         max_digits=10,
         decimal_places=4,
@@ -655,14 +669,14 @@ class CareerSkillEvidence(models.Model):
         null=True,
     )
 
-    scale_minimum = models.DecimalField(
+    level_scale_minimum = models.DecimalField(
         max_digits=10,
         decimal_places=4,
         blank=True,
         null=True,
     )
 
-    scale_maximum = models.DecimalField(
+    level_scale_maximum = models.DecimalField(
         max_digits=10,
         decimal_places=4,
         blank=True,
@@ -695,7 +709,9 @@ class CareerSkillEvidence(models.Model):
         constraints = [
             models.CheckConstraint(
                 condition=(
-                    models.Q(normalized_importance__isnull=True)
+                    models.Q(
+                        normalized_importance__isnull=True,
+                    )
                     | models.Q(
                         normalized_importance__gte=0,
                         normalized_importance__lte=100,
@@ -705,7 +721,9 @@ class CareerSkillEvidence(models.Model):
             ),
             models.CheckConstraint(
                 condition=(
-                    models.Q(normalized_level__isnull=True)
+                    models.Q(
+                        normalized_level__isnull=True,
+                    )
                     | models.Q(
                         normalized_level__gte=0,
                         normalized_level__lte=100,
@@ -716,16 +734,34 @@ class CareerSkillEvidence(models.Model):
             models.CheckConstraint(
                 condition=(
                     models.Q(
-                        scale_minimum__isnull=True,
-                        scale_maximum__isnull=True,
+                        importance_scale_minimum__isnull=True,
+                        importance_scale_maximum__isnull=True,
                     )
                     | models.Q(
-                        scale_minimum__isnull=False,
-                        scale_maximum__isnull=False,
-                        scale_maximum__gt=models.F("scale_minimum"),
+                        importance_scale_minimum__isnull=False,
+                        importance_scale_maximum__isnull=False,
+                        importance_scale_maximum__gt=models.F(
+                            "importance_scale_minimum"
+                        ),
                     )
                 ),
-                name="valid_evidence_scale_range",
+                name="valid_evidence_importance_scale_range",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        level_scale_minimum__isnull=True,
+                        level_scale_maximum__isnull=True,
+                    )
+                    | models.Q(
+                        level_scale_minimum__isnull=False,
+                        level_scale_maximum__isnull=False,
+                        level_scale_maximum__gt=models.F(
+                            "level_scale_minimum"
+                        ),
+                    )
+                ),
+                name="valid_evidence_level_scale_range",
             ),
             models.UniqueConstraint(
                 fields=[
@@ -742,6 +778,7 @@ class CareerSkillEvidence(models.Model):
 
     def __str__(self):
         return (
-            f"{self.career_skill} evidence from "
-            f"{self.dataset.source.name} {self.dataset.version}"
+            f"{self.career_skill} - "
+            f"{self.dataset} - "
+            f"{self.source_domain}"
         )
