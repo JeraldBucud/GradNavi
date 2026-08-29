@@ -16,11 +16,60 @@ class StudentProfile(models.Model):
 
 
 class Skill(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    category = models.CharField(max_length=100, blank=True)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    """
+    Canonical Skill reference used by both StudentSkill and CareerSkill.
+
+    A Skill represents one approved GradNavi concept. External labels,
+    aliases, and external identifiers are mapped to this canonical record
+    instead of creating duplicate Skill concepts.
+    """
+
+    class ConceptType(models.TextChoices):
+        SKILL = "skill", "Skill"
+        KNOWLEDGE = "knowledge", "Knowledge"
+        TECHNOLOGY = "technology", "Technology"
+
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+    )
+
+    concept_type = models.CharField(
+        max_length=20,
+        choices=ConceptType.choices,
+        default=ConceptType.SKILL,
+    )
+
+    category = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    concept_type__in=[
+                        "skill",
+                        "knowledge",
+                        "technology",
+                    ],
+                ),
+                name="valid_skill_concept_type",
+            ),
+        ]
 
     def __str__(self):
         return self.name
