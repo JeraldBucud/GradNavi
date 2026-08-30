@@ -1,6 +1,6 @@
 # GradNavi Recommendation Scoring Design
 
-Status: Sprint 2 working design for WBS 5.3 Weighted Recommendation Engine.
+Status: Approved Version 1 design for WBS 5.3 Weighted Recommendation Engine.
 
 ## 1. Purpose
 
@@ -27,7 +27,7 @@ This document defines:
 - Testing requirements.
 - Dependencies on other Sprint 2 work.
 
-Exact scoring weights and final Career reference-data fields are pending team confirmation.
+Version 1 uses deterministic canonical Skill matching weighted by source-backed O*NET normalized Importance. Student proficiency is reserved for WBS 5.5 readiness scoring.
 
 ## 2. Related Documents
 
@@ -172,14 +172,14 @@ Only approved factors should affect numerical recommendation results.
 
 ## 8. Student Skill Proficiency
 
-GradNavi currently uses these Student Skill proficiency values:
+GradNavi StudentSkill records use these proficiency values:
 
 - Foundational.
 - Developing.
 - Proficient.
 - Advanced.
 
-The API values are expected to follow the existing lowercase representation:
+The stored API values are:
 
 ```text
 foundational
@@ -188,380 +188,380 @@ proficient
 advanced
 ```
 
-A deterministic comparison process needs an ordered representation.
+Student proficiency does not change the WBS 5.3 Version 1 numerical recommendation score.
 
-A proposed internal order is:
+WBS 5.3 answers:
 
 ```text
-Foundational -> 1
-Developing   -> 2
-Proficient   -> 3
-Advanced     -> 4
+How strongly does the Student's known Skill set align
+with the source-backed competencies for this Career?
 ```
 
-This ordering represents progression only.
+Student proficiency is reserved for:
 
-The numbers above are not final recommendation-score contributions.
+```text
+WBS 5.5 Skill Gap and Readiness Scoring Logic
+```
 
-The team must approve the proficiency comparison rule before final scoring implementation.
+This separation prevents WBS 5.3 from assigning proficiency multipliers without an approved Career-side required proficiency value.
+
+The existing proficiency sequence remains available for WBS 5.5:
+
+```text
+Foundational
+Developing
+Proficient
+Advanced
+```
+
+No WBS 5.3 numerical multiplier is assigned to these levels.
 
 ## 9. Career Reference Input
 
-Career reference information comes from WBS 5.2 Career and Skill Reference Data.
+Career reference information comes from the approved WBS 5.2 Dataset 1.0 structure.
 
-The recommendation engine needs enough Career information to compare a Student Profile with each Career.
+WBS 5.3 uses:
 
-Expected categories of Career information include:
+```text
+Career
+CareerSkill
+CareerSkillEvidence
+Skill
+```
 
-- Career identifier.
-- Career name.
-- Relevant or required skills.
-- Required or preferred proficiency levels where implemented.
-- Relevant interests where implemented.
-- Education requirements where implemented.
-- Experience indicators where implemented.
-- Career-goal alignment information where implemented.
-- Personality-related reference information where approved.
+Canonical Skill identifiers connect StudentSkill and CareerSkill.
 
-Exact field names and relationships are pending WBS 5.2.
+The Version 1 numerical score uses O*NET evidence rows that contain normalized Importance values.
 
-The scoring service must follow the approved Career model instead of defining a competing data model.
+Current Dataset 1.0 evidence also contains:
+
+- O*NET software technology relationships without numerical Importance or Level values.
+- ESCO essential and optional relationships.
+
+Those relationships support structured explanations in Version 1 but do not receive invented numerical weights.
+
+Career-side interests, education, experience, projects, career goals, and personality reference structures are not part of Dataset 1.0.
+
+Those profile areas do not affect the WBS 5.3 Version 1 numerical score.
 
 ## 10. Recommendation Scoring Factors
 
-The final scoring-factor set requires team approval.
+The approved WBS 5.3 Version 1 numerical factor is:
 
-Candidate factors from the current GradNavi requirements are:
-
-| Factor | Student Source | Career Source | Final Inclusion |
+| Factor | Student Source | Career Source | Version 1 Use |
 | --- | --- | --- | --- |
-| Skills | Student Profile | Career reference data | TBD |
-| Interests | Student Profile | Career reference data | TBD |
-| Education | Student Profile | Career reference data | TBD |
-| Experience | Student Profile | Career reference data | TBD |
-| Projects | Student Profile | Career reference data | TBD |
-| Career goals | Student Profile | Career reference data | TBD |
-| Personality responses | Student Profile | Approved Career reference data | TBD |
+| Skills and knowledge | StudentSkill | O*NET numerical CareerSkillEvidence | Numerical score |
+| Technologies | StudentSkill | O*NET software evidence | Explanation only |
+| ESCO essential relationships | StudentSkill | ESCO CareerSkillEvidence | Explanation only |
+| ESCO optional relationships | StudentSkill | ESCO CareerSkillEvidence | Explanation only |
+| Interests | Student Profile | No approved Career-side Dataset 1.0 structure | Excluded |
+| Education | Student Profile | No approved Career-side Dataset 1.0 structure | Excluded |
+| Experience | Student Profile | No approved Career-side Dataset 1.0 structure | Excluded |
+| Projects | Student Profile | No approved Career-side Dataset 1.0 structure | Excluded |
+| Career goals | Student Profile | No approved Career-side Dataset 1.0 structure | Excluded |
+| Personality responses | Student Profile | No approved Career-side Dataset 1.0 structure | Excluded |
 
-A factor must not affect the recommendation score until:
+Version 1 does not convert missing source information into estimated weights.
 
-1. The team approves the factor.
-2. Input data is defined.
-3. The comparison rule is documented.
-4. The weight is approved.
-5. Expected behaviour is testable.
+Only source-backed numerical O*NET Importance values contribute to the numerical recommendation score.
 
 ## 11. Factor Score Range
 
-Each approved factor should produce a normalized factor score.
-
-Proposed range:
+The approved WBS 5.3 Version 1 recommendation-score range is:
 
 ```text
-0 to 100
+0.00 to 100.00
 ```
 
-Proposed interpretation:
+Interpretation:
 
 ```text
-0   = no alignment
-100 = full alignment
+0.00
+No weighted numerical Career competencies are matched.
+
+100.00
+All weighted numerical Career competencies are matched.
 ```
 
-Intermediate values depend on the approved comparison rules.
+Intermediate values represent the proportion of total source-backed O*NET Importance covered by the Student's canonical Skill matches.
 
-Final factor score range:
+A null score is different from zero.
 
 ```text
-TBD
+recommendation_score = null
 ```
+
+means the Career has insufficient numerical evidence for the Version 1 scoring method.
 
 ## 12. Weighting Model
 
-Each approved factor receives a weight.
+WBS 5.3 Version 1 does not assign hand-written factor weights.
 
-Conceptual configuration:
+Each eligible CareerSkill receives its source-backed O*NET normalized Importance value as its scoring weight.
 
-```text
-skills_weight
-interests_weight
-education_weight
-experience_weight
-projects_weight
-career_goals_weight
-personality_weight
-```
-
-Exact numerical weights are:
+Conceptually:
 
 ```text
-TBD
+CareerSkill weight
+    =
+O*NET normalized Importance
 ```
 
-Weights require team approval before final implementation.
+The service does not assign artificial numerical values to:
 
-The scoring implementation should store weight configuration in one clear location rather than spreading numerical values across several functions.
+- Student proficiency.
+- O*NET software technologies.
+- ESCO essential relationships.
+- ESCO optional relationships.
+- Interests.
+- Education.
+- Experience.
+- Projects.
+- Career goals.
+- Personality responses.
+
+This keeps the Version 1 numerical score traceable to the approved reference dataset.
 
 ## 13. Weight Validation
 
-The implementation must validate the scoring configuration.
+Version 1 validates source-backed scoring evidence.
 
-Validation should cover:
+Validation covers:
 
-- Unsupported factors.
-- Negative weights.
-- Missing required weights.
-- No active weighted factors.
-- Invalid numerical values.
-- Invalid total weight where the chosen weighting method requires a specific total.
+- CareerSkill review status must be approved.
+- O*NET normalized Importance must be present for a numerical contribution.
+- Normalized Importance must stay within the approved 0 to 100 evidence range.
+- Evidence marked not relevant must not enter scoring.
+- Evidence marked recommend suppress must not enter scoring.
+- A CareerSkill must not be counted more than once in the numerical denominator.
+- Ambiguous duplicate numerical O*NET evidence for one CareerSkill must not be silently double-counted.
+- A Career with no eligible numerical O*NET evidence receives insufficient-evidence status.
 
-Invalid configuration must not silently produce a recommendation score.
+Invalid evidence must not silently produce a misleading recommendation score.
 
 ## 14. Weighted Score Formula
 
-The general weighted structure is:
+For one Career, let each eligible numerical CareerSkill have:
 
 ```text
-weighted_total =
-    factor_score_1 × factor_weight_1
-  + factor_score_2 × factor_weight_2
-  + ...
-  + factor_score_n × factor_weight_n
+w_i = O*NET normalized Importance
 ```
 
-If approved weights use proportions whose total equals `1`:
+Let:
 
 ```text
-recommendation_score =
-    sum(factor_score × factor_weight)
+m_i = 1
 ```
 
-If approved weights use another scale:
+when the Student has the same canonical Skill identifier.
+
+Otherwise:
 
 ```text
-recommendation_score =
-    sum(factor_score × factor_weight)
-    /
-    sum(active_factor_weights)
+m_i = 0
 ```
 
-Final formula:
+The matched weighted total is:
 
 ```text
-TBD pending approved weight representation
+matched_weight
+    =
+sum(w_i * m_i)
 ```
 
-Proposed final recommendation-score range:
+The total available weight is:
 
 ```text
-0 to 100
+total_weight
+    =
+sum(w_i)
 ```
 
-Final score range requires team confirmation.
+The Version 1 recommendation score is:
+
+```text
+recommendation_score
+    =
+(matched_weight / total_weight) * 100
+```
+
+This formula is used only when:
+
+```text
+total_weight > 0
+```
+
+If the Career has no eligible numerical O*NET evidence:
+
+```text
+score_status = insufficient_evidence
+recommendation_score = null
+```
+
+Student proficiency does not multiply the score in WBS 5.3 Version 1.
+
+The formula measures weighted Career-fit coverage, not Career readiness.
 
 ## 15. Structural Example
 
-The following example shows the scoring structure only.
-
-The example does not define approved GradNavi weights.
+Example Career evidence:
 
 ```text
-Skills score       × Skills weight
-Interests score    × Interests weight
-Education score    × Education weight
-Experience score   × Experience weight
-Projects score     × Projects weight
-Career goals score × Career goals weight
-
-                    |
-                    v
-
-          Weighted Recommendation Score
+Skill A normalized Importance = 80
+Skill B normalized Importance = 60
+Skill C normalized Importance = 40
 ```
+
+Student canonical Skill matches:
+
+```text
+Skill A = matched
+Skill B = matched
+Skill C = missing
+```
+
+Calculation:
+
+```text
+matched_weight
+    =
+80 + 60
+    =
+140
+
+total_weight
+    =
+80 + 60 + 40
+    =
+180
+
+recommendation_score
+    =
+140 / 180 * 100
+    =
+77.78
+```
+
+Student proficiency does not change this WBS 5.3 score.
+
+Proficiency-based readiness belongs to WBS 5.5.
 
 ## 16. Missing Profile Data
 
-The recommendation engine needs predictable behaviour when Student Profile information is incomplete.
+WBS 5.3 Version 1 requires at least one StudentSkill record before ranking Careers.
 
-Examples include:
-
-- No Student skills.
-- No interests.
-- No education records.
-- No experience records.
-- No projects.
-- No career goals.
-- No personality responses.
-
-The team must approve one missing-data policy.
-
-### Option A: Missing Factor Receives Zero
-
-Missing information produces a factor score of zero.
-
-### Option B: Exclude Missing Optional Factors
-
-An optional missing factor is removed from the calculation and active weights are normalized.
-
-### Option C: Require Minimum Profile Completion
-
-Recommendation scoring does not run until required profile information is present.
-
-Final policy:
+If the Student has no StudentSkill records:
 
 ```text
-TBD
+score_status = insufficient_profile
 ```
 
-The selected policy must be documented and covered by tests.
+The service must not return a list of zero-score Careers as if a meaningful comparison occurred.
+
+Missing interests, education, experience, projects, career goals, and personality responses do not block WBS 5.3 Version 1 because those areas are not numerical scoring factors.
+
+For an individual Career with no eligible numerical O*NET evidence:
+
+```text
+score_status = insufficient_evidence
+recommendation_score = null
+```
+
+Zero and null therefore have different meanings:
+
+```text
+0.00
+Valid numerical evidence exists, but none of its weighted competencies matched.
+
+null
+The Version 1 numerical scoring method lacks enough Career evidence.
+```
 
 ## 17. Skill Comparison
 
-Skill comparison is expected to form a major part of recommendation scoring.
+WBS 5.3 Version 1 uses canonical Skill identifiers.
 
-Conceptual structure:
+The core comparison is:
 
 ```text
-StudentSkill
-    |
-    +-- Skill reference
-    +-- Student proficiency
-
-Career Skill Requirement
-    |
-    +-- Skill reference
-    +-- Required or preferred proficiency
+StudentSkill.skill_id
+        ==
+CareerSkill.skill_id
 ```
 
-Where shared Skill identifiers exist, comparison should use those references instead of relying only on free-text skill names.
+Free-text names do not determine numerical matches.
 
-The exact Career-to-Skill relationship remains dependent on WBS 5.2.
+Aliases and external identifiers are resolved into canonical Skill records by the WBS 5.2 reference-data layer before recommendation scoring.
+
+For numerical scoring, the CareerSkill must have eligible O*NET evidence containing normalized Importance.
+
+Technology and ESCO relationships are collected separately for explanation.
 
 ## 18. Proficiency Comparison
 
-A future deterministic comparison might examine:
+Student proficiency is not part of the WBS 5.3 Version 1 recommendation formula.
 
-```text
-Student proficiency
-        versus
-Career required proficiency
-```
+Reason:
 
-Example concept:
+- Dataset 1.0 CareerSkill required_proficiency values are not populated.
+- Dataset 1.0 CareerSkill required_level_score values are not populated.
+- Assigning Foundational, Developing, Proficient, and Advanced multipliers would introduce project-created numerical assumptions into Career-fit scoring.
 
-```text
-Student: Proficient
-Career: Developing
+WBS 5.5 owns proficiency-based Skill Gap and Career Readiness calculations.
 
-Result:
-Student meets or exceeds the Career requirement
-```
-
-Another example:
-
-```text
-Student: Foundational
-Career: Advanced
-
-Result:
-Student has a significant proficiency gap
-```
-
-The final mathematical contribution of these comparisons remains:
-
-```text
-TBD
-```
+WBS 5.3 may return Student proficiency in structured matching details for later use, but the value does not alter the Version 1 recommendation score.
 
 ## 19. Interest Comparison
 
-If interests become an approved scoring factor, the comparison rule must define how Student interests match Career reference interests.
+Interests are excluded from the WBS 5.3 Version 1 numerical recommendation score.
 
-Possible data concerns include:
+Dataset 1.0 does not contain an approved Career-to-Interest reference structure.
 
-- Exact reference matches.
-- Multiple matching interests.
-- No matching interests.
-- Duplicate Student interests.
-- Career records with no interest references.
-
-The final interest comparison rule is:
-
-```text
-TBD
-```
+Interest scoring requires a future documented Career-side data model and comparison rule before activation.
 
 ## 20. Education Comparison
 
-If education becomes an approved scoring factor, the team must define:
+Education is excluded from the WBS 5.3 Version 1 numerical recommendation score.
 
-- Which education attributes matter.
-- Whether field of study matters.
-- Whether qualification level matters.
-- How multiple education records are handled.
-- How missing education requirements are handled.
+Dataset 1.0 does not contain an approved Career education-requirement structure.
 
-Final education comparison rule:
-
-```text
-TBD
-```
+Education scoring requires a future documented Career-side data model and comparison rule before activation.
 
 ## 21. Experience Comparison
 
-If experience becomes an approved scoring factor, the team must define:
+Experience is excluded from the WBS 5.3 Version 1 numerical recommendation score.
 
-- Which experience attributes matter.
-- Whether role type matters.
-- Whether duration matters.
-- How multiple experience records are combined.
-- How Careers without experience requirements are handled.
+Dataset 1.0 does not contain an approved Career experience-requirement structure.
 
-Final experience comparison rule:
-
-```text
-TBD
-```
+Experience scoring requires a future documented Career-side data model and comparison rule before activation.
 
 ## 22. Project Comparison
 
-If Student projects become an approved factor, the team must define how a project contributes to Career alignment.
+Student projects are excluded from the WBS 5.3 Version 1 numerical recommendation score.
 
-Potential structured comparisons might use approved skills or categories attached to a project.
+Free-text project descriptions do not directly create numerical Career-fit values.
 
-Free-text project descriptions should not directly produce numerical scores without a documented deterministic rule.
-
-Final project comparison rule:
-
-```text
-TBD
-```
+A future project factor requires an approved structured Career-side comparison rule.
 
 ## 23. Career Goal Comparison
 
-If Career goals become an approved factor, the team must define the structure used to compare a Student goal with Career reference data.
+Career goals are excluded from the WBS 5.3 Version 1 numerical recommendation score.
 
-Final Career goal comparison rule:
-
-```text
-TBD
-```
+A future Career-goal factor requires an approved structured comparison between Student goals and Career reference data.
 
 ## 24. Personality Comparison
 
-Personality responses must not affect recommendation scoring until:
+Personality responses are excluded from the WBS 5.3 Version 1 numerical recommendation score.
 
-- The questionnaire is approved.
-- Response values are approved.
-- Career personality reference information is approved.
-- The scoring relationship is documented.
-- Ethical review confirms the factor is appropriate.
+Personality scoring requires:
 
-Final personality scoring status:
+- An approved questionnaire.
+- Approved response values.
+- Approved Career personality reference information.
+- A documented scoring relationship.
+- Ethical review.
 
-```text
-TBD
-```
+No personality value affects Version 1 ranking.
 
 ## 25. Protected and Sensitive Attributes
 
@@ -573,69 +573,64 @@ The recommendation engine must not infer unsupported personal attributes from St
 
 ## 26. Career Score Calculation
 
-For each Career, the service performs the same general process:
+For each active Career, Version 1 performs this process:
 
 ```text
-1. Receive normalized Student scoring input.
-2. Receive one Career scoring input.
-3. Calculate each approved factor score.
-4. Apply approved weights.
-5. Calculate final recommendation score.
-6. Produce the factor breakdown.
-7. Return the structured Career result.
+1. Load approved CareerSkill relationships.
+2. Load eligible O*NET numerical evidence.
+3. Build the set of Student canonical Skill identifiers.
+4. Sum total O*NET normalized Importance.
+5. Sum Importance for matched canonical Skills.
+6. Calculate weighted Career-fit coverage.
+7. Collect matched and missing numerical competencies.
+8. Collect matched technologies for explanation.
+9. Collect ESCO essential and optional matches for explanation.
+10. Return the structured Career result.
 ```
 
-Each Career should be scored independently using the same approved rules.
+Each eligible numerical CareerSkill contributes once.
+
+The calculation does not write database records.
+
+The same Student skills, Career data, and Dataset 1.0 evidence produce the same numerical result.
 
 ## 27. Career Ranking
 
-After all selected Careers are scored, results are ordered from highest score to lowest score.
+Careers with valid numerical scores are ranked from highest recommendation score to lowest.
 
-Example:
-
-```text
-Software Engineer      88
-Data Analyst           82
-Systems Administrator  74
-```
-
-Result:
+Careers with:
 
 ```text
-1. Software Engineer
-2. Data Analyst
-3. Systems Administrator
+score_status = insufficient_evidence
 ```
 
-The values above are examples only.
+do not receive a fabricated zero score and do not participate in normal numerical ranking.
 
-The same Student input, Career data, and scoring configuration must produce the same ranking.
+The ranking service uses the unrounded internal score for ordering.
+
+The displayed score is rounded separately.
+
+The same Student input, Career data, and reference dataset must produce the same ranking.
 
 ## 28. Tie Handling
 
-Two or more Careers might receive equal recommendation scores.
+Tie handling is deterministic.
 
-Tie handling must remain deterministic.
-
-Possible approaches include:
-
-1. Equal score, then Career identifier.
-2. Equal score, then alphabetical Career name.
-3. Equal score, then an approved secondary deterministic factor.
-
-Final tie-breaking rule:
+Approved Version 1 rule:
 
 ```text
-TBD
+1. Higher unrounded recommendation score first.
+2. If scores are equal, Career name alphabetically.
+3. If Career names are equal, Career identifier ascending.
 ```
 
-The selected rule must not depend on database return order.
+Database return order must not decide tied ranking positions.
 
 ## 29. Recommendation Result Structure
 
-The scoring service should return structured information rather than formatted frontend text.
+The WBS 5.3 service returns structured information for WBS 5.4.
 
-Proposed logical result:
+Version 1 logical result:
 
 ```text
 RecommendationResult
@@ -643,39 +638,55 @@ RecommendationResult
     +-- career_id
     +-- career_name
     +-- recommendation_score
+    +-- score_status
     +-- rank
-    +-- factor_breakdown
-    +-- matched_factors
-    +-- weaker_factors
+    +-- matched_weight
+    +-- total_weight
+    +-- matched_competencies
+    +-- missing_competencies
+    +-- matched_technologies
+    +-- esco_essential_matches
+    +-- esco_optional_matches
+    +-- evidence_summary
 ```
 
-Exact field names remain dependent on WBS 5.4 Career Recommendation API.
+WBS 5.4 decides the final serializer and HTTP response field names.
+
+The service result must preserve enough information for FR-04 recommendation explanations.
 
 ## 30. Factor Breakdown
 
 FR-04 requires understandable reasons for each recommendation.
 
-The scoring service should expose the factors used in the calculation.
-
-Conceptual example:
+Version 1 exposes a source-backed breakdown such as:
 
 ```json
 {
   "career_id": 1,
   "career_name": "Software Engineer",
-  "recommendation_score": 84,
-  "factor_breakdown": {
-    "skills": 90,
-    "interests": 85,
-    "education": 80,
-    "experience": 70
-  }
+  "recommendation_score": 77.78,
+  "score_status": "scored",
+  "matched_weight": 140.0,
+  "total_weight": 180.0,
+  "matched_competencies": [
+    "Skill A",
+    "Skill B"
+  ],
+  "missing_competencies": [
+    "Skill C"
+  ],
+  "matched_technologies": [
+    "Python",
+    "PostgreSQL"
+  ],
+  "esco_essential_matches": 4,
+  "esco_optional_matches": 3
 }
 ```
 
-The values above are examples only.
+The values above illustrate the output shape only.
 
-The final factor list depends on the approved scoring configuration.
+O*NET technology matches and ESCO relationship matches support explanation but do not alter the Version 1 numerical score.
 
 ## 31. Explanation Boundary
 
@@ -702,42 +713,40 @@ Generative AI does not replace the deterministic scoring calculation.
 
 Recommendation scoring belongs in a focused backend service.
 
-Conceptual flow:
+Version 1 uses the existing Career domain rather than creating another Django app only for scoring.
 
-```text
-API View
-   |
-   v
-Serializer and Request Validation
-   |
-   v
-Recommendation Service
-   |
-   +-- Factor Calculations
-   +-- Weight Application
-   +-- Final Score
-   +-- Ranking
-   +-- Factor Breakdown
-   |
-   v
-Structured Result
-```
-
-A possible future implementation structure is:
+Planned implementation structure:
 
 ```text
 backend/
-└── recommendations/
+└── careers/
     ├── services/
-    │   └── scoring.py
+    │   ├── __init__.py
+    │   └── recommendation_scoring.py
     └── tests/
+        ├── __init__.py
+        └── test_recommendation_scoring.py
 ```
 
-This folder structure is provisional.
+Conceptual flow:
 
-Do not create a Django app only to match this document.
+```text
+WBS 5.4 API
+    |
+    v
+Career Recommendation Service
+    |
+    +-- load StudentSkill identifiers
+    +-- load eligible CareerSkill evidence
+    +-- calculate weighted Career-fit coverage
+    +-- build explanation data
+    +-- rank scored Careers
+    |
+    v
+Structured Recommendation Results
+```
 
-The implementation structure should be created when the recommendation domain is ready.
+The scoring service stays separate from HTTP request handling and generative AI.
 
 ## 33. API Layer Responsibility
 
@@ -757,16 +766,23 @@ The API view should not contain the full recommendation algorithm.
 
 The recommendation service is responsible for:
 
-- Factor calculations.
-- Proficiency comparison.
-- Weight application.
-- Final score calculation.
-- Ranking.
-- Tie handling.
-- Factor breakdown.
+- Canonical Skill identifier matching.
+- O*NET normalized Importance weighting.
+- Career-fit score calculation.
+- Insufficient-profile handling.
+- Insufficient-evidence handling.
+- Technology-match collection.
+- ESCO essential-match collection.
+- ESCO optional-match collection.
+- Deterministic ranking.
+- Deterministic tie handling.
+- Numerical precision.
+- Structured explanation data.
 - Deterministic output.
 
-The service should receive structured Python data or approved domain objects and return structured results.
+Student proficiency-based readiness scoring does not belong to WBS 5.3.
+
+WBS 5.5 owns Skill Gap and Career Readiness calculations.
 
 ## 35. Database Layer Responsibility
 
@@ -802,38 +818,49 @@ AI must not determine:
 
 ## 37. Validation Rules
 
-The recommendation flow must safely handle invalid structured input.
+The recommendation flow must safely handle invalid or incomplete structured input.
 
-Validation scenarios include:
+Version 1 validation scenarios include:
 
-- Missing required Career identifier.
-- Unsupported proficiency value.
-- Invalid factor score.
-- Invalid weight.
-- Negative weight.
-- No active scoring factors.
+- Missing Student Profile.
+- Student Profile with no StudentSkill records.
 - Unsupported Career reference.
-- Unsupported Student Profile value.
+- Non-approved CareerSkill relationship.
+- Missing numerical O*NET Importance.
+- Invalid normalized Importance range.
+- Evidence marked not relevant.
+- Evidence marked recommend suppress.
+- Ambiguous duplicate numerical evidence for one CareerSkill.
+- Career with no eligible numerical O*NET evidence.
 - Duplicate Career input where duplication is not expected.
 
-Final responsibility between serializers and service validation will be confirmed during implementation.
+Missing optional non-scoring profile sections do not invalidate WBS 5.3 Version 1.
+
+Invalid input must produce controlled service behaviour rather than a misleading score.
 
 ## 38. Numerical Precision
 
-The implementation must define:
+Version 1 uses Decimal-compatible numerical operations for scoring.
 
-- Internal numerical precision.
-- Rounding point.
-- Number of decimal places returned through the API.
-- Whether ranking uses rounded or unrounded values.
-
-Final precision rule:
+Rules:
 
 ```text
-TBD
+Internal ranking:
+Use the unrounded recommendation score.
+
+Returned recommendation score:
+Round to 2 decimal places.
+
+Minimum returned score:
+0.00
+
+Maximum returned score:
+100.00
 ```
 
-The ranking process must use one consistent precision rule.
+Rounding must occur after the weighted ratio is calculated.
+
+Ranking must not use the displayed rounded value when a more precise internal value is available.
 
 ## 39. Recommendation Count
 
@@ -888,86 +915,100 @@ The recommendation engine must satisfy these rules:
 
 ### SCORE-01: Identical Input Produces Identical Score
 
-Given the same Student Profile, Career data, and scoring configuration.
+Expected:
 
-Expected result:
-
-- Repeated calculations return the same numerical score.
+- Repeated calculations return the same score.
 
 ### SCORE-02: Identical Input Produces Identical Ranking
 
-Given the same Student Profile and Career set.
+Expected:
 
-Expected result:
+- Repeated calculations return the same ranking.
 
-- Career ranking stays identical.
+### SCORE-03: Canonical Skill Match Contributes Weight
 
-### SCORE-03: Stronger Approved Match Produces Higher Factor Score
+Expected:
 
-Given two comparisons where one has stronger alignment under an approved rule.
+- A matching StudentSkill and CareerSkill canonical identifier contributes the CareerSkill's eligible O*NET normalized Importance.
 
-Expected result:
+### SCORE-04: Missing Canonical Skill Does Not Contribute Weight
 
-- The stronger match receives a higher relevant factor score.
+Expected:
 
-### SCORE-04: Recommendation Score Stays Within Approved Range
+- A missing Student Skill contributes zero matched weight.
 
-Expected result:
+### SCORE-05: Recommendation Score Stays Within Range
 
-- The final score does not fall below the approved minimum.
-- The final score does not exceed the approved maximum.
+Expected:
 
-### SCORE-05: Invalid Weight Configuration Is Rejected
+- Scored results stay between 0.00 and 100.00.
 
-Expected result:
+### SCORE-06: Student Proficiency Does Not Change WBS 5.3 Score
 
-- Invalid weights do not silently produce a result.
+Expected:
 
-### SCORE-06: Missing Optional Data Follows Approved Policy
+- Changing proficiency for the same matched canonical Skill does not change the Version 1 recommendation score.
 
-Expected result:
+### SCORE-07: No Student Skills Produces Insufficient Profile
 
-- Missing optional profile information follows the documented missing-data policy.
+Expected:
 
-### SCORE-07: Missing Required Data Is Handled Safely
+- The service does not return misleading zero-score rankings.
 
-Expected result:
+### SCORE-08: Career Without Numerical Evidence Is Marked Insufficient Evidence
 
-- Missing required input does not produce an uncontrolled exception.
-- No misleading recommendation result is returned.
+Expected:
 
-### SCORE-08: Tie Handling Is Deterministic
+- recommendation_score is null.
+- The Career does not receive a fabricated zero.
 
-Expected result:
+### SCORE-09: Technology Match Does Not Change Numerical Score
 
-- Equal scores use the approved tie-breaking rule.
+Expected:
 
-### SCORE-09: Factor Breakdown Matches Final Score
+- O*NET software technology matches appear in explanation data only.
 
-Expected result:
+### SCORE-10: ESCO Relationship Does Not Change Numerical Score
 
-- Factor contributions reproduce the documented final recommendation score.
+Expected:
 
-### SCORE-10: AI Does Not Affect Numerical Score
+- ESCO essential and optional matches appear in explanation data only.
 
-Expected result:
+### SCORE-11: Suppressed or Not-Relevant Evidence Is Excluded
 
-- Recommendation score stays unchanged regardless of explanation generation.
+Expected:
 
-### SCORE-11: Unsupported Proficiency Is Rejected
+- Excluded evidence does not enter matched or total weight.
 
-Expected result:
+### SCORE-12: Tie Handling Is Deterministic
 
-- A proficiency value outside the approved GradNavi set is rejected.
+Expected:
 
-### SCORE-12: Career Ordering Does Not Affect Scores
+- Equal scores use Career name alphabetically, then Career identifier.
 
-Given the same Careers supplied in a different input order.
+### SCORE-13: Career Ordering Does Not Affect Scores
 
-Expected result:
+Expected:
 
-- Each Career receives the same score.
-- Final ranking follows the approved deterministic ranking rule.
+- Input ordering does not change Career scores or final deterministic ranking.
+
+### SCORE-14: Display Rounding Does Not Control Ranking
+
+Expected:
+
+- Ranking uses the unrounded internal score.
+
+### SCORE-15: AI Does Not Affect Numerical Score
+
+Expected:
+
+- Explanation generation does not alter score or rank.
+
+### SCORE-16: Scoring Has No Database Write Side Effect
+
+Expected:
+
+- Score calculation does not create or update database records.
 
 ## 43. Future Integration Tests
 
@@ -997,19 +1038,13 @@ Performance work should follow measured evidence from testing.
 
 ### WBS 5.2 Career and Skill Reference Data
 
-Owner:
+Status:
 
 ```text
-MD
+Available for WBS 5.3
 ```
 
-Required before final model integration:
-
-- Final Career model or representation.
-- Final Skill reference structure.
-- Career-to-Skill relationship.
-- Required proficiency representation where implemented.
-- Other approved Career comparison fields.
+Version 1 uses the approved Dataset 1.0 Career, Skill, CareerSkill, and CareerSkillEvidence structure.
 
 ### WBS 5.4 Career Recommendation API
 
@@ -1019,9 +1054,9 @@ Owner:
 MD
 ```
 
-The API needs the final scoring-service output contract.
+WBS 5.4 consumes the structured WBS 5.3 result.
 
-The scoring service should return structured information suitable for serialization.
+The API decides the final serializer contract and recommendation result limit.
 
 ### WBS 5.5 Skill Gap and Readiness Scoring Logic
 
@@ -1033,68 +1068,87 @@ Jerald
 
 WBS 5.5 follows WBS 5.3.
 
-Reusable skill comparison rules should be separated clearly so WBS 5.5 does not duplicate logic without need.
+Student proficiency and Career readiness belong to WBS 5.5 rather than the WBS 5.3 Career-fit formula.
 
 ## 46. Decisions Required Before Final Coding
 
-The following decisions are still open:
+The core WBS 5.3 Version 1 scoring decisions are resolved.
 
-1. Final Career data structure from WBS 5.2.
-2. Final Career-to-Skill relationship.
-3. Final list of recommendation scoring factors.
-4. Weight assigned to each factor.
-5. Factor score range.
-6. Final recommendation score range.
-7. Skill proficiency comparison rule.
-8. Missing-data policy.
-9. Tie-breaking rule.
-10. Numerical precision and rounding.
-11. Number of recommendations returned.
-12. Final factor-breakdown output structure.
-13. Recommendation persistence behaviour.
-14. Shared rules between WBS 5.3 and WBS 5.5.
-15. Final handling of personality responses.
-16. Final handling of optional Student Profile sections.
+Resolved:
+
+1. Numerical factor: source-backed O*NET Skill and Knowledge Importance coverage.
+2. Matching method: canonical Skill identifier.
+3. Recommendation score range: 0.00 to 100.00.
+4. Student proficiency: excluded from WBS 5.3 numerical scoring.
+5. Technology evidence: explanation only.
+6. ESCO essential and optional evidence: explanation only.
+7. Missing Student skills: insufficient_profile.
+8. Missing Career numerical evidence: insufficient_evidence.
+9. Tie rule: score descending, Career name alphabetical, Career identifier ascending.
+10. Returned precision: 2 decimal places.
+11. Ranking precision: unrounded internal value.
+
+Remaining cross-WBS decisions:
+
+1. Number of recommendations returned by WBS 5.4.
+2. Final API serializer field names.
+3. Recommendation persistence behaviour.
+4. Final WBS 5.5 readiness formula.
+5. Future inclusion rules for non-Skill profile factors.
 
 ## 47. Decisions Already Established
 
-The following principles are already established in GradNavi project documentation:
+The following principles are established for WBS 5.3 Version 1:
 
 - Recommendation scoring is deterministic.
-- Recommendation scores use documented weighted rules.
-- The same structured input produces the same numerical result.
+- Canonical Skill identifiers determine matches.
+- O*NET normalized Importance supplies numerical CareerSkill weight.
+- WBS 5.3 measures weighted Career-fit coverage.
+- Student proficiency does not change the WBS 5.3 numerical score.
+- Student proficiency is reserved for WBS 5.5 readiness.
+- O*NET software technologies support explanation only.
+- ESCO essential and optional relationships support explanation only.
+- A Career without numerical evidence receives insufficient_evidence rather than zero.
+- A Student with no skills receives insufficient_profile.
+- Recommendation score range is 0.00 to 100.00.
+- Returned scores use 2 decimal places.
+- Ranking uses the unrounded internal score.
+- Ties use Career name alphabetically, then Career identifier.
+- Generative AI does not determine numerical recommendation scores.
 - Recommendation scoring belongs in focused backend business logic.
-- Generative AI does not independently determine numerical recommendation scores.
-- Recommendation results require explainable scoring factors.
-- Skill proficiency uses Foundational, Developing, Proficient, and Advanced.
-- React does not access PostgreSQL directly.
-- Django remains responsible for protected Student data.
-- WBS 5.3 depends on WBS 5.2.
 - WBS 5.4 consumes the recommendation-scoring result.
-- WBS 5.5 follows the recommendation engine work.
 
 ## 48. Implementation Sequence
 
 ```text
-Recommendation Scoring Design
+Approved WBS 5.3 Version 1 Design
         |
         v
-WBS 5.2 Career and Skill Data Confirmed
+Define Recommendation Service Contract
         |
         v
-Resolve Open Design Decisions
+Create Test Fixtures
         |
         v
-Define Test Fixtures
+Write Core Scoring Unit Tests
         |
         v
-Write Scoring Unit Tests
+Implement Canonical Skill Matching
         |
         v
-Implement Recommendation Scoring Service
+Implement O*NET Importance Weighting
         |
         v
-Verify Deterministic Results
+Implement Insufficient-Data Handling
+        |
+        v
+Implement Explanation Evidence Collection
+        |
+        v
+Implement Deterministic Ranking
+        |
+        v
+Verify No Database Write Side Effects
         |
         v
 Connect WBS 5.4 Career Recommendation API
@@ -1105,19 +1159,25 @@ Sprint 2 Integration Testing
 
 ## 49. Definition of Ready for Final Scoring Implementation
 
-WBS 5.3 is ready for final implementation when:
+WBS 5.3 Version 1 is ready for implementation because:
 
 - Career reference structure is confirmed.
-- Skill reference structure is confirmed.
-- Career-to-Skill relationship is confirmed.
-- Required scoring factors are approved.
-- Factor weights are approved.
-- Missing-data policy is approved.
+- Canonical Skill structure is confirmed.
+- CareerSkill relationships are confirmed.
+- CareerSkillEvidence is available.
+- Numerical O*NET evidence coverage has been inspected.
+- O*NET software evidence limitations have been inspected.
+- ESCO relationship evidence has been inspected.
+- Numerical scoring factor is approved.
+- Weight source is approved.
+- Missing-profile behaviour is approved.
+- Missing-evidence behaviour is approved.
 - Score range is approved.
 - Tie behaviour is approved.
 - Numerical precision is approved.
-- Output contract is agreed with WBS 5.4.
-- No unresolved model conflict exists with WBS 5.2.
+- WBS 5.3 and WBS 5.5 responsibilities are separated.
+
+WBS 5.4 still owns the final HTTP serializer contract and recommendation result limit.
 
 ## 50. Definition of Done
 
