@@ -45,22 +45,52 @@ Primary WBS:
 WBS 5.2 Career and Skill Reference Data
 ```
 
-Initial Career target:
+Current Dataset 1.0 totals:
 
 ```text
+Career Count:
 36
+
+Career External Mapping Count:
+105
+
+Canonical Skill Count:
+2873
+
+Skill Alias Count:
+6670
+
+Skill External Mapping Count:
+2927
+
+CareerSkill Count:
+9959
+
+CareerSkillEvidence Count:
+10038
 ```
 
-Skill count:
+CareerSkill requirement types:
 
 ```text
-TBD after source import and normalisation
+essential:
+1037
+
+optional:
+1160
+
+unspecified:
+7762
 ```
 
-CareerSkill count:
+Evidence source totals:
 
 ```text
-TBD after source import, mapping, and review
+O*NET:
+7841
+
+ESCO:
+2197
 ```
 
 ---
@@ -216,24 +246,47 @@ Example:
 
 ## 8. Initial Version
 
-The initial Sprint 2 reference dataset begins as:
+The initial Sprint 2 reference dataset is:
 
 ```text
 1.0
 ```
 
-Version 1.0 stays in working status until:
+Dataset 1.0 has completed the technical import and reconstruction checks for WBS 5.2.
 
-1. The 36 Career records are verified.
-2. External Career mappings are reviewed.
-3. Canonical Skill records are prepared.
-4. External Skill mappings are prepared.
-5. CareerSkill relationships are prepared.
-6. CareerSkill evidence is stored.
-7. Import tests pass.
-8. PostgreSQL verification passes.
-9. Attribution is complete.
-10. WBS 5.2 review is complete.
+Verified results include:
+
+```text
+36 Careers
+105 Career external mappings
+2873 canonical Skills
+6670 Skill aliases
+2927 Skill external mappings
+9959 CareerSkill relationships
+10038 CareerSkillEvidence records
+```
+
+The importer passed:
+
+```text
+file validation
+source version validation
+checksum validation
+dry-run rollback
+normal transactional import
+final database validation
+clean-database reconstruction
+repeated-import idempotency
+preserved Sprint 1 Skill ID validation
+```
+
+The project-level dataset status stays:
+
+```text
+working
+```
+
+until the remaining WBS 5.2 review and team acceptance are complete.
 
 ---
 
@@ -310,7 +363,7 @@ The release first goes through import, comparison, and review.
 
 GradNavi maintains a reference dataset manifest.
 
-Initial Version 1.0 manifest:
+Dataset Version 1.0 manifest:
 
 ```text
 GradNavi Dataset Version:
@@ -332,7 +385,7 @@ OSCA Version:
 2024 Version 1.0
 
 Australian Occupation Context:
-Jobs and Skills Australia OSCA occupation profiles
+Jobs and Skills Australia
 
 Detailed Occupational Requirements:
 O*NET Database
@@ -346,35 +399,44 @@ ESCO
 ESCO Version:
 1.2.1
 
-Career Target:
+Career Count:
 36
 
-Career Count:
-TBD
+Canonical Skill Count:
+2873
 
-Skill Count:
-TBD
-
-CareerSkill Count:
-TBD
+Career External Mappings:
+105
 
 Approved Career Mappings:
-TBD
+105
 
 Pending Career Mappings:
-TBD
+0
+
+Skill Alias Count:
+6670
+
+Skill External Mappings:
+2927
 
 Approved Skill Mappings:
-TBD
+2927
 
 Pending Skill Mappings:
-TBD
+0
+
+CareerSkill Relationships:
+9959
 
 Approved CareerSkill Relationships:
-TBD
+9959
 
 Pending CareerSkill Relationships:
-TBD
+0
+
+CareerSkillEvidence Records:
+10038
 ```
 
 ---
@@ -560,16 +622,51 @@ Career additions require:
 
 ## 18. Skill Catalogue Changes
 
-The Skill catalogue is not assigned a fixed total.
+Dataset 1.0 contains:
 
-The final Skill count depends on:
+```text
+2873 canonical Skills
+```
 
-- Source-backed Skill concepts
-- Normalisation
-- Alias review
-- Duplicate removal
+Concept type totals are:
+
+```text
+skill:
+776
+
+knowledge:
+554
+
+technology:
+1543
+```
+
+Four Sprint 1 technology records retain their approved database identities:
+
+```text
+Python:
+1
+
+Django:
+2
+
+React:
+3
+
+PostgreSQL:
+4
+```
+
+Future dataset versions are not required to keep the same total Skill count.
+
+Future Skill catalogue changes depend on:
+
+- source-backed concepts
+- normalisation
+- alias review
+- duplicate resolution
 - Career coverage
-- Approved concept types
+- approved mapping decisions
 
 Supported GradNavi concept types are:
 
@@ -579,28 +676,49 @@ knowledge
 technology
 ```
 
-Future changes to these types require schema and design review.
+Changes to the concept-type model require schema and design review.
 
 ---
 
 ## 19. CareerSkill Changes
 
-CareerSkill count is not fixed.
+Dataset 1.0 contains:
 
-Different Careers might have different numbers of relevant source-backed Skills.
+```text
+9959 CareerSkill relationships
+```
 
-A future dataset version might change CareerSkill counts because of:
+Requirement type totals are:
 
-- New evidence
-- Source updates
-- Improved mapping
-- Duplicate removal
-- Relationship rejection
-- Relationship approval
-- New Careers
-- New canonical Skills
+```text
+essential:
+1037
 
-Changes must stay traceable through dataset versioning.
+optional:
+1160
+
+unspecified:
+7762
+```
+
+All imported Dataset 1.0 CareerSkill records have approved review status.
+
+Dataset 1.0 does not assign aggregate CareerSkill Importance, aggregate required Level, or required proficiency values during WBS 5.2.
+
+Those scoring interpretations belong to later recommendation and readiness work.
+
+A future dataset version might change CareerSkill totals because of:
+
+- new source evidence
+- source updates
+- improved mapping
+- duplicate resolution
+- relationship rejection
+- relationship approval
+- new Careers
+- new canonical Skills
+
+Changes stay traceable through dataset versioning.
 
 ---
 
@@ -667,17 +785,26 @@ working
 WBS:
 5.2 Career and Skill Reference Data
 
-Career Target:
+Career Count:
 36
 
-Career Count:
-TBD
+Career External Mapping Count:
+105
 
-Skill Count:
-TBD
+Canonical Skill Count:
+2873
+
+Skill Alias Count:
+6670
+
+Skill External Mapping Count:
+2927
 
 CareerSkill Count:
-TBD
+9959
+
+CareerSkillEvidence Count:
+10038
 
 Primary Australian Classification:
 OSCA 2024 Version 1.0
@@ -694,9 +821,17 @@ Jobs and Skills Australia
 Runtime Storage:
 PostgreSQL
 
+Import Command:
+python backend/manage.py import_reference_dataset
+
+Dry Run:
+python backend/manage.py import_reference_dataset --dry-run
+
 Live External API Dependency:
 None for normal recommendation scoring
 ```
+
+Dataset 1.0 passed clean-database reconstruction and repeated-import idempotency verification.
 
 ---
 
@@ -726,7 +861,19 @@ Status:
 working
 
 Current Activity:
-WBS 5.2 reference-data preparation
+Final WBS 5.2 documentation, commit, push, and pull-request preparation
+
+Technical Import Validation:
+PASSED
+
+Dry-Run Rollback:
+PASSED
+
+Clean-Database Reconstruction:
+PASSED
+
+Repeated Import Idempotency:
+PASSED
 ```
 
-The next dataset activity is definition of the Career and Skill mapping rules.
+Dataset 1.0 stays in working status until WBS 5.2 review and team acceptance are complete.

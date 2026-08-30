@@ -238,19 +238,59 @@ GradNavi Reference Dataset
 Version 1.0
 ```
 
-Current status:
+Current project-level status:
 
 ```text
 working
 ```
 
-Initial Career target:
+Dataset 1.0 currently contains:
 
 ```text
-36 Careers
+Careers:
+36
+
+Canonical Skills:
+2873
+
+Career external mappings:
+105
+
+Skill aliases:
+6670
+
+Skill external mappings:
+2927
+
+CareerSkill relationships:
+9959
+
+CareerSkillEvidence records:
+10038
 ```
 
-The final Skill count and CareerSkill count depend on source import, normalisation, mapping, and review.
+CareerSkill requirement types:
+
+```text
+essential:
+1037
+
+optional:
+1160
+
+unspecified:
+7762
+```
+
+Evidence sources:
+
+```text
+O*NET:
+7841
+
+ESCO:
+2197
+```
 
 Detailed version information is stored in:
 
@@ -323,17 +363,23 @@ GradNavi-reviewed project data belongs under:
 data/reference/curated/
 ```
 
-Planned files include:
+Dataset 1.0 includes tracked curated files such as:
 
 ```text
 careers.csv
-skills.csv
-career_skill_reviews.csv
+canonical_skills.csv
+source_skill_concepts.csv
+skill_aliases.csv
+onet_rating_evidence.csv
+onet_software_evidence.csv
+esco_skill_evidence.csv
 ```
 
-These files contain GradNavi-reviewed information rather than untouched external source datasets.
+Additional curated candidate and evidence files support the mapping and review process.
 
-Curated files stay under version control when file size remains reasonable.
+These files contain GradNavi-reviewed or processed project data rather than untouched external source downloads.
+
+Curated files stay under version control when their file size is suitable for normal repository history.
 
 ---
 
@@ -345,15 +391,22 @@ External mapping decisions belong under:
 data/reference/mappings/
 ```
 
-Planned mapping files include:
+Dataset 1.0 includes mapping files such as:
 
 ```text
 osca_mappings.csv
 onet_mappings.csv
 esco_mappings.csv
+skill_external_mappings.csv
+skill_normalization_exact_matches.csv
+skill_normalization_manual_decisions.csv
 ```
 
-Mapping files record how GradNavi Careers and Skills connect to external source concepts.
+Supporting review and candidate files also remain in this directory.
+
+Mapping files record how GradNavi Careers and canonical Skills connect to external occupation and Skill concepts.
+
+Approved runtime mappings are imported into PostgreSQL through the Dataset 1.0 management command.
 
 ---
 
@@ -615,7 +668,7 @@ One Career and one canonical Skill produce one CareerSkill record.
 
 CareerSkillEvidence records the external evidence supporting a CareerSkill relationship.
 
-Evidence includes available information such as:
+Evidence preserves available source information including:
 
 ```text
 source dataset
@@ -627,18 +680,41 @@ raw Importance
 normalised Importance
 raw Level
 normalised Level
-source scale boundaries
+Importance scale boundaries
+Level scale boundaries
 Not Relevant
+Recommend Suppress
 source update date
 ```
 
-O*NET quality metadata should also preserve:
+Dataset 1.0 imports only eligible reviewed evidence.
+
+Current evidence totals are:
 
 ```text
-Recommend Suppress
+O*NET:
+7841
+
+ESCO:
+2197
+
+Total:
+10038
 ```
 
-before O*NET import begins.
+The imported Dataset 1.0 evidence contains:
+
+```text
+Not Relevant = true:
+0
+
+Recommend Suppress = true:
+0
+```
+
+O*NET evidence contains no source timestamp in the current Dataset 1.0 import.
+
+ESCO evidence contains the required source timestamps.
 
 ---
 
@@ -775,108 +851,168 @@ WBS 5.3 must normalise scoring so CareerSkill count alone does not affect rankin
 
 ## 30. Reference Data Import
 
-The planned Django management command is:
+GradNavi implements the Django management command:
 
 ```powershell
-python backend/manage.py import_reference_data
+python backend/manage.py import_reference_dataset
 ```
 
-The importer should support:
+A full validation run with rollback uses:
 
 ```powershell
-python backend/manage.py import_reference_data --dry-run
+python backend/manage.py import_reference_dataset --dry-run
 ```
 
-The command should:
+The command performs these operations:
 
 ```text
-read source files
+validate Dataset 1.0 files
+validate row totals
 validate source versions
-normalise Skill labels
-match canonical Skills
-create external mappings
-import evidence
-apply review state
-prevent duplicates
-produce an import summary
+validate source checksums
+validate evidence eligibility
+validate approved mapping files
+import ReferenceSource records
+import ReferenceDataset records
+import Career records
+import Career external mappings
+import canonical Skills
+import Skill aliases
+import Skill external mappings
+construct CareerSkill relationships
+import CareerSkillEvidence
+validate final database totals
+validate duplicate constraints
+validate review state
 ```
+
+The command runs database work inside one outer transaction.
+
+The dry-run option executes the complete import and validation process, then rolls back all database changes.
 
 ---
 
 ## 31. Import Idempotency
 
-The importer must be safe to run repeatedly.
+The Dataset 1.0 importer is safe to run repeatedly against the same reviewed dataset.
 
-Running the same reviewed source files twice must not create duplicate:
+The clean-database reconstruction test created:
 
 ```text
-Careers
-Skills
-Career mappings
-Skill mappings
-CareerSkill relationships
-CareerSkill evidence
+ReferenceSource:
+4
+
+ReferenceDataset:
+3
+
+Career:
+36
+
+CareerExternalMapping:
+105
+
+Skill:
+2873
+
+SkillAlias:
+6670
+
+SkillExternalMapping:
+2927
+
+CareerSkill:
+9959
+
+CareerSkillEvidence:
+10038
 ```
 
-Database uniqueness constraints support this rule.
+A second import against the reconstructed database produced:
+
+```text
+created:
+0
+
+updated:
+0
+```
+
+for every imported model.
+
+The second run retained the same final database totals and passed all final validation checks.
+
+Database uniqueness constraints provide another layer of duplicate protection.
 
 ---
 
 ## 32. Import Transactions
 
-Reference-data imports should use database transactions.
+The Dataset 1.0 importer runs database work inside a single outer transaction.
 
-A failed import should avoid leaving a partially inconsistent dataset where transaction rollback applies.
+If an import or final validation fails, the transaction does not leave a partially imported Dataset 1.0 state.
 
-The importer should provide a summary containing:
+The command also supports:
+
+```powershell
+python backend/manage.py import_reference_dataset --dry-run
+```
+
+Dry-run behaviour:
 
 ```text
-records read
-records matched
-records created
-records updated
-records skipped
-records pending review
-records rejected
-errors
+validate files
+run the complete import
+run final database validation
+mark the transaction for rollback
+leave the database unchanged
 ```
+
+The dry-run test passed against the populated GradNavi database.
 
 ---
 
 ## 33. Import Workflow
 
-Planned import workflow:
+Dataset 1.0 follows this implemented workflow:
 
 ```text
 Download Source Data
         |
         v
-Record Version
+Record Versions and Checksums
         |
         v
-Record Checksum
+Prepare Curated Files
         |
         v
 Prepare Mapping Files
         |
         v
+Review Mapping Decisions
+        |
+        v
+Run Dataset Validation
+        |
+        v
 Run Dry-Run Import
         |
         v
-Review Results
-        |
-        v
-Approve Mappings
-        |
-        v
-Run Import
+Run Transactional Import
         |
         v
 Verify PostgreSQL
         |
         v
-Run Tests
+Test Clean-Database Reconstruction
+        |
+        v
+Run Import Again
+        |
+        v
+Verify Idempotency
 ```
+
+The clean reconstruction and repeated-import tests both passed for Dataset 1.0.
 
 ---
 
@@ -944,12 +1080,13 @@ ReferenceSource
 
 ## 37. WBS 5.2 Testing
 
-Reference-data tests cover:
+Reference-data validation covers:
 
 - Career persistence
 - Career uniqueness
 - Skill compatibility
 - concept type validation
+- preserved Sprint 1 Skill IDs
 - CareerSkill uniqueness
 - numerical range validation
 - requirement type validation
@@ -958,8 +1095,19 @@ Reference-data tests cover:
 - alias persistence
 - evidence persistence
 - dataset relationships
-- import idempotency
-- invalid data rejection
+- source-version validation
+- checksum validation
+- evidence eligibility totals
+- dry-run rollback
+- full transaction validation
+- clean-database reconstruction
+- repeated-import idempotency
+- duplicate CareerSkill detection
+- duplicate CareerSkillEvidence detection
+
+The clean-database test rebuilt Dataset 1.0 from migrations plus the tracked curated and mapping files.
+
+A second import against the rebuilt database produced no new or updated Dataset 1.0 records.
 
 ---
 
@@ -1049,14 +1197,26 @@ GradNavi Dataset:
 Dataset Status:
 working
 
-Career Target:
+Careers:
 36
 
-Skill Count:
-TBD
+Career External Mappings:
+105
 
-CareerSkill Count:
-TBD
+Canonical Skills:
+2873
+
+Skill Aliases:
+6670
+
+Skill External Mappings:
+2927
+
+CareerSkill Relationships:
+9959
+
+CareerSkillEvidence Records:
+10038
 
 Runtime Database:
 PostgreSQL
@@ -1064,6 +1224,8 @@ PostgreSQL
 External Runtime API Dependency:
 None
 ```
+
+Dataset 1.0 has passed file validation, transactional import validation, dry-run rollback validation, clean-database reconstruction, and repeated-import idempotency testing.
 
 ---
 
@@ -1089,26 +1251,20 @@ docs/system-design/recommendation-scoring-design.md
 
 ## 43. Current Next Steps
 
-The current WBS 5.2 implementation sequence is:
+The remaining WBS 5.2 delivery sequence is:
 
 ```text
-1. Complete reference-data documentation.
-2. Add remaining source quality metadata to CareerSkillEvidence.
-3. Verify Django migrations.
-4. Prepare the initial 36-Career catalogue.
-5. Verify OSCA Career mappings.
-6. Download approved source datasets.
-7. Prepare O*NET occupation mappings.
-8. Prepare ESCO occupation mappings.
-9. Prepare canonical Skill mappings.
-10. Implement reference-data import.
-11. Run import dry-run.
-12. Review mappings.
-13. Import approved records.
-14. Verify PostgreSQL.
-15. Run WBS 5.2 tests.
-16. Record evidence.
+1. Review the final management-command diff.
+2. Review the updated Dataset 1.0 documentation.
+3. Stage the management command and documentation.
+4. Commit the completed WBS 5.2 import work.
+5. Push the branch.
+6. Prepare the WBS 5.2 pull request.
+7. Complete team review.
+8. Move to WBS 5.3 recommendation scoring work after WBS 5.2 acceptance.
 ```
+
+Dataset preparation and PostgreSQL reconstruction are no longer pending activities.
 
 ---
 
@@ -1116,11 +1272,35 @@ The current WBS 5.2 implementation sequence is:
 
 ```text
 GradNavi Reference Data Documentation:
-Initial structure complete
+Dataset 1.0 implementation record updated
 
 Current Dataset:
 Version 1.0 working
 
+Career Records:
+36
+
+Canonical Skills:
+2873
+
+CareerSkill Relationships:
+9959
+
+CareerSkillEvidence Records:
+10038
+
+Import Command:
+python backend/manage.py import_reference_dataset
+
+Dry Run:
+python backend/manage.py import_reference_dataset --dry-run
+
+Clean Reconstruction:
+PASSED
+
+Repeated Import:
+PASSED
+
 Next Technical Activity:
-CareerSkillEvidence source quality metadata update
+Final WBS 5.2 review, commit, push, and pull request
 ```
