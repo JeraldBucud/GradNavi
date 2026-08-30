@@ -1,0 +1,37 @@
+career_name,decision,esco_code,esco_concept_uri,esco_title,review_reason
+Cloud Engineer,approved,2512.1,http://data.europa.eu/esco/occupation/349ee6f6-c295-4c38-9b98-48765b55280e,cloud engineer,Direct occupational scope match.
+DevOps Engineer,approved,2512.7,http://data.europa.eu/esco/occupation/cc867bee-ab5c-427f-9244-f7a204d9574b,cloud DevOps engineer,ESCO explicitly includes DevOps Engineer as a matching label.
+Software Engineer,approved,2512.4,http://data.europa.eu/esco/occupation/f2b15a0e-e65a-438a-affb-29b9d50b77d1,software developer,ESCO explicitly includes Software Engineer as a matching label.
+ICT Business Analyst,approved,2511.9,http://data.europa.eu/esco/occupation/fe0fa514-b48d-4a53-9757-a283c0baacf0,ICT business analyst,Direct occupational scope match.
+Data Analyst,approved,2511.3,http://data.europa.eu/esco/occupation/d3edb8f8-3a06-47a0-8fb9-9b212c006aa2,data analyst,Fallback direct occupation provides stronger scope than the partial ISCO statistical group.
+Data Architect,approved,2521.2,http://data.europa.eu/esco/occupation/8d9ec84d-cf2d-4179-87bc-335cda54a427,database designer,Fallback occupation includes Data Architect and matches data-model and database architecture work.
+Data Engineer,approved,2511.20,http://data.europa.eu/esco/occupation/2079755f-d809-49e6-8037-4de6180e54c0,data engineer,"Fallback direct occupation matches data pipelines, transformation, storage, and data infrastructure."
+Data Scientist,approved,2511.4,http://data.europa.eu/esco/occupation/258e46f9-0075-4a2e-adae-1ff0477e0f30,data scientist,"Fallback direct occupation matches statistical, analytical, and data-science work."
+Cyber Security Advice and Assessment Specialist,approved,2529.8,http://data.europa.eu/esco/occupation/7754d570-9519-48c2-b1c9-8e165f8bca0f,cybersecurity risk manager,"Scope matches cyber risk assessment, mitigation, controls, and security guidance."
+Cyber Security Analyst,no_suitable_direct_mapping,,,,"No suitable ESCO occupation represents the full OSCA Cyber Security Analyst scope. Available candidates are narrower digital-forensics, penetration-testing, risk, or incident-response roles."
+Cyber Security Architect,no_suitable_direct_mapping,,,,"No suitable ESCO occupation represents the full OSCA Cyber Security Architect scope. The ICT Security Architect alternative label appears under Cyber Incident Responder, whose primary scope is incident response."
+Cyber Security Engineer,no_suitable_direct_mapping,,,,"No suitable general ESCO Cyber Security Engineer occupation was identified. The exact alternative label belongs to Embedded Systems Security Engineer, which is narrower than the OSCA occupation."
+Accountant (General),approved,2411.1,http://data.europa.eu/esco/occupation/eda0d957-3c3c-4139-b89a-a18bc9e18897,accountant,"Official ISCO group, broader ESCO occupation matches general accounting scope."
+Management Accountant,approved,2411.1,http://data.europa.eu/esco/occupation/eda0d957-3c3c-4139-b89a-a18bc9e18897,accountant,"Broader accountant occupation covers financial reporting, budgets, forecasting, and financial advice."
+Taxation Accountant,approved,2411.1,http://data.europa.eu/esco/occupation/eda0d957-3c3c-4139-b89a-a18bc9e18897,accountant,ESCO accountant scope explicitly includes tax returns and tax-related advice.
+Management Consultant,approved,2421.2,http://data.europa.eu/esco/occupation/6a29d804-f775-446c-bec7-35fc4e28ac97,business consultant,"Business consultant scope matches organisational analysis, process review, and improvement advice."
+Civil Engineer,approved,2142.1,http://data.europa.eu/esco/occupation/d7d986e1-7333-431b-9719-0c5c6939e360,civil engineer,Direct occupational scope match.
+Electrical Engineer,approved,2151.1,http://data.europa.eu/esco/occupation/86ca306c-ab99-420a-9e2a-aa73c5c4de22,electrical engineer,Direct occupational scope match.
+Industrial Engineer,approved,2141.4,http://data.europa.eu/esco/occupation/53d2052f-edc0-4f44-8be1-164526412bfe,industrial engineer,Direct occupational scope match.
+Mechanical Engineer,approved,2144.1,http://data.europa.eu/esco/occupation/579254cf-6d69-4889-9000-9c79dc568644,mechanical engineer,Direct occupational scope match.
+Registered Nurse (Acute Care),approved,2221.2,http://data.europa.eu/esco/occupation/8d3e8aaa-791b-4c75-a465-f3f827028f50,nurse responsible for general care,Reviewed broader nursing occupation selected instead of advanced or specialist practitioner roles.
+Physiotherapist,approved,2264.2,http://data.europa.eu/esco/occupation/006cc1f9-2841-41c3-991a-dc3f2f3bd533,physiotherapist,Direct occupational scope match.
+Occupational Therapist,approved,2269.4,http://data.europa.eu/esco/occupation/33da5532-8c4e-4d1b-b52e-c201ee1bc7ab,occupational therapist,Direct occupational scope match.
+Health Information Manager,approved,3252.2,http://data.europa.eu/esco/occupation/983c2816-a339-4817-97f4-151a9ff3e64d,medical records manager,Scope matches management and security of patient and medical-record information.
+Content Creator (Marketing),approved,2431.10.4,http://data.europa.eu/esco/occupation/356227b9-2263-4dbd-81e9-7dfc6d3f3af7,online marketer,Reviewed marketing-focused match covering internet and social-media promotion.
+Digital Marketing Analyst,approved,2513.2,http://data.europa.eu/esco/occupation/092fdeeb-a76f-4ed2-b248-90fd6eaaffef,search engine optimisation expert,"Fallback match aligns strongly with SEO, digital behaviour, search metrics, and online analysis."
+Market Research Analyst,approved,2431.11,http://data.europa.eu/esco/occupation/66fb9704-0d56-4673-8e69-7823816b73e1,market research analyst,Direct occupational scope match.
+Marketing Specialist,approved,2431.10,http://data.europa.eu/esco/occupation/4791e217-d607-40d5-9f84-df1d0a071cbc,marketing consultant,ESCO alternative terminology and occupational scope match marketing strategy work.
+Multimedia Designer,approved,2166.7,http://data.europa.eu/esco/occupation/d5a43cd3-230e-46d0-ba05-d67d61e5cfbb,digital media designer,"Scope covers graphics, animation, sound, text, video, web, and multimedia products."
+UI / UX Designer,approved,2513.3,http://data.europa.eu/esco/occupation/96e20037-0a25-4bf6-a25e-808d1605d890,user interface designer,Fallback occupation provides stronger UI and UX scope than Web Designer.
+Web Designer,approved,2166.15,http://data.europa.eu/esco/occupation/30ed83ba-cc89-4d9f-a59d-5c783c1da56e,web designer,Direct occupational scope match.
+Graphic Designer,approved,2166.9,http://data.europa.eu/esco/occupation/69bcbb0a-8d80-4ecd-b0a4-9adea2a40de2,graphic designer,Direct occupational scope match.
+Human Resources Adviser,approved,2423.3,http://data.europa.eu/esco/occupation/d3e32e5e-7f24-48e3-b939-e4f800eb62fb,human resources officer,"Scope matches staffing, employment policy, remuneration, recruitment, and HR advice."
+Recruitment Consultant,approved,2423.6,http://data.europa.eu/esco/occupation/068370e0-9c27-4814-87d0-44fbb3140815,recruitment consultant,Direct occupational scope match.
+Workplace Relations Adviser,approved,2423.4,http://data.europa.eu/esco/occupation/20b9f370-6b56-4679-8c06-c23b866a5bd0,labour relations officer,"Scope matches labour policy, negotiation, disputes, and employee relations."
+Supply Chain Analyst,approved,2421.5,http://data.europa.eu/esco/occupation/51cd3a7a-eae6-4dc6-9f24-179d7ec6d230,logistics analyst,ESCO explicitly includes Supply Chain Analyst as a matching label.

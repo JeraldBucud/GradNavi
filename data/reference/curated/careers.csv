@@ -1,0 +1,37 @@
+name,category,description,active
+Cloud Engineer,Software and Information Technology,"Designs, deploys, manages, and supports cloud infrastructure, platforms, services, and applications.",true
+DevOps Engineer,Software and Information Technology,"Improves software delivery and operations through automation, deployment pipelines, infrastructure practices, monitoring, and collaboration.",true
+Software Engineer,Software and Information Technology,"Designs, develops, tests, maintains, and improves software systems and applications.",true
+ICT Business Analyst,Software and Information Technology,"Analyses organisational and user needs and translates them into functional and technical requirements for ICT solutions.",true
+Data Analyst,Data and Artificial Intelligence,"Collects, prepares, analyses, interprets, and presents data to support organisational decisions.",true
+Data Architect,Data and Artificial Intelligence,"Designs data structures, models, standards, and architectures that support reliable organisational data use.",true
+Data Engineer,Data and Artificial Intelligence,"Builds and maintains data pipelines, storage systems, transformation processes, and data platforms.",true
+Data Scientist,Data and Artificial Intelligence,"Uses statistical, analytical, and computational methods to extract insights and build data-driven models.",true
+Cyber Security Advice and Assessment Specialist,Cyber Security,"Assesses cyber security risks and controls and provides advice on security requirements, governance, and protection measures.",true
+Cyber Security Analyst,Cyber Security,"Monitors and analyses systems, threats, vulnerabilities, and security events to identify and reduce cyber security risks.",true
+Cyber Security Architect,Cyber Security,"Designs security architectures, controls, patterns, and technical structures for secure digital systems.",true
+Cyber Security Engineer,Cyber Security,"Designs, implements, operates, and improves technical cyber security systems and controls.",true
+Accountant (General),Business and Finance,"Provides accounting, reporting, financial analysis, compliance, and business financial information services.",true
+Management Accountant,Business and Finance,"Provides financial analysis, budgeting, costing, performance information, and decision support for organisational management.",true
+Taxation Accountant,Business and Finance,"Prepares and analyses taxation information and provides advice on taxation obligations and compliance.",true
+Management Consultant,Business and Finance,"Analyses organisational problems and advises on strategies, processes, systems, resources, and performance improvements.",true
+Civil Engineer,Engineering,"Plans, designs, analyses, and oversees civil infrastructure and construction projects.",true
+Electrical Engineer,Engineering,"Designs, develops, tests, and oversees electrical equipment, power systems, and electrical infrastructure.",true
+Industrial Engineer,Engineering,"Analyses and improves operational processes, resource use, logistics, quality, safety, and production efficiency.",true
+Mechanical Engineer,Engineering,"Designs, develops, tests, operates, and maintains mechanical equipment, systems, and installations.",true
+Registered Nurse (Acute Care),Healthcare,"Plans, coordinates, and provides nursing care for patients in hospital and acute-care settings.",true
+Physiotherapist,Healthcare,"Assesses and treats movement and physical-function problems caused by injury, illness, or other health conditions.",true
+Occupational Therapist,Healthcare,"Assesses functional needs and provides interventions that support participation in daily activities and occupations.",true
+Health Information Manager,Healthcare,"Manages health information, clinical data, documentation systems, information quality, security, and health-data governance.",true
+Content Creator (Marketing),Marketing and Communications,"Creates and manages digital marketing content designed to promote organisations, products, services, and audience engagement.",true
+Digital Marketing Analyst,Marketing and Communications,"Analyses digital marketing performance and online customer behaviour to improve campaigns and marketing decisions.",true
+Market Research Analyst,Marketing and Communications,"Collects and analyses market and consumer information to identify trends, preferences, opportunities, and demand.",true
+Marketing Specialist,Marketing and Communications,"Researches markets and develops or advises on marketing, promotion, pricing, positioning, and distribution strategies.",true
+Multimedia Designer,Design and Creative Technology,"Plans and creates digital multimedia content using text, graphics, animation, video, sound, and interactive media.",true
+UI / UX Designer,Design and Creative Technology,"Researches user needs and designs interfaces, interactions, journeys, prototypes, and experiences for digital products.",true
+Web Designer,Design and Creative Technology,"Plans and designs website layouts, presentation, navigation, content structure, accessibility, and visual experience.",true
+Graphic Designer,Design and Creative Technology,"Develops visual communication using typography, images, graphics, layout, and other design elements.",true
+Human Resources Adviser,"People, Organisation, Operations and Supply Chain","Provides advice and services relating to staffing, personnel administration, workplace policies, and human-resource programs.",true
+Recruitment Consultant,"People, Organisation, Operations and Supply Chain","Matches employers with suitable candidates through vacancy analysis, sourcing, screening, interviewing, and recruitment support.",true
+Workplace Relations Adviser,"People, Organisation, Operations and Supply Chain","Advises on employment conditions, workplace relations, disputes, agreements, legislation, and employee relations.",true
+Supply Chain Analyst,"People, Organisation, Operations and Supply Chain","Analyses supply-chain data, inventory, logistics, risks, and processes to improve supply performance and efficiency.",true

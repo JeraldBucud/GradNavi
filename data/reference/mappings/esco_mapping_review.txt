@@ -1,0 +1,1393 @@
+
+====================================================================================================
+CAREER: Accountant (General)
+OSCA: 211131 Accountant (General)
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1.8
+ESCO title: financial controller
+Matched label: accountant
+Exact label: no
+Similarity: 71.43
+Description:
+Financial controllers handle all tasks related to the budgeting and accounting aspects of a company or organisation. They implement and ensure compliance with internal financial and accounting procedures, and prepare documentation for external audits. They collect information related to financial statements such as assets, liabilities, equity, and cash flow in order to assess the company's financial position to prepare annual budgets and forecasts.
+
+Candidate 2
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1
+ESCO title: accountant
+Matched label: accountant
+Exact label: no
+Similarity: 71.43
+Description:
+Accountants review and analyse financial statements, budgets, financial reports, and business plans in order to check for irregularities resulting from error or fraud, and provide their clients with financial advice in matters such as financial forecasting and risk analysis. They may audit financial data, resolve insolvency cases, prepare tax returns and provide other tax-related advice in reference to current legislation.
+
+Candidate 3
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1.1
+ESCO title: accounting analyst
+Matched label: accounts analyst
+Exact label: no
+Similarity: 64.71
+Description:
+Accounting analysts evaluate the financial statements of clients, usually companies, which include the income sheet, the balance sheet, the statement of cash flows and additional notes to other financial statements. They interpret and implement new accounting systems and accounting procedures and will analyse and determine if the proposed systems conform to accounting regulations and meet user information requirements.
+
+
+====================================================================================================
+CAREER: Civil Engineer
+OSCA: 243231 Civil Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2142 Civil engineers
+Partial correspondence: yes
+ESCO code: 2142.1
+ESCO title: civil engineer
+Matched label: civil engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Civil engineers design, plan, and develop technical and engineering specifications for infrastructure and construction projects. They apply engineering knowledge in a vast array of projects, from the construction of infrastructure for transportation, housing projects, and luxury buildings, to the construction of natural sites. They design plans that seek to optimise materials and integrate specifications and resource allocation within the time constraints.
+
+Candidate 2
+ISCO-08: 2142 Civil engineers
+Partial correspondence: yes
+ESCO code: 2142.1.2
+ESCO title: construction engineer
+Matched label: site engineer
+Exact label: no
+Similarity: 74.07
+Description:
+Construction engineers interpret building designs and add technical specifications to construction projects. They integrate engineering principles into the designs to ensure that structures are safe and resistant. They work together with architects and engineers to transform design ideas into executable plans.
+
+Candidate 3
+ISCO-08: 2142 Civil engineers
+Partial correspondence: yes
+ESCO code: 2142.1.3
+ESCO title: drainage engineer
+Matched label: drain engineer
+Exact label: no
+Similarity: 71.43
+Description:
+Drainage engineers design and construct drainage systems for sewers and storm water systems. They evaluate the options to design drainage systems that meet the requirements while ensuring compliance with legislation and environmental standards and policies. Drainage engineers choose the most optimal drainage system to prevent floods, control irrigation and direct sewage away from water sources.
+
+
+====================================================================================================
+CAREER: Cloud Engineer
+OSCA: 273331 Cloud Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.1
+ESCO title: cloud engineer
+Matched label: cloud engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Cloud engineers are responsible for the design, planning, management and maintenance of cloud-based systems. They develop and implement cloud-applications, handle the migration of existing on-premise applications to the cloud, and debug cloud stacks.
+
+Candidate 2
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.7
+ESCO title: cloud DevOps engineer
+Matched label: cloud DevOps engineer
+Exact label: no
+Similarity: 80.0
+Description:
+Cloud DevOps engineers implement and manage continuous software delivery systems and methodologies. This includes managing and configuring code repositories, build services, automated testing, and deployment mechanisms. For cloud-based workloads, a Cloud DevOps Engineer define and deploy infrastructure as code, automating test and development environments. They can define and configure automated disaster recovery solutions that meet business objectives.
+
+Candidate 3
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.4.1
+ESCO title: blockchain developer
+Matched label: DLT engineer
+Exact label: no
+Similarity: 76.92
+Description:
+Blockchain developers implement or program blockchain-based software systems based on specifications and designs by using programming languages, tools, and blockchain platforms.
+
+
+====================================================================================================
+CAREER: Content Creator (Marketing)
+OSCA: 221531 Content Creator (Marketing)
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.1
+ESCO title: advertising copywriter
+Matched label: content marketer
+Exact label: no
+Similarity: 68.29
+Description:
+Advertising copywriters are responsible for the written or verbal design of advertisements and commercials. They write slogans, catchphrases and work closely together with advertising artists.
+
+Candidate 2
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.10.4
+ESCO title: online marketer
+Matched label: internet marketer
+Exact label: no
+Similarity: 57.14
+Description:
+Online marketers use e-mail, internet and social media in order to market goods and brands.
+
+Candidate 3
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.6
+ESCO title: client relations manager
+Matched label: client relations manager
+Exact label: no
+Similarity: 57.14
+Description:
+Client relations managers act as the middle person between a company and its customers. They ensure that the customers are satisfied by providing them with guidance and explanation on their accounts and services received by the company. They also have possible other tasks such as developing plans or delivering proposals.
+
+
+====================================================================================================
+CAREER: Cyber Security Advice and Assessment Specialist
+OSCA: 271132 Cyber Security Advice and Assessment Specialist
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.2
+ESCO title: digital forensics expert
+Matched label: cybersecurity and forensic specialist
+Exact label: no
+Similarity: 73.81
+Description:
+Digital forensics experts retrieve and analyse information from computers and other types of data storage devices. They examine digital media that may have been hidden, encrypted or damaged, in a forensic manner with the aim to identify, preserve, recover, analyse and present facts and opinions about the digital information.
+
+Candidate 2
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.4
+ESCO title: ethical hacker
+Matched label: cybersecurity specialist
+Exact label: no
+Similarity: 67.61
+Description:
+Ethical hackers perform security vulnerability assessments and penetration tests in accordance with industry-accepted methods and protocols. They analyse systems for potential vulnerabilities that may result from improper system configuration, hardware or software flaws, or operational weaknesses.
+
+Candidate 3
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.8
+ESCO title: cybersecurity risk manager
+Matched label: cybersecurity specialist
+Exact label: no
+Similarity: 67.61
+Description:
+Cybersecurity risk managers identify, analyse, assess, estimate and mitigate cybersecurity-related risks of ICT infrastructures such as systems or services. They manage these aspects by planning risk analysis, applying, reporting, assessing, communicating, and treating them. They establish a risk management strategy for the organisation and ensure that risks remain at an acceptable level for the organisation by selecting mitigation actions and controls.
+
+
+====================================================================================================
+CAREER: Cyber Security Analyst
+OSCA: 271133 Cyber Security Analyst
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.2
+ESCO title: digital forensics expert
+Matched label: cybersecurity analyst
+Exact label: no
+Similarity: 97.67
+Description:
+Digital forensics experts retrieve and analyse information from computers and other types of data storage devices. They examine digital media that may have been hidden, encrypted or damaged, in a forensic manner with the aim to identify, preserve, recover, analyse and present facts and opinions about the digital information.
+
+Candidate 2
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.8
+ESCO title: cybersecurity risk manager
+Matched label: cybersecurity impact analyst
+Exact label: no
+Similarity: 84.0
+Description:
+Cybersecurity risk managers identify, analyse, assess, estimate and mitigate cybersecurity-related risks of ICT infrastructures such as systems or services. They manage these aspects by planning risk analysis, applying, reporting, assessing, communicating, and treating them. They establish a risk management strategy for the organisation and ensure that risks remain at an acceptable level for the organisation by selecting mitigation actions and controls.
+
+Candidate 3
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.4
+ESCO title: ethical hacker
+Matched label: cybersecurity specialist
+Exact label: no
+Similarity: 78.26
+Description:
+Ethical hackers perform security vulnerability assessments and penetration tests in accordance with industry-accepted methods and protocols. They analyse systems for potential vulnerabilities that may result from improper system configuration, hardware or software flaws, or operational weaknesses.
+
+
+====================================================================================================
+CAREER: Cyber Security Architect
+OSCA: 271134 Cyber Security Architect
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.7
+ESCO title: cyber incident responder
+Matched label: ICT security architect
+Exact label: no
+Similarity: 86.96
+Description:
+Cyber incident responders monitor and assess cybersecurity state systems, analysing, evaluating, and mitigating the impact of cybersecurity incidents. Moreover, they identify malicious actors and cyber incidents root causes. According to the organisation’s Incident Response Plan, they restore systems and process functionalities to an operational state, collecting evidence and documenting actions taken.
+
+Candidate 2
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.4
+ESCO title: ethical hacker
+Matched label: cybersecurity tester
+Exact label: no
+Similarity: 77.27
+Description:
+Ethical hackers perform security vulnerability assessments and penetration tests in accordance with industry-accepted methods and protocols. They analyse systems for potential vulnerabilities that may result from improper system configuration, hardware or software flaws, or operational weaknesses.
+
+Candidate 3
+ISCO-08: 2529 Database and network professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2529.8
+ESCO title: cybersecurity risk manager
+Matched label: ICT security chief
+Exact label: no
+Similarity: 71.43
+Description:
+Cybersecurity risk managers identify, analyse, assess, estimate and mitigate cybersecurity-related risks of ICT infrastructures such as systems or services. They manage these aspects by planning risk analysis, applying, reporting, assessing, communicating, and treating them. They establish a risk management strategy for the organisation and ensure that risks remain at an acceptable level for the organisation by selecting mitigation actions and controls.
+
+
+====================================================================================================
+CAREER: Cyber Security Engineer
+OSCA: 271135 Cyber Security Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.1
+ESCO title: cloud engineer
+Matched label: cloud security engineer
+Exact label: no
+Similarity: 82.61
+Description:
+Cloud engineers are responsible for the design, planning, management and maintenance of cloud-based systems. They develop and implement cloud-applications, handle the migration of existing on-premise applications to the cloud, and debug cloud stacks.
+
+Candidate 2
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.5
+ESCO title: user interface developer
+Matched label: user interface engineer
+Exact label: no
+Similarity: 60.87
+Description:
+User interface developers implement, code, document and maintain the interface of a software system by using front-end development technologies.
+
+Candidate 3
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.7
+ESCO title: cloud DevOps engineer
+Matched label: devops engineer
+Exact label: no
+Similarity: 57.89
+Description:
+Cloud DevOps engineers implement and manage continuous software delivery systems and methodologies. This includes managing and configuring code repositories, build services, automated testing, and deployment mechanisms. For cloud-based workloads, a Cloud DevOps Engineer define and deploy infrastructure as code, automating test and development environments. They can define and configure automated disaster recovery solutions that meet business objectives.
+
+
+====================================================================================================
+CAREER: Data Analyst
+OSCA: 223231 Data Analyst
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.1
+ESCO title: actuarial consultant
+Matched label: actuarial analyst
+Exact label: no
+Similarity: 75.86
+Description:
+Actuarial consultants analyse, manage and provide guidance on financial impact of risks. They can work in fields related to insurance, pension, investment, banking, healthcare etc. Actuarial consultants apply technical and statistical models and theories to give strategic, commercial, and financial advice.
+
+Candidate 2
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.6
+ESCO title: statistician
+Matched label: statistical data analyst
+Exact label: no
+Similarity: 66.67
+Description:
+Statisticians collect, tabulate, and, most importantly, analyse quantitative information coming from a varied array of fields. They interpret and analyse statistical studies on fields such as health, demographics, finance, business, etc. and advise based on patterns and drawn analysis.
+
+Candidate 3
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.2
+ESCO title: demographer
+Matched label: demography analyst
+Exact label: no
+Similarity: 66.67
+Description:
+Demographers study a variety of parameters related with population. They develop, based on their observations, statistical analyses on the evolutions and changes of births, elderly, marriage and divorce, employment, mortality, immigration and related matters.
+
+
+====================================================================================================
+CAREER: Data Architect
+OSCA: 223232 Data Architect
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.1
+ESCO title: actuarial consultant
+Matched label: actuaries
+Exact label: no
+Similarity: 52.17
+Description:
+Actuarial consultants analyse, manage and provide guidance on financial impact of risks. They can work in fields related to insurance, pension, investment, banking, healthcare etc. Actuarial consultants apply technical and statistical models and theories to give strategic, commercial, and financial advice.
+
+Candidate 2
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.5
+ESCO title: mathematician
+Matched label: mathematics research scientist
+Exact label: no
+Similarity: 50.0
+Description:
+Mathematicians study and deepen existing mathematical theories in order to expand the knowledge and find new paradigms within the field. They can apply this knowledge to challenges presented in engineering and scientific projects in order to assure that measurements, quantities, and mathematic laws prove their viability.
+
+Candidate 3
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.6
+ESCO title: statistician
+Matched label: statistical research scientist
+Exact label: no
+Similarity: 50.0
+Description:
+Statisticians collect, tabulate, and, most importantly, analyse quantitative information coming from a varied array of fields. They interpret and analyse statistical studies on fields such as health, demographics, finance, business, etc. and advise based on patterns and drawn analysis.
+
+
+====================================================================================================
+CAREER: Data Engineer
+OSCA: 223233 Data Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.4
+ESCO title: gambling quality assurance engineer
+Matched label: gambling engineer
+Exact label: no
+Similarity: 66.67
+Description:
+Gambling quality assurance engineers design and plan methods to test the gambling, the lottery or betting games. They execute the tests. These games can be both for public or for private audience, and the tests are for both online and land-based gaming.
+
+Candidate 2
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.3
+ESCO title: gambling games developer
+Matched label: gambling designer
+Exact label: no
+Similarity: 46.67
+Description:
+Gambling games developers create, develop and produce content for lottery, betting and similar gambling games for large audiences.
+
+Candidate 3
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.5
+ESCO title: mathematician
+Matched label: mathematics researcher
+Exact label: no
+Similarity: 45.71
+Description:
+Mathematicians study and deepen existing mathematical theories in order to expand the knowledge and find new paradigms within the field. They can apply this knowledge to challenges presented in engineering and scientific projects in order to assure that measurements, quantities, and mathematic laws prove their viability.
+
+
+====================================================================================================
+CAREER: Data Scientist
+OSCA: 223234 Data Scientist
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.5
+ESCO title: mathematician
+Matched label: mathematics scientist
+Exact label: no
+Similarity: 74.29
+Description:
+Mathematicians study and deepen existing mathematical theories in order to expand the knowledge and find new paradigms within the field. They can apply this knowledge to challenges presented in engineering and scientific projects in order to assure that measurements, quantities, and mathematic laws prove their viability.
+
+Candidate 2
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.6
+ESCO title: statistician
+Matched label: statistical scientist
+Exact label: no
+Similarity: 74.29
+Description:
+Statisticians collect, tabulate, and, most importantly, analyse quantitative information coming from a varied array of fields. They interpret and analyse statistical studies on fields such as health, demographics, finance, business, etc. and advise based on patterns and drawn analysis.
+
+Candidate 3
+ISCO-08: 2120 Mathematicians, actuaries and statisticians
+Partial correspondence: yes
+ESCO code: 2120.2
+ESCO title: demographer
+Matched label: demography scientist
+Exact label: no
+Similarity: 70.59
+Description:
+Demographers study a variety of parameters related with population. They develop, based on their observations, statistical analyses on the evolutions and changes of births, elderly, marriage and divorce, employment, mortality, immigration and related matters.
+
+
+====================================================================================================
+CAREER: DevOps Engineer
+OSCA: 273332 DevOps Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.7
+ESCO title: cloud DevOps engineer
+Matched label: devops engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Cloud DevOps engineers implement and manage continuous software delivery systems and methodologies. This includes managing and configuring code repositories, build services, automated testing, and deployment mechanisms. For cloud-based workloads, a Cloud DevOps Engineer define and deploy infrastructure as code, automating test and development environments. They can define and configure automated disaster recovery solutions that meet business objectives.
+
+Candidate 2
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.4.1
+ESCO title: blockchain developer
+Matched label: DLT engineer
+Exact label: no
+Similarity: 74.07
+Description:
+Blockchain developers implement or program blockchain-based software systems based on specifications and designs by using programming languages, tools, and blockchain platforms.
+
+Candidate 3
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.1
+ESCO title: cloud engineer
+Matched label: cloud engineer
+Exact label: no
+Similarity: 68.97
+Description:
+Cloud engineers are responsible for the design, planning, management and maintenance of cloud-based systems. They develop and implement cloud-applications, handle the migration of existing on-premise applications to the cloud, and debug cloud stacks.
+
+
+====================================================================================================
+CAREER: Digital Marketing Analyst
+OSCA: 221532 Digital Marketing Analyst
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.10
+ESCO title: marketing consultant
+Matched label: marketing analyst
+Exact label: no
+Similarity: 80.95
+Description:
+Marketing consultants advise companies in the development of marketing strategies for specific purposes. They can advise and develop strategies for the entry of a brand in the market, for the re-launch of a product, for the introduction of a new product, or for the positioning of a commercial image. They perform previous studies of the position of the company and perception of customers in order to define the marketing approach.
+
+Candidate 2
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.11
+ESCO title: market research analyst
+Matched label: market analyst
+Exact label: no
+Similarity: 71.79
+Description:
+Market research analysts collect the information gathered in the market research and study it to draw conclusions. They define the potential customers of a product, the target group and the way they can be reached. Market research analysts analyse the position of products in the market from different perspectives such as features, prices and competitors. They analyse cross selling and interdependencies between different products and their placement. Market research analysts prepare information helpful for the development of marketing strategies.
+
+Candidate 3
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.10.4
+ESCO title: online marketer
+Matched label: digital marketer
+Exact label: no
+Similarity: 68.29
+Description:
+Online marketers use e-mail, internet and social media in order to market goods and brands.
+
+
+====================================================================================================
+CAREER: Electrical Engineer
+OSCA: 243331 Electrical Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2151 Electrical engineers
+Partial correspondence: yes
+ESCO code: 2151.1
+ESCO title: electrical engineer
+Matched label: electrical engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Electrical engineers design and develop electrical systems, electrical equipment, components, motors, and equipment with the feature of energy transmission. They engage in large scale projects such as the design and maintenance of power stations, and the distribution of power to smaller applications such as household appliances.
+
+Candidate 2
+ISCO-08: 2151 Electrical engineers
+Partial correspondence: yes
+ESCO code: 2151.1.4
+ESCO title: mine electrical engineer
+Matched label: electrical engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Mine electrical engineers supervise the procurement, installation and maintenance of mining electrical equipment, using their knowledge of electrical and electronic principles. They organise the replacement and repair of electrical equipment and components.
+
+Candidate 3
+ISCO-08: 2151 Electrical engineers
+Partial correspondence: yes
+ESCO code: 2151.1.3
+ESCO title: electromechanical engineer
+Matched label: electromechanical engineer
+Exact label: no
+Similarity: 84.44
+Description:
+Electromechanical engineers design and develop equipment and machinery that use both electrical and mechanical technology. They make draughts and prepare documents detailing the material requisitions, the assembly process and other technical specifications. Electromechanical engineers also test and evaluate the prototypes. They oversee the manufacturing process.
+
+
+====================================================================================================
+CAREER: Graphic Designer
+OSCA: 242332 Graphic Designer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.9
+ESCO title: graphic designer
+Matched label: graphic designer
+Exact label: yes
+Similarity: 100.0
+Description:
+Graphic designers create text and images to communicate ideas. They make visual concepts by hand or using computer software, intended for publishing in paper or online media such as advertisements, websites, and magazines.
+
+Candidate 2
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.15
+ESCO title: web designer
+Matched label: graphic web designer
+Exact label: no
+Similarity: 88.89
+Description:
+Web designers are in charge of creating the visual elements, layout and other aspects such as the easiness of use of a website. They follow the different phases of a website creation from the design to the implementation until it goes live. They work side by side with front-end developers to design user interfaces that met the needs of customers and are also appealing. They are responsible of developing mock-ups and of confirming the technical feasibility of the product. They can use and put together various types of elements for the website including graphics, animations, text, videos and photos. They are in contact with clients and stakeholders of the company to ensure that the design of the website meets their needs.
+
+Candidate 3
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.3.1
+ESCO title: 3D animator
+Matched label: CGI designer
+Exact label: no
+Similarity: 78.57
+Description:
+3D animators are in charge of animating 3D models of objects, virtual environments, layouts, characters and 3D virtual animated agents.
+
+
+====================================================================================================
+CAREER: Health Information Manager
+OSCA: 223933 Health Information Manager
+====================================================================================================
+
+Candidate 1
+ISCO-08: 3252 Medical records and health information technicians
+Partial correspondence: yes
+ESCO code: 3252.2
+ESCO title: medical records manager
+Matched label: health records manager
+Exact label: no
+Similarity: 70.83
+Description:
+Medical records managers are responsible for managing activities of medical records units which maintain and secure patient data. They supervise, oversee and train employees while implementing medical department policies.
+
+Candidate 2
+ISCO-08: 3252 Medical records and health information technicians
+Partial correspondence: yes
+ESCO code: 3252.3
+ESCO title: picture archiving and communication systems administrator
+Matched label: PACS administration manager
+Exact label: no
+Similarity: 67.92
+Description:
+Picture archiving and communication systems administrators manage picture archiving and communication systems (PACS). They store images taken by various types of medical equipment, such as X-rays, in order to enable easy access to these images for medical. PACS administrators ensure the day-to-day management and maintenance of the system.
+
+Candidate 3
+ISCO-08: 3252 Medical records and health information technicians
+Partial correspondence: yes
+ESCO code: 3252.4
+ESCO title: waiting list coordinator
+Matched label: healthcare waiting list manager
+Exact label: no
+Similarity: 63.16
+Description:
+Waiting list coordinators guarantee the day to day management of waiting list time. They plan when operation rooms are available and call patients in to be operated. Waiting list coordinators make sure to optimise the use of resources.
+
+
+====================================================================================================
+CAREER: Human Resources Adviser
+OSCA: 222131 Human Resources Adviser
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2423 Personnel and career professionals
+Partial correspondence: yes
+ESCO code: 2423.3
+ESCO title: human resources officer
+Matched label: human resources director
+Exact label: no
+Similarity: 85.11
+Description:
+Human resources officers develop and implement strategies that help their employers select and retain appropriately qualified staff within that business sector. They recruit staff, prepare job advertisements, interview and short-list people, negotiate with employment agencies, and set up working conditions. Human resources officers also administer the payroll, review salaries and advise on remuneration benefits and employment law. They arrange for training opportunities to enhance employees' performance.
+
+Candidate 2
+ISCO-08: 2423 Personnel and career professionals
+Partial correspondence: yes
+ESCO code: 2423.1
+ESCO title: career guidance advisor
+Matched label: careers advisor
+Exact label: no
+Similarity: 63.16
+Description:
+Career guidance advisors provide guidance and advice to adults and students on making educational, training and occupational choices and assist people in managing their careers, through career planning and career exploration. They help identify options for future careers, assist beneficiaries in the development of their curriculum and help people reflect on their ambitions, interests and qualifications. Career guidance advisors may provide advice on various career planning issues and make suggestions for lifelong learning if necessary, including study recommendations. They may also assist the individual in the search for a job or provide guidance and advice to prepare a candidate for recognition of prior learning.
+
+Candidate 3
+ISCO-08: 2423 Personnel and career professionals
+Partial correspondence: yes
+ESCO code: 2423.4
+ESCO title: labour relations officer
+Matched label: union representative
+Exact label: no
+Similarity: 51.16
+Description:
+Labour relations officers implement labour policy in an organisation, and advise trade unions on policies and negotiation. They handle disputes, and advise management on personnel policy as well as facilitate communication between trade unions and managerial staff.
+
+
+====================================================================================================
+CAREER: ICT Business Analyst
+OSCA: 273232 ICT Business Analyst
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2511 Systems analysts
+Partial correspondence: yes
+ESCO code: 2511.9
+ESCO title: ICT business analyst
+Matched label: ICT business analyst
+Exact label: yes
+Similarity: 100.0
+Description:
+ICT business analysts are in charge of analysing and designing an organisation's processes and systems, assessing the business model and its integration with technology. They also identify change needs, assess the impact of the change, capture and document requirements and then ensure that these requirements are delivered whilst supporting the business through the implementation process.
+
+Candidate 2
+ISCO-08: 2511 Systems analysts
+Partial correspondence: yes
+ESCO code: 2511.8
+ESCO title: ICT business analysis manager
+Matched label: lead IT business analyst
+Exact label: no
+Similarity: 86.36
+Description:
+ICT business analysis managers identify areas where information system changes are needed to support business plans and monitor the impact in terms of change management. They contribute to the general ICT functional requirements of the business organisation. ICT business analysis managers analyse business needs and translate them into ICT solutions.
+
+Candidate 3
+ISCO-08: 2511 Systems analysts
+Partial correspondence: yes
+ESCO code: 2511.3
+ESCO title: data analyst
+Matched label: business data analyst
+Exact label: no
+Similarity: 78.05
+Description:
+Data analysts import, inspect, clean, transform, validate, model, or interpret collections of data with regard to the business goals of the company. They ensure that the data sources and repositories provide consistent and reliable data. Data analysts use different algorithms and IT tools as demanded by the situation and the current data. They might prepare reports in the form of visualisations such as graphs, charts, and dashboards.
+
+
+====================================================================================================
+CAREER: Industrial Engineer
+OSCA: 243531 Industrial Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2141 Industrial and production engineers
+Partial correspondence: yes
+ESCO code: 2141.4
+ESCO title: industrial engineer
+Matched label: industrial engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Industrial engineers design a vast array of production systems aiming to present efficient and effective solutions. They integrate a varied number of variables such as workers, technology, ergonomics, production flows, and product specifications for the design and implementation of production systems. They can specify and design for microsystems as well.
+
+Candidate 2
+ISCO-08: 2141 Industrial and production engineers
+Partial correspondence: yes
+ESCO code: 2141.5
+ESCO title: leather goods industrial engineer
+Matched label: industrial engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Leather goods industrial engineers analyse product technical specifications, define productive operations and their sequence, refine working methods and calculate operative times by using time measurement techniques. They address human and technological resources to each operation and define distribution of work according to production capacity. All their activities and tasks have the objective of maximising productivity and reducing production costs, assuring the functionality and quality of product and customer satisfaction.
+
+Candidate 3
+ISCO-08: 2149 Engineering professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2149.9.7
+ESCO title: renewable energy engineer
+Matched label: industrial energy engineer
+Exact label: no
+Similarity: 84.44
+Description:
+Renewable energy engineers research alternative sources of energy in order to design systems for renewable energy production. They strive to optimise energy production from renewable sources, and reduce production expenses and environmental strain. They design systems which focus on energy sustainability and efficiency.
+
+
+====================================================================================================
+CAREER: Management Accountant
+OSCA: 211134 Management Accountant
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1.4
+ESCO title: budget analyst
+Matched label: budget accountant
+Exact label: no
+Similarity: 73.68
+Description:
+Budget analysts monitor the spending activities of public and private institutions and companies. They prepare budget reports, review the budget model used in the company and ensure compliance with the budgeting policies and other legal regulations.
+
+Candidate 2
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1.11
+ESCO title: public finance accountant
+Matched label: finance accountant
+Exact label: no
+Similarity: 71.79
+Description:
+Public finance accountants head the treasury department of a governmental institution. They manage the institution's financial administration, expenditure and income generation, and compliance with taxation and other financial legislation. They perform administrative duties to ensure record keeping, develop plans for budget management and perform financial forecasts.
+
+Candidate 3
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1.7
+ESCO title: financial auditor
+Matched label: chartered accountant
+Exact label: no
+Similarity: 68.29
+Description:
+Financial auditors collect and examine financial data for clients, organisations and companies. They ensure the financial data is properly maintained and free of material misstatements due to error or fraud, that it adds up, and functions legally and effectively. They review lending and credit policies or numbers in databases and documents, evaluate, consult and assist the source of the transaction if necessary. They use their review of the client's financial governance as assurance to give testimony to the shareholders, stakeholders and board of directors of the organisation or company that all is up to par.
+
+
+====================================================================================================
+CAREER: Management Consultant
+OSCA: 223432 Management Consultant
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2421 Management and organisation analysts
+Partial correspondence: yes
+ESCO code: 2421.1
+ESCO title: business analyst
+Matched label: management consultant
+Exact label: yes
+Similarity: 100.0
+Description:
+Business analysts research and understand the strategic position of businesses and companies in relation to their markets and their stakeholders. They analyse and present their views on how the company, from many perspectives, can improve its strategic position and internal corporate structure. They assess needs for change, communication methods, technology, IT tools, new standards and certifications.
+
+Candidate 2
+ISCO-08: 2421 Management and organisation analysts
+Partial correspondence: yes
+ESCO code: 2421.6
+ESCO title: building information modelling consultant
+Matched label: BIM consultant
+Exact label: no
+Similarity: 68.57
+Description:
+Building information modelling consultants advice, guide and evaluate clients in building information modelling (BIM) business processes, as well as construction teams on performing BIM technologies. They manage the communication with staff and clients, implement strategies and BIM solutions for completing the deliverables, and draft documents such as flow charts, agendas and guides for best practices.
+
+Candidate 3
+ISCO-08: 2421 Management and organisation analysts
+Partial correspondence: yes
+ESCO code: 2421.2
+ESCO title: business consultant
+Matched label: business consultant
+Exact label: no
+Similarity: 65.0
+Description:
+Business consultants analyse the position, structure and processes of businesses and companies and offer services or advice to improve them. They research and identify business processes such as financial inefficiencies or employee management and devise strategical plans to overcome these difficulties. They work in external consulting firms where they provide an objective view on a business and or company's structure and methodological processes.
+
+
+====================================================================================================
+CAREER: Market Research Analyst
+OSCA: 221533 Market Research Analyst
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.11
+ESCO title: market research analyst
+Matched label: market research analyst
+Exact label: yes
+Similarity: 100.0
+Description:
+Market research analysts collect the information gathered in the market research and study it to draw conclusions. They define the potential customers of a product, the target group and the way they can be reached. Market research analysts analyse the position of products in the market from different perspectives such as features, prices and competitors. They analyse cross selling and interdependencies between different products and their placement. Market research analysts prepare information helpful for the development of marketing strategies.
+
+Candidate 2
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.10
+ESCO title: marketing consultant
+Matched label: marketing analyst
+Exact label: no
+Similarity: 70.0
+Description:
+Marketing consultants advise companies in the development of marketing strategies for specific purposes. They can advise and develop strategies for the entry of a brand in the market, for the re-launch of a product, for the introduction of a new product, or for the positioning of a commercial image. They perform previous studies of the position of the company and perception of customers in order to define the marketing approach.
+
+Candidate 3
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.14
+ESCO title: pricing specialist
+Matched label: retail pricing analyst
+Exact label: no
+Similarity: 62.22
+Description:
+Pricing specialists analyse production prices, market trends and competitors in order to establish the right price, taking brand and marketing concepts into consideration.
+
+
+====================================================================================================
+CAREER: Marketing Specialist
+OSCA: 221534 Marketing Specialist
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.10
+ESCO title: marketing consultant
+Matched label: marketing specialist
+Exact label: yes
+Similarity: 100.0
+Description:
+Marketing consultants advise companies in the development of marketing strategies for specific purposes. They can advise and develop strategies for the entry of a brand in the market, for the re-launch of a product, for the introduction of a new product, or for the positioning of a commercial image. They perform previous studies of the position of the company and perception of customers in order to define the marketing approach.
+
+Candidate 2
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.10.4
+ESCO title: online marketer
+Matched label: online marketing specialist
+Exact label: no
+Similarity: 85.11
+Description:
+Online marketers use e-mail, internet and social media in order to market goods and brands.
+
+Candidate 3
+ISCO-08: 2431 Advertising and marketing professionals
+Partial correspondence: yes
+ESCO code: 2431.13
+ESCO title: network marketer
+Matched label: network marketing specialist
+Exact label: no
+Similarity: 83.33
+Description:
+Network marketers apply various marketing strategies, including ​network marketing strategies to sell products and convince new people to also join in and start selling these products. They use personal relations to attract customers and sell various types of products.
+
+
+====================================================================================================
+CAREER: Mechanical Engineer
+OSCA: 243532 Mechanical Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2144 Mechanical engineers
+Partial correspondence: yes
+ESCO code: 2144.1
+ESCO title: mechanical engineer
+Matched label: mechanical engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Mechanical engineers research, plan and design mechanical products and systems and supervise the fabrication, operation, application, installation and repair of systems and products. They research and analyse data.
+
+Candidate 2
+ISCO-08: 2144 Mechanical engineers
+Partial correspondence: yes
+ESCO code: 2144.1.15
+ESCO title: optomechanical engineer
+Matched label: optomechanical engineer
+Exact label: no
+Similarity: 90.48
+Description:
+Optomechanical engineers design and develop optomechanical systems, devices, and components, such as optical mirrors and optical mounts. Optomechanical engineering combines optical engineering with mechanical engineering in the design of these systems and devices. They conduct research, perform analysis, test the devices, and supervise the research.
+
+Candidate 3
+ISCO-08: 2144 Mechanical engineers
+Partial correspondence: yes
+ESCO code: 2144.1.12
+ESCO title: mine mechanical engineer
+Matched label: mine mechanical engineer
+Exact label: no
+Similarity: 88.37
+Description:
+Mine mechanical engineers supervise the procurement, installation, removal and maintenance of mining mechanical equipment, using their knowledge of mechanical specifications. They organise the replacement and repair of mechanical equipment and components.
+
+
+====================================================================================================
+CAREER: Multimedia Designer
+OSCA: 242131 Multimedia Designer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.15
+ESCO title: web designer
+Matched label: multimedia web designer
+Exact label: no
+Similarity: 90.48
+Description:
+Web designers are in charge of creating the visual elements, layout and other aspects such as the easiness of use of a website. They follow the different phases of a website creation from the design to the implementation until it goes live. They work side by side with front-end developers to design user interfaces that met the needs of customers and are also appealing. They are responsible of developing mock-ups and of confirming the technical feasibility of the product. They can use and put together various types of elements for the website including graphics, animations, text, videos and photos. They are in contact with clients and stakeholders of the company to ensure that the design of the website meets their needs.
+
+Candidate 2
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.7
+ESCO title: digital media designer
+Matched label: digital multimedia designer
+Exact label: no
+Similarity: 82.61
+Description:
+Digital media designers create and edit graphics, animations, sound, text and video to assist in the creation of integrated multimedia products. They may perform activities related to the web, social networks, augmented reality and virtual reality but exclude the production of music using physical instruments and complex software sound synthesis tools. Digital media designers may program and build websites, mobile applications and other multimedia products.
+
+Candidate 3
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.9
+ESCO title: graphic designer
+Matched label: commercial designer
+Exact label: no
+Similarity: 73.68
+Description:
+Graphic designers create text and images to communicate ideas. They make visual concepts by hand or using computer software, intended for publishing in paper or online media such as advertisements, websites, and magazines.
+
+
+====================================================================================================
+CAREER: Occupational Therapist
+OSCA: 262331 Occupational Therapist
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2269 Health professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2269.4
+ESCO title: occupational therapist
+Matched label: occupational therapist
+Exact label: yes
+Similarity: 100.0
+Description:
+Occupational therapists assist individuals or groups who have occupational limitations due to diseases, physical disorders, and temporary or permanent mental disabilities, in regaining their ability to perform daily activities. They provide treatment and rehabilitation to enable them to actively participate in society, to live their lives according to their wishes and to perform those activities that are meaningful to them. Occupational therapists work in public health and social care services, but can also be involved in supporting asylum seekers, refugees and/or homeless people.
+
+Candidate 2
+ISCO-08: 2269 Health professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2269.5
+ESCO title: occupational therapy assistant
+Matched label: occupational therapy assistant
+Exact label: no
+Similarity: 84.62
+Description:
+Occupational therapy assistants support occupational therapists by working with people and communities to enhance their ability to engage in the occupations they want to, need to, or are expected to do, or by modifying the occupation or the environment to better support their occupational engagement. They work under the supervision of an occupational therapist.
+
+Candidate 3
+ISCO-08: 2269 Health professionals not elsewhere classified
+Partial correspondence: yes
+ESCO code: 2269.9
+ESCO title: recreational therapist
+Matched label: recreational therapist
+Exact label: no
+Similarity: 81.82
+Description:
+Recreational therapists offer treatment to persons who have behavioural disorders or conditions. They use techniques and interventions such as art, music, animals and dance to promote, maintain and restore the development and health of the patient.
+
+
+====================================================================================================
+CAREER: Physiotherapist
+OSCA: 262431 Physiotherapist
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2264 Physiotherapists
+Partial correspondence: no
+ESCO code: 2264.2
+ESCO title: physiotherapist
+Matched label: physiotherapist
+Exact label: yes
+Similarity: 100.0
+Description:
+Physiotherapists are autonomous health professionals who are responsible for developing, maintaining or restoring motor function and movement throughout the lifespan using evidence-based practice. They relieve pain and treat or prevent physical conditions associated with injury, disease or other impairments. Physiotherapists empower patients and their carers to manage the condition outside clinical settings. They work within their scope of practice and their professional Code of Conduct.
+
+Candidate 2
+ISCO-08: 2264 Physiotherapists
+Partial correspondence: no
+ESCO code: 2264.1
+ESCO title: advanced physiotherapist
+Matched label: senior physiotherapist
+Exact label: no
+Similarity: 81.08
+Description:
+Advanced physiotherapists are highly specialised. They make complex decisions and manage risks in unpredictable contexts and within a defined area. They may focus on a specific area of clinical practice, education, research or professional management.
+
+
+====================================================================================================
+CAREER: Recruitment Consultant
+OSCA: 222231 Recruitment Consultant
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2423 Personnel and career professionals
+Partial correspondence: yes
+ESCO code: 2423.6
+ESCO title: recruitment consultant
+Matched label: recruitment consultant
+Exact label: yes
+Similarity: 100.0
+Description:
+Recruitment consultants provide the suitable candidates to employers according to the specific job profile requested. They perform testing and interviewing with job seekers, shortlist few candidates to present to the employers and match candidates to appropriate jobs. Recruitment consultants maintain relationships with employers to offer their services on a more long-term basis.
+
+Candidate 2
+ISCO-08: 3339 Business service agents not elsewhere classified
+Partial correspondence: yes
+ESCO code: 3339.3
+ESCO title: intellectual property consultant
+Matched label: patent consultant
+Exact label: no
+Similarity: 76.92
+Description:
+Intellectual property consultants provide advice on the usage of intellectual property assests such as patents, copyrights, and trademarks. They help clients to value, in monetary terms, intellectual property portfolios, to follow adequate legal procedures for protecting of such property, and to perform patent brokerage activities.
+
+Candidate 3
+ISCO-08: 3339 Business service agents not elsewhere classified
+Partial correspondence: yes
+ESCO code: 3339.6
+ESCO title: relocation officer
+Matched label: relocation consultant
+Exact label: no
+Similarity: 74.42
+Description:
+Relocation officers help businesses and organisations with the move of employees. They are responsible for managing all moving activities including the planning of moving services and the provision of advises on real estate. They look after the general well-being of the employees and their family.
+
+
+====================================================================================================
+CAREER: Registered Nurse (Acute Care)
+OSCA: 265432 Registered Nurse (Acute Care)
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2221 Nursing professionals
+Partial correspondence: yes
+ESCO code: 2221.1
+ESCO title: advanced nurse practitioner
+Matched label: emergency nurse practitioner
+Exact label: no
+Similarity: 58.18
+Description:
+Advanced nurse practitioners are in charge of promoting and restoring patients` health, provide diagnosis and care in advanced settings, coordinating care within areas of chronic disease management, providing integrated care, and supervising assigned team members. Advanced nurse practitioners are general care nurses who have acquired an expert knowledge base, complex decision making skills and clinical competencies for expanded clinical practice on advanced level.
+
+Candidate 2
+ISCO-08: 2221 Nursing professionals
+Partial correspondence: yes
+ESCO code: 2221.3
+ESCO title: specialist nurse
+Matched label: specialist nurse practitioner
+Exact label: no
+Similarity: 57.14
+Description:
+Specialist nurses promote and restore people's health, and diagnose and care within a specific branch of the nursing field. Examples of such specialist nursing jobs include but are not restricted to; ambulatory care nurse, advanced practice nurse, cardiac nurse, dental nurse, community health nurse, forensic nurse, gastroenterology nurse, hospice and palliative care nurse, paediatric nurse, public health nurse, rehabilitation nurse, renal nurse and school nurse. Specialist nurses are general care nurses prepared beyond the level of a nurse generalist and authorised to practice as specialists with specific expertise in a branch of the nursing field.
+
+Candidate 3
+ISCO-08: 2221 Nursing professionals
+Partial correspondence: yes
+ESCO code: 2221.2
+ESCO title: nurse responsible for general care
+Matched label: district nurse
+Exact label: no
+Similarity: 48.78
+Description:
+Nurses responsible for general care are in charge of promoting and restoring patients` health by providing physical and psychological support to patients, friends, and families. They also supervise assigned team members.
+
+
+====================================================================================================
+CAREER: Software Engineer
+OSCA: 273333 Software Engineer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.4
+ESCO title: software developer
+Matched label: software engineer
+Exact label: yes
+Similarity: 100.0
+Description:
+Software developers implement or program all kinds of software systems based on specifications and designs by using programming languages, tools, and platforms.
+
+Candidate 2
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.1
+ESCO title: cloud engineer
+Matched label: cloud software engineer
+Exact label: no
+Similarity: 85.0
+Description:
+Cloud engineers are responsible for the design, planning, management and maintenance of cloud-based systems. They develop and implement cloud-applications, handle the migration of existing on-premise applications to the cloud, and debug cloud stacks.
+
+Candidate 3
+ISCO-08: 2512 Software developers
+Partial correspondence: yes
+ESCO code: 2512.3
+ESCO title: software architect
+Matched label: software designer
+Exact label: no
+Similarity: 82.35
+Description:
+Software architects create the technical design and the functional model of a software system, based on functional specifications. They also design the architecture of the system or different modules and components related to the business' or customer requirements, technical platform, computer language or development environment.
+
+
+====================================================================================================
+CAREER: Supply Chain Analyst
+OSCA: 223434 Supply Chain Analyst
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2421 Management and organisation analysts
+Partial correspondence: yes
+ESCO code: 2421.5
+ESCO title: logistics analyst
+Matched label: supply chain analyst
+Exact label: yes
+Similarity: 100.0
+Description:
+Logistics analysts streamline product manufacturing, transportation, storage and distribution. They assess production and supply chain problems to determine economically efficient solutions. They assists company managers in decision-making processes and direct programs designed to provide subcontractors, managers and customers with logistic technology.
+
+Candidate 2
+ISCO-08: 2421 Management and organisation analysts
+Partial correspondence: yes
+ESCO code: 2421.1
+ESCO title: business analyst
+Matched label: business analyst
+Exact label: no
+Similarity: 61.11
+Description:
+Business analysts research and understand the strategic position of businesses and companies in relation to their markets and their stakeholders. They analyse and present their views on how the company, from many perspectives, can improve its strategic position and internal corporate structure. They assess needs for change, communication methods, technology, IT tools, new standards and certifications.
+
+Candidate 3
+ISCO-08: 2421 Management and organisation analysts
+Partial correspondence: yes
+ESCO code: 2421.3
+ESCO title: business intelligence manager
+Matched label: business research analyst
+Exact label: no
+Similarity: 53.33
+Description:
+Business intelligence managers gain knowledge of the industry, the innovative processes therein, and contrast them with the operations of the company in order to improve them. They focus their analysis in the supply chain processes, warehouses, storage, and sales as to facilitate communication and revenue improvement.
+
+
+====================================================================================================
+CAREER: Taxation Accountant
+OSCA: 211135 Taxation Accountant
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1
+ESCO title: accountant
+Matched label: production accountant
+Exact label: no
+Similarity: 75.0
+Description:
+Accountants review and analyse financial statements, budgets, financial reports, and business plans in order to check for irregularities resulting from error or fraud, and provide their clients with financial advice in matters such as financial forecasting and risk analysis. They may audit financial data, resolve insolvency cases, prepare tax returns and provide other tax-related advice in reference to current legislation.
+
+Candidate 2
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1.5
+ESCO title: cost analyst
+Matched label: cost accountant
+Exact label: no
+Similarity: 70.59
+Description:
+Cost analysts prepare regular costs, budgeting analyses and reports in order to contribute to the overall cost planning and forecasting activities of a business. They review and reconcile key balance sheets and identify new opportunities to save costs.
+
+Candidate 3
+ISCO-08: 2411 Accountants
+Partial correspondence: yes
+ESCO code: 2411.1.11
+ESCO title: public finance accountant
+Matched label: finance accountant
+Exact label: no
+Similarity: 70.27
+Description:
+Public finance accountants head the treasury department of a governmental institution. They manage the institution's financial administration, expenditure and income generation, and compliance with taxation and other financial legislation. They perform administrative duties to ensure record keeping, develop plans for budget management and perform financial forecasts.
+
+
+====================================================================================================
+CAREER: UI / UX Designer
+OSCA: 242132 UI / UX Designer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.15
+ESCO title: web designer
+Matched label: ux designer
+Exact label: no
+Similarity: 88.0
+Description:
+Web designers are in charge of creating the visual elements, layout and other aspects such as the easiness of use of a website. They follow the different phases of a website creation from the design to the implementation until it goes live. They work side by side with front-end developers to design user interfaces that met the needs of customers and are also appealing. They are responsible of developing mock-ups and of confirming the technical feasibility of the product. They can use and put together various types of elements for the website including graphics, animations, text, videos and photos. They are in contact with clients and stakeholders of the company to ensure that the design of the website meets their needs.
+
+Candidate 2
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.3.1
+ESCO title: 3D animator
+Matched label: CGI designer
+Exact label: no
+Similarity: 76.92
+Description:
+3D animators are in charge of animating 3D models of objects, virtual environments, layouts, characters and 3D virtual animated agents.
+
+Candidate 3
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.12
+ESCO title: performance video designer
+Matched label: video designer
+Exact label: no
+Similarity: 71.43
+Description:
+Performance video designers develop a projected image design concept for a performance and supervise the execution of it. Their work is based on research and artistic vision. Their design is influenced by and influences other designs and must be conform with these designs and the overall artistic vision. Therefore, the designers work closely with artistic directors, operators and the artistic team. Performance video designers prepare media fragments to be used in a performance, which can involve recording, composing, manipulating and editing. They develop plans, mapping, cue lists and other documentation to support the operators and production crew. They sometimes also work as autonomous artists, creating video art outside a performance context.
+
+
+====================================================================================================
+CAREER: Web Designer
+OSCA: 242133 Web Designer
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.15
+ESCO title: web designer
+Matched label: web designer
+Exact label: yes
+Similarity: 100.0
+Description:
+Web designers are in charge of creating the visual elements, layout and other aspects such as the easiness of use of a website. They follow the different phases of a website creation from the design to the implementation until it goes live. They work side by side with front-end developers to design user interfaces that met the needs of customers and are also appealing. They are responsible of developing mock-ups and of confirming the technical feasibility of the product. They can use and put together various types of elements for the website including graphics, animations, text, videos and photos. They are in contact with clients and stakeholders of the company to ensure that the design of the website meets their needs.
+
+Candidate 2
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.3.1
+ESCO title: 3D animator
+Matched label: 3D designer
+Exact label: no
+Similarity: 78.26
+Description:
+3D animators are in charge of animating 3D models of objects, virtual environments, layouts, characters and 3D virtual animated agents.
+
+Candidate 3
+ISCO-08: 2166 Graphic and multimedia designers
+Partial correspondence: yes
+ESCO code: 2166.8
+ESCO title: gambling games designer
+Matched label: games designer
+Exact label: no
+Similarity: 76.92
+Description:
+Gambling games designers design innovative gambling, betting and lottery games. They determine the design, gaming rules or structure of a game. Gambling games designers may also demonstrate the game to individuals.
+
+
+====================================================================================================
+CAREER: Workplace Relations Adviser
+OSCA: 222132 Workplace Relations Adviser
+====================================================================================================
+
+Candidate 1
+ISCO-08: 2423 Personnel and career professionals
+Partial correspondence: yes
+ESCO code: 2423.2
+ESCO title: employment and vocational integration consultant
+Matched label: job placement adviser
+Exact label: no
+Similarity: 66.67
+Description:
+Employment and vocational integration consultants offer assistance to unemployed individuals in finding jobs or vocational training opportunities, according to their educational or professional background and experience. They advise them on how to market their skills in the job-hunting process. Employment and vocational integration consultants help job-seekers write CVs and cover letters, prepare for a job interview and indicate where to search for new job or training opportunities.
+
+Candidate 2
+ISCO-08: 2423 Personnel and career professionals
+Partial correspondence: yes
+ESCO code: 2423.7
+ESCO title: compensation analyst
+Matched label: compensation advisor
+Exact label: no
+Similarity: 63.83
+Description:
+Compensation analysts recognise and reward contributions and behaviors that support company’s business objectives and corporate values.
+
+Candidate 3
+ISCO-08: 2423 Personnel and career professionals
+Partial correspondence: yes
+ESCO code: 2423.4
+ESCO title: labour relations officer
+Matched label: labour relations officer
+Exact label: no
+Similarity: 62.75
+Description:
+Labour relations officers implement labour policy in an organisation, and advise trade unions on policies and negotiation. They handle disputes, and advise management on personnel policy as well as facilitate communication between trade unions and managerial staff.
+
