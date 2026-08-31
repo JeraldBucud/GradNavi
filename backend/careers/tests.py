@@ -31,6 +31,21 @@ from careers.services.recommendation_scoring import (
     rank_recommendation_results,
 )
 
+from careers.services.readiness_scoring import (
+    CareerNotAvailableError,
+    CareerNotFoundError,
+    CareerReadinessRequirement,
+    GapStatus,
+    ReadinessStatus,
+    calculate_career_readiness,
+    calculate_selected_career_readiness,
+    calculate_skill_gap,
+    load_career_readiness_requirements,
+    load_student_proficiencies,
+    map_student_proficiency,
+    order_skill_gaps,
+)
+
 
 class CalculateCareerFitTests(SimpleTestCase):
     """
@@ -1817,3 +1832,1411 @@ class RecommendationExplanationTests(
             result.esco_optional_matches,
             0,
         )
+
+
+class CalculateSkillGapTests(SimpleTestCase):
+    """
+    Tests the pure WBS 5.5 per-Skill readiness calculation.
+
+    These tests do not use the database.
+    """
+
+    def make_requirement(
+        self,
+        *,
+        career_skill_id=201,
+        skill_id=21,
+        skill_name="Systems Analysis",
+        concept_type="skill",
+        source_domain="onet_transferable_skills",
+        importance=Decimal("80"),
+        required_level=Decimal("80"),
+    ):
+        return CareerReadinessRequirement(
+            career_skill_id=career_skill_id,
+            skill_id=skill_id,
+            skill_name=skill_name,
+            concept_type=concept_type,
+            source_domain=source_domain,
+            importance=importance,
+            required_level=required_level,
+        )
+
+    def test_foundational_maps_to_25(self):
+        self.assertEqual(
+            map_student_proficiency(
+                "foundational"
+            ),
+            Decimal("25"),
+        )
+
+    def test_developing_maps_to_50(self):
+        self.assertEqual(
+            map_student_proficiency(
+                "developing"
+            ),
+            Decimal("50"),
+        )
+
+    def test_proficient_maps_to_75(self):
+        self.assertEqual(
+            map_student_proficiency(
+                "proficient"
+            ),
+            Decimal("75"),
+        )
+
+    def test_advanced_maps_to_100(self):
+        self.assertEqual(
+            map_student_proficiency(
+                "advanced"
+            ),
+            Decimal("100"),
+        )
+
+    def test_missing_skill_maps_to_zero(self):
+        self.assertEqual(
+            map_student_proficiency(
+                None
+            ),
+            Decimal("0"),
+        )
+
+    def test_invalid_proficiency_is_rejected(self):
+        with self.assertRaises(
+            ValueError
+        ):
+            map_student_proficiency(
+                "expert"
+            )
+
+    def test_missing_skill_returns_missing_gap(self):
+        requirement = self.make_requirement(
+            required_level=Decimal("60"),
+        )
+
+        result = calculate_skill_gap(
+            requirement=requirement,
+            student_proficiency_level=None,
+        )
+
+        self.assertEqual(
+            result.gap_status,
+            GapStatus.MISSING,
+        )
+
+        self.assertEqual(
+            result.student_proficiency_score,
+            Decimal("0"),
+        )
+
+        self.assertEqual(
+            result.gap_amount,
+            Decimal("60.00"),
+        )
+
+        self.assertEqual(
+            result.attainment_ratio,
+            Decimal("0"),
+        )
+
+        self.assertEqual(
+            result.attainment_percentage,
+            Decimal("0.00"),
+        )
+
+        self.assertEqual(
+            result.weighted_contribution,
+            Decimal("0"),
+        )
+
+    def test_below_requirement_receives_partial_attainment(self):
+        requirement = self.make_requirement(
+            importance=Decimal("80"),
+            required_level=Decimal("80"),
+        )
+
+        result = calculate_skill_gap(
+            requirement=requirement,
+            student_proficiency_level=(
+                "developing"
+            ),
+        )
+
+        self.assertEqual(
+            result.gap_status,
+            GapStatus.BELOW_REQUIREMENT,
+        )
+
+        self.assertEqual(
+            result.student_proficiency_score,
+            Decimal("50"),
+        )
+
+        self.assertEqual(
+            result.gap_amount,
+            Decimal("30.00"),
+        )
+
+        self.assertEqual(
+            result.attainment_ratio,
+            Decimal("0.625"),
+        )
+
+        self.assertEqual(
+            result.attainment_percentage,
+            Decimal("62.50"),
+        )
+
+        self.assertEqual(
+            result.weighted_contribution,
+            Decimal("50.000"),
+        )
+
+    def test_exact_requirement_is_met(self):
+        requirement = self.make_requirement(
+            importance=Decimal("70"),
+            required_level=Decimal("50"),
+        )
+
+        result = calculate_skill_gap(
+            requirement=requirement,
+            student_proficiency_level=(
+                "developing"
+            ),
+        )
+
+        self.assertEqual(
+            result.gap_status,
+            GapStatus.MEETS_REQUIREMENT,
+        )
+
+        self.assertEqual(
+            result.gap_amount,
+            Decimal("0.00"),
+        )
+
+        self.assertEqual(
+            result.attainment_ratio,
+            Decimal("1"),
+        )
+
+        self.assertEqual(
+            result.attainment_percentage,
+            Decimal("100.00"),
+        )
+
+        self.assertEqual(
+            result.weighted_contribution,
+            Decimal("70"),
+        )
+
+    def test_attainment_is_capped_at_one(self):
+        requirement = self.make_requirement(
+            importance=Decimal("60"),
+            required_level=Decimal("50"),
+        )
+
+        result = calculate_skill_gap(
+            requirement=requirement,
+            student_proficiency_level=(
+                "proficient"
+            ),
+        )
+
+        self.assertEqual(
+            result.gap_status,
+            GapStatus.MEETS_REQUIREMENT,
+        )
+
+        self.assertEqual(
+            result.attainment_ratio,
+            Decimal("1"),
+        )
+
+        self.assertEqual(
+            result.attainment_percentage,
+            Decimal("100.00"),
+        )
+
+        self.assertEqual(
+            result.weighted_contribution,
+            Decimal("60"),
+        )
+
+    def test_negative_importance_is_rejected(self):
+        requirement = self.make_requirement(
+            importance=Decimal("-1"),
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_skill_gap(
+                requirement=requirement,
+                student_proficiency_level=(
+                    "developing"
+                ),
+            )
+
+    def test_importance_above_100_is_rejected(self):
+        requirement = self.make_requirement(
+            importance=Decimal("100.01"),
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_skill_gap(
+                requirement=requirement,
+                student_proficiency_level=(
+                    "developing"
+                ),
+            )
+
+    def test_zero_required_level_is_rejected(self):
+        requirement = self.make_requirement(
+            required_level=Decimal("0"),
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_skill_gap(
+                requirement=requirement,
+                student_proficiency_level=(
+                    "developing"
+                ),
+            )
+
+    def test_required_level_above_100_is_rejected(self):
+        requirement = self.make_requirement(
+            required_level=Decimal("100.01"),
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_skill_gap(
+                requirement=requirement,
+                student_proficiency_level=(
+                    "developing"
+                ),
+            )
+
+    def test_technology_requirement_is_rejected(self):
+        requirement = self.make_requirement(
+            concept_type="technology",
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_skill_gap(
+                requirement=requirement,
+                student_proficiency_level=(
+                    "developing"
+                ),
+            )
+
+    def test_unsupported_source_domain_is_rejected(self):
+        requirement = self.make_requirement(
+            source_domain=(
+                "onet_software_skills"
+            ),
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_skill_gap(
+                requirement=requirement,
+                student_proficiency_level=(
+                    "developing"
+                ),
+            )
+
+    def test_blank_skill_name_is_rejected(self):
+        requirement = self.make_requirement(
+            skill_name="   ",
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_skill_gap(
+                requirement=requirement,
+                student_proficiency_level=(
+                    "developing"
+                ),
+            )
+
+
+class CalculateCareerReadinessTests(SimpleTestCase):
+    """
+    Tests the pure WBS 5.5 Career-level readiness logic.
+
+    These tests perform no database operations.
+    """
+
+    def make_requirement(
+        self,
+        *,
+        career_skill_id,
+        skill_id,
+        skill_name,
+        importance,
+        required_level,
+        concept_type="skill",
+        source_domain="onet_transferable_skills",
+    ):
+        return CareerReadinessRequirement(
+            career_skill_id=career_skill_id,
+            skill_id=skill_id,
+            skill_name=skill_name,
+            concept_type=concept_type,
+            source_domain=source_domain,
+            importance=importance,
+            required_level=required_level,
+        )
+
+    def test_full_readiness_returns_100_percent(self):
+        requirements = (
+            self.make_requirement(
+                career_skill_id=301,
+                skill_id=31,
+                skill_name="Skill A",
+                importance=Decimal("80"),
+                required_level=Decimal("50"),
+            ),
+            self.make_requirement(
+                career_skill_id=302,
+                skill_id=32,
+                skill_name="Skill B",
+                importance=Decimal("20"),
+                required_level=Decimal("75"),
+            ),
+        )
+
+        result = calculate_career_readiness(
+            career_id=1,
+            career_name="Software Engineer",
+            student_proficiencies={
+                31: "advanced",
+                32: "advanced",
+            },
+            requirements=requirements,
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.SCORED,
+        )
+
+        self.assertEqual(
+            result.readiness_score,
+            Decimal("100.00"),
+        )
+
+        self.assertEqual(
+            result.meets_requirement_count,
+            2,
+        )
+
+        self.assertEqual(
+            result.missing_requirement_count,
+            0,
+        )
+
+    def test_partial_readiness_uses_importance_weighting(self):
+        requirements = (
+            self.make_requirement(
+                career_skill_id=311,
+                skill_id=41,
+                skill_name="Skill A",
+                importance=Decimal("80"),
+                required_level=Decimal("80"),
+            ),
+            self.make_requirement(
+                career_skill_id=312,
+                skill_id=42,
+                skill_name="Skill B",
+                importance=Decimal("20"),
+                required_level=Decimal("50"),
+            ),
+        )
+
+        result = calculate_career_readiness(
+            career_id=1,
+            career_name="Software Engineer",
+            student_proficiencies={
+                41: "developing",
+                42: "proficient",
+            },
+            requirements=requirements,
+        )
+
+        self.assertEqual(
+            result.readiness_score,
+            Decimal("70.00"),
+        )
+
+        self.assertEqual(
+            result.total_importance_weight,
+            Decimal("100"),
+        )
+
+        self.assertEqual(
+            result.weighted_attainment,
+            Decimal("70.000"),
+        )
+
+        self.assertEqual(
+            result.below_requirement_count,
+            1,
+        )
+
+        self.assertEqual(
+            result.meets_requirement_count,
+            1,
+        )
+
+    def test_documented_unrelated_skills_return_zero(self):
+        requirements = (
+            self.make_requirement(
+                career_skill_id=321,
+                skill_id=51,
+                skill_name="Career Skill",
+                importance=Decimal("80"),
+                required_level=Decimal("50"),
+            ),
+        )
+
+        result = calculate_career_readiness(
+            career_id=1,
+            career_name="Software Engineer",
+            student_proficiencies={
+                999: "advanced",
+            },
+            requirements=requirements,
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.SCORED,
+        )
+
+        self.assertEqual(
+            result.readiness_score,
+            Decimal("0.00"),
+        )
+
+        self.assertEqual(
+            result.missing_requirement_count,
+            1,
+        )
+
+    def test_empty_student_profile_is_insufficient(self):
+        result = calculate_career_readiness(
+            career_id=1,
+            career_name="Software Engineer",
+            student_proficiencies={},
+            requirements=(
+                self.make_requirement(
+                    career_skill_id=331,
+                    skill_id=61,
+                    skill_name="Skill A",
+                    importance=Decimal("80"),
+                    required_level=Decimal("50"),
+                ),
+            ),
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.INSUFFICIENT_PROFILE,
+        )
+
+        self.assertIsNone(
+            result.readiness_score
+        )
+
+        self.assertEqual(
+            result.skill_gaps,
+            (),
+        )
+
+    def test_career_without_evidence_is_insufficient(self):
+        result = calculate_career_readiness(
+            career_id=1,
+            career_name="Health Information Manager",
+            student_proficiencies={
+                1: "proficient",
+            },
+            requirements=(),
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.INSUFFICIENT_EVIDENCE,
+        )
+
+        self.assertIsNone(
+            result.readiness_score
+        )
+
+    def test_zero_total_importance_is_insufficient(self):
+        requirements = (
+            self.make_requirement(
+                career_skill_id=341,
+                skill_id=71,
+                skill_name="Zero Weight",
+                importance=Decimal("0"),
+                required_level=Decimal("50"),
+            ),
+        )
+
+        result = calculate_career_readiness(
+            career_id=1,
+            career_name="Software Engineer",
+            student_proficiencies={
+                71: "developing",
+            },
+            requirements=requirements,
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.INSUFFICIENT_EVIDENCE,
+        )
+
+        self.assertIsNone(
+            result.readiness_score
+        )
+
+    def test_duplicate_career_skill_is_rejected(self):
+        requirements = (
+            self.make_requirement(
+                career_skill_id=351,
+                skill_id=81,
+                skill_name="Skill A",
+                importance=Decimal("70"),
+                required_level=Decimal("50"),
+            ),
+            self.make_requirement(
+                career_skill_id=351,
+                skill_id=82,
+                skill_name="Skill B",
+                importance=Decimal("60"),
+                required_level=Decimal("50"),
+            ),
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_career_readiness(
+                career_id=1,
+                career_name="Software Engineer",
+                student_proficiencies={
+                    81: "proficient",
+                },
+                requirements=requirements,
+            )
+
+    def test_gap_order_is_deterministic(self):
+        requirements = (
+            self.make_requirement(
+                career_skill_id=361,
+                skill_id=91,
+                skill_name="Met Skill",
+                importance=Decimal("100"),
+                required_level=Decimal("50"),
+            ),
+            self.make_requirement(
+                career_skill_id=362,
+                skill_id=92,
+                skill_name="Lower Missing",
+                importance=Decimal("40"),
+                required_level=Decimal("80"),
+            ),
+            self.make_requirement(
+                career_skill_id=363,
+                skill_id=93,
+                skill_name="Higher Missing",
+                importance=Decimal("90"),
+                required_level=Decimal("60"),
+            ),
+            self.make_requirement(
+                career_skill_id=364,
+                skill_id=94,
+                skill_name="Below Skill",
+                importance=Decimal("95"),
+                required_level=Decimal("80"),
+            ),
+        )
+
+        result = calculate_career_readiness(
+            career_id=1,
+            career_name="Software Engineer",
+            student_proficiencies={
+                91: "advanced",
+                94: "developing",
+                999: "foundational",
+            },
+            requirements=requirements,
+        )
+
+        self.assertEqual(
+            tuple(
+                gap.skill_name
+                for gap in result.skill_gaps
+            ),
+            (
+                "Higher Missing",
+                "Lower Missing",
+                "Below Skill",
+                "Met Skill",
+            ),
+        )
+
+    def test_readiness_score_rounds_to_two_decimals(self):
+        requirements = (
+            self.make_requirement(
+                career_skill_id=371,
+                skill_id=101,
+                skill_name="Rounded Skill",
+                importance=Decimal("100"),
+                required_level=Decimal("60"),
+            ),
+        )
+
+        result = calculate_career_readiness(
+            career_id=1,
+            career_name="Software Engineer",
+            student_proficiencies={
+                101: "developing",
+            },
+            requirements=requirements,
+        )
+
+        self.assertEqual(
+            result.readiness_score,
+            Decimal("83.33"),
+        )
+
+    def test_invalid_career_identity_is_rejected(self):
+        requirement = self.make_requirement(
+            career_skill_id=381,
+            skill_id=111,
+            skill_name="Skill A",
+            importance=Decimal("80"),
+            required_level=Decimal("50"),
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_career_readiness(
+                career_id=0,
+                career_name="Software Engineer",
+                student_proficiencies={
+                    111: "proficient",
+                },
+                requirements=(
+                    requirement,
+                ),
+            )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_career_readiness(
+                career_id=1,
+                career_name="   ",
+                student_proficiencies={
+                    111: "proficient",
+                },
+                requirements=(
+                    requirement,
+                ),
+            )
+
+
+class ReadinessScoringDatabaseTests(
+    RecommendationScoringDatabaseFixtureMixin,
+    TestCase,
+):
+    """
+    Database integration tests for WBS 5.5 readiness loaders.
+    """
+
+    def _create_readiness_evidence(
+        self,
+        *,
+        skill,
+        importance=Decimal("80"),
+        required_level=Decimal("60"),
+        source_domain="onet_essential_skills",
+        dataset=None,
+        review_status=ReviewStatus.APPROVED,
+        not_relevant=False,
+        recommend_suppress=None,
+        career_skill=None,
+        source_relation="",
+        external_occupation_id="",
+        external_skill_id="",
+    ):
+        if dataset is None:
+            dataset = self.onet_dataset
+
+        if career_skill is None:
+            career_skill = (
+                CareerSkill.objects.create(
+                    career=self.career,
+                    skill=skill,
+                    review_status=(
+                        review_status
+                    ),
+                )
+            )
+
+        CareerSkillEvidence.objects.create(
+            career_skill=career_skill,
+            dataset=dataset,
+            external_occupation_id=(
+                external_occupation_id
+            ),
+            external_skill_id=(
+                external_skill_id
+            ),
+            source_domain=(
+                source_domain
+            ),
+            source_relation=(
+                source_relation
+            ),
+            normalized_importance=(
+                importance
+            ),
+            normalized_level=(
+                required_level
+            ),
+            not_relevant=(
+                not_relevant
+            ),
+            recommend_suppress=(
+                recommend_suppress
+            ),
+        )
+
+        return career_skill
+
+    def test_load_student_proficiencies_returns_canonical_mapping(
+        self,
+    ):
+        result = load_student_proficiencies(
+            student_profile_id=(
+                self.profile.id
+            )
+        )
+
+        self.assertEqual(
+            result,
+            {
+                self.student_skill.id:
+                    StudentSkill
+                    .ProficiencyLevel
+                    .FOUNDATIONAL,
+
+                self.student_knowledge.id:
+                    StudentSkill
+                    .ProficiencyLevel
+                    .ADVANCED,
+            },
+        )
+
+    def test_readiness_loader_returns_importance_and_level(
+        self,
+    ):
+        skill = self._create_skill(
+            "Readiness Source Skill"
+        )
+
+        career_skill = (
+            self._create_readiness_evidence(
+                skill=skill,
+                importance=Decimal("72.00"),
+                required_level=Decimal("58.86"),
+                source_domain=(
+                    "onet_essential_skills"
+                ),
+            )
+        )
+
+        result = (
+            load_career_readiness_requirements(
+                career_id=self.career.id
+            )
+        )
+
+        self.assertEqual(
+            len(result),
+            1,
+        )
+
+        self.assertEqual(
+            result[0].career_skill_id,
+            career_skill.id,
+        )
+
+        self.assertEqual(
+            result[0].skill_id,
+            skill.id,
+        )
+
+        self.assertEqual(
+            result[0].importance,
+            Decimal("72.00"),
+        )
+
+        self.assertEqual(
+            result[0].required_level,
+            Decimal("58.86"),
+        )
+
+    def test_readiness_loader_accepts_only_approved_domains_and_concepts(
+        self,
+    ):
+        skill = self._create_skill(
+            "Readiness Essential Skill"
+        )
+
+        knowledge = self._create_skill(
+            "Readiness Knowledge",
+            Skill.ConceptType.KNOWLEDGE,
+        )
+
+        transferable = self._create_skill(
+            "Readiness Transferable Skill"
+        )
+
+        software_domain_skill = (
+            self._create_skill(
+                "Readiness Software Domain Skill"
+            )
+        )
+
+        technology = self._create_skill(
+            "Readiness Technology",
+            Skill.ConceptType.TECHNOLOGY,
+        )
+
+        self._create_readiness_evidence(
+            skill=skill,
+            source_domain=(
+                "onet_essential_skills"
+            ),
+        )
+
+        self._create_readiness_evidence(
+            skill=knowledge,
+            source_domain=(
+                "onet_knowledge"
+            ),
+        )
+
+        self._create_readiness_evidence(
+            skill=transferable,
+            source_domain=(
+                "onet_transferable_skills"
+            ),
+        )
+
+        self._create_readiness_evidence(
+            skill=software_domain_skill,
+            source_domain=(
+                "onet_software_skills"
+            ),
+        )
+
+        # Synthetic numerical evidence is supplied to prove
+        # technology concepts remain outside WBS 5.5 even
+        # when the source-domain name is numerical.
+        self._create_readiness_evidence(
+            skill=technology,
+            source_domain=(
+                "onet_knowledge"
+            ),
+        )
+
+        result = (
+            load_career_readiness_requirements(
+                career_id=self.career.id
+            )
+        )
+
+        self.assertEqual(
+            tuple(
+                item.skill_id
+                for item in result
+            ),
+            (
+                skill.id,
+                knowledge.id,
+                transferable.id,
+            ),
+        )
+
+    def test_readiness_loader_excludes_ineligible_evidence(
+        self,
+    ):
+        eligible = self._create_skill(
+            "Readiness Eligible"
+        )
+
+        pending = self._create_skill(
+            "Readiness Pending"
+        )
+
+        esco = self._create_skill(
+            "Readiness ESCO"
+        )
+
+        superseded = self._create_skill(
+            "Readiness Superseded"
+        )
+
+        no_importance = self._create_skill(
+            "Readiness No Importance"
+        )
+
+        no_level = self._create_skill(
+            "Readiness No Level"
+        )
+
+        not_relevant = self._create_skill(
+            "Readiness Not Relevant"
+        )
+
+        suppressed = self._create_skill(
+            "Readiness Suppressed"
+        )
+
+        self._create_readiness_evidence(
+            skill=eligible,
+            importance=Decimal("75"),
+            required_level=Decimal("60"),
+        )
+
+        self._create_readiness_evidence(
+            skill=pending,
+            review_status=(
+                ReviewStatus.PENDING
+            ),
+        )
+
+        self._create_readiness_evidence(
+            skill=esco,
+            dataset=self.esco_dataset,
+        )
+
+        self._create_readiness_evidence(
+            skill=superseded,
+            dataset=(
+                self.superseded_onet_dataset
+            ),
+        )
+
+        self._create_readiness_evidence(
+            skill=no_importance,
+            importance=None,
+        )
+
+        self._create_readiness_evidence(
+            skill=no_level,
+            required_level=None,
+        )
+
+        self._create_readiness_evidence(
+            skill=not_relevant,
+            not_relevant=True,
+        )
+
+        self._create_readiness_evidence(
+            skill=suppressed,
+            recommend_suppress=True,
+        )
+
+        result = (
+            load_career_readiness_requirements(
+                career_id=self.career.id
+            )
+        )
+
+        self.assertEqual(
+            tuple(
+                item.skill_id
+                for item in result
+            ),
+            (
+                eligible.id,
+            ),
+        )
+
+    def test_duplicate_career_skill_evidence_remains_visible(
+        self,
+    ):
+        skill = self._create_skill(
+            "Duplicate Readiness Evidence"
+        )
+
+        career_skill = (
+            CareerSkill.objects.create(
+                career=self.career,
+                skill=skill,
+                review_status=(
+                    ReviewStatus.APPROVED
+                ),
+            )
+        )
+
+        self._create_readiness_evidence(
+            skill=skill,
+            career_skill=career_skill,
+            importance=Decimal("80"),
+            required_level=Decimal("60"),
+            source_relation="first",
+        )
+
+        self._create_readiness_evidence(
+            skill=skill,
+            career_skill=career_skill,
+            importance=Decimal("70"),
+            required_level=Decimal("50"),
+            source_relation="second",
+        )
+
+        result = (
+            load_career_readiness_requirements(
+                career_id=self.career.id
+            )
+        )
+
+        self.assertEqual(
+            len(result),
+            2,
+        )
+
+        self.assertEqual(
+            result[0].career_skill_id,
+            result[1].career_skill_id,
+        )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_career_readiness(
+                career_id=self.career.id,
+                career_name=self.career.name,
+                student_proficiencies={
+                    skill.id: "proficient",
+                },
+                requirements=result,
+            )
+
+    def test_database_loaders_feed_pure_readiness_calculation(
+        self,
+    ):
+        first_skill = self.student_skill
+
+        second_skill = (
+            self.student_knowledge
+        )
+
+        self._create_readiness_evidence(
+            skill=first_skill,
+            importance=Decimal("80"),
+            required_level=Decimal("50"),
+            source_domain=(
+                "onet_essential_skills"
+            ),
+        )
+
+        self._create_readiness_evidence(
+            skill=second_skill,
+            importance=Decimal("20"),
+            required_level=Decimal("75"),
+            source_domain=(
+                "onet_knowledge"
+            ),
+        )
+
+        student_proficiencies = (
+            load_student_proficiencies(
+                student_profile_id=(
+                    self.profile.id
+                )
+            )
+        )
+
+        requirements = (
+            load_career_readiness_requirements(
+                career_id=self.career.id
+            )
+        )
+
+        result = calculate_career_readiness(
+            career_id=self.career.id,
+            career_name=self.career.name,
+            student_proficiencies=(
+                student_proficiencies
+            ),
+            requirements=requirements,
+        )
+
+        # Foundational = 25 against Level 50:
+        # 50 percent attainment on weight 80 = 40.
+        #
+        # Advanced = 100 against Level 75:
+        # full attainment on weight 20 = 20.
+        #
+        # Total achieved weight = 60 of 100.
+        self.assertEqual(
+            result.readiness_score,
+            Decimal("60.00"),
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.SCORED,
+        )
+
+        self.assertEqual(
+            result.below_requirement_count,
+            1,
+        )
+
+        self.assertEqual(
+            result.meets_requirement_count,
+            1,
+        )
+
+
+class ReadinessOrchestrationTests(
+    RecommendationScoringDatabaseFixtureMixin,
+    TestCase,
+):
+    """
+    Tests the WBS 5.5 selected-Career orchestration layer.
+    """
+
+    def _create_readiness_evidence(
+        self,
+        *,
+        skill,
+        importance,
+        required_level,
+        source_domain="onet_essential_skills",
+    ):
+        career_skill = (
+            CareerSkill.objects.create(
+                career=self.career,
+                skill=skill,
+                review_status=(
+                    ReviewStatus.APPROVED
+                ),
+            )
+        )
+
+        CareerSkillEvidence.objects.create(
+            career_skill=career_skill,
+            dataset=self.onet_dataset,
+            source_domain=source_domain,
+            normalized_importance=(
+                importance
+            ),
+            normalized_level=(
+                required_level
+            ),
+            not_relevant=False,
+        )
+
+        return career_skill
+
+    def test_selected_active_career_returns_readiness_result(
+        self,
+    ):
+        self._create_readiness_evidence(
+            skill=self.student_skill,
+            importance=Decimal("80"),
+            required_level=Decimal("50"),
+        )
+
+        self._create_readiness_evidence(
+            skill=self.student_knowledge,
+            importance=Decimal("20"),
+            required_level=Decimal("75"),
+            source_domain="onet_knowledge",
+        )
+
+        result = (
+            calculate_selected_career_readiness(
+                student_profile_id=(
+                    self.profile.id
+                ),
+                career_id=self.career.id,
+            )
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.SCORED,
+        )
+
+        self.assertEqual(
+            result.readiness_score,
+            Decimal("60.00"),
+        )
+
+        self.assertEqual(
+            result.career_id,
+            self.career.id,
+        )
+
+        self.assertEqual(
+            result.career_name,
+            self.career.name,
+        )
+
+    def test_selected_career_without_evidence_is_insufficient(
+        self,
+    ):
+        result = (
+            calculate_selected_career_readiness(
+                student_profile_id=(
+                    self.profile.id
+                ),
+                career_id=self.career.id,
+            )
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.INSUFFICIENT_EVIDENCE,
+        )
+
+        self.assertIsNone(
+            result.readiness_score
+        )
+
+    def test_empty_student_profile_is_insufficient(
+        self,
+    ):
+        user_model = get_user_model()
+
+        empty_user = (
+            user_model.objects.create_user(
+                email=(
+                    "wbs55-empty-profile"
+                    "@example.com"
+                ),
+                password="test-password",
+            )
+        )
+
+        empty_profile = (
+            StudentProfile.objects.create(
+                user=empty_user
+            )
+        )
+
+        self._create_readiness_evidence(
+            skill=self.student_skill,
+            importance=Decimal("80"),
+            required_level=Decimal("50"),
+        )
+
+        result = (
+            calculate_selected_career_readiness(
+                student_profile_id=(
+                    empty_profile.id
+                ),
+                career_id=self.career.id,
+            )
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.INSUFFICIENT_PROFILE,
+        )
+
+        self.assertIsNone(
+            result.readiness_score
+        )
+
+    def test_nonexistent_career_raises_domain_error(
+        self,
+    ):
+        missing_career_id = (
+            Career.objects
+            .order_by("-id")
+            .first()
+            .id
+            + 1000
+        )
+
+        with self.assertRaises(
+            CareerNotFoundError
+        ):
+            calculate_selected_career_readiness(
+                student_profile_id=(
+                    self.profile.id
+                ),
+                career_id=(
+                    missing_career_id
+                ),
+            )
+
+    def test_inactive_career_raises_domain_error(
+        self,
+    ):
+        inactive_career = (
+            Career.objects.create(
+                name="Inactive Readiness Career",
+                active=False,
+            )
+        )
+
+        with self.assertRaises(
+            CareerNotAvailableError
+        ):
+            calculate_selected_career_readiness(
+                student_profile_id=(
+                    self.profile.id
+                ),
+                career_id=(
+                    inactive_career.id
+                ),
+            )
+
+    def test_invalid_identifiers_are_rejected(
+        self,
+    ):
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_selected_career_readiness(
+                student_profile_id=0,
+                career_id=self.career.id,
+            )
+
+        with self.assertRaises(
+            ValueError
+        ):
+            calculate_selected_career_readiness(
+                student_profile_id=(
+                    self.profile.id
+                ),
+                career_id=0,
+            )
