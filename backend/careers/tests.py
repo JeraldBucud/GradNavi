@@ -55,7 +55,10 @@ from careers.services.readiness_scoring import (
 )
 
 from careers.services.learning_roadmap import (
+    LearningPlan,
+    LearningSuggestion,
     LearningResourceSummary,
+    RoadmapStep,
     build_learning_suggestions,
     build_roadmap_steps,
     generate_learning_plan,
@@ -651,6 +654,658 @@ class RecommendationAPITests(APITestCase):
                     "esco_optional_matches": 0,
                 }
             ],
+        )
+
+
+class LearningRoadmapAPITests(APITestCase):
+    """
+    WBS 5.7 API tests for learning suggestions and roadmap output.
+    """
+
+    def setUp(self):
+        user_model = get_user_model()
+
+        self.learning_url = (
+            "/api/v1/learning-resources/"
+        )
+        self.roadmap_url = "/api/v1/roadmaps/"
+
+        self.user = user_model.objects.create_user(
+            email="learning-api-a@gradnavi.test",
+            password="StrongPassword123!",
+        )
+        self.profile = StudentProfile.objects.create(
+            user=self.user,
+        )
+        self.access_token = str(
+            RefreshToken
+            .for_user(self.user)
+            .access_token
+        )
+
+        self.other_user = user_model.objects.create_user(
+            email="learning-api-b@gradnavi.test",
+            password="StrongPassword123!",
+        )
+        self.other_profile = StudentProfile.objects.create(
+            user=self.other_user,
+        )
+
+    def authenticated_get(
+        self,
+        path,
+    ):
+        return self.client.get(
+            path,
+            HTTP_AUTHORIZATION=(
+                f"Bearer {self.access_token}"
+            ),
+        )
+
+    def make_resource_summary(
+        self,
+        *,
+        resource_id=1,
+        title="Python Foundations",
+        provider="GradNavi Reference",
+        url="https://example.com/python-foundations",
+        resource_type="course",
+        description="Introductory Python resource.",
+    ):
+        return LearningResourceSummary(
+            id=resource_id,
+            title=title,
+            provider=provider,
+            url=url,
+            resource_type=resource_type,
+            description=description,
+        )
+
+    def make_readiness_result(
+        self,
+        *,
+        career_id=10,
+        career_name="Software Engineer",
+        score_status=ReadinessStatus.SCORED,
+        readiness_score=Decimal("55.50"),
+    ):
+        return CareerReadinessResult(
+            career_id=career_id,
+            career_name=career_name,
+            score_status=score_status,
+            readiness_score=readiness_score,
+            skill_gaps=(),
+        )
+
+    def make_plan(
+        self,
+        *,
+        career_id=10,
+        career_name="Software Engineer",
+        suggestions=None,
+        roadmap_steps=None,
+    ):
+        readiness_result = self.make_readiness_result(
+            career_id=career_id,
+            career_name=career_name,
+        )
+        if suggestions is None:
+            suggestions = (
+                LearningSuggestion(
+                    priority=1,
+                    skill_id=101,
+                    skill_name="Python",
+                    gap_status=GapStatus.MISSING,
+                    current_proficiency=None,
+                    current_score=Decimal("0"),
+                    required_level=Decimal("80"),
+                    gap_amount=Decimal("80"),
+                    importance=Decimal("90"),
+                    resources=(
+                        self.make_resource_summary(),
+                    ),
+                ),
+                LearningSuggestion(
+                    priority=2,
+                    skill_id=102,
+                    skill_name="Systems Analysis",
+                    gap_status=(
+                        GapStatus.BELOW_REQUIREMENT
+                    ),
+                    current_proficiency="developing",
+                    current_score=Decimal("50"),
+                    required_level=Decimal("75"),
+                    gap_amount=Decimal("25"),
+                    importance=Decimal("70"),
+                    resources=(),
+                ),
+            )
+
+        if roadmap_steps is None:
+            roadmap_steps = tuple(
+                RoadmapStep(
+                    step_number=suggestion.priority,
+                    skill_id=suggestion.skill_id,
+                    skill_name=suggestion.skill_name,
+                    gap_status=suggestion.gap_status,
+                    current_proficiency=(
+                        suggestion.current_proficiency
+                    ),
+                    current_score=(
+                        suggestion.current_score
+                    ),
+                    required_level=(
+                        suggestion.required_level
+                    ),
+                    gap_amount=suggestion.gap_amount,
+                    importance=suggestion.importance,
+                    resources=suggestion.resources,
+                )
+                for suggestion in suggestions
+            )
+
+        return LearningPlan(
+            student_profile_id=self.profile.id,
+            career_id=career_id,
+            career_name=career_name,
+            readiness_result=readiness_result,
+            suggestions=tuple(
+                suggestions
+            ),
+            roadmap_steps=tuple(
+                roadmap_steps
+            ),
+        )
+
+    def test_learning_resources_authentication_required(
+        self,
+    ):
+        response = self.client.get(
+            f"{self.learning_url}?career_id=10"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "not_authenticated",
+        )
+
+    def test_roadmap_authentication_required(self):
+        response = self.client.get(
+            f"{self.roadmap_url}?career_id=10"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "not_authenticated",
+        )
+
+    def test_missing_student_profile_returns_not_found(
+        self,
+    ):
+        self.profile.delete()
+
+        response = self.authenticated_get(
+            f"{self.learning_url}?career_id=10"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "not_found",
+        )
+
+    def test_student_profile_is_derived_from_request_user(
+        self,
+    ):
+        plan = self.make_plan()
+        path = (
+            f"{self.learning_url}?career_id=10"
+            f"&student_profile_id={self.other_profile.id}"
+            f"&user_id={self.other_user.id}"
+        )
+
+        with patch(
+            "careers.views.generate_learning_plan",
+            return_value=plan,
+        ) as generate_mock:
+            response = self.authenticated_get(
+                path
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        generate_mock.assert_called_once_with(
+            student_profile_id=self.profile.id,
+            career_id=10,
+        )
+
+    def test_api_delegates_to_wbs57_service(self):
+        plan = self.make_plan()
+
+        with patch(
+            "careers.views.generate_learning_plan",
+            return_value=plan,
+        ) as generate_mock:
+            self.authenticated_get(
+                f"{self.roadmap_url}?career_id=10"
+            )
+
+        generate_mock.assert_called_once_with(
+            student_profile_id=self.profile.id,
+            career_id=10,
+        )
+
+    def test_valid_learning_resource_response(self):
+        plan = self.make_plan()
+
+        with patch(
+            "careers.views.generate_learning_plan",
+            return_value=plan,
+        ):
+            response = self.authenticated_get(
+                f"{self.learning_url}?career_id=10"
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            set(response.data["data"]),
+            {
+                "career_id",
+                "career_name",
+                "score_status",
+                "readiness_score",
+                "learning_suggestions",
+            },
+        )
+        self.assertEqual(
+            response.data["data"]["career_id"],
+            10,
+        )
+        self.assertEqual(
+            response.data["data"]["readiness_score"],
+            "55.50",
+        )
+
+    def test_valid_roadmap_response(self):
+        plan = self.make_plan()
+
+        with patch(
+            "careers.views.generate_learning_plan",
+            return_value=plan,
+        ):
+            response = self.authenticated_get(
+                f"{self.roadmap_url}?career_id=10"
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            set(response.data["data"]),
+            {
+                "career_id",
+                "career_name",
+                "score_status",
+                "readiness_score",
+                "roadmap_steps",
+            },
+        )
+        self.assertEqual(
+            len(
+                response.data["data"]["roadmap_steps"]
+            ),
+            2,
+        )
+
+    def test_missing_and_below_gaps_are_exposed_and_met_excluded(
+        self,
+    ):
+        plan = self.make_plan()
+
+        with patch(
+            "careers.views.generate_learning_plan",
+            return_value=plan,
+        ):
+            response = self.authenticated_get(
+                f"{self.learning_url}?career_id=10"
+            )
+
+        suggestions = (
+            response
+            .data["data"]["learning_suggestions"]
+        )
+
+        self.assertEqual(
+            [
+                item["gap_status"]
+                for item in suggestions
+            ],
+            [
+                "missing",
+                "below_requirement",
+            ],
+        )
+        self.assertNotIn(
+            "meets_requirement",
+            [
+                item["gap_status"]
+                for item in suggestions
+            ],
+        )
+
+    def test_learning_resource_serialization_and_zero_resource_gap(
+        self,
+    ):
+        plan = self.make_plan()
+
+        with patch(
+            "careers.views.generate_learning_plan",
+            return_value=plan,
+        ):
+            response = self.authenticated_get(
+                f"{self.learning_url}?career_id=10"
+            )
+
+        suggestions = (
+            response
+            .data["data"]["learning_suggestions"]
+        )
+        resource = suggestions[0]["resources"][0]
+
+        self.assertEqual(
+            resource,
+            {
+                "id": 1,
+                "title": "Python Foundations",
+                "provider": "GradNavi Reference",
+                "url": (
+                    "https://example.com/"
+                    "python-foundations"
+                ),
+                "resource_type": "course",
+                "description": (
+                    "Introductory Python resource."
+                ),
+            },
+        )
+        self.assertEqual(
+            suggestions[1]["resources"],
+            [],
+        )
+
+    def test_roadmap_ordering_is_preserved(self):
+        plan = self.make_plan()
+
+        with patch(
+            "careers.views.generate_learning_plan",
+            return_value=plan,
+        ):
+            response = self.authenticated_get(
+                f"{self.roadmap_url}?career_id=10"
+            )
+
+        self.assertEqual(
+            [
+                step["skill_id"]
+                for step
+                in response.data["data"]["roadmap_steps"]
+            ],
+            [
+                101,
+                102,
+            ],
+        )
+        self.assertEqual(
+            [
+                step["step_number"]
+                for step
+                in response.data["data"]["roadmap_steps"]
+            ],
+            [
+                1,
+                2,
+            ],
+        )
+
+    def test_repeated_response_is_deterministic(self):
+        plan = self.make_plan()
+
+        with patch(
+            "careers.views.generate_learning_plan",
+            side_effect=[
+                plan,
+                plan,
+            ],
+        ):
+            first_response = self.authenticated_get(
+                f"{self.learning_url}?career_id=10"
+            )
+            second_response = self.authenticated_get(
+                f"{self.learning_url}?career_id=10"
+            )
+
+        self.assertEqual(
+            first_response.data,
+            second_response.data,
+        )
+
+    def test_invalid_career_id_returns_validation_error(
+        self,
+    ):
+        response = self.authenticated_get(
+            f"{self.learning_url}?career_id=abc"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+        )
+
+    def test_nonexistent_career_returns_not_found(self):
+        with patch(
+            "careers.views.generate_learning_plan",
+            side_effect=CareerNotFoundError(),
+        ):
+            response = self.authenticated_get(
+                f"{self.learning_url}?career_id=999"
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "not_found",
+        )
+
+    def test_unavailable_career_returns_validation_error(
+        self,
+    ):
+        with patch(
+            "careers.views.generate_learning_plan",
+            side_effect=CareerNotAvailableError(),
+        ):
+            response = self.authenticated_get(
+                f"{self.roadmap_url}?career_id=12"
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+        )
+
+    def test_real_service_excludes_inactive_resources(
+        self,
+    ):
+        source = ReferenceSource.objects.create(
+            name="O*NET Database",
+        )
+        dataset = ReferenceDataset.objects.create(
+            source=source,
+            version="31.0-learning-api-test",
+            retrieved_at=date(
+                2026,
+                8,
+                30,
+            ),
+            status=ReferenceDataset.Status.ACTIVE,
+        )
+        career = Career.objects.create(
+            name="Learning API Career",
+        )
+        student_skill = Skill.objects.create(
+            name="Learning API Below Skill",
+            concept_type=Skill.ConceptType.SKILL,
+        )
+        missing_skill = Skill.objects.create(
+            name="Learning API Missing Skill",
+            concept_type=Skill.ConceptType.SKILL,
+        )
+
+        StudentSkill.objects.create(
+            student_profile=self.profile,
+            skill=student_skill,
+            proficiency_level=(
+                StudentSkill
+                .ProficiencyLevel
+                .DEVELOPING
+            ),
+        )
+
+        below_career_skill = CareerSkill.objects.create(
+            career=career,
+            skill=student_skill,
+            review_status=ReviewStatus.APPROVED,
+        )
+        missing_career_skill = CareerSkill.objects.create(
+            career=career,
+            skill=missing_skill,
+            review_status=ReviewStatus.APPROVED,
+        )
+        CareerSkillEvidence.objects.create(
+            career_skill=below_career_skill,
+            dataset=dataset,
+            source_domain="onet_essential_skills",
+            normalized_importance=Decimal("80.00"),
+            normalized_level=Decimal("75.00"),
+            not_relevant=False,
+        )
+        CareerSkillEvidence.objects.create(
+            career_skill=missing_career_skill,
+            dataset=dataset,
+            source_domain="onet_essential_skills",
+            normalized_importance=Decimal("90.00"),
+            normalized_level=Decimal("70.00"),
+            not_relevant=False,
+        )
+
+        active_resource = LearningResource.objects.create(
+            title="Active Learning API Course",
+            provider="GradNavi Reference",
+            url=(
+                "https://example.com/"
+                "active-learning-api-course"
+            ),
+            resource_type=(
+                LearningResource
+                .ResourceType
+                .COURSE
+            ),
+            is_active=True,
+        )
+        inactive_resource = LearningResource.objects.create(
+            title="Inactive Learning API Course",
+            provider="GradNavi Reference",
+            url=(
+                "https://example.com/"
+                "inactive-learning-api-course"
+            ),
+            resource_type=(
+                LearningResource
+                .ResourceType
+                .COURSE
+            ),
+            is_active=False,
+        )
+        LearningResourceSkill.objects.create(
+            learning_resource=active_resource,
+            skill=missing_skill,
+        )
+        LearningResourceSkill.objects.create(
+            learning_resource=inactive_resource,
+            skill=missing_skill,
+        )
+
+        response = self.authenticated_get(
+            (
+                f"{self.learning_url}"
+                f"?career_id={career.id}"
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        suggestions = (
+            response
+            .data["data"]["learning_suggestions"]
+        )
+        self.assertEqual(
+            [
+                item["gap_status"]
+                for item in suggestions
+            ],
+            [
+                "missing",
+                "below_requirement",
+            ],
+        )
+        self.assertEqual(
+            [
+                resource["title"]
+                for resource
+                in suggestions[0]["resources"]
+            ],
+            [
+                "Active Learning API Course",
+            ],
+        )
+        self.assertEqual(
+            suggestions[1]["resources"],
+            [],
         )
 
 
