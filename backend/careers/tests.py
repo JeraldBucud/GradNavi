@@ -12,6 +12,8 @@ from careers.models import (
     Career,
     CareerSkill,
     CareerSkillEvidence,
+    LearningResource,
+    LearningResourceSkill,
     ReferenceDataset,
     ReferenceSource,
     ReviewStatus,
@@ -38,9 +40,11 @@ from careers.services.recommendation_scoring import (
 from careers.services.readiness_scoring import (
     CareerNotAvailableError,
     CareerNotFoundError,
+    CareerReadinessResult,
     CareerReadinessRequirement,
     GapStatus,
     ReadinessStatus,
+    SkillGapResult,
     calculate_career_readiness,
     calculate_selected_career_readiness,
     calculate_skill_gap,
@@ -48,6 +52,15 @@ from careers.services.readiness_scoring import (
     load_student_proficiencies,
     map_student_proficiency,
     order_skill_gaps,
+)
+
+from careers.services.learning_roadmap import (
+    LearningResourceSummary,
+    build_learning_suggestions,
+    build_roadmap_steps,
+    generate_learning_plan,
+    get_unresolved_skill_gaps,
+    load_active_learning_resources_by_skill,
 )
 
 
@@ -3834,3 +3847,561 @@ class ReadinessOrchestrationTests(
                 ),
                 career_id=0,
             )
+
+
+class LearningRoadmapPureTests(SimpleTestCase):
+    """
+    Pure WBS 5.7 service tests.
+
+    These tests prove WBS 5.7 consumes WBS 5.5 output without
+    recalculating readiness or changing gap order.
+    """
+
+    def make_gap(
+        self,
+        *,
+        skill_id,
+        skill_name,
+        gap_status,
+        career_skill_id=901,
+        student_proficiency_level=None,
+        student_proficiency_score=Decimal("0"),
+        required_level=Decimal("80"),
+        importance=Decimal("70"),
+        gap_amount=Decimal("80"),
+    ):
+        return SkillGapResult(
+            career_skill_id=career_skill_id,
+            skill_id=skill_id,
+            skill_name=skill_name,
+            concept_type="skill",
+            source_domain="onet_essential_skills",
+            student_proficiency_level=(
+                student_proficiency_level
+            ),
+            student_proficiency_score=(
+                student_proficiency_score
+            ),
+            required_level=required_level,
+            importance=importance,
+            gap_amount=gap_amount,
+            attainment_ratio=Decimal("0"),
+            attainment_percentage=Decimal("0"),
+            weighted_contribution=Decimal("0"),
+            gap_status=gap_status,
+        )
+
+    def make_readiness_result(
+        self,
+        skill_gaps,
+    ):
+        return CareerReadinessResult(
+            career_id=801,
+            career_name="Learning Test Career",
+            score_status=ReadinessStatus.SCORED,
+            readiness_score=Decimal("42.00"),
+            skill_gaps=tuple(
+                skill_gaps
+            ),
+        )
+
+    def test_missing_and_below_requirement_are_learning_targets(
+        self,
+    ):
+        missing_gap = self.make_gap(
+            skill_id=1,
+            skill_name="Missing Skill",
+            gap_status=GapStatus.MISSING,
+        )
+        below_gap = self.make_gap(
+            skill_id=2,
+            skill_name="Below Skill",
+            gap_status=(
+                GapStatus.BELOW_REQUIREMENT
+            ),
+            student_proficiency_level="developing",
+            student_proficiency_score=Decimal("50"),
+            gap_amount=Decimal("30"),
+        )
+        met_gap = self.make_gap(
+            skill_id=3,
+            skill_name="Met Skill",
+            gap_status=GapStatus.MEETS_REQUIREMENT,
+            student_proficiency_level="advanced",
+            student_proficiency_score=Decimal("100"),
+            gap_amount=Decimal("0"),
+        )
+
+        unresolved = get_unresolved_skill_gaps(
+            self.make_readiness_result(
+                (
+                    missing_gap,
+                    below_gap,
+                    met_gap,
+                )
+            )
+        )
+
+        self.assertEqual(
+            unresolved,
+            (
+                missing_gap,
+                below_gap,
+            ),
+        )
+
+    def test_wbs55_ordering_is_preserved(self):
+        below_gap = self.make_gap(
+            skill_id=2,
+            skill_name="Below Skill",
+            gap_status=(
+                GapStatus.BELOW_REQUIREMENT
+            ),
+        )
+        missing_gap = self.make_gap(
+            career_skill_id=902,
+            skill_id=1,
+            skill_name="Missing Skill",
+            gap_status=GapStatus.MISSING,
+        )
+
+        suggestions = build_learning_suggestions(
+            unresolved_gaps=(
+                below_gap,
+                missing_gap,
+            ),
+            resources_by_skill={},
+        )
+        steps = build_roadmap_steps(
+            suggestions=suggestions
+        )
+
+        self.assertEqual(
+            tuple(
+                suggestion.skill_id
+                for suggestion in suggestions
+            ),
+            (
+                2,
+                1,
+            ),
+        )
+        self.assertEqual(
+            tuple(
+                step.skill_id
+                for step in steps
+            ),
+            (
+                2,
+                1,
+            ),
+        )
+        self.assertEqual(
+            tuple(
+                step.step_number
+                for step in steps
+            ),
+            (
+                1,
+                2,
+            ),
+        )
+
+    def test_gap_with_no_resource_is_handled_safely(
+        self,
+    ):
+        gap = self.make_gap(
+            skill_id=7,
+            skill_name="No Resource Skill",
+            gap_status=GapStatus.MISSING,
+        )
+
+        suggestions = build_learning_suggestions(
+            unresolved_gaps=(gap,),
+            resources_by_skill={},
+        )
+
+        self.assertEqual(
+            suggestions[0].resources,
+            (),
+        )
+
+    def test_no_unresolved_gaps_produces_empty_outputs(
+        self,
+    ):
+        met_gap = self.make_gap(
+            skill_id=3,
+            skill_name="Met Skill",
+            gap_status=GapStatus.MEETS_REQUIREMENT,
+        )
+
+        unresolved = get_unresolved_skill_gaps(
+            self.make_readiness_result(
+                (met_gap,)
+            )
+        )
+        suggestions = build_learning_suggestions(
+            unresolved_gaps=unresolved,
+            resources_by_skill={},
+        )
+        steps = build_roadmap_steps(
+            suggestions=suggestions
+        )
+
+        self.assertEqual(
+            unresolved,
+            (),
+        )
+        self.assertEqual(
+            suggestions,
+            (),
+        )
+        self.assertEqual(
+            steps,
+            (),
+        )
+
+    def test_repeated_generation_is_deterministic(
+        self,
+    ):
+        gap = self.make_gap(
+            skill_id=4,
+            skill_name="Deterministic Skill",
+            gap_status=GapStatus.MISSING,
+        )
+        resource = LearningResourceSummary(
+            id=1,
+            title="Resource",
+            provider="Provider",
+            url="https://example.com/resource",
+            resource_type="course",
+            description="",
+        )
+
+        first = build_learning_suggestions(
+            unresolved_gaps=(gap,),
+            resources_by_skill={
+                4: (
+                    resource,
+                ),
+            },
+        )
+        second = build_learning_suggestions(
+            unresolved_gaps=(gap,),
+            resources_by_skill={
+                4: (
+                    resource,
+                ),
+            },
+        )
+
+        self.assertEqual(
+            first,
+            second,
+        )
+
+
+class LearningRoadmapDatabaseTests(
+    RecommendationScoringDatabaseFixtureMixin,
+    TestCase,
+):
+    """
+    Database-backed WBS 5.7 service tests.
+    """
+
+    def _create_readiness_evidence(
+        self,
+        *,
+        skill,
+        importance,
+        required_level,
+        source_domain="onet_essential_skills",
+    ):
+        career_skill = CareerSkill.objects.create(
+            career=self.career,
+            skill=skill,
+            review_status=ReviewStatus.APPROVED,
+        )
+
+        CareerSkillEvidence.objects.create(
+            career_skill=career_skill,
+            dataset=self.onet_dataset,
+            source_domain=source_domain,
+            normalized_importance=importance,
+            normalized_level=required_level,
+            not_relevant=False,
+        )
+
+        return career_skill
+
+    def _create_resource(
+        self,
+        *,
+        skill,
+        title,
+        provider="GradNavi Reference",
+        url=None,
+        resource_type=LearningResource.ResourceType.COURSE,
+        is_active=True,
+    ):
+        if url is None:
+            url = (
+                "https://example.com/"
+                f"{title.lower().replace(' ', '-')}"
+            )
+
+        resource = LearningResource.objects.create(
+            title=title,
+            provider=provider,
+            url=url,
+            resource_type=resource_type,
+            is_active=is_active,
+        )
+
+        LearningResourceSkill.objects.create(
+            learning_resource=resource,
+            skill=skill,
+        )
+
+        return resource
+
+    def test_active_resources_match_canonical_skills_only(
+        self,
+    ):
+        missing_skill = self._create_skill(
+            "Learning Missing Skill"
+        )
+        unrelated_skill = self._create_skill(
+            "Learning Unrelated Skill"
+        )
+
+        active_resource = self._create_resource(
+            skill=missing_skill,
+            title="Active Missing Skill Course",
+        )
+        self._create_resource(
+            skill=missing_skill,
+            title="Inactive Missing Skill Course",
+            is_active=False,
+        )
+        self._create_resource(
+            skill=unrelated_skill,
+            title="Unrelated Course",
+        )
+
+        resources = load_active_learning_resources_by_skill(
+            skill_ids=(
+                missing_skill.id,
+                unrelated_skill.id,
+            )
+        )
+
+        self.assertEqual(
+            tuple(
+                resource.id
+                for resource
+                in resources[missing_skill.id]
+            ),
+            (
+                active_resource.id,
+            ),
+        )
+        self.assertEqual(
+            len(
+                resources[unrelated_skill.id]
+            ),
+            1,
+        )
+
+    def test_learning_plan_uses_wbs55_gaps_and_resources(
+        self,
+    ):
+        missing_skill = self._create_skill(
+            "Roadmap Missing Skill"
+        )
+        no_resource_skill = self._create_skill(
+            "Roadmap No Resource Skill"
+        )
+
+        below_resource = self._create_resource(
+            skill=self.student_skill,
+            title="Below Requirement Course",
+        )
+        missing_resource = self._create_resource(
+            skill=missing_skill,
+            title="Missing Skill Course",
+        )
+        self._create_resource(
+            skill=self.student_knowledge,
+            title="Met Skill Course",
+        )
+
+        self._create_readiness_evidence(
+            skill=self.student_skill,
+            importance=Decimal("90"),
+            required_level=Decimal("80"),
+        )
+        self._create_readiness_evidence(
+            skill=missing_skill,
+            importance=Decimal("95"),
+            required_level=Decimal("70"),
+        )
+        self._create_readiness_evidence(
+            skill=no_resource_skill,
+            importance=Decimal("85"),
+            required_level=Decimal("60"),
+        )
+        self._create_readiness_evidence(
+            skill=self.student_knowledge,
+            importance=Decimal("100"),
+            required_level=Decimal("75"),
+            source_domain="onet_knowledge",
+        )
+
+        plan = generate_learning_plan(
+            student_profile_id=self.profile.id,
+            career_id=self.career.id,
+        )
+        repeated_plan = generate_learning_plan(
+            student_profile_id=self.profile.id,
+            career_id=self.career.id,
+        )
+
+        self.assertEqual(
+            tuple(
+                suggestion.gap_status
+                for suggestion
+                in plan.suggestions
+            ),
+            (
+                GapStatus.MISSING,
+                GapStatus.MISSING,
+                GapStatus.BELOW_REQUIREMENT,
+            ),
+        )
+        self.assertEqual(
+            tuple(
+                suggestion.skill_id
+                for suggestion
+                in plan.suggestions
+            ),
+            (
+                missing_skill.id,
+                no_resource_skill.id,
+                self.student_skill.id,
+            ),
+        )
+        self.assertEqual(
+            tuple(
+                step.skill_id
+                for step
+                in plan.roadmap_steps
+            ),
+            (
+                missing_skill.id,
+                no_resource_skill.id,
+                self.student_skill.id,
+            ),
+        )
+        self.assertEqual(
+            tuple(
+                resource.id
+                for resource
+                in plan.suggestions[0].resources
+            ),
+            (
+                missing_resource.id,
+            ),
+        )
+        self.assertEqual(
+            plan.suggestions[1].resources,
+            (),
+        )
+        self.assertEqual(
+            tuple(
+                resource.id
+                for resource
+                in plan.suggestions[2].resources
+            ),
+            (
+                below_resource.id,
+            ),
+        )
+        self.assertEqual(
+            plan.suggestions,
+            repeated_plan.suggestions,
+        )
+        self.assertEqual(
+            plan.roadmap_steps,
+            repeated_plan.roadmap_steps,
+        )
+
+    def test_generate_learning_plan_delegates_inputs_to_wbs55(
+        self,
+    ):
+        readiness_result = CareerReadinessResult(
+            career_id=55,
+            career_name="Delegated Career",
+            score_status=ReadinessStatus.SCORED,
+            readiness_score=Decimal("100.00"),
+            skill_gaps=(),
+        )
+
+        with patch(
+            (
+                "careers.services.learning_roadmap."
+                "readiness_scoring."
+                "calculate_selected_career_readiness"
+            ),
+            return_value=readiness_result,
+        ) as readiness_mock:
+            plan = generate_learning_plan(
+                student_profile_id=123,
+                career_id=456,
+            )
+
+        readiness_mock.assert_called_once_with(
+            student_profile_id=123,
+            career_id=456,
+        )
+        self.assertEqual(
+            plan.career_id,
+            55,
+        )
+        self.assertEqual(
+            plan.suggestions,
+            (),
+        )
+        self.assertEqual(
+            plan.roadmap_steps,
+            (),
+        )
+
+    def test_existing_wbs55_readiness_behaviour_still_holds(
+        self,
+    ):
+        self._create_readiness_evidence(
+            skill=self.student_skill,
+            importance=Decimal("80"),
+            required_level=Decimal("50"),
+        )
+        self._create_readiness_evidence(
+            skill=self.student_knowledge,
+            importance=Decimal("20"),
+            required_level=Decimal("75"),
+            source_domain="onet_knowledge",
+        )
+
+        result = calculate_selected_career_readiness(
+            student_profile_id=self.profile.id,
+            career_id=self.career.id,
+        )
+
+        self.assertEqual(
+            result.score_status,
+            ReadinessStatus.SCORED,
+        )
+        self.assertEqual(
+            result.readiness_score,
+            Decimal("60.00"),
+        )

@@ -782,3 +782,127 @@ class CareerSkillEvidence(models.Model):
             f"{self.dataset} - "
             f"{self.source_domain}"
         )
+
+
+class LearningResource(models.Model):
+    """
+    Controlled learning resource reference data for WBS 5.7.
+
+    Resources are linked to canonical GradNavi Skills through
+    LearningResourceSkill so learning suggestions are driven by
+    reviewed database records rather than fabricated service output.
+    """
+
+    class ResourceType(models.TextChoices):
+        COURSE = "course", "Course"
+        DOCUMENTATION = "documentation", "Documentation"
+        ARTICLE = "article", "Article"
+        VIDEO = "video", "Video"
+        TUTORIAL = "tutorial", "Tutorial"
+        BOOK = "book", "Book"
+        OTHER = "other", "Other"
+
+    title = models.CharField(
+        max_length=255,
+    )
+
+    provider = models.CharField(
+        max_length=255,
+        blank=True,
+    )
+
+    url = models.URLField(
+        unique=True,
+    )
+
+    resource_type = models.CharField(
+        max_length=30,
+        choices=ResourceType.choices,
+        default=ResourceType.OTHER,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+    )
+
+    skills = models.ManyToManyField(
+        Skill,
+        through="LearningResourceSkill",
+        related_name="learning_resources",
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    resource_type__in=[
+                        "course",
+                        "documentation",
+                        "article",
+                        "video",
+                        "tutorial",
+                        "book",
+                        "other",
+                    ],
+                ),
+                name="valid_learning_resource_type",
+            ),
+        ]
+
+    def __str__(self):
+        return self.title
+
+
+class LearningResourceSkill(models.Model):
+    """
+    Links one controlled LearningResource to one canonical Skill.
+    """
+
+    learning_resource = models.ForeignKey(
+        LearningResource,
+        on_delete=models.CASCADE,
+        related_name="skill_links",
+    )
+
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.PROTECT,
+        related_name="learning_resource_links",
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "learning_resource",
+                    "skill",
+                ],
+                name="unique_learning_resource_skill",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.learning_resource.title} - "
+            f"{self.skill.name}"
+        )
