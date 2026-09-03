@@ -1,8 +1,13 @@
 from datetime import date
 from decimal import Decimal
+from io import StringIO
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import SimpleTestCase, TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -1306,6 +1311,441 @@ class LearningRoadmapAPITests(APITestCase):
         self.assertEqual(
             suggestions[1]["resources"],
             [],
+        )
+
+
+class LearningResourceImportCommandTests(TestCase):
+    """
+    Focused WBS 5.7 importer tests.
+    """
+
+    def setUp(self):
+        self.temp_dir = TemporaryDirectory()
+        self.project_root = Path(
+            self.temp_dir.name
+        )
+        self.learning_dir = (
+            self.project_root
+            / "data"
+            / "reference"
+            / "learning"
+        )
+        self.curated_dir = (
+            self.project_root
+            / "data"
+            / "reference"
+            / "curated"
+        )
+        self.learning_dir.mkdir(
+            parents=True
+        )
+        self.curated_dir.mkdir(
+            parents=True
+        )
+
+        self.python_skill = Skill.objects.create(
+            name="Python",
+            concept_type=Skill.ConceptType.TECHNOLOGY,
+        )
+        self.git_skill = Skill.objects.create(
+            name="Git",
+            concept_type=Skill.ConceptType.TECHNOLOGY,
+        )
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
+
+    def write_dataset(
+        self,
+        *,
+        resources=None,
+        mappings=None,
+        canonical_rows=None,
+    ):
+        if resources is None:
+            resources = [
+                {
+                    "resource_key": "python_tutorial",
+                    "title": "Python Tutorial",
+                    "provider": (
+                        "Python Software Foundation"
+                    ),
+                    "url": (
+                        "https://docs.python.org/3/tutorial/"
+                    ),
+                    "resource_type": "tutorial",
+                    "description": (
+                        "Official Python tutorial."
+                    ),
+                    "is_active": "true",
+                },
+            ]
+
+        if mappings is None:
+            mappings = [
+                {
+                    "resource_key": "python_tutorial",
+                    "canonical_skill_key": (
+                        "canonical:test|python"
+                    ),
+                },
+            ]
+
+        if canonical_rows is None:
+            canonical_rows = [
+                {
+                    "canonical_key": (
+                        "canonical:test|python"
+                    ),
+                    "name": "Python",
+                },
+                {
+                    "canonical_key": (
+                        "canonical:test|git"
+                    ),
+                    "name": "Git",
+                },
+            ]
+
+        self.write_csv(
+            self.learning_dir
+            / "learning_resources.csv",
+            [
+                "resource_key",
+                "title",
+                "provider",
+                "url",
+                "resource_type",
+                "description",
+                "is_active",
+            ],
+            resources,
+        )
+        self.write_csv(
+            self.learning_dir
+            / "learning_resource_skills.csv",
+            [
+                "resource_key",
+                "canonical_skill_key",
+            ],
+            mappings,
+        )
+        self.write_csv(
+            self.curated_dir
+            / "canonical_skills.csv",
+            [
+                "canonical_key",
+                "name",
+            ],
+            canonical_rows,
+        )
+
+    def write_csv(
+        self,
+        path,
+        headers,
+        rows,
+    ):
+        lines = [
+            ",".join(headers)
+        ]
+        for row in rows:
+            lines.append(
+                ",".join(
+                    str(
+                        row.get(
+                            header,
+                            "",
+                        )
+                    )
+                    for header in headers
+                )
+            )
+
+        path.write_text(
+            "\n".join(lines) + "\n",
+            encoding="utf-8",
+        )
+
+    def run_import(
+        self,
+        *,
+        dry_run=False,
+    ):
+        return call_command(
+            "import_learning_resources",
+            project_root=str(
+                self.project_root
+            ),
+            dry_run=dry_run,
+            stdout=StringIO(),
+        )
+
+    def test_successful_import_resolves_canonical_key_and_creates_link(
+        self,
+    ):
+        self.write_dataset()
+
+        self.run_import()
+
+        resource = LearningResource.objects.get(
+            url="https://docs.python.org/3/tutorial/"
+        )
+        self.assertEqual(
+            resource.title,
+            "Python Tutorial",
+        )
+        self.assertTrue(
+            LearningResourceSkill.objects.filter(
+                learning_resource=resource,
+                skill=self.python_skill,
+            ).exists()
+        )
+
+    def test_idempotent_repeated_import_does_not_duplicate_records(
+        self,
+    ):
+        self.write_dataset()
+
+        self.run_import()
+        self.run_import()
+
+        self.assertEqual(
+            LearningResource.objects.count(),
+            1,
+        )
+        self.assertEqual(
+            LearningResourceSkill.objects.count(),
+            1,
+        )
+
+    def test_duplicate_resource_key_is_rejected(self):
+        self.write_dataset(
+            resources=[
+                {
+                    "resource_key": "duplicate",
+                    "title": "First Resource",
+                    "provider": "Provider",
+                    "url": "https://example.com/first",
+                    "resource_type": "course",
+                    "description": "",
+                    "is_active": "true",
+                },
+                {
+                    "resource_key": "duplicate",
+                    "title": "Second Resource",
+                    "provider": "Provider",
+                    "url": "https://example.com/second",
+                    "resource_type": "course",
+                    "description": "",
+                    "is_active": "true",
+                },
+            ]
+        )
+
+        with self.assertRaisesRegex(
+            CommandError,
+            "Duplicate resource_key",
+        ):
+            self.run_import()
+
+    def test_unknown_resource_key_mapping_is_rejected(
+        self,
+    ):
+        self.write_dataset(
+            mappings=[
+                {
+                    "resource_key": "unknown",
+                    "canonical_skill_key": (
+                        "canonical:test|python"
+                    ),
+                },
+            ]
+        )
+
+        with self.assertRaisesRegex(
+            CommandError,
+            "unknown resource_key",
+        ):
+            self.run_import()
+
+    def test_unknown_canonical_skill_key_is_rejected(
+        self,
+    ):
+        self.write_dataset(
+            mappings=[
+                {
+                    "resource_key": "python_tutorial",
+                    "canonical_skill_key": (
+                        "canonical:test|unknown"
+                    ),
+                },
+            ]
+        )
+
+        with self.assertRaisesRegex(
+            CommandError,
+            "unknown canonical_skill_key",
+        ):
+            self.run_import()
+
+    def test_canonical_skill_missing_from_database_is_rejected(
+        self,
+    ):
+        self.write_dataset(
+            canonical_rows=[
+                {
+                    "canonical_key": (
+                        "canonical:test|missing"
+                    ),
+                    "name": "Missing Skill",
+                },
+            ],
+            mappings=[
+                {
+                    "resource_key": "python_tutorial",
+                    "canonical_skill_key": (
+                        "canonical:test|missing"
+                    ),
+                },
+            ],
+        )
+
+        with self.assertRaisesRegex(
+            CommandError,
+            "missing from the database",
+        ):
+            self.run_import()
+
+    def test_invalid_resource_type_is_rejected(self):
+        self.write_dataset(
+            resources=[
+                {
+                    "resource_key": "python_tutorial",
+                    "title": "Python Tutorial",
+                    "provider": (
+                        "Python Software Foundation"
+                    ),
+                    "url": (
+                        "https://docs.python.org/3/tutorial/"
+                    ),
+                    "resource_type": "bootcamp",
+                    "description": "",
+                    "is_active": "true",
+                },
+            ]
+        )
+
+        with self.assertRaisesRegex(
+            CommandError,
+            "invalid resource_type",
+        ):
+            self.run_import()
+
+    def test_active_and_inactive_resources_are_imported(
+        self,
+    ):
+        self.write_dataset(
+            resources=[
+                {
+                    "resource_key": "python_tutorial",
+                    "title": "Python Tutorial",
+                    "provider": (
+                        "Python Software Foundation"
+                    ),
+                    "url": (
+                        "https://docs.python.org/3/tutorial/"
+                    ),
+                    "resource_type": "tutorial",
+                    "description": "",
+                    "is_active": "true",
+                },
+                {
+                    "resource_key": "git_book",
+                    "title": "Pro Git Book",
+                    "provider": "Git SCM",
+                    "url": (
+                        "https://git-scm.com/book/en/v2"
+                    ),
+                    "resource_type": "book",
+                    "description": "",
+                    "is_active": "false",
+                },
+            ],
+            mappings=[
+                {
+                    "resource_key": "python_tutorial",
+                    "canonical_skill_key": (
+                        "canonical:test|python"
+                    ),
+                },
+                {
+                    "resource_key": "git_book",
+                    "canonical_skill_key": (
+                        "canonical:test|git"
+                    ),
+                },
+            ],
+        )
+
+        self.run_import()
+
+        self.assertTrue(
+            LearningResource.objects.get(
+                title="Python Tutorial"
+            ).is_active
+        )
+        self.assertFalse(
+            LearningResource.objects.get(
+                title="Pro Git Book"
+            ).is_active
+        )
+
+    def test_dry_run_leaves_database_unchanged(self):
+        self.write_dataset()
+
+        self.run_import(
+            dry_run=True
+        )
+
+        self.assertEqual(
+            LearningResource.objects.count(),
+            0,
+        )
+        self.assertEqual(
+            LearningResourceSkill.objects.count(),
+            0,
+        )
+
+    def test_transaction_rolls_back_import_failure(
+        self,
+    ):
+        self.write_dataset()
+
+        with patch(
+            (
+                "careers.management.commands."
+                "import_learning_resources."
+                "LearningResourceSkill.objects."
+                "get_or_create"
+            ),
+            side_effect=RuntimeError(
+                "forced import failure"
+            ),
+        ):
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "forced import failure",
+            ):
+                self.run_import()
+
+        self.assertEqual(
+            LearningResource.objects.count(),
+            0,
+        )
+        self.assertEqual(
+            LearningResourceSkill.objects.count(),
+            0,
         )
 
 
