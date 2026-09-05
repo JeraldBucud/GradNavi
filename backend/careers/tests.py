@@ -1,8 +1,12 @@
 from datetime import date
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
+from rest_framework import status
+from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from careers.models import (
     Career,
@@ -45,6 +49,596 @@ from careers.services.readiness_scoring import (
     map_student_proficiency,
     order_skill_gaps,
 )
+
+
+def assert_error_envelope(test_case, response, code):
+    test_case.assertIn(
+        "error",
+        response.data,
+    )
+    test_case.assertEqual(
+        response.data["error"]["code"],
+        code,
+    )
+    test_case.assertIn(
+        "message",
+        response.data["error"],
+    )
+    test_case.assertIn(
+        "details",
+        response.data["error"],
+    )
+
+
+class RecommendationAPITests(APITestCase):
+    """
+    WBS 5.4 API tests for the Career Recommendation endpoint.
+    """
+
+    def setUp(self):
+        user_model = get_user_model()
+
+        self.url = "/api/v1/recommendations/"
+
+        self.user = user_model.objects.create_user(
+            email="recommendation-api-a@gradnavi.test",
+            password="StrongPassword123!",
+        )
+        self.profile = StudentProfile.objects.create(
+            user=self.user,
+        )
+        self.access_token = str(
+            RefreshToken
+            .for_user(self.user)
+            .access_token
+        )
+
+        self.other_user = user_model.objects.create_user(
+            email="recommendation-api-b@gradnavi.test",
+            password="StrongPassword123!",
+        )
+        self.other_profile = StudentProfile.objects.create(
+            user=self.other_user,
+        )
+
+    def authenticated_get(self, path=None):
+        return self.client.get(
+            path or self.url,
+            HTTP_AUTHORIZATION=(
+                f"Bearer {self.access_token}"
+            ),
+        )
+
+    def recommendation_result(
+        self,
+        *,
+        career_id=1,
+        career_name="Software Engineer",
+        score_status=ScoreStatus.SCORED,
+        recommendation_score=Decimal("77.78"),
+        rank=1,
+        matched_weight=Decimal("140"),
+        total_weight=Decimal("180"),
+        matched_competencies=(
+            "Critical Thinking",
+            "Programming",
+        ),
+        missing_competencies=(
+            "Systems Analysis",
+        ),
+        matched_technologies=(
+            "Python",
+        ),
+        esco_essential_skills=(
+            "Communication",
+        ),
+        esco_optional_skills=(
+            "Docker",
+        ),
+        esco_essential_matches=1,
+        esco_optional_matches=1,
+    ):
+        return RecommendationResult(
+            career_id=career_id,
+            career_name=career_name,
+            score_status=score_status,
+            recommendation_score=recommendation_score,
+            rank=rank,
+            matched_weight=matched_weight,
+            total_weight=total_weight,
+            matched_competencies=matched_competencies,
+            missing_competencies=missing_competencies,
+            matched_technologies=matched_technologies,
+            esco_essential_skills=esco_essential_skills,
+            esco_optional_skills=esco_optional_skills,
+            esco_essential_matches=esco_essential_matches,
+            esco_optional_matches=esco_optional_matches,
+        )
+
+    def test_unauthenticated_request_is_rejected(self):
+        response = self.client.get(
+            self.url,
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "not_authenticated",
+        )
+
+    def test_authenticated_request_succeeds(self):
+        result = self.recommendation_result()
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ):
+            response = self.authenticated_get()
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            len(
+                response
+                .data["data"]["recommendations"]
+            ),
+            1,
+        )
+
+    def test_missing_student_profile_returns_not_found(self):
+        self.profile.delete()
+
+        response = self.authenticated_get()
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "not_found",
+        )
+
+    def test_authenticated_user_profile_is_used_exclusively(self):
+        result = self.recommendation_result(
+            career_id=10,
+            career_name="Own Profile Career",
+        )
+        path = (
+            f"{self.url}?user_id={self.other_user.id}"
+            f"&student_profile_id={self.other_profile.id}"
+        )
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ) as generate_mock:
+            response = self.authenticated_get(
+                path=path,
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        generate_mock.assert_called_once_with(
+            student_profile_id=self.profile.id,
+        )
+        self.assertEqual(
+            response.data["data"]["recommendations"][0]["career_id"],
+            10,
+        )
+
+    def test_response_envelope_and_recommendation_schema(self):
+        result = self.recommendation_result()
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ):
+            response = self.authenticated_get()
+
+        self.assertEqual(
+            set(response.data),
+            {
+                "data",
+            },
+        )
+        self.assertEqual(
+            set(response.data["data"]),
+            {
+                "recommendations",
+            },
+        )
+        self.assertEqual(
+            set(
+                response
+                .data["data"]["recommendations"][0]
+            ),
+            {
+                "career_id",
+                "career_name",
+                "score_status",
+                "recommendation_score",
+                "rank",
+                "matched_weight",
+                "total_weight",
+                "matched_competencies",
+                "missing_competencies",
+                "matched_technologies",
+                "esco_essential_skills",
+                "esco_optional_skills",
+                "esco_essential_matches",
+                "esco_optional_matches",
+            },
+        )
+
+    def test_recommendation_result_serialization(self):
+        result = self.recommendation_result()
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ):
+            response = self.authenticated_get()
+
+        recommendation = (
+            response
+            .data["data"]["recommendations"][0]
+        )
+
+        self.assertEqual(
+            recommendation["career_id"],
+            1,
+        )
+        self.assertEqual(
+            recommendation["career_name"],
+            "Software Engineer",
+        )
+        self.assertEqual(
+            recommendation["score_status"],
+            "scored",
+        )
+        self.assertEqual(
+            recommendation["rank"],
+            1,
+        )
+
+    def test_ranking_order_is_preserved_from_service(self):
+        first = self.recommendation_result(
+            career_id=2,
+            career_name="Data Analyst",
+            recommendation_score=Decimal("90.00"),
+            rank=1,
+        )
+        second = self.recommendation_result(
+            career_id=1,
+            career_name="Software Engineer",
+            recommendation_score=Decimal("80.00"),
+            rank=2,
+        )
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(first, second),
+        ):
+            response = self.authenticated_get()
+
+        self.assertEqual(
+            [
+                item["career_id"]
+                for item
+                in response.data["data"]["recommendations"]
+            ],
+            [
+                2,
+                1,
+            ],
+        )
+
+    def test_scored_result_preserves_score_and_rank(self):
+        result = self.recommendation_result(
+            score_status=ScoreStatus.SCORED,
+            recommendation_score=Decimal("44.44"),
+            rank=3,
+        )
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ):
+            response = self.authenticated_get()
+
+        recommendation = (
+            response
+            .data["data"]["recommendations"][0]
+        )
+        self.assertEqual(
+            recommendation["score_status"],
+            "scored",
+        )
+        self.assertEqual(
+            recommendation["recommendation_score"],
+            "44.44",
+        )
+        self.assertEqual(
+            recommendation["rank"],
+            3,
+        )
+
+    def test_insufficient_profile_result_preserves_null_score_and_rank(self):
+        result = self.recommendation_result(
+            score_status=(
+                ScoreStatus.INSUFFICIENT_PROFILE
+            ),
+            recommendation_score=None,
+            rank=None,
+            matched_weight=Decimal("0"),
+            total_weight=Decimal("0"),
+            matched_competencies=(),
+            missing_competencies=(),
+            matched_technologies=(),
+            esco_essential_skills=(),
+            esco_optional_skills=(),
+            esco_essential_matches=0,
+            esco_optional_matches=0,
+        )
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ):
+            response = self.authenticated_get()
+
+        recommendation = (
+            response
+            .data["data"]["recommendations"][0]
+        )
+        self.assertEqual(
+            recommendation["score_status"],
+            "insufficient_profile",
+        )
+        self.assertIsNone(
+            recommendation["recommendation_score"]
+        )
+        self.assertIsNone(
+            recommendation["rank"]
+        )
+
+    def test_insufficient_evidence_result_preserves_null_score_and_rank(self):
+        result = self.recommendation_result(
+            score_status=(
+                ScoreStatus.INSUFFICIENT_EVIDENCE
+            ),
+            recommendation_score=None,
+            rank=None,
+            matched_weight=Decimal("0"),
+            total_weight=Decimal("0"),
+            matched_competencies=(),
+            missing_competencies=(),
+            matched_technologies=(),
+            esco_essential_skills=(),
+            esco_optional_skills=(),
+            esco_essential_matches=0,
+            esco_optional_matches=0,
+        )
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ):
+            response = self.authenticated_get()
+
+        recommendation = (
+            response
+            .data["data"]["recommendations"][0]
+        )
+        self.assertEqual(
+            recommendation["score_status"],
+            "insufficient_evidence",
+        )
+        self.assertIsNone(
+            recommendation["recommendation_score"]
+        )
+        self.assertIsNone(
+            recommendation["rank"]
+        )
+
+    def test_explanation_fields_are_serialized(self):
+        result = self.recommendation_result()
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ):
+            response = self.authenticated_get()
+
+        recommendation = (
+            response
+            .data["data"]["recommendations"][0]
+        )
+        self.assertEqual(
+            recommendation["matched_competencies"],
+            [
+                "Critical Thinking",
+                "Programming",
+            ],
+        )
+        self.assertEqual(
+            recommendation["missing_competencies"],
+            [
+                "Systems Analysis",
+            ],
+        )
+        self.assertEqual(
+            recommendation["matched_technologies"],
+            [
+                "Python",
+            ],
+        )
+        self.assertEqual(
+            recommendation["esco_essential_skills"],
+            [
+                "Communication",
+            ],
+        )
+        self.assertEqual(
+            recommendation["esco_optional_skills"],
+            [
+                "Docker",
+            ],
+        )
+        self.assertEqual(
+            recommendation["esco_essential_matches"],
+            1,
+        )
+        self.assertEqual(
+            recommendation["esco_optional_matches"],
+            1,
+        )
+
+    def test_decimal_values_are_serialized_without_float_conversion(self):
+        result = self.recommendation_result(
+            recommendation_score=Decimal("77.78"),
+            matched_weight=Decimal("140.00"),
+            total_weight=Decimal("180.00"),
+        )
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ):
+            response = self.authenticated_get()
+
+        recommendation = (
+            response
+            .data["data"]["recommendations"][0]
+        )
+        self.assertEqual(
+            recommendation["recommendation_score"],
+            "77.78",
+        )
+        self.assertEqual(
+            recommendation["matched_weight"],
+            "140.00",
+        )
+        self.assertEqual(
+            recommendation["total_weight"],
+            "180.00",
+        )
+
+    def test_api_response_is_deterministic_for_same_service_output(self):
+        results = (
+            self.recommendation_result(),
+        )
+
+        with patch(
+            "careers.views.generate_recommendations",
+            side_effect=[
+                results,
+                results,
+            ],
+        ):
+            first_response = self.authenticated_get()
+            second_response = self.authenticated_get()
+
+        self.assertEqual(
+            first_response.data,
+            second_response.data,
+        )
+
+    def test_api_delegates_to_wbs_53_service(self):
+        result = self.recommendation_result()
+
+        with patch(
+            "careers.views.generate_recommendations",
+            return_value=(result,),
+        ) as generate_mock:
+            self.authenticated_get()
+
+        generate_mock.assert_called_once_with(
+            student_profile_id=self.profile.id,
+        )
+
+    def test_real_wbs_53_service_result_is_exposed(self):
+        skill = Skill.objects.create(
+            name="API Integration Skill",
+            concept_type=Skill.ConceptType.SKILL,
+        )
+        StudentSkill.objects.create(
+            student_profile=self.profile,
+            skill=skill,
+            proficiency_level=(
+                StudentSkill
+                .ProficiencyLevel
+                .PROFICIENT
+            ),
+        )
+        career = Career.objects.create(
+            name="API Integration Career",
+        )
+        source = ReferenceSource.objects.create(
+            name="O*NET Database",
+        )
+        dataset = ReferenceDataset.objects.create(
+            source=source,
+            version="31.0-api-test",
+            retrieved_at=date(
+                2026,
+                8,
+                30,
+            ),
+            status=ReferenceDataset.Status.ACTIVE,
+        )
+        career_skill = CareerSkill.objects.create(
+            career=career,
+            skill=skill,
+            review_status=ReviewStatus.APPROVED,
+        )
+        CareerSkillEvidence.objects.create(
+            career_skill=career_skill,
+            dataset=dataset,
+            source_domain="onet_essential_skills",
+            normalized_importance=Decimal("80.00"),
+            not_relevant=False,
+        )
+
+        response = self.authenticated_get()
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            response.data["data"]["recommendations"],
+            [
+                {
+                    "career_id": career.id,
+                    "career_name": "API Integration Career",
+                    "score_status": "scored",
+                    "recommendation_score": "100.00",
+                    "rank": 1,
+                    "matched_weight": "80.00",
+                    "total_weight": "80.00",
+                    "matched_competencies": [
+                        "API Integration Skill",
+                    ],
+                    "missing_competencies": [],
+                    "matched_technologies": [],
+                    "esco_essential_skills": [],
+                    "esco_optional_skills": [],
+                    "esco_essential_matches": 0,
+                    "esco_optional_matches": 0,
+                }
+            ],
+        )
 
 
 class CalculateCareerFitTests(SimpleTestCase):
