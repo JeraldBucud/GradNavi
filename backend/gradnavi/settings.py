@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'profiles',
     'careers',
     'documents',
+    'interviews',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
