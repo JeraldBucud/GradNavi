@@ -1,13 +1,29 @@
 """
-URL configuration for the GradNavi interview preparation API.
+URL configuration for GradNavi interview preparation.
 
-WBS 6.6 will add the interview question and feedback
-endpoints to this module.
+WBS 6.6 exposes authenticated interview question
+generation and interview feedback operations.
 """
 
 from django.urls import path
 
+from interviews.views import (
+    InterviewFeedbackGenerationView,
+    InterviewQuestionGenerationView,
+)
+
 
 app_name = "interviews"
 
-urlpatterns = []
+urlpatterns = [
+    path(
+        "interviews/questions/",
+        InterviewQuestionGenerationView.as_view(),
+        name="question-generate",
+    ),
+    path(
+        "interviews/feedback/",
+        InterviewFeedbackGenerationView.as_view(),
+        name="feedback-generate",
+    ),
+]
