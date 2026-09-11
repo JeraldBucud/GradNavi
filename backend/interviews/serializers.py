@@ -9,6 +9,8 @@ WBS 6.6 exposes two interview operations:
 The HTTP contracts mirror the validated WBS 6.2 AI contracts.
 """
 
+from collections.abc import Mapping
+
 from rest_framework import serializers
 
 from ai_services.schemas.common import SHORT_TEXT_MAX_LENGTH
@@ -22,12 +24,50 @@ from ai_services.schemas.inputs import (
 )
 
 
+class StrictRequestSerializer(serializers.Serializer):
+    """
+    Reject unexpected fields at the REST API boundary.
+
+    WBS 6.2 Pydantic contracts use extra="forbid".
+
+    This serializer applies the same rule before request data reaches
+    the WBS 6.6 interview service layer.
+    """
+
+    def to_internal_value(self, data):
+        if not isinstance(data, Mapping):
+            raise serializers.ValidationError(
+                "Expected an object."
+            )
+
+        allowed_fields = set(self.fields)
+        supplied_fields = set(data)
+
+        unexpected_fields = (
+            supplied_fields - allowed_fields
+        )
+
+        if unexpected_fields:
+            raise serializers.ValidationError(
+                {
+                    field: [
+                        "This field is not allowed."
+                    ]
+                    for field in sorted(
+                        unexpected_fields
+                    )
+                }
+            )
+
+        return super().to_internal_value(data)
+
+
 class StrictCharField(serializers.CharField):
     """
-    Reject non-string JSON values before DRF performs type conversion.
+    Reject non-string JSON values before DRF type conversion.
 
     WBS 6.2 AI contracts use strict Pydantic validation, so the REST
-    boundary should not silently convert numbers or booleans into text.
+    boundary must not silently convert numbers or booleans into text.
     """
 
     def to_internal_value(self, data):
@@ -39,10 +79,10 @@ class StrictCharField(serializers.CharField):
 
 class StrictIntegerField(serializers.IntegerField):
     """
-    Reject non-integer JSON values before DRF performs type conversion.
+    Reject non-integer JSON values before DRF type conversion.
 
-    bool requires an explicit rejection because Python bool is a subclass
-    of int.
+    bool requires explicit rejection because Python bool inherits
+    from int.
     """
 
     def to_internal_value(self, data):
@@ -52,7 +92,9 @@ class StrictIntegerField(serializers.IntegerField):
         return super().to_internal_value(data)
 
 
-class InterviewQuestionRequestSerializer(serializers.Serializer):
+class InterviewQuestionRequestSerializer(
+    StrictRequestSerializer
+):
     """
     Validate an interview-question generation HTTP request.
 
@@ -77,11 +119,13 @@ class InterviewQuestionRequestSerializer(serializers.Serializer):
     )
 
 
-class InterviewFeedbackRequestSerializer(serializers.Serializer):
+class InterviewFeedbackRequestSerializer(
+    StrictRequestSerializer
+):
     """
     Validate an interview-answer feedback HTTP request.
 
-    The request contains only the information required by the
+    The request contains only information required by the
     WBS 6.2 InterviewFeedbackInput contract.
     """
 
