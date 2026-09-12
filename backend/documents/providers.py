@@ -18,3 +18,13 @@ def get_resume_generation_provider() -> AIProvider:
         "AI provider is not configured for resume generation."
     )
 
+
+def get_cover_letter_generation_provider() -> AIProvider:
+    """
+    Return the configured cover-letter-generation provider.
+    """
+
+    raise AIProviderUnavailableError(
+        "AI provider is not configured for cover-letter generation."
+    )
+
