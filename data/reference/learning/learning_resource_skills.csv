@@ -1,0 +1,5 @@
+resource_key,canonical_skill_key
+python_tutorial,existing_skill:1
+javascript_guide,canonical:O*NET Database|onet_software_skills|2.E.7.h|JavaScript
+git_book,canonical:O*NET Database|onet_software_skills|2.E.5.c|Git
+postgresql_sql_tutorial,canonical:O*NET Database|onet_software_skills|2.E.6.f|Structured query language SQL
