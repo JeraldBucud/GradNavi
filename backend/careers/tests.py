@@ -1237,6 +1237,7 @@ class LearningRoadmapAPITests(APITestCase):
         )
 
         active_resource = LearningResource.objects.create(
+            resource_key="active_learning_api_course",
             title="Active Learning API Course",
             provider="GradNavi Reference",
             url=(
@@ -1251,6 +1252,7 @@ class LearningRoadmapAPITests(APITestCase):
             is_active=True,
         )
         inactive_resource = LearningResource.objects.create(
+            resource_key="inactive_learning_api_course",
             title="Inactive Learning API Course",
             provider="GradNavi Reference",
             url=(
@@ -1489,7 +1491,7 @@ class LearningResourceImportCommandTests(TestCase):
         self.run_import()
 
         resource = LearningResource.objects.get(
-            url="https://docs.python.org/3/tutorial/"
+            resource_key="python_tutorial"
         )
         self.assertEqual(
             resource.title,
@@ -1517,6 +1519,197 @@ class LearningResourceImportCommandTests(TestCase):
         self.assertEqual(
             LearningResourceSkill.objects.count(),
             1,
+        )
+
+    def test_existing_resource_key_updates_changed_url_without_duplicate(
+        self,
+    ):
+        self.write_dataset()
+        self.run_import()
+
+        self.write_dataset(
+            resources=[
+                {
+                    "resource_key": "python_tutorial",
+                    "title": "Python Tutorial",
+                    "provider": (
+                        "Python Software Foundation"
+                    ),
+                    "url": (
+                        "https://docs.python.org/3/"
+                        "updated-tutorial/"
+                    ),
+                    "resource_type": "tutorial",
+                    "description": (
+                        "Official Python tutorial."
+                    ),
+                    "is_active": "true",
+                },
+            ],
+        )
+        self.run_import()
+
+        self.assertEqual(
+            LearningResource.objects.count(),
+            1,
+        )
+        resource = LearningResource.objects.get(
+            resource_key="python_tutorial"
+        )
+        self.assertEqual(
+            resource.url,
+            "https://docs.python.org/3/updated-tutorial/",
+        )
+
+    def test_removed_resource_skill_mapping_is_deleted(
+        self,
+    ):
+        resources = [
+            {
+                "resource_key": "python_tutorial",
+                "title": "Python Tutorial",
+                "provider": (
+                    "Python Software Foundation"
+                ),
+                "url": (
+                    "https://docs.python.org/3/tutorial/"
+                ),
+                "resource_type": "tutorial",
+                "description": (
+                    "Official Python tutorial."
+                ),
+                "is_active": "true",
+            },
+        ]
+        self.write_dataset(
+            resources=resources,
+            mappings=[
+                {
+                    "resource_key": "python_tutorial",
+                    "canonical_skill_key": (
+                        "canonical:test|python"
+                    ),
+                },
+                {
+                    "resource_key": "python_tutorial",
+                    "canonical_skill_key": (
+                        "canonical:test|git"
+                    ),
+                },
+            ],
+        )
+        self.run_import()
+
+        self.write_dataset(
+            resources=resources,
+            mappings=[
+                {
+                    "resource_key": "python_tutorial",
+                    "canonical_skill_key": (
+                        "canonical:test|python"
+                    ),
+                },
+            ],
+        )
+        self.run_import()
+
+        resource = LearningResource.objects.get(
+            resource_key="python_tutorial"
+        )
+        self.assertTrue(
+            LearningResourceSkill.objects.filter(
+                learning_resource=resource,
+                skill=self.python_skill,
+            ).exists()
+        )
+        self.assertFalse(
+            LearningResourceSkill.objects.filter(
+                learning_resource=resource,
+                skill=self.git_skill,
+            ).exists()
+        )
+        self.assertEqual(
+            LearningResourceSkill.objects.count(),
+            1,
+        )
+
+    def test_mapping_reconciliation_is_idempotent_after_removal(
+        self,
+    ):
+        resources = [
+            {
+                "resource_key": "python_tutorial",
+                "title": "Python Tutorial",
+                "provider": (
+                    "Python Software Foundation"
+                ),
+                "url": (
+                    "https://docs.python.org/3/tutorial/"
+                ),
+                "resource_type": "tutorial",
+                "description": (
+                    "Official Python tutorial."
+                ),
+                "is_active": "true",
+            },
+        ]
+        initial_mappings = [
+            {
+                "resource_key": "python_tutorial",
+                "canonical_skill_key": (
+                    "canonical:test|python"
+                ),
+            },
+            {
+                "resource_key": "python_tutorial",
+                "canonical_skill_key": (
+                    "canonical:test|git"
+                ),
+            },
+        ]
+        updated_mappings = [
+            {
+                "resource_key": "python_tutorial",
+                "canonical_skill_key": (
+                    "canonical:test|python"
+                ),
+            },
+        ]
+
+        self.write_dataset(
+            resources=resources,
+            mappings=initial_mappings,
+        )
+        self.run_import()
+        self.write_dataset(
+            resources=resources,
+            mappings=updated_mappings,
+        )
+        self.run_import()
+        self.run_import()
+
+        resource = LearningResource.objects.get(
+            resource_key="python_tutorial"
+        )
+        self.assertEqual(
+            LearningResource.objects.count(),
+            1,
+        )
+        self.assertEqual(
+            LearningResourceSkill.objects.count(),
+            1,
+        )
+        self.assertTrue(
+            LearningResourceSkill.objects.filter(
+                learning_resource=resource,
+                skill=self.python_skill,
+            ).exists()
+        )
+        self.assertFalse(
+            LearningResourceSkill.objects.filter(
+                learning_resource=resource,
+                skill=self.git_skill,
+            ).exists()
         )
 
     def test_duplicate_resource_key_is_rejected(self):
@@ -5246,6 +5439,9 @@ class LearningRoadmapDatabaseTests(
             )
 
         resource = LearningResource.objects.create(
+            resource_key=(
+                f"test_resource_{title.lower().replace(' ', '_')}"
+            ),
             title=title,
             provider=provider,
             url=url,

@@ -148,6 +148,7 @@ class Command(BaseCommand):
         resource_unchanged = 0
         link_created = 0
         link_existing = 0
+        link_deleted = 0
 
         if dry_run:
             self.stdout.write(
@@ -168,7 +169,7 @@ class Command(BaseCommand):
                 resource = (
                     LearningResource.objects
                     .filter(
-                        url=row["url"],
+                        resource_key=resource_key,
                     )
                     .first()
                 )
@@ -177,6 +178,7 @@ class Command(BaseCommand):
                     resource = (
                         LearningResource.objects
                         .create(
+                            resource_key=resource_key,
                             title=row["title"],
                             provider=row[
                                 "provider"
@@ -205,6 +207,7 @@ class Command(BaseCommand):
                     resource.provider = row[
                         "provider"
                     ]
+                    resource.url = row["url"]
                     resource.resource_type = row[
                         "resource_type"
                     ]
@@ -218,6 +221,7 @@ class Command(BaseCommand):
                         update_fields=[
                             "title",
                             "provider",
+                            "url",
                             "resource_type",
                             "description",
                             "is_active",
@@ -231,14 +235,15 @@ class Command(BaseCommand):
                 ] = resource
 
             for resource_key, skill in resolved_mappings:
+                learning_resource = (
+                    resources_by_resource_key[
+                        resource_key
+                    ]
+                )
                 _, created = (
                     LearningResourceSkill.objects
                     .get_or_create(
-                        learning_resource=(
-                            resources_by_resource_key[
-                                resource_key
-                            ]
-                        ),
+                        learning_resource=learning_resource,
                         skill=skill,
                     )
                 )
@@ -246,6 +251,52 @@ class Command(BaseCommand):
                     link_created += 1
                 else:
                     link_existing += 1
+
+            desired_pairs = {
+                (
+                    resources_by_resource_key[
+                        resource_key
+                    ].id,
+                    skill.id,
+                )
+                for resource_key, skill in resolved_mappings
+            }
+            controlled_resource_ids = [
+                resource.id
+                for resource in (
+                    resources_by_resource_key.values()
+                )
+            ]
+            stale_link_ids = [
+                link.id
+                for link in (
+                    LearningResourceSkill.objects
+                    .filter(
+                        learning_resource_id__in=(
+                            controlled_resource_ids
+                        ),
+                    )
+                    .only(
+                        "id",
+                        "learning_resource_id",
+                        "skill_id",
+                    )
+                )
+                if (
+                    link.learning_resource_id,
+                    link.skill_id,
+                ) not in desired_pairs
+            ]
+
+            if stale_link_ids:
+                deleted_count, _ = (
+                    LearningResourceSkill.objects
+                    .filter(
+                        id__in=stale_link_ids,
+                    )
+                    .delete()
+                )
+                link_deleted = deleted_count
 
             if dry_run:
                 transaction.set_rollback(True)
@@ -292,6 +343,9 @@ class Command(BaseCommand):
         )
         self.stdout.write(
             f"Links existing: {link_existing}"
+        )
+        self.stdout.write(
+            f"Links deleted: {link_deleted}"
         )
 
     def get_project_root(self, override):
@@ -597,7 +651,9 @@ class Command(BaseCommand):
         row,
     ):
         return (
-            resource.title == row["title"]
+            resource.resource_key == row["resource_key"]
+            and resource.url == row["url"]
+            and resource.title == row["title"]
             and resource.provider == row["provider"]
             and resource.resource_type == row["resource_type"]
             and resource.description == row["description"]
@@ -609,9 +665,10 @@ class Command(BaseCommand):
             "learning_resources": tuple(
                 LearningResource.objects
                 .order_by(
-                    "url",
+                    "resource_key",
                 )
                 .values_list(
+                    "resource_key",
                     "url",
                     "title",
                     "provider",
@@ -627,11 +684,11 @@ class Command(BaseCommand):
                     "skill",
                 )
                 .order_by(
-                    "learning_resource__url",
+                    "learning_resource__resource_key",
                     "skill__name",
                 )
                 .values_list(
-                    "learning_resource__url",
+                    "learning_resource__resource_key",
                     "skill__name",
                 )
             ),

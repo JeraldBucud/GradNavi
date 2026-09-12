@@ -806,14 +806,17 @@ class LearningResource(models.Model):
         max_length=255,
     )
 
+    resource_key = models.CharField(
+        max_length=120,
+        unique=True,
+    )
+
     provider = models.CharField(
         max_length=255,
         blank=True,
     )
 
-    url = models.URLField(
-        unique=True,
-    )
+    url = models.URLField()
 
     resource_type = models.CharField(
         max_length=30,
