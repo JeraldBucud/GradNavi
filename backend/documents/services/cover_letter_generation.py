@@ -1,5 +1,5 @@
 """
-Cover-letter generation service foundation for GradNavi.
+Cover-letter generation service foundation for GradNavi documents.
 
 The caller must authenticate the Student and enforce profile ownership
 before calling this service.
