@@ -1,17 +1,17 @@
 # GradNavi
 
-GradNavi is an AI-Powered Career Guidance System for students.
+GradNavi is an AI-powered Career Guidance System for students.
 
-The planned responsive web application will analyse a student's skills, interests, education, experience, projects, and career goals. It will provide ranked career recommendations, readiness scores, skill-gap analysis, learning suggestions, career roadmaps, employment-preparation tools, and basic administration functions.
+The responsive web application analyses a student's skills, interests, education, experience, projects, and career goals. GradNavi provides ranked career recommendations, readiness scores, skill-gap analysis, learning suggestions, career roadmaps, application-document support, interview preparation, and administration functions.
 
 ## Project overview
 
-GradNavi uses a structured student profile containing skills, education, interests, experience, projects, and career goals.
+GradNavi uses a structured Student Profile containing skills, education, interests, experience, projects, and career goals.
 
 The planned system includes:
 
 - Secure student and administrator authentication
-- Student profile management
+- Student Profile management
 - Ranked career recommendations using documented weighted rules
 - Recommendation scores and explanations
 - Career-readiness scoring
@@ -25,11 +25,13 @@ The planned system includes:
 - Progress tracking
 - Administrator management of users, careers, skills, learning resources, audit records, and reports
 
-Numerical recommendation and readiness scores are intended to come from documented rule-based logic. Generative AI supports explanations and editable text rather than independently determining numerical scores.
+Numerical recommendation and readiness scores come from documented deterministic scoring logic.
+
+Generative AI supports structured explanations, resume drafts, cover-letter drafts, and interview-preparation content. AI-generated content stays subject to Student review and does not independently determine numerical career scores.
 
 ## Repository purpose
 
-This repository stores the GradNavi capstone project baseline and implementation work.
+This repository stores the GradNavi capstone project baseline, implementation work, system design, Sprint planning, testing, and evidence.
 
 The repository currently includes:
 
@@ -49,8 +51,21 @@ The repository currently includes:
 - Django REST Framework backend
 - React frontend
 - JWT authentication implementation
+- Student Profile backend
+- Career and skill reference data
+- Weighted career-recommendation logic
+- Career Recommendation API
+- Skill-gap and Career Readiness scoring
+- Learning Suggestions and Roadmap API
+- Shared AI service foundation
+- AI prompt templates and safety rules
+- AI privacy mapping and structured contracts
+- Resume Generation backend
+- Cover Letter Generation backend
+- Interview Question and Feedback API
 - PostgreSQL configuration and migrations
 - Frontend and backend integration work
+- Sprint integration plans
 - Sprint testing plans, test cases, and evidence
 - Contribution and communication records
 
@@ -90,8 +105,46 @@ Note: the current repository filename for the ER diagram is `GrandNavi ER diagra
 - [Task Leads](docs/project-management/task-leads.md)
 - [Tools and Resources](docs/project-management/tools-and-resources.md)
 - [Work Breakdown Structure](docs/project-management/work-breakdown-structure.md)
+
+## System design
+
+- [REST API Design](docs/system-design/rest-api-design.md)
+- [Security Architecture](docs/system-design/security-architecture.md)
+- [Student Profile Data Design](docs/system-design/student-profile-data-design.md)
+- [Student Profile API Model Mapping](docs/system-design/student-profile-api-model-mapping.md)
+- [Career and Skill Reference Data Design](docs/system-design/career-skill-reference-data-design.md)
+- [Recommendation Scoring Design](docs/system-design/recommendation-scoring-design.md)
+- [Readiness Scoring Design](docs/system-design/readiness_scoring_design.md)
+- [AI Prompt and Safety Design](docs/system-design/ai-prompt-safety-design.md)
+
+## Integration plans
+
+- [Sprint 1 Integration Plan](docs/system-design/sprint-1-integration-plan.md)
+- [Sprint 2 Integration Plan](docs/system-design/sprint-2-integration-plan.md)
+- [Sprint 3 Integration Plan](docs/system-design/sprint-3-integration-plan.md)
+
+## Testing documentation
+
+### Sprint 1
+
 - [Sprint 1 Test Plan](docs/testing/sprint-1-test-plan.md)
 - [Sprint 1 Test Case Tracker](docs/testing/sprint-1-test-cases.xlsx)
+
+### Sprint 2
+
+- [Sprint 2 Test Plan](docs/testing/sprint-2-test-plan.md)
+- [Sprint 2 Test Case Tracker](docs/testing/sprint-2-test-cases.xlsx)
+
+### Sprint 3
+
+- [Sprint 3 Test Plan](docs/testing/sprint-3-test-plan.md)
+- [Sprint 3 Test Case Tracker](docs/testing/sprint-3-test-cases.xlsx)
+
+Testing evidence is stored under:
+
+```text
+docs/testing/evidence/
+```
 
 ## Planning images
 
@@ -113,8 +166,8 @@ The current GradNavi requirements identify the following main system actors and 
 |---|---|
 | Student | Maintains a profile, receives career guidance, analyses skill gaps, prepares application material, practises interviews, and tracks progress |
 | System Administrator | Manages users, careers, skills, learning resources, reports, audit records, and reference data |
-| OpenAI API | Provides structured explanations and editable generated content through the Django backend |
-| Public Career and Learning Sources | Supply reference information that is reviewed before being entered into GradNavi |
+| OpenAI API | Planned external AI provider for structured explanations and editable generated content through the Django backend |
+| Public Career and Learning Sources | Supply reference information reviewed before entry into GradNavi |
 
 Career Adviser access is outside the current V1 scope.
 
@@ -123,11 +176,11 @@ Career Adviser access is outside the current V1 scope.
 The current project proposal identifies these student use cases:
 
 1. Register and authenticate
-2. Manage student profile
+2. Manage Student Profile
 3. Receive career recommendations
 4. View recommendation scores and explanations
 5. Perform skill-gap analysis
-6. View career-readiness score
+6. View Career Readiness score
 7. Match a job description
 8. Generate a resume draft
 9. Generate a cover-letter draft
@@ -154,7 +207,7 @@ The team also uses the CQU Microsoft 365 shared workspace for collaborative file
 | Joyee Chakraborty | 12286715 | Frontend Lead |
 | Md Enamul Haque | 12280315 | Backend Lead and Requirements Lead |
 
-## Technology Stack
+## Technology stack
 
 | Area | Technology |
 | --- | --- |
@@ -164,48 +217,186 @@ The team also uses the CQU Microsoft 365 shared workspace for collaborative file
 | Authentication | Django authentication and Simple JWT |
 | Database | PostgreSQL through Psycopg |
 | CORS | django-cors-headers |
-| Artificial intelligence | OpenAI API through the Django backend, planned for later Sprints |
+| AI architecture | Provider-independent AI service layer, structured schemas, prompt templates, safety rules, privacy mapping, and validated output contracts |
+| Planned AI provider | OpenAI API integration through the Django backend under Sprint 4 |
 | Planning | Scrum, Trello, GitHub, Microsoft Project |
 | Communication | Microsoft Teams |
 | Planned deployment | Vercel frontend, Railway backend and PostgreSQL |
 
+## AI architecture status
+
+GradNavi separates deterministic career-scoring logic from generative AI features.
+
+Deterministic logic handles:
+
+- Career recommendation scores
+- Recommendation ranking
+- Skill-gap calculations
+- Career Readiness scoring
+- Learning-gap ordering
+
+The current AI service foundation includes:
+
+- Approved AI operation identifiers
+- Shared input schemas
+- Shared output schemas
+- Prompt templates
+- Trusted and untrusted content separation
+- Prompt-injection boundaries
+- Privacy allowlists
+- AI safety rules
+- Provider-independent service contracts
+- Controlled provider exceptions
+- AI-generated content indicators
+- Student-review requirements
+
+Resume, Cover Letter, and Interview services currently use a provider boundary that fails closed when no approved external AI provider is configured.
+
+Concrete OpenAI provider integration is scheduled under WBS 7.3 in Sprint 4.
+
 ## Current implementation status
 
-GradNavi has completed substantial Sprint 1 foundation work and has entered Sprint 2 development.
+GradNavi is currently in Sprint 3 development.
 
-Completed or implemented foundation work includes:
+### Sprint 1 foundation
 
-- Django REST Framework backend foundation.
-- React frontend foundation and routing.
-- PostgreSQL development database configuration.
-- Django migrations.
-- Student account model and authentication backend.
-- Registration.
-- Login.
-- JWT access and refresh handling.
-- Logout.
-- Current authenticated-user endpoint.
-- Password reset backend flow.
-- Frontend registration and login integration.
-- Protected frontend routes.
-- Authentication session handling.
-- CORS configuration for approved local frontend origins.
-- Sprint 1 authentication, security, database, and regression test evidence.
+Implemented Sprint 1 work includes:
 
-Student Profile frontend work exists, but full Student Profile frontend-to-backend integration remains dependent on the Student Profile backend implementation.
+- Django REST Framework backend foundation
+- React frontend foundation and routing
+- PostgreSQL development database configuration
+- Django migrations
+- Student account model
+- Registration
+- Login
+- JWT access and refresh handling
+- Logout
+- Current authenticated-user endpoint
+- Password reset backend flow
+- Student Profile backend
+- Frontend registration and login integration
+- Protected frontend routes
+- Authentication session handling
+- CORS configuration for approved local frontend origins
+- Authentication, security, profile, database, and regression testing
 
-Sprint 2 focuses on:
+### Sprint 2 backend
 
-- Career and skill reference data.
-- Weighted recommendation scoring.
-- Career recommendation API.
-- Skill-gap analysis.
-- Career-readiness scoring.
-- Recommendation and readiness interface.
-- Learning suggestions.
-- Career roadmap.
+Implemented and merged Sprint 2 backend work includes:
 
-AI service integration, deployment, and later feature areas remain scheduled for later Sprints.
+- Career and skill reference data
+- Weighted recommendation engine
+- Career Recommendation API
+- Skill-gap calculation
+- Career Readiness scoring
+- Learning-resource reference data
+- Learning Suggestions API
+- Learning Roadmap API
+- Sprint 2 backend regression coverage
+
+Sprint 2 frontend implementation and final integrated Sprint 2 verification still depend on the remaining interface work.
+
+### Sprint 3
+
+The current Sprint 3 shared branch includes:
+
+| WBS | Task | Current repository status |
+| --- | --- | --- |
+| 6.1 | Sprint 3 Planning | Started |
+| 6.2 | AI Prompt Templates and Safety Rules | Implemented and merged |
+| 6.3 | Resume Generation Backend | Implemented and merged |
+| 6.4 | Cover Letter Generation Backend | Implemented and merged |
+| 6.5 | Resume and Cover Letter Interface | Pending frontend implementation |
+| 6.6 | Interview Question and Feedback API | Implemented and merged |
+| 6.7 | Interview Preparation Interface | Pending frontend implementation |
+| 6.8 | Document and Interview Integration | Waiting for WBS 6.5 and WBS 6.7 |
+| 6.9 | Sprint 3 Testing | Planned and partially prepared |
+| 6.10 | Sprint 3 Review and Retrospective | Not started |
+| 6.11 | Sprint 3 Complete | Not reached |
+
+Sprint 3 integration and testing plans are already stored in the repository.
+
+WBS 6.8 requires WBS 6.3, 6.4, 6.5, 6.6, and 6.7 before full integration begins.
+
+## Current Sprint 3 backend capabilities
+
+### Resume Generation
+
+The backend includes an authenticated Resume Generation service based on the Student's own profile.
+
+The implementation uses:
+
+- authenticated Student Profile context
+- shared privacy mapping
+- shared AI prompt contracts
+- structured Resume Draft output
+- AI-generated content indicators
+- Student-review requirements
+- controlled provider failure behaviour
+
+### Cover Letter Generation
+
+The backend includes an authenticated Cover Letter Generation service.
+
+The implementation uses:
+
+- validated Job Description input
+- authenticated Student Profile context
+- privacy-controlled profile mapping
+- untrusted Job Description boundaries
+- structured Cover Letter Draft output
+- AI-generated content indicators
+- Student-review requirements
+- controlled provider failure behaviour
+
+### Interview Preparation
+
+The backend includes authenticated endpoints for:
+
+```text
+POST /api/v1/interviews/questions/
+POST /api/v1/interviews/feedback/
+```
+
+Interview Question Generation supports:
+
+- target role
+- optional Job Description
+- controlled question count
+- structured question sets
+- focus areas
+- AI-generated content indicators
+- Student-review requirements
+
+Interview Feedback supports:
+
+- target role
+- interview question
+- typed Student answer
+- strengths
+- improvement areas
+- suggested responses
+- feedback summary
+- AI-generated content indicators
+- Student-review requirements
+
+The Interview API does not provide hiring probability, pass or fail classifications, or guaranteed employment outcomes.
+
+## Current testing baseline
+
+The project uses automated backend tests, manual integration tests, frontend checks, and evidence records.
+
+The latest Sprint 3 backend validation performed before the WBS 6.6 merge included:
+
+```text
+Interview test suite: 38 / 38 PASS
+Full backend regression: 410 / 410 PASS
+Django system check: PASS
+makemigrations --check: No changes detected
+Failures: 0
+```
+
+Sprint 3 integration testing will continue after the remaining frontend dependencies are available.
 
 ## Delivery planning
 
@@ -234,19 +425,121 @@ The detailed task-level schedule, dependencies, ownership, resources, milestones
 
 When Sprint dates, ownership, dependencies, or milestones change, Microsoft Project should be updated first. Related GitHub planning documents should then be updated to match.
 
-## Repository Structure
+## Local development
+
+### Backend
+
+Move into the backend directory:
+
+```powershell
+cd backend
+```
+
+Activate the Python virtual environment:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Install backend dependencies when required:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Create a local `.env` file from:
+
+```text
+backend/.env.example
+```
+
+The development environment expects PostgreSQL settings for:
+
+```text
+DB_NAME
+DB_USER
+DB_PASSWORD
+DB_HOST
+DB_PORT
+```
+
+Apply migrations:
+
+```powershell
+python manage.py migrate
+```
+
+Run the Django development server:
+
+```powershell
+python manage.py runserver
+```
+
+Run the Django system check:
+
+```powershell
+python manage.py check
+```
+
+Run the backend test suite:
+
+```powershell
+python manage.py test
+```
+
+### Frontend
+
+Move into the frontend directory:
+
+```powershell
+cd frontend
+```
+
+Install dependencies:
+
+```powershell
+npm install
+```
+
+Start the Vite development server:
+
+```powershell
+npm run dev
+```
+
+Run frontend linting:
+
+```powershell
+npm run lint
+```
+
+Run the production build check:
+
+```powershell
+npm run build
+```
+
+## Repository structure
 
 ```text
 GradNavi/
 ├── backend/
 │   ├── accounts/
+│   ├── ai_services/
+│   ├── careers/
 │   ├── docs/
+│   ├── documents/
 │   ├── gradnavi/
+│   ├── interviews/
+│   ├── profiles/
+│   ├── .env.example
 │   ├── manage.py
 │   └── requirements.txt
 │
 ├── frontend/
+│   ├── public/
 │   ├── src/
+│   ├── .oxlintrc.json
 │   ├── package.json
 │   └── vite.config.js
 │
@@ -260,7 +553,9 @@ GradNavi/
 │   │   └── requirements-assignment-matrix.md
 │   │
 │   ├── project-management/
+│   │   ├── contribution-log.md
 │   │   ├── product-backlog.md
+│   │   ├── quality-plan.md
 │   │   ├── responsibility-matrix.md
 │   │   ├── risk-register.md
 │   │   ├── roadmap-and-milestones.md
@@ -269,13 +564,25 @@ GradNavi/
 │   │   └── GradNavi_Final_Project_Plan.mpp
 │   │
 │   ├── system-design/
+│   │   ├── ai-prompt-safety-design.md
+│   │   ├── career-skill-reference-data-design.md
+│   │   ├── readiness_scoring_design.md
+│   │   ├── recommendation-scoring-design.md
 │   │   ├── rest-api-design.md
 │   │   ├── security-architecture.md
-│   │   └── student-profile-api-model-mapping.md
+│   │   ├── sprint-1-integration-plan.md
+│   │   ├── sprint-2-integration-plan.md
+│   │   ├── sprint-3-integration-plan.md
+│   │   ├── student-profile-api-model-mapping.md
+│   │   └── student-profile-data-design.md
 │   │
 │   └── testing/
 │       ├── sprint-1-test-plan.md
 │       ├── sprint-1-test-cases.xlsx
+│       ├── sprint-2-test-plan.md
+│       ├── sprint-2-test-cases.xlsx
+│       ├── sprint-3-test-plan.md
+│       ├── sprint-3-test-cases.xlsx
 │       └── evidence/
 │
 ├── .gitignore
@@ -299,11 +606,14 @@ The current V1 scope excludes:
 - Multilingual support
 - Production-scale infrastructure and disaster recovery
 
-Career guidance generated by GradNavi provides decision support. Students review AI-generated material before saving or using it.
+GradNavi provides career-guidance decision support.
+
+Students review AI-generated material before saving or using generated content.
 
 ## Document status
 
 The repository is an active project workspace.
 
-Requirements, diagrams, task ownership, architecture decisions, database design, sprint planning, testing evidence, deployment records, and assessment documents should stay aligned with the latest approved project baseline.
+Requirements, diagrams, task ownership, architecture decisions, database design, Sprint planning, testing evidence, deployment records, and assessment documents should stay aligned with the latest approved project baseline.
 
+The Microsoft Project schedule remains the authoritative planning source for Sprint dates, task dependencies, ownership, and milestones.
