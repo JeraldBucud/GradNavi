@@ -1,4 +1,8 @@
+import { getAccessToken } from './authStorage'
+
+
 const API_BASE_URL = 'http://127.0.0.1:8000/api/v1'
+
 
 async function apiRequest(endpoint, options = {}) {
   const {
@@ -12,7 +16,7 @@ async function apiRequest(endpoint, options = {}) {
   }
 
   if (requiresAuth) {
-    const accessToken = localStorage.getItem('gradnavi_access_token')
+    const accessToken = getAccessToken()
 
     if (accessToken) {
       headers.Authorization = `Bearer ${accessToken}`
@@ -41,7 +45,8 @@ async function apiRequest(endpoint, options = {}) {
 
   if (!response.ok) {
     const error = new Error(
-      responseData?.error?.message || 'API request failed.',
+      responseData?.error?.message
+      || 'API request failed.',
     )
 
     error.status = response.status
@@ -52,5 +57,6 @@ async function apiRequest(endpoint, options = {}) {
 
   return responseData
 }
+
 
 export default apiRequest

@@ -1,30 +1,15 @@
 import apiRequest from './apiClient'
 
-const ACCESS_TOKEN_KEY = 'gradnavi_access_token'
-const REFRESH_TOKEN_KEY = 'gradnavi_refresh_token'
-const USER_KEY = 'gradnavi_user'
+import {
+  clearAuthSession,
+  getRefreshToken,
+  getStoredUser,
+  hasStoredAccessToken,
+  storeAccessToken,
+  storeAuthSession,
+  storeRefreshToken,
+} from './authStorage'
 
-function storeAuthSession(authData) {
-  localStorage.setItem(ACCESS_TOKEN_KEY, authData.access)
-  localStorage.setItem(REFRESH_TOKEN_KEY, authData.refresh)
-  localStorage.setItem(USER_KEY, JSON.stringify(authData.user))
-}
-
-function clearAuthSession() {
-  localStorage.removeItem(ACCESS_TOKEN_KEY)
-  localStorage.removeItem(REFRESH_TOKEN_KEY)
-  localStorage.removeItem(USER_KEY)
-}
-
-function getStoredUser() {
-  const storedUser = localStorage.getItem(USER_KEY)
-
-  if (!storedUser) {
-    return null
-  }
-
-  return JSON.parse(storedUser)
-}
 
 async function registerAccount(registrationData) {
   return apiRequest('/auth/register/', {
@@ -32,6 +17,7 @@ async function registerAccount(registrationData) {
     body: registrationData,
   })
 }
+
 
 async function loginAccount(email, password) {
   const authData = await apiRequest('/auth/login/', {
@@ -47,37 +33,63 @@ async function loginAccount(email, password) {
   return authData
 }
 
+
+async function requestPasswordReset(email) {
+  return apiRequest('/auth/password/reset/', {
+    method: 'POST',
+    body: {
+      email,
+    },
+  })
+}
+
+
+async function confirmPasswordReset(resetData) {
+  return apiRequest('/auth/password/reset/confirm/', {
+    method: 'POST',
+    body: resetData,
+  })
+}
+
+
 async function getCurrentUser() {
   return apiRequest('/auth/me/', {
     requiresAuth: true,
   })
 }
 
+
 async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
+  const refreshToken = getRefreshToken()
 
   if (!refreshToken) {
-    throw new Error('No refresh token is available.')
+    throw new Error(
+      'No refresh token is available.',
+    )
   }
 
-  const tokenData = await apiRequest('/auth/token/refresh/', {
-    method: 'POST',
-    body: {
-      refresh: refreshToken,
+  const tokenData = await apiRequest(
+    '/auth/token/refresh/',
+    {
+      method: 'POST',
+      body: {
+        refresh: refreshToken,
+      },
     },
-  })
+  )
 
-  localStorage.setItem(ACCESS_TOKEN_KEY, tokenData.access)
+  storeAccessToken(tokenData.access)
 
   if (tokenData.refresh) {
-    localStorage.setItem(REFRESH_TOKEN_KEY, tokenData.refresh)
+    storeRefreshToken(tokenData.refresh)
   }
 
   return tokenData
 }
 
+
 async function logoutAccount() {
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY)
+  const refreshToken = getRefreshToken()
 
   try {
     if (refreshToken) {
@@ -90,16 +102,26 @@ async function logoutAccount() {
       })
     }
   } finally {
+    /*
+     * Local logout must always finish.
+     *
+     * A failed server request must not leave access,
+     * refresh, or user information in browser storage.
+     */
     clearAuthSession()
   }
 }
 
+
 export {
   registerAccount,
   loginAccount,
+  requestPasswordReset,
+  confirmPasswordReset,
   logoutAccount,
   getCurrentUser,
   refreshAccessToken,
   getStoredUser,
+  hasStoredAccessToken,
   clearAuthSession,
 }
