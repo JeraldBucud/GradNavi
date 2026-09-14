@@ -1,0 +1,1096 @@
+/*
+ * GradNavi Landing Page
+ *
+ * Source:
+ * Figma -> 03 - High Fidelity Pilot
+ * -> Landing Page - High Fidelity
+ *
+ * Figma node: 205:3
+ * Desktop reference: 1440 x 2140
+ *
+ * The 1440px layout follows the approved Figma frame.
+ * Responsive rules preserve the same content and hierarchy
+ * without introducing unsupported features.
+ */
+
+
+/* =================================================
+ * PAGE
+ * ================================================= */
+
+.landing-page {
+  min-height: 100vh;
+
+  color: var(--color-body);
+  background: var(--color-page);
+}
+
+.landing-container {
+  width: min(1280px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+
+/* =================================================
+ * HEADER
+ * ================================================= */
+
+.landing-header {
+  height: 82px;
+
+  background: var(--color-surface);
+}
+
+.landing-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: min(1280px, calc(100% - 48px));
+  height: 100%;
+
+  margin: 0 auto;
+}
+
+.landing-brand {
+  color: var(--color-primary-dark);
+
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  line-height: 33px;
+
+  text-decoration: none;
+}
+
+.landing-brand:hover {
+  text-decoration: none;
+}
+
+.landing-nav {
+  display: flex;
+  align-items: center;
+
+  gap: 32px;
+}
+
+.landing-nav > a:not(.gn-button) {
+  color: var(--color-heading);
+
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 18px;
+
+  text-decoration: none;
+}
+
+.landing-nav > a:not(.gn-button):hover {
+  color: var(--color-primary);
+
+  text-decoration: none;
+}
+
+.landing-header__cta {
+  width: 150px;
+
+  font-size: 13px;
+  line-height: 18px;
+}
+
+
+/* =================================================
+ * HERO
+ * ================================================= */
+
+.landing-hero {
+  padding: 63px 0 70px;
+}
+
+.landing-hero__grid {
+  display: grid;
+
+  /*
+   * Figma desktop positions:
+   * left content = 650px
+   * gap = 50px
+   * preview = 580px
+   *
+   * Total = 1280px
+   */
+  grid-template-columns: 650px 580px;
+
+  gap: 50px;
+
+  align-items: start;
+}
+
+.landing-hero__content {
+  padding-top: 14px;
+}
+
+.landing-hero__title {
+  width: 650px;
+  max-width: 650px;
+
+  color: var(--color-heading);
+
+  font-size: 62px;
+  font-weight: var(--font-weight-bold);
+  line-height: 86px;
+
+  letter-spacing: 0;
+}
+
+.landing-hero__actions {
+  display: flex;
+
+  gap: 20px;
+
+  margin-top: 18px;
+}
+
+.landing-button {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.landing-button--primary {
+  width: 150px;
+}
+
+.landing-button--login {
+  width: 120px;
+
+  color: var(--color-heading);
+
+  border: 1px solid var(--color-border-strong);
+}
+
+.landing-hero__description {
+  width: 640px;
+  max-width: 640px;
+
+  margin-top: 26px;
+
+  color: var(--color-muted);
+
+  font-size: 20px;
+  font-weight: var(--font-weight-regular);
+  line-height: 28px;
+}
+
+
+/* =================================================
+ * DASHBOARD PREVIEW
+ * ================================================= */
+
+.landing-preview {
+  width: 580px;
+  min-height: 430px;
+
+  padding: 27px;
+
+  background: var(--color-surface);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: 14px;
+}
+
+.landing-preview__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+}
+
+.landing-preview__header h2 {
+  color: var(--color-heading);
+
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+  line-height: 30px;
+}
+
+.landing-preview__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 150px;
+  min-height: 30px;
+
+  padding: 0 12px;
+
+  color: var(--color-muted);
+  background: var(--color-neutral-100);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 15px;
+}
+
+.landing-preview__metrics {
+  display: grid;
+
+  grid-template-columns: 180px 190px 120px;
+
+  gap: 16px;
+
+  margin-top: 28px;
+}
+
+.landing-preview__metric {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 108px;
+
+  padding: 13px 15px;
+
+  background: var(--color-neutral-100);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-large);
+}
+
+.landing-preview__metric-label {
+  color: var(--color-muted);
+
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 17px;
+}
+
+.landing-preview__metric strong {
+  margin-top: 4px;
+
+  color: var(--color-heading);
+
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  line-height: 39px;
+}
+
+.landing-preview__metric span:last-child {
+  margin-top: auto;
+
+  color: var(--color-muted);
+
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.landing-preview__actions-title {
+  margin-top: 30px;
+
+  color: var(--color-heading);
+
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  line-height: 25px;
+}
+
+.landing-preview__actions {
+  display: grid;
+
+  gap: 8px;
+
+  margin-top: 15px;
+}
+
+.landing-preview__actions div {
+  display: flex;
+  align-items: center;
+
+  min-height: 34px;
+
+  padding: 0 14px;
+
+  color: var(--color-heading);
+  background: var(--color-neutral-100);
+
+  border-radius: var(--radius-medium);
+
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 17px;
+}
+
+
+/* =================================================
+ * SHARED LANDING SECTIONS
+ * ================================================= */
+
+.landing-section {
+  padding-top: 0;
+}
+
+.landing-section__heading {
+  margin-bottom: 36px;
+}
+
+.landing-section__heading h2 {
+  color: var(--color-heading);
+
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  line-height: 33px;
+}
+
+.landing-section__heading p {
+  margin-top: 4px;
+
+  color: var(--color-muted);
+
+  font-size: 14px;
+  line-height: 19px;
+}
+
+
+/* =================================================
+ * FEATURES
+ * ================================================= */
+
+.landing-features-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 380px);
+
+  gap: 30px 40px;
+
+  max-width: 1220px;
+}
+
+.landing-feature-card {
+  display: grid;
+
+  grid-template-columns: 22px 1fr;
+
+  gap: 12px;
+
+  min-height: 120px;
+
+  padding: 22px;
+
+  background: var(--color-surface);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: 14px;
+}
+
+.landing-feature-card__marker {
+  color: var(--color-primary);
+
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+  line-height: 30px;
+}
+
+.landing-feature-card h3 {
+  color: var(--color-heading);
+
+  font-size: 17px;
+  font-weight: var(--font-weight-bold);
+  line-height: 23px;
+}
+
+.landing-feature-card p {
+  margin-top: 9px;
+
+  color: var(--color-muted);
+
+  font-size: 13px;
+  line-height: 18px;
+}
+
+
+/* =================================================
+ * WORKFLOW
+ * ================================================= */
+
+.landing-section--workflow {
+  padding-top: 86px;
+}
+
+.landing-workflow-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 280px);
+
+  gap: 35px;
+
+  max-width: 1225px;
+}
+
+.landing-workflow-card {
+  display: grid;
+
+  grid-template-columns: 130px 1fr;
+
+  gap: 14px;
+
+  align-items: center;
+
+  min-height: 150px;
+
+  padding: 22px;
+
+  background: var(--color-surface);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: 14px;
+}
+
+.landing-workflow-card__metric {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 108px;
+
+  padding: 13px 15px;
+
+  background: var(--color-neutral-100);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-large);
+}
+
+.landing-workflow-card__metric > span {
+  color: var(--color-muted);
+
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 17px;
+}
+
+.landing-workflow-card__metric strong {
+  margin-top: 4px;
+
+  color: var(--color-heading);
+
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  line-height: 39px;
+}
+
+.landing-workflow-card__metric small {
+  margin-top: auto;
+
+  color: var(--color-muted);
+
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.landing-workflow-card h3 {
+  color: var(--color-heading);
+
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 19px;
+}
+
+
+/* =================================================
+ * RESPONSIBILITIES
+ * ================================================= */
+
+.landing-section--responsibilities {
+  padding-top: 80px;
+}
+
+.landing-responsibilities {
+  padding: 26px;
+
+  background: var(--color-surface);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: 14px;
+}
+
+.landing-responsibilities > h2 {
+  color: var(--color-heading);
+
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  line-height: 33px;
+}
+
+.landing-responsibilities__grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 380px));
+
+  gap: 25px;
+
+  margin-top: 27px;
+}
+
+.landing-responsibility-card {
+  min-height: 120px;
+
+  padding: 16px;
+
+  border-radius: var(--radius-large);
+}
+
+.landing-responsibility-card h3 {
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
+  line-height: 22px;
+}
+
+.landing-responsibility-card p {
+  margin-top: 14px;
+
+  color: var(--color-heading);
+
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.landing-responsibility-card--analysis,
+.landing-responsibility-card--student {
+  background: var(--color-primary-light);
+
+  border: 1px solid var(--color-primary);
+}
+
+.landing-responsibility-card--analysis h3,
+.landing-responsibility-card--student h3 {
+  color: var(--color-primary);
+}
+
+.landing-responsibility-card--ai {
+  background: var(--color-secondary-light);
+
+  border: 1px solid var(--color-secondary);
+}
+
+.landing-responsibility-card--ai h3 {
+  color: var(--color-secondary);
+}
+
+
+/* =================================================
+ * FINAL CTA
+ * ================================================= */
+
+.landing-cta-section {
+  padding: 60px 0 92px;
+}
+
+.landing-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 180px;
+
+  padding: 40px;
+
+  background: var(--color-primary-dark);
+
+  border-radius: 18px;
+}
+
+.landing-cta h2 {
+  color: var(--color-neutral-0);
+
+  font-size: 30px;
+  font-weight: var(--font-weight-bold);
+  line-height: 41px;
+}
+
+.landing-cta p {
+  margin-top: 7px;
+
+  color: var(--color-primary-light);
+
+  font-size: 15px;
+  line-height: 21px;
+}
+
+.landing-cta__actions {
+  display: flex;
+
+  gap: 20px;
+}
+
+.landing-button--create {
+  width: 150px;
+}
+
+.landing-button--cta-login {
+  width: 110px;
+
+  color: var(--color-heading);
+
+  border: 1px solid var(--color-border-strong);
+}
+
+
+/* =================================================
+ * LARGE DESKTOP ADJUSTMENT
+ *
+ * Keeps the Figma-style two-column structure while the
+ * available width begins to reduce.
+ * ================================================= */
+
+@media (max-width: 1320px) {
+  .landing-hero__grid {
+    grid-template-columns: minmax(0, 1fr) 520px;
+
+    gap: 40px;
+  }
+
+  .landing-hero__title {
+    width: auto;
+    max-width: 650px;
+
+    font-size: 56px;
+    line-height: 68px;
+  }
+
+  .landing-hero__description {
+    width: auto;
+  }
+
+  .landing-preview {
+    width: 100%;
+  }
+
+  .landing-preview__metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .landing-features-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    max-width: none;
+  }
+
+  .landing-workflow-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    max-width: none;
+  }
+
+  .landing-responsibilities__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* =================================================
+ * TABLET / SMALL DESKTOP
+ *
+ * At this width, squeezing the hero into two columns
+ * makes the large heading too narrow. The content moves
+ * to one column instead.
+ * ================================================= */
+
+@media (max-width: 1180px) {
+  .landing-header {
+    height: auto;
+
+    padding: 18px 0;
+  }
+
+  .landing-header__inner {
+    align-items: flex-start;
+
+    gap: 24px;
+  }
+
+  .landing-nav {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    gap: 18px 24px;
+  }
+
+  .landing-hero {
+    padding-top: 48px;
+  }
+
+  .landing-hero__grid {
+    grid-template-columns: 1fr;
+
+    gap: 48px;
+  }
+
+  .landing-hero__content {
+    padding-top: 0;
+  }
+
+  .landing-hero__title {
+    width: auto;
+    max-width: 760px;
+
+    font-size: 48px;
+    line-height: 56px;
+  }
+
+  .landing-hero__description {
+    width: auto;
+    max-width: 680px;
+
+    font-size: 18px;
+    line-height: 27px;
+  }
+
+  .landing-preview {
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .landing-features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .landing-workflow-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .landing-responsibilities__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-cta {
+    align-items: flex-start;
+
+    gap: 32px;
+  }
+}
+
+
+/* =================================================
+ * MOBILE
+ *
+ * GradNavi keeps a visible two-row header on mobile.
+ * No hamburger navigation is introduced because the
+ * approved interface does not define that interaction.
+ * ================================================= */
+
+@media (max-width: 700px) {
+  /* -----------------------------------------------
+   * Shared mobile container
+   * --------------------------------------------- */
+
+  .landing-container,
+  .landing-header__inner {
+    width: min(calc(100% - 32px), 1280px);
+  }
+
+
+  /* -----------------------------------------------
+   * Header
+   *
+   * Row 1: GradNavi
+   * Row 2: Navigation and Get Started
+   * --------------------------------------------- */
+
+  .landing-header {
+    height: auto;
+
+    padding: 20px 0;
+  }
+
+  .landing-header__inner {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 22px;
+  }
+
+  .landing-brand {
+    font-size: 24px;
+    line-height: 33px;
+  }
+
+  .landing-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+
+    width: 100%;
+
+    gap: 12px 20px;
+  }
+
+  .landing-nav > a:not(.gn-button) {
+    font-size: 13px;
+    line-height: 18px;
+
+    white-space: nowrap;
+  }
+
+  .landing-header__cta {
+    width: 104px;
+    min-height: 44px;
+
+    padding-inline: 12px;
+  }
+
+
+  /* -----------------------------------------------
+   * Hero
+   * --------------------------------------------- */
+
+  .landing-hero {
+    padding: 42px 0 56px;
+  }
+
+  .landing-hero__grid {
+    grid-template-columns: 1fr;
+
+    gap: 48px;
+  }
+
+  .landing-hero__content {
+    padding-top: 0;
+  }
+
+  .landing-hero__title {
+    width: auto;
+    max-width: 100%;
+
+    font-size: 38px;
+    line-height: 46px;
+  }
+
+  .landing-hero__actions {
+    display: flex;
+    flex-wrap: nowrap;
+
+    width: 100%;
+
+    gap: 20px;
+
+    margin-top: 22px;
+  }
+
+  .landing-button--primary,
+  .landing-button--login {
+    flex: 1 1 0;
+
+    width: auto;
+    min-width: 0;
+  }
+
+  .landing-hero__description {
+    width: auto;
+    max-width: 100%;
+
+    margin-top: 26px;
+
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+
+  /* -----------------------------------------------
+   * Dashboard Preview
+   * --------------------------------------------- */
+
+  .landing-preview {
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+
+    padding: 20px;
+  }
+
+  .landing-preview__header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 12px;
+  }
+
+  .landing-preview__header h2 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .landing-preview__badge {
+    min-width: 150px;
+  }
+
+  .landing-preview__metrics {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+
+    margin-top: 28px;
+  }
+
+  .landing-preview__metric {
+    width: 100%;
+  }
+
+  .landing-preview__actions-title {
+    margin-top: 28px;
+  }
+
+
+  /* -----------------------------------------------
+   * Section headings
+   * --------------------------------------------- */
+
+  .landing-section__heading {
+    margin-bottom: 24px;
+  }
+
+  .landing-section__heading h2 {
+    font-size: 22px;
+    line-height: 30px;
+  }
+
+  .landing-section__heading p {
+    margin-top: 6px;
+  }
+
+
+  /* -----------------------------------------------
+   * Features
+   * --------------------------------------------- */
+
+  .landing-features-grid {
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+  }
+
+  .landing-feature-card {
+    min-height: 120px;
+  }
+
+
+  /* -----------------------------------------------
+   * Workflow
+   * --------------------------------------------- */
+
+  .landing-section--workflow {
+    padding-top: 64px;
+  }
+
+  .landing-workflow-grid {
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+  }
+
+  .landing-workflow-card {
+    grid-template-columns: 120px minmax(0, 1fr);
+
+    gap: 16px;
+
+    padding: 20px;
+  }
+
+  .landing-workflow-card__metric {
+    min-width: 0;
+  }
+
+
+  /* -----------------------------------------------
+   * Responsibilities
+   * --------------------------------------------- */
+
+  .landing-section--responsibilities {
+    padding-top: 64px;
+  }
+
+  .landing-responsibilities {
+    padding: 20px;
+  }
+
+  .landing-responsibilities > h2 {
+    font-size: 22px;
+    line-height: 30px;
+  }
+
+  .landing-responsibilities__grid {
+    grid-template-columns: 1fr;
+
+    gap: 16px;
+
+    margin-top: 24px;
+  }
+
+
+  /* -----------------------------------------------
+   * Final CTA
+   * --------------------------------------------- */
+
+  .landing-cta-section {
+    padding: 48px 0 64px;
+  }
+
+  .landing-cta {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 28px;
+
+    min-height: 0;
+
+    padding: 32px 24px;
+  }
+
+  .landing-cta h2 {
+    font-size: 26px;
+    line-height: 34px;
+  }
+
+  .landing-cta__actions {
+    display: flex;
+
+    width: 100%;
+
+    gap: 12px;
+  }
+
+  .landing-button--create,
+  .landing-button--cta-login {
+    flex: 1 1 0;
+
+    width: auto;
+    min-width: 0;
+  }
+}
+
+/* =================================================
+ * EXTRA-SMALL MOBILE
+ *
+ * Keeps the public header to two rows on narrow
+ * screens without introducing a hamburger menu.
+ * ================================================= */
+
+@media (max-width: 360px) {
+  .landing-nav {
+    flex-wrap: nowrap;
+
+    gap: 8px;
+  }
+
+  .landing-nav > a:not(.gn-button) {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .landing-header__cta {
+    width: 88px;
+    min-width: 88px;
+
+    padding-inline: 8px;
+
+    font-size: 12px;
+  }
+}
