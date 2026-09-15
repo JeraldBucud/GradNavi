@@ -2,12 +2,14 @@ import { Route, Routes } from 'react-router'
 
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import StudentLayout from './layouts/StudentLayout'
+import CareerRecommendationsPage from './pages/CareerRecommendationsPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import NotFoundPage from './pages/NotFoundPage'
 import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import SkillGapAnalysisPage from './pages/SkillGapAnalysisPage'
 import StudentProfilePage from './pages/StudentProfilePage'
 
 
@@ -44,6 +46,16 @@ function App() {
           <Route
             path="/profile"
             element={<StudentProfilePage />}
+          />
+
+          <Route
+            path="/career-recommendations"
+            element={<CareerRecommendationsPage />}
+          />
+
+          <Route
+            path="/skill-gap-analysis"
+            element={<SkillGapAnalysisPage />}
           />
         </Route>
       </Route>
