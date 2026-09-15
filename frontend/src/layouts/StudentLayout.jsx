@@ -41,12 +41,14 @@ const studentNavigation = [
   {
     label: 'Career Recommendations',
     icon: Briefcase,
-    implemented: false,
+    path: '/career-recommendations',
+    implemented: true,
   },
   {
     label: 'Skill Gap Analysis',
     icon: BarChart3,
-    implemented: false,
+    path: '/skill-gap-analysis',
+    implemented: true,
   },
   {
     label: 'Career Roadmap',
