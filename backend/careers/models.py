@@ -692,6 +692,16 @@ class CareerSkillEvidence(models.Model):
         null=True,
     )
 
+    hot_technology = models.BooleanField(
+    blank=True,
+    null=True,
+    )
+
+    in_demand = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
     source_updated_at = models.DateTimeField(
         blank=True,
         null=True,
