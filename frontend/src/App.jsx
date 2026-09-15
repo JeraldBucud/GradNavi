@@ -1,22 +1,19 @@
-import { Routes, Route } from 'react-router'
+import { Route, Routes } from 'react-router'
 
 import ProtectedRoute from './components/auth/ProtectedRoute'
-import MainLayout from './layouts/MainLayout'
+import StudentLayout from './layouts/StudentLayout'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import NotFoundPage from './pages/NotFoundPage'
 import RegisterPage from './pages/RegisterPage'
-import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import StudentProfilePage from './pages/StudentProfilePage'
-import NotFoundPage from './pages/NotFoundPage'
 
 
 function App() {
   return (
     <Routes>
-      {/*
-       * Public screens with their own approved shells.
-       */}
       <Route
         path="/"
         element={<HomePage />}
@@ -42,24 +39,19 @@ function App() {
         element={<ResetPasswordPage />}
       />
 
-
-      {/*
-       * Existing authenticated routes continue using MainLayout
-       * until each approved high-fidelity screen is implemented.
-       */}
-      <Route element={<MainLayout />}>
-        <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute />}>
+        <Route element={<StudentLayout />}>
           <Route
             path="/profile"
             element={<StudentProfilePage />}
           />
         </Route>
-
-        <Route
-          path="*"
-          element={<NotFoundPage />}
-        />
       </Route>
+
+      <Route
+        path="*"
+        element={<NotFoundPage />}
+      />
     </Routes>
   )
 }
