@@ -102,4 +102,3 @@ class CareerGoalReferenceModelTests(TestCase):
             str(goal),
             "Legacy Career Goal",
         )
-
