@@ -1,0 +1,2452 @@
+{
+  "career_mapping_count": 36,
+  "local_onet_dataset_version": "31.0",
+  "local_reference_source": "O*NET Database",
+  "occupation_count": 27,
+  "occupations": [
+    {
+      "gradnavi_careers": [
+        "Human Resources Adviser",
+        "Recruitment Consultant"
+      ],
+      "onet_soc_code": "13-1071.00",
+      "onet_title": "Human Resources Specialists",
+      "response": {
+        "end": 7,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 21,
+            "title": "Microsoft Office software"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Oracle%20HRIS",
+            "in_demand": true,
+            "percentage": 19,
+            "title": "Oracle HRIS"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Microsoft Excel"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Applicant%20tracking%20software",
+            "in_demand": true,
+            "percentage": 15,
+            "title": "Applicant tracking software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Outlook",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft Outlook"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Workday%20software",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Workday software"
+          }
+        ],
+        "start": 1,
+        "total": 7
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/13-1071.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Workplace Relations Adviser"
+      ],
+      "onet_soc_code": "13-1075.00",
+      "onet_title": "Labor Relations Specialists",
+      "response": {
+        "end": 7,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 23,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Microsoft Excel"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Oracle%20HRIS",
+            "in_demand": true,
+            "percentage": 15,
+            "title": "Oracle HRIS"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Outlook",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft Outlook"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Workday%20software",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Workday software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/ServiceNow",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "ServiceNow"
+          }
+        ],
+        "start": 1,
+        "total": 7
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/13-1075.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Supply Chain Analyst"
+      ],
+      "onet_soc_code": "13-1081.02",
+      "onet_title": "Logistics Analysts",
+      "response": {
+        "end": 10,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 39,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 22,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/SAP%20software",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "SAP software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 15,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Power%20BI",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "Microsoft Power BI"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Tableau",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Tableau"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Outlook",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Microsoft Outlook"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Access",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft Access"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Inventory%20management%20systems",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Inventory management systems"
+          }
+        ],
+        "start": 1,
+        "total": 10
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/13-1081.02/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Management Consultant"
+      ],
+      "onet_soc_code": "13-1111.00",
+      "onet_title": "Management Analysts",
+      "response": {
+        "end": 11,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 21,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 14,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 14,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Power%20BI",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Microsoft Power BI"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Atlassian%20JIRA",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Atlassian JIRA"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Tableau",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Tableau"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Visio",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft Visio"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Salesforce%20software",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Salesforce software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20SharePoint",
+            "in_demand": true,
+            "percentage": 4,
+            "title": "Microsoft SharePoint"
+          }
+        ],
+        "start": 1,
+        "total": 11
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/13-1111.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Content Creator (Marketing)",
+        "Market Research Analyst",
+        "Marketing Specialist"
+      ],
+      "onet_soc_code": "13-1161.00",
+      "onet_title": "Market Research Analysts and Marketing Specialists",
+      "response": {
+        "end": 9,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 14,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Salesforce%20software",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Salesforce software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Google%20Analytics",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Google Analytics"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Canva",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Canva"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Creative%20Cloud%20software",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Adobe Creative Cloud software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/TikTok",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "TikTok"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Outlook",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft Outlook"
+          }
+        ],
+        "start": 1,
+        "total": 9
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/13-1161.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Digital Marketing Analyst"
+      ],
+      "onet_soc_code": "13-1161.01",
+      "onet_title": "Search Marketing Strategists",
+      "response": {
+        "end": 20,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Google%20Analytics",
+            "in_demand": true,
+            "percentage": 34,
+            "title": "Google Analytics"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Semrush",
+            "in_demand": true,
+            "percentage": 25,
+            "title": "Semrush"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Google",
+            "in_demand": true,
+            "percentage": 22,
+            "title": "Google"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Ahrefs%20Site%20Explorer",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Ahrefs Site Explorer"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Hypertext%20markup%20language%20HTML",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Hypertext markup language HTML"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Screaming%20Frog%20SEO%20Spider",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Screaming Frog SEO Spider"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Cascading%20style%20sheets%20CSS",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Cascading style sheets CSS"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Google%20Ads",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Google Ads"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/JavaScript",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "JavaScript"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/WordPress",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "WordPress"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Python"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Moz%20search%20engine%20optimization%20SEO%20software",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Moz search engine optimization SEO software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Google%20Looker%20Analytics",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Google Looker Analytics"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Google%20Tag%20Manager",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Google Tag Manager"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Bing%20Ads",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Bing Ads"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Adobe%20Analytics",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Adobe Analytics"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Content%20management%20systems%20CMS",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Content management systems CMS"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft PowerPoint"
+          }
+        ],
+        "start": 1,
+        "total": 20
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/13-1161.01/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Accountant (General)",
+        "Management Accountant",
+        "Taxation Accountant"
+      ],
+      "onet_soc_code": "13-2011.00",
+      "onet_title": "Accountants and Auditors",
+      "response": {
+        "end": 6,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 28,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Intuit%20QuickBooks",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Intuit QuickBooks"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/SAP%20software",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "SAP software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Outlook",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Microsoft Outlook"
+          }
+        ],
+        "start": 1,
+        "total": 6
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/13-2011.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "ICT Business Analyst"
+      ],
+      "onet_soc_code": "15-1211.00",
+      "onet_title": "Computer Systems Analysts",
+      "response": {
+        "end": 10,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 15,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 14,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/SAP%20software",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "SAP software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/ServiceNow",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "ServiceNow"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Atlassian%20JIRA",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Atlassian JIRA"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20SharePoint",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft SharePoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Power%20BI",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft Power BI"
+          }
+        ],
+        "start": 1,
+        "total": 10
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-1211.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Cyber Security Advice and Assessment Specialist",
+        "Cyber Security Analyst"
+      ],
+      "onet_soc_code": "15-1212.00",
+      "onet_title": "Information Security Analysts",
+      "response": {
+        "end": 14,
+        "example": [
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Firewall%20software",
+            "in_demand": true,
+            "percentage": 18,
+            "title": "Firewall software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Linux",
+            "in_demand": true,
+            "percentage": 14,
+            "title": "Linux"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Splunk%20Enterprise",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Splunk Enterprise"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Azure%20software",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Microsoft Azure software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Amazon%20Web%20Services%20AWS%20software",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Amazon Web Services AWS software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerShell",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft PowerShell"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/MITRE%20ATT%26CK%20software",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "MITRE ATT&CK software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Microsoft Excel"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/eMASS",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "eMASS"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/UNIX",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "UNIX"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Tenable%20Nessus",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Tenable Nessus"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft PowerPoint"
+          }
+        ],
+        "start": 1,
+        "total": 14
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-1212.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Data Architect"
+      ],
+      "onet_soc_code": "15-1243.00",
+      "onet_title": "Database Architects",
+      "response": {
+        "end": 13,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 29,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 21,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Amazon%20Web%20Services%20AWS%20software",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "Amazon Web Services AWS software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Azure%20software",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "Microsoft Azure software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Power%20BI",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Microsoft Power BI"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Snowflake",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Snowflake"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Tableau",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Tableau"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Apache%20Spark",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Apache Spark"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Apache%20Kafka",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Apache Kafka"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Oracle%20Java",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Oracle Java"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft PowerPoint"
+          }
+        ],
+        "start": 1,
+        "total": 13
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-1243.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Data Engineer"
+      ],
+      "onet_soc_code": "15-1243.01",
+      "onet_title": "Data Warehousing Specialists",
+      "response": {
+        "end": 10,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 25,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 18,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Power%20BI",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Microsoft Power BI"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Operational%20Data%20Store%20ODS%20software",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Operational Data Store ODS software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Outlook",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Microsoft Outlook"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Tableau",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Tableau"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Access",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft Access"
+          }
+        ],
+        "start": 1,
+        "total": 10
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-1243.01/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "DevOps Engineer",
+        "Software Engineer"
+      ],
+      "onet_soc_code": "15-1252.00",
+      "onet_title": "Software Developers",
+      "response": {
+        "end": 30,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 29,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Amazon%20Web%20Services%20AWS%20software",
+            "in_demand": true,
+            "percentage": 26,
+            "title": "Amazon Web Services AWS software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Oracle%20Java",
+            "in_demand": true,
+            "percentage": 25,
+            "title": "Oracle Java"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 24,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/JavaScript",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "JavaScript"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Azure%20software",
+            "in_demand": true,
+            "percentage": 19,
+            "title": "Microsoft Azure software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Kubernetes",
+            "in_demand": true,
+            "percentage": 14,
+            "title": "Kubernetes"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Git",
+            "in_demand": true,
+            "percentage": 14,
+            "title": "Git"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/RESTful%20API",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "RESTful API"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/React",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "React"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Docker",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "Docker"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/C%23",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "C#"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/C%2B%2B",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "C++"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Google%20Angular",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Google Angular"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Cascading%20style%20sheets%20CSS",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Cascading style sheets CSS"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Linux",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Linux"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Jenkins%20CI",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Jenkins CI"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Hypertext%20markup%20language%20HTML",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Hypertext markup language HTML"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/TypeScript",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "TypeScript"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Node.js",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Node.js"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Atlassian%20JIRA",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Atlassian JIRA"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/GitHub",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "GitHub"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/NoSQL",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "NoSQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/PostgreSQL",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "PostgreSQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/IBM%20Terraform",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "IBM Terraform"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Apache%20Kafka",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Apache Kafka"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/C",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "C"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Spring%20Boot",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Spring Boot"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Go",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Go"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Spring%20Framework",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Spring Framework"
+          }
+        ],
+        "start": 1,
+        "total": 30
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-1252.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "UI / UX Designer",
+        "Web Designer"
+      ],
+      "onet_soc_code": "15-1255.00",
+      "onet_title": "Web and Digital Interface Designers",
+      "response": {
+        "end": 12,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Figma",
+            "in_demand": true,
+            "percentage": 37,
+            "title": "Figma"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Cascading%20style%20sheets%20CSS",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "Cascading style sheets CSS"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/JavaScript",
+            "in_demand": true,
+            "percentage": 19,
+            "title": "JavaScript"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Hypertext%20markup%20language%20HTML",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Hypertext markup language HTML"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/React",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "React"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Creative%20Cloud%20software",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Adobe Creative Cloud software"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Adobe%20XD",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Adobe XD"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Google%20Angular",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Google Angular"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Photoshop",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Adobe Photoshop"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Illustrator",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Adobe Illustrator"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/TypeScript",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "TypeScript"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Atlassian%20JIRA",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Atlassian JIRA"
+          }
+        ],
+        "start": 1,
+        "total": 12
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-1255.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Cyber Security Architect",
+        "Cyber Security Engineer"
+      ],
+      "onet_soc_code": "15-1299.05",
+      "onet_title": "Information Security Engineers",
+      "response": {
+        "end": 13,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Amazon%20Web%20Services%20AWS%20software",
+            "in_demand": true,
+            "percentage": 24,
+            "title": "Amazon Web Services AWS software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Azure%20software",
+            "in_demand": true,
+            "percentage": 23,
+            "title": "Microsoft Azure software"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Firewall%20software",
+            "in_demand": true,
+            "percentage": 21,
+            "title": "Firewall software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 21,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Linux",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "Linux"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerShell",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Microsoft PowerShell"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Splunk%20Enterprise",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Splunk Enterprise"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Active%20Directory",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Microsoft Active Directory"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Oracle%20Java",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Oracle Java"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/IBM%20Terraform",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "IBM Terraform"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Kubernetes",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Kubernetes"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Bash",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Bash"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Single%20sign-on%20SSO",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Single sign-on SSO"
+          }
+        ],
+        "start": 1,
+        "total": 13
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-1299.05/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Cloud Engineer"
+      ],
+      "onet_soc_code": "15-1299.08",
+      "onet_title": "Computer Systems Engineers/Architects",
+      "response": {
+        "end": 22,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 31,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Amazon%20Web%20Services%20AWS%20software",
+            "in_demand": true,
+            "percentage": 31,
+            "title": "Amazon Web Services AWS software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Azure%20software",
+            "in_demand": true,
+            "percentage": 26,
+            "title": "Microsoft Azure software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/IBM%20Terraform",
+            "in_demand": true,
+            "percentage": 18,
+            "title": "IBM Terraform"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Kubernetes",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Kubernetes"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Linux",
+            "in_demand": true,
+            "percentage": 14,
+            "title": "Linux"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Docker",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Docker"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Oracle%20Java",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Oracle Java"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Ansible%20software",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Ansible software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerShell",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Microsoft PowerShell"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Bash",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Bash"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Jenkins%20CI",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Jenkins CI"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Atlassian%20JIRA",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Atlassian JIRA"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/GitHub",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "GitHub"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/C%2B%2B",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "C++"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Go",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Go"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Git",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Git"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/JavaScript",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "JavaScript"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Amazon%20Web%20Services%20AWS%20CloudFormation",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Amazon Web Services AWS CloudFormation"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Active%20Directory",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft Active Directory"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Firewall%20software",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Firewall software"
+          }
+        ],
+        "start": 1,
+        "total": 22
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-1299.08/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Data Scientist"
+      ],
+      "onet_soc_code": "15-2051.00",
+      "onet_title": "Data Scientists",
+      "response": {
+        "end": 21,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 66,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 51,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/R",
+            "in_demand": true,
+            "percentage": 34,
+            "title": "R"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Tableau",
+            "in_demand": true,
+            "percentage": 22,
+            "title": "Tableau"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Power%20BI",
+            "in_demand": true,
+            "percentage": 19,
+            "title": "Microsoft Power BI"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Amazon%20Web%20Services%20AWS%20software",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Amazon Web Services AWS software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Azure%20software",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "Microsoft Azure software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/TensorFlow",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "TensorFlow"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/PyTorch",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "PyTorch"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/SAS",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "SAS"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Scikit-learn",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Scikit-learn"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Snowflake",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Snowflake"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Apache%20Spark",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Apache Spark"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/pandas",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "pandas"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Apache%20Hadoop",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Apache Hadoop"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/C%2B%2B",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "C++"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Git",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Git"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/The%20MathWorks%20MATLAB",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "The MathWorks MATLAB"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/NumPy",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "NumPy"
+          }
+        ],
+        "start": 1,
+        "total": 21
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-2051.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Data Analyst"
+      ],
+      "onet_soc_code": "15-2051.01",
+      "onet_title": "Business Intelligence Analysts",
+      "response": {
+        "end": 14,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 35,
+            "title": "Structured query language SQL"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Power%20BI",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "Microsoft Power BI"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Tableau",
+            "in_demand": true,
+            "percentage": 19,
+            "title": "Tableau"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/SAP%20software",
+            "in_demand": true,
+            "percentage": 19,
+            "title": "SAP software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/R",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "R"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Amazon%20Web%20Services%20AWS%20software",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Amazon Web Services AWS software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Azure%20software",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft Azure software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Snowflake",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Snowflake"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/SAS",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "SAS"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Salesforce%20software",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Salesforce software"
+          }
+        ],
+        "start": 1,
+        "total": 14
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/15-2051.01/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Civil Engineer"
+      ],
+      "onet_soc_code": "17-2051.00",
+      "onet_title": "Civil Engineers",
+      "response": {
+        "end": 8,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Autodesk%20AutoCAD",
+            "in_demand": true,
+            "percentage": 22,
+            "title": "Autodesk AutoCAD"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 18,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Autodesk%20AutoCAD%20Civil%203D",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Autodesk AutoCAD Civil 3D"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Bentley%20MicroStation",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Bentley MicroStation"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Autodesk%20Revit",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Autodesk Revit"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Outlook",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Microsoft Outlook"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft PowerPoint"
+          }
+        ],
+        "start": 1,
+        "total": 8
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/17-2051.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Electrical Engineer"
+      ],
+      "onet_soc_code": "17-2071.00",
+      "onet_title": "Electrical Engineers",
+      "response": {
+        "end": 10,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Autodesk%20AutoCAD",
+            "in_demand": true,
+            "percentage": 20,
+            "title": "Autodesk AutoCAD"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Autodesk%20Revit",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Autodesk Revit"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/The%20MathWorks%20MATLAB",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "The MathWorks MATLAB"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/ETAP",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "ETAP"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/SKM%20Systems%20Analysis%20Power%20Tools",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "SKM Systems Analysis Power Tools"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/C%2B%2B",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "C++"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft PowerPoint"
+          }
+        ],
+        "start": 1,
+        "total": 10
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/17-2071.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Industrial Engineer"
+      ],
+      "onet_soc_code": "17-2112.00",
+      "onet_title": "Industrial Engineers",
+      "response": {
+        "end": 6,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 15,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Autodesk%20AutoCAD",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Autodesk AutoCAD"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/SAP%20software",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "SAP software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Structured%20query%20language%20SQL",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Structured query language SQL"
+          }
+        ],
+        "start": 1,
+        "total": 6
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/17-2112.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Mechanical Engineer"
+      ],
+      "onet_soc_code": "17-2141.00",
+      "onet_title": "Mechanical Engineers",
+      "response": {
+        "end": 9,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Dassault%20Systemes%20SolidWorks",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Dassault Systemes SolidWorks"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Autodesk%20AutoCAD",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Autodesk AutoCAD"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 13,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Autodesk%20Revit",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Autodesk Revit"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Python",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Python"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/PTC%20Creo%20Parametric",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "PTC Creo Parametric"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Outlook",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Microsoft Outlook"
+          }
+        ],
+        "start": 1,
+        "total": 9
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/17-2141.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Multimedia Designer"
+      ],
+      "onet_soc_code": "27-1014.00",
+      "onet_title": "Special Effects Artists and Animators",
+      "response": {
+        "end": 18,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Photoshop",
+            "in_demand": true,
+            "percentage": 49,
+            "title": "Adobe Photoshop"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Illustrator",
+            "in_demand": true,
+            "percentage": 43,
+            "title": "Adobe Illustrator"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Creative%20Cloud%20software",
+            "in_demand": true,
+            "percentage": 37,
+            "title": "Adobe Creative Cloud software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20After%20Effects",
+            "in_demand": true,
+            "percentage": 32,
+            "title": "Adobe After Effects"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20InDesign",
+            "in_demand": true,
+            "percentage": 26,
+            "title": "Adobe InDesign"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Figma",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Figma"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Adobe%20Premiere%20Pro",
+            "in_demand": true,
+            "percentage": 17,
+            "title": "Adobe Premiere Pro"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Autodesk%20Maya",
+            "in_demand": true,
+            "percentage": 15,
+            "title": "Autodesk Maya"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 15,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Hypertext%20markup%20language%20HTML",
+            "in_demand": true,
+            "percentage": 9,
+            "title": "Hypertext markup language HTML"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Maxon%20Cinema%204D",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Maxon Cinema 4D"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Cascading%20style%20sheets%20CSS",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Cascading style sheets CSS"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Unreal%20Technology%20Unreal%20Engine",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Unreal Technology Unreal Engine"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Microsoft Excel"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Unity%20Technologies%20Unity",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Unity Technologies Unity"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Canva",
+            "in_demand": true,
+            "percentage": 6,
+            "title": "Canva"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/SideFX%20Houdini",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "SideFX Houdini"
+          }
+        ],
+        "start": 1,
+        "total": 18
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/27-1014.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Graphic Designer"
+      ],
+      "onet_soc_code": "27-1024.00",
+      "onet_title": "Graphic Designers",
+      "response": {
+        "end": 13,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Illustrator",
+            "in_demand": true,
+            "percentage": 62,
+            "title": "Adobe Illustrator"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Photoshop",
+            "in_demand": true,
+            "percentage": 61,
+            "title": "Adobe Photoshop"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20InDesign",
+            "in_demand": true,
+            "percentage": 49,
+            "title": "Adobe InDesign"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20Creative%20Cloud%20software",
+            "in_demand": true,
+            "percentage": 47,
+            "title": "Adobe Creative Cloud software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20PowerPoint",
+            "in_demand": true,
+            "percentage": 18,
+            "title": "Microsoft PowerPoint"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Adobe%20After%20Effects",
+            "in_demand": true,
+            "percentage": 16,
+            "title": "Adobe After Effects"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Figma",
+            "in_demand": true,
+            "percentage": 11,
+            "title": "Figma"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 10,
+            "title": "Microsoft Excel"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Hypertext%20markup%20language%20HTML",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Hypertext markup language HTML"
+          },
+          {
+            "href": "https://api-v2.onetcenter.org/online/technology/examples/Adobe%20Premiere%20Pro",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Adobe Premiere Pro"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Canva",
+            "in_demand": true,
+            "percentage": 7,
+            "title": "Canva"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Cascading%20style%20sheets%20CSS",
+            "in_demand": true,
+            "percentage": 5,
+            "title": "Cascading style sheets CSS"
+          }
+        ],
+        "start": 1,
+        "total": 13
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/27-1024.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Occupational Therapist"
+      ],
+      "onet_soc_code": "29-1122.00",
+      "onet_title": "Occupational Therapists",
+      "response": {
+        "end": 0,
+        "example": [],
+        "start": 1,
+        "total": 0
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/29-1122.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Physiotherapist"
+      ],
+      "onet_soc_code": "29-1123.00",
+      "onet_title": "Physical Therapists",
+      "response": {
+        "end": 0,
+        "example": [],
+        "start": 1,
+        "total": 0
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/29-1123.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Registered Nurse (Acute Care)"
+      ],
+      "onet_soc_code": "29-1141.01",
+      "onet_title": "Acute Care Nurses",
+      "response": {
+        "end": 0,
+        "example": [],
+        "start": 1,
+        "total": 0
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/29-1141.01/in_demand_skills?start=1&end=2000&sort=percentage"
+    },
+    {
+      "gradnavi_careers": [
+        "Health Information Manager"
+      ],
+      "onet_soc_code": "29-9021.00",
+      "onet_title": "Health Information Technologists and Medical Registrars",
+      "response": {
+        "end": 2,
+        "example": [
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Office%20software",
+            "in_demand": true,
+            "percentage": 12,
+            "title": "Microsoft Office software"
+          },
+          {
+            "hot_technology": true,
+            "href": "https://api-v2.onetcenter.org/online/hot_technology/Microsoft%20Excel",
+            "in_demand": true,
+            "percentage": 8,
+            "title": "Microsoft Excel"
+          }
+        ],
+        "start": 1,
+        "total": 2
+      },
+      "source_url": "https://api-v2.onetcenter.org/online/occupations/29-9021.00/in_demand_skills?start=1&end=2000&sort=percentage"
+    }
+  ],
+  "retrieved_at_local": "2026-09-16T11:44:40.525932+10:00",
+  "retrieved_at_utc": "2026-09-16T01:44:40.526168+00:00",
+  "schema_version": 1,
+  "source": "O*NET Web Services API v2",
+  "technology_row_count": 295
+}

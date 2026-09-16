@@ -249,7 +249,14 @@ class ProviderIndependenceTests(SimpleTestCase):
     Tests confirming WBS 6.2 stays provider-independent.
     """
 
-    def test_backend_requirements_do_not_include_openai_sdk(self):
+    def test_backend_requirements_include_openai_sdk_for_sprint_4(self):
+        """
+        Sprint 4 introduces the concrete OpenAI provider.
+
+        The OpenAI SDK belongs in backend dependencies while the
+        shared provider contract stays provider-independent.
+        """
+
         backend_directory = (
             Path(__file__).resolve().parents[2]
         )
@@ -262,8 +269,13 @@ class ProviderIndependenceTests(SimpleTestCase):
             encoding="utf-8"
         ).lower()
 
-        self.assertNotIn(
-            "openai",
+        self.assertIn(
+            "openai==3.13.0",
+            requirements,
+        )
+
+        self.assertIn(
+            "pydantic==2.13.5",
             requirements,
         )
 
