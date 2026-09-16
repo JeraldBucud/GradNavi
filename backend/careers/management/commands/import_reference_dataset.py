@@ -67,6 +67,13 @@ class Command(BaseCommand):
         "total_eligible": 10038,
     }
 
+    EXPECTED_SOFTWARE_DEMAND_FLAGS = {
+        "hot_true": 2156,
+        "hot_false": 3836,
+        "in_demand_true": 401,
+        "in_demand_false": 5591,
+    }
+
     EXPECTED_CAREER_MAPPING_COUNTS = {
         "ABS OSCA": 36,
         "O*NET Database": 36,
@@ -560,6 +567,95 @@ class Command(BaseCommand):
             0,
         )
 
+        software_evidence = CareerSkillEvidence.objects.filter(
+            dataset__source__name="O*NET Database",
+            source_domain="onet_software_skills",
+        )
+
+        self.validate_equal(
+            "Final O*NET software evidence",
+            software_evidence.count(),
+            self.EXPECTED_EVIDENCE_COUNTS[
+                "eligible_onet_software"
+            ],
+        )
+
+        self.validate_equal(
+            "Final hot technology = True",
+            software_evidence.filter(
+                hot_technology=True
+            ).count(),
+            self.EXPECTED_SOFTWARE_DEMAND_FLAGS[
+                "hot_true"
+            ],
+        )
+
+        self.validate_equal(
+            "Final hot technology = False",
+            software_evidence.filter(
+                hot_technology=False
+            ).count(),
+            self.EXPECTED_SOFTWARE_DEMAND_FLAGS[
+                "hot_false"
+            ],
+        )
+
+        self.validate_equal(
+            "Final hot technology = NULL",
+            software_evidence.filter(
+                hot_technology__isnull=True
+            ).count(),
+            0,
+        )
+
+        self.validate_equal(
+            "Final in demand = True",
+            software_evidence.filter(
+                in_demand=True
+            ).count(),
+            self.EXPECTED_SOFTWARE_DEMAND_FLAGS[
+                "in_demand_true"
+            ],
+        )
+
+        self.validate_equal(
+            "Final in demand = False",
+            software_evidence.filter(
+                in_demand=False
+            ).count(),
+            self.EXPECTED_SOFTWARE_DEMAND_FLAGS[
+                "in_demand_false"
+            ],
+        )
+
+        self.validate_equal(
+            "Final in demand = NULL",
+            software_evidence.filter(
+                in_demand__isnull=True
+            ).count(),
+            0,
+        )
+
+        self.validate_equal(
+            "Non-software evidence with Hot Technology flag",
+            CareerSkillEvidence.objects.exclude(
+                source_domain="onet_software_skills"
+            ).filter(
+                hot_technology__isnull=False
+            ).count(),
+            0,
+        )
+
+        self.validate_equal(
+            "Non-software evidence with In Demand flag",
+            CareerSkillEvidence.objects.exclude(
+                source_domain="onet_software_skills"
+            ).filter(
+                in_demand__isnull=False
+            ).count(),
+            0,
+        )
+
     def load_csv(self, path):
         with path.open("r", encoding="utf-8-sig", newline="") as file:
             return list(DictReader(file))
@@ -579,6 +675,30 @@ class Command(BaseCommand):
             return False
         raise CommandError(f"Invalid boolean value in Dataset 1.0: {value}")
 
+    def parse_onet_yes_no(self, value):
+        """
+        Parse a strict O*NET Y/N source flag.
+
+        Y -> True
+        N -> False
+
+        Blank or unexpected values are invalid because O*NET Software
+        Skills flags are expected to be explicitly populated.
+        """
+
+        normalized = (value or "").strip().upper()
+
+        if normalized == "Y":
+            return True
+
+        if normalized == "N":
+            return False
+
+        raise CommandError(
+            "Invalid O*NET Y/N value: "
+            f"{value!r}"
+        )
+
     def parse_confidence(self, value):
         normalized = (value or "").strip()
         if not normalized:
@@ -590,7 +710,6 @@ class Command(BaseCommand):
         if score < 0 or score > 100:
             raise CommandError(f"Confidence score outside 0 to 100: {value}")
         return score
-
 
     def parse_nullable_boolean(self, value):
         normalized = (value or "").strip().casefold()
@@ -722,6 +841,52 @@ class Command(BaseCommand):
             "Total eligible evidence",
             total_eligible,
             self.EXPECTED_EVIDENCE_COUNTS["total_eligible"],
+        )
+
+        hot_counts = Counter(
+            self.parse_onet_yes_no(
+                row["hot_technology"]
+            )
+            for row in eligible_software
+        )
+
+        in_demand_counts = Counter(
+            self.parse_onet_yes_no(
+                row["in_demand"]
+            )
+            for row in eligible_software
+        )
+
+        self.validate_equal(
+            "O*NET software Hot Technology = True",
+            hot_counts[True],
+            self.EXPECTED_SOFTWARE_DEMAND_FLAGS[
+                "hot_true"
+            ],
+        )
+
+        self.validate_equal(
+            "O*NET software Hot Technology = False",
+            hot_counts[False],
+            self.EXPECTED_SOFTWARE_DEMAND_FLAGS[
+                "hot_false"
+            ],
+        )
+
+        self.validate_equal(
+            "O*NET software In Demand = True",
+            in_demand_counts[True],
+            self.EXPECTED_SOFTWARE_DEMAND_FLAGS[
+                "in_demand_true"
+            ],
+        )
+
+        self.validate_equal(
+            "O*NET software In Demand = False",
+            in_demand_counts[False],
+            self.EXPECTED_SOFTWARE_DEMAND_FLAGS[
+                "in_demand_false"
+            ],
         )
 
     def validate_mapping_files(self, osca_rows, onet_rows, esco_rows, skill_rows):
@@ -1326,7 +1491,6 @@ class Command(BaseCommand):
 
         return canonical_by_key
 
-
     def import_skill_aliases(self, alias_rows, canonical_by_key):
         self.stdout.write("9. SKILL ALIAS IMPORT")
         self.stdout.write("-" * 100)
@@ -1792,6 +1956,8 @@ class Command(BaseCommand):
                     "recommend_suppress": self.parse_nullable_boolean(
                         row["recommend_suppress"]
                     ),
+                    "hot_technology": None,
+                    "in_demand": None,
                     "source_updated_at": None,
                 }
             )
@@ -1824,6 +1990,12 @@ class Command(BaseCommand):
                     "level_scale_maximum": None,
                     "not_relevant": False,
                     "recommend_suppress": None,
+                    "hot_technology": self.parse_onet_yes_no(
+                        row["hot_technology"]
+                    ),
+                    "in_demand": self.parse_onet_yes_no(
+                        row["in_demand"]
+                    ),
                     "source_updated_at": None,
                 }
             )
@@ -1862,6 +2034,8 @@ class Command(BaseCommand):
                     "level_scale_maximum": None,
                     "not_relevant": False,
                     "recommend_suppress": None,
+                    "hot_technology": None,
+                    "in_demand": None,
                     "source_updated_at": self.parse_esco_datetime(
                         row["modified_date"]
                     ),
@@ -2049,6 +2223,8 @@ class Command(BaseCommand):
                     "level_scale_maximum": row["level_scale_maximum"],
                     "not_relevant": row["not_relevant"],
                     "recommend_suppress": row["recommend_suppress"],
+                    "hot_technology": row["hot_technology"],
+                    "in_demand": row["in_demand"],
                     "source_updated_at": row["source_updated_at"],
                 }
                 evidence_key = (
@@ -2100,6 +2276,8 @@ class Command(BaseCommand):
                 "level_scale_maximum",
                 "not_relevant",
                 "recommend_suppress",
+                "hot_technology",
+                "in_demand",
                 "source_updated_at",
             ]
 

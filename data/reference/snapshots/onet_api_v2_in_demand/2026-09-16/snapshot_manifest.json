@@ -1,0 +1,41 @@
+{
+  "api_base_url": "https://api-v2.onetcenter.org/online/occupations",
+  "career_mapping_count": 36,
+  "files": {
+    "onet_api_v2_in_demand_normalized.csv": {
+      "sha256": "87a55e59df4205a72560819c2c128f169d4353605b9153231089d86cf5c93d20"
+    },
+    "onet_api_v2_in_demand_raw.json": {
+      "sha256": "06f0512b6e957a0444715c19cc87c21ce0dc0eab6eb3d292b0657181287e617b"
+    }
+  },
+  "local_onet_dataset_version": "31.0",
+  "maximum_percentage": 66.0,
+  "minimum_percentage": 4.0,
+  "occupation_count": 27,
+  "retrieved_at_local": "2026-09-16T11:44:40.525932+10:00",
+  "retrieved_at_utc": "2026-09-16T01:44:40.526168+00:00",
+  "schema_version": 1,
+  "snapshot_date": "2026-09-16",
+  "source": "O*NET Web Services API v2",
+  "technology_row_count": 295,
+  "validation": {
+    "api_key_written_to_snapshot": false,
+    "api_local_mismatch_count": 0
+  },
+  "zero_result_occupation_count": 3,
+  "zero_result_occupations": [
+    {
+      "onet_soc_code": "29-1122.00",
+      "onet_title": "Occupational Therapists"
+    },
+    {
+      "onet_soc_code": "29-1123.00",
+      "onet_title": "Physical Therapists"
+    },
+    {
+      "onet_soc_code": "29-1141.01",
+      "onet_title": "Acute Care Nurses"
+    }
+  ]
+}

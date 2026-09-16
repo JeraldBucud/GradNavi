@@ -692,6 +692,23 @@ class CareerSkillEvidence(models.Model):
         null=True,
     )
 
+    hot_technology = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
+    in_demand = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
+    in_demand_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
+
     source_updated_at = models.DateTimeField(
         blank=True,
         null=True,
@@ -762,6 +779,29 @@ class CareerSkillEvidence(models.Model):
                     )
                 ),
                 name="valid_evidence_level_scale_range",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        in_demand_percentage__isnull=True,
+                    )
+                    | models.Q(
+                        in_demand_percentage__gte=0,
+                        in_demand_percentage__lte=100,
+                    )
+                ),
+                name="valid_evidence_in_demand_percentage",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        in_demand_percentage__isnull=True,
+                    )
+                    | models.Q(
+                        in_demand=True,
+                    )
+                ),
+                name="evidence_percentage_requires_in_demand",
             ),
             models.UniqueConstraint(
                 fields=[
