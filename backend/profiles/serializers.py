@@ -1,6 +1,8 @@
 from django.db import transaction
 from rest_framework import serializers
 
+from careers.models import Career
+
 from .models import (
     CareerGoal,
     Education,
@@ -30,6 +32,41 @@ class RejectUnknownFieldsMixin:
             )
 
         return super().to_internal_value(data)
+
+
+class SkillReferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = (
+            "id",
+            "name",
+            "category",
+            "concept_type",
+        )
+        read_only_fields = fields
+
+
+class InterestReferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interest
+        fields = (
+            "id",
+            "name",
+            "category",
+        )
+        read_only_fields = fields
+
+
+class CareerReferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Career
+        fields = (
+            "id",
+            "name",
+            "category",
+            "description",
+        )
+        read_only_fields = fields
 
 
 class StudentSkillSerializer(serializers.ModelSerializer):
