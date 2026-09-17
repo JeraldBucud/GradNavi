@@ -93,36 +93,64 @@ def assert_error_envelope(test_case, response, code):
 
 class RecommendationAPITests(APITestCase):
     """
-    WBS 5.4 API tests for the Career Recommendation endpoint.
+    WBS 5.4 API tests updated for the locked WBS 5.3
+    composite recommendation service.
     """
 
     def setUp(self):
         user_model = get_user_model()
 
-        self.url = "/api/v1/recommendations/"
+        self.url = (
+            "/api/v1/recommendations/"
+        )
 
-        self.user = user_model.objects.create_user(
-            email="recommendation-api-a@gradnavi.test",
-            password="StrongPassword123!",
+        self.user = (
+            user_model.objects.create_user(
+                email=(
+                    "recommendation-api-a"
+                    "@gradnavi.test"
+                ),
+                password=(
+                    "StrongPassword123!"
+                ),
+            )
         )
-        self.profile = StudentProfile.objects.create(
-            user=self.user,
+
+        self.profile = (
+            StudentProfile.objects.create(
+                user=self.user,
+            )
         )
+
         self.access_token = str(
             RefreshToken
             .for_user(self.user)
             .access_token
         )
 
-        self.other_user = user_model.objects.create_user(
-            email="recommendation-api-b@gradnavi.test",
-            password="StrongPassword123!",
-        )
-        self.other_profile = StudentProfile.objects.create(
-            user=self.other_user,
+        self.other_user = (
+            user_model.objects.create_user(
+                email=(
+                    "recommendation-api-b"
+                    "@gradnavi.test"
+                ),
+                password=(
+                    "StrongPassword123!"
+                ),
+            )
         )
 
-    def authenticated_get(self, path=None):
+        self.other_profile = (
+            StudentProfile.objects.create(
+                user=self.other_user,
+            )
+        )
+
+
+    def authenticated_get(
+        self,
+        path=None,
+    ):
         return self.client.get(
             path or self.url,
             HTTP_AUTHORIZATION=(
@@ -130,53 +158,181 @@ class RecommendationAPITests(APITestCase):
             ),
         )
 
-    def recommendation_result(
+
+    def composite_result(
         self,
         *,
         career_id=1,
         career_name="Software Engineer",
-        score_status=ScoreStatus.SCORED,
-        recommendation_score=Decimal("77.78"),
+        recommendation_score=(
+            Decimal("82.50")
+        ),
         rank=1,
-        matched_weight=Decimal("140"),
-        total_weight=Decimal("180"),
-        matched_competencies=(
-            "Critical Thinking",
-            "Programming",
+        competency_score=(
+            Decimal("70.00")
         ),
-        missing_competencies=(
-            "Systems Analysis",
+        competency_normalized_score=(
+            Decimal("65.000000")
         ),
-        matched_technologies=(
-            "Python",
+        competency_status=(
+            ScoreStatus.SCORED
         ),
-        esco_essential_skills=(
-            "Communication",
+        technology_score=(
+            Decimal("80.00")
         ),
-        esco_optional_skills=(
-            "Docker",
+        technology_normalized_score=(
+            Decimal("75.000000")
         ),
-        esco_essential_matches=1,
-        esco_optional_matches=1,
+        technology_status=(
+            ScoreStatus.SCORED
+        ),
+        technology_student_alignment_ratio=(
+            Decimal("0.400000")
+        ),
+        technology_active=True,
+        semantic_alignment_score=(
+            Decimal("90.00")
+        ),
+        semantic_normalized_score=(
+            Decimal("95.000000")
+        ),
+        semantic_context_mode=(
+            "identity_esco"
+        ),
+        effective_competency_weight=(
+            Decimal("0.200000")
+        ),
+        effective_technology_weight=(
+            Decimal("0.200000")
+        ),
+        effective_semantic_weight=(
+            Decimal("0.600000")
+        ),
     ):
-        return RecommendationResult(
-            career_id=career_id,
-            career_name=career_name,
-            score_status=score_status,
-            recommendation_score=recommendation_score,
-            rank=rank,
-            matched_weight=matched_weight,
-            total_weight=total_weight,
-            matched_competencies=matched_competencies,
-            missing_competencies=missing_competencies,
-            matched_technologies=matched_technologies,
-            esco_essential_skills=esco_essential_skills,
-            esco_optional_skills=esco_optional_skills,
-            esco_essential_matches=esco_essential_matches,
-            esco_optional_matches=esco_optional_matches,
+        from types import SimpleNamespace
+
+        competency_result = (
+            SimpleNamespace(
+                matched_competencies=(
+                    "Critical Thinking",
+                    "Programming",
+                ),
+                missing_competencies=(
+                    "Systems Analysis",
+                    "Writing",
+                ),
+                esco_essential_skills=(
+                    "Communication",
+                ),
+                esco_optional_skills=(
+                    "Docker",
+                ),
+            )
         )
 
-    def test_unauthenticated_request_is_rejected(self):
+        technology_result = (
+            SimpleNamespace(
+                matched_technologies=(
+                    "Python",
+                ),
+                missing_technologies=(
+                    "AWS",
+                    "Docker",
+                ),
+            )
+        )
+
+        semantic_result = (
+            SimpleNamespace(
+                essential_esco_count=6,
+            )
+        )
+
+        return SimpleNamespace(
+            career_id=career_id,
+            career_name=career_name,
+            recommendation_score=(
+                recommendation_score
+            ),
+            rank=rank,
+            competency_score=(
+                competency_score
+            ),
+            competency_normalized_score=(
+                competency_normalized_score
+            ),
+            competency_status=(
+                competency_status
+            ),
+            technology_score=(
+                technology_score
+            ),
+            technology_normalized_score=(
+                technology_normalized_score
+            ),
+            technology_status=(
+                technology_status
+            ),
+            technology_student_alignment_ratio=(
+                technology_student_alignment_ratio
+            ),
+            technology_active=(
+                technology_active
+            ),
+            semantic_alignment_score=(
+                semantic_alignment_score
+            ),
+            semantic_normalized_score=(
+                semantic_normalized_score
+            ),
+            semantic_context_mode=(
+                semantic_context_mode
+            ),
+            effective_competency_weight=(
+                effective_competency_weight
+            ),
+            effective_technology_weight=(
+                effective_technology_weight
+            ),
+            effective_semantic_weight=(
+                effective_semantic_weight
+            ),
+            competency_result=(
+                competency_result
+            ),
+            technology_result=(
+                technology_result
+            ),
+            semantic_result=(
+                semantic_result
+            ),
+        )
+
+
+    def composite_report(
+        self,
+        *results,
+    ):
+        from types import SimpleNamespace
+
+        return SimpleNamespace(
+            model=(
+                "text-embedding-3-small"
+            ),
+            prompt_tokens=120,
+            total_tokens=120,
+            career_count=len(
+                results
+            ),
+            results=tuple(
+                results
+            ),
+        )
+
+
+    def test_unauthenticated_request_is_rejected(
+        self,
+    ):
         response = self.client.get(
             self.url,
         )
@@ -185,178 +341,494 @@ class RecommendationAPITests(APITestCase):
             response.status_code,
             status.HTTP_401_UNAUTHORIZED,
         )
+
         assert_error_envelope(
             self,
             response,
             "not_authenticated",
         )
 
-    def test_authenticated_request_succeeds(self):
-        result = self.recommendation_result()
 
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
-        ):
-            response = self.authenticated_get()
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK,
-        )
-        self.assertEqual(
-            len(
-                response
-                .data["data"]["recommendations"]
-            ),
-            1,
-        )
-
-    def test_missing_student_profile_returns_not_found(self):
+    def test_missing_student_profile_returns_not_found(
+        self,
+    ):
         self.profile.delete()
 
-        response = self.authenticated_get()
+        with patch(
+            "careers.views.OpenAIEmbeddingProvider"
+        ) as provider_mock:
+            response = (
+                self.authenticated_get()
+            )
 
         self.assertEqual(
             response.status_code,
             status.HTTP_404_NOT_FOUND,
         )
+
+        provider_mock.assert_not_called()
+
         assert_error_envelope(
             self,
             response,
             "not_found",
         )
 
-    def test_authenticated_user_profile_is_used_exclusively(self):
-        result = self.recommendation_result(
-            career_id=10,
-            career_name="Own Profile Career",
-        )
-        path = (
-            f"{self.url}?user_id={self.other_user.id}"
-            f"&student_profile_id={self.other_profile.id}"
+
+    def test_authenticated_request_uses_composite_service(
+        self,
+    ):
+        result = (
+            self.composite_result()
         )
 
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
-        ) as generate_mock:
-            response = self.authenticated_get(
-                path=path,
+        report = (
+            self.composite_report(
+                result
+            )
+        )
+
+        provider = object()
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider",
+                return_value=provider,
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                return_value=report,
+            ) as generate_mock,
+        ):
+            response = (
+                self.authenticated_get()
             )
 
         self.assertEqual(
             response.status_code,
             status.HTTP_200_OK,
         )
+
         generate_mock.assert_called_once_with(
-            student_profile_id=self.profile.id,
+            student_profile_id=(
+                self.profile.id
+            ),
+            embedding_provider=provider,
         )
+
+
+    def test_authenticated_user_profile_is_used_exclusively(
+        self,
+    ):
+        result = self.composite_result(
+            career_id=10,
+            career_name=(
+                "Own Profile Career"
+            ),
+        )
+
+        report = (
+            self.composite_report(
+                result
+            )
+        )
+
+        path = (
+            f"{self.url}"
+            f"?user_id={self.other_user.id}"
+            f"&student_profile_id="
+            f"{self.other_profile.id}"
+        )
+
+        provider = object()
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider",
+                return_value=provider,
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                return_value=report,
+            ) as generate_mock,
+        ):
+            response = (
+                self.authenticated_get(
+                    path=path,
+                )
+            )
+
+        generate_mock.assert_called_once_with(
+            student_profile_id=(
+                self.profile.id
+            ),
+            embedding_provider=provider,
+        )
+
         self.assertEqual(
-            response.data["data"]["recommendations"][0]["career_id"],
+            response
+            .data["data"]
+            ["recommendations"]
+            [0]["career_id"],
             10,
         )
 
-    def test_response_envelope_and_recommendation_schema(self):
-        result = self.recommendation_result()
 
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
-        ):
-            response = self.authenticated_get()
+    def test_response_exposes_composite_metadata(
+        self,
+    ):
+        result = (
+            self.composite_result()
+        )
 
-        self.assertEqual(
-            set(response.data),
-            {
-                "data",
-            },
+        report = (
+            self.composite_report(
+                result
+            )
         )
-        self.assertEqual(
-            set(response.data["data"]),
-            {
-                "recommendations",
-            },
-        )
-        self.assertEqual(
-            set(
-                response
-                .data["data"]["recommendations"][0]
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider"
             ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                return_value=report,
+            ),
+        ):
+            response = (
+                self.authenticated_get()
+            )
+
+        data = response.data[
+            "data"
+        ]
+
+        self.assertEqual(
+            data["scoring_model"],
+            "composite_v1",
+        )
+
+        self.assertEqual(
+            data["embedding_model"],
+            "text-embedding-3-small",
+        )
+
+        self.assertEqual(
+            data["career_count"],
+            1,
+        )
+
+        self.assertEqual(
+            data["base_weights"],
             {
-                "career_id",
-                "career_name",
-                "score_status",
-                "recommendation_score",
-                "rank",
-                "matched_weight",
-                "total_weight",
-                "matched_competencies",
-                "missing_competencies",
-                "matched_technologies",
-                "esco_essential_skills",
-                "esco_optional_skills",
-                "esco_essential_matches",
-                "esco_optional_matches",
+                "competency": "0.20",
+                "technology": "0.20",
+                "semantic": "0.60",
             },
         )
 
-    def test_recommendation_result_serialization(self):
-        result = self.recommendation_result()
 
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
+    def test_composite_result_schema(
+        self,
+    ):
+        result = (
+            self.composite_result()
+        )
+
+        report = (
+            self.composite_report(
+                result
+            )
+        )
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider"
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                return_value=report,
+            ),
         ):
-            response = self.authenticated_get()
+            response = (
+                self.authenticated_get()
+            )
 
         recommendation = (
             response
-            .data["data"]["recommendations"][0]
+            .data["data"]
+            ["recommendations"][0]
         )
 
         self.assertEqual(
-            recommendation["career_id"],
-            1,
-        )
-        self.assertEqual(
-            recommendation["career_name"],
-            "Software Engineer",
-        )
-        self.assertEqual(
-            recommendation["score_status"],
-            "scored",
-        )
-        self.assertEqual(
-            recommendation["rank"],
-            1,
+            set(recommendation),
+            {
+                "career_id",
+                "career_name",
+                "recommendation_score",
+                "rank",
+                "competency_score",
+                "competency_normalized_score",
+                "competency_status",
+                "technology_score",
+                "technology_normalized_score",
+                "technology_status",
+                "technology_student_alignment_ratio",
+                "technology_active",
+                "semantic_alignment_score",
+                "semantic_normalized_score",
+                "semantic_context_mode",
+                "effective_competency_weight",
+                "effective_technology_weight",
+                "effective_semantic_weight",
+                "matched_competencies",
+                "missing_competencies",
+                "matched_technologies",
+                "missing_technologies",
+                "esco_essential_skills",
+                "esco_optional_skills",
+                "semantic_essential_esco_count",
+            },
         )
 
-    def test_ranking_order_is_preserved_from_service(self):
-        first = self.recommendation_result(
-            career_id=2,
-            career_name="Data Analyst",
-            recommendation_score=Decimal("90.00"),
-            rank=1,
-        )
-        second = self.recommendation_result(
-            career_id=1,
-            career_name="Software Engineer",
-            recommendation_score=Decimal("80.00"),
-            rank=2,
+
+    def test_component_scores_and_evidence_are_serialized(
+        self,
+    ):
+        result = (
+            self.composite_result()
         )
 
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(first, second),
+        report = (
+            self.composite_report(
+                result
+            )
+        )
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider"
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                return_value=report,
+            ),
         ):
-            response = self.authenticated_get()
+            response = (
+                self.authenticated_get()
+            )
+
+        recommendation = (
+            response
+            .data["data"]
+            ["recommendations"][0]
+        )
+
+        self.assertEqual(
+            recommendation[
+                "recommendation_score"
+            ],
+            "82.50",
+        )
+
+        self.assertEqual(
+            recommendation[
+                "competency_score"
+            ],
+            "70.00",
+        )
+
+        self.assertEqual(
+            recommendation[
+                "technology_score"
+            ],
+            "80.00",
+        )
+
+        self.assertEqual(
+            recommendation[
+                "semantic_alignment_score"
+            ],
+            "90.00",
+        )
+
+        self.assertEqual(
+            recommendation[
+                "matched_competencies"
+            ],
+            [
+                "Critical Thinking",
+                "Programming",
+            ],
+        )
+
+        self.assertEqual(
+            recommendation[
+                "missing_competencies"
+            ],
+            [
+                "Systems Analysis",
+                "Writing",
+            ],
+        )
+
+        self.assertEqual(
+            recommendation[
+                "matched_technologies"
+            ],
+            [
+                "Python",
+            ],
+        )
+
+        self.assertEqual(
+            recommendation[
+                "missing_technologies"
+            ],
+            [
+                "AWS",
+                "Docker",
+            ],
+        )
+
+
+    def test_effective_weights_are_serialized(
+        self,
+    ):
+        result = (
+            self.composite_result(
+                effective_competency_weight=(
+                    Decimal("0.250000")
+                ),
+                effective_technology_weight=(
+                    Decimal("0.000000")
+                ),
+                effective_semantic_weight=(
+                    Decimal("0.750000")
+                ),
+                technology_active=False,
+            )
+        )
+
+        report = (
+            self.composite_report(
+                result
+            )
+        )
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider"
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                return_value=report,
+            ),
+        ):
+            response = (
+                self.authenticated_get()
+            )
+
+        recommendation = (
+            response
+            .data["data"]
+            ["recommendations"][0]
+        )
+
+        self.assertEqual(
+            recommendation[
+                "effective_competency_weight"
+            ],
+            "0.250000",
+        )
+
+        self.assertEqual(
+            recommendation[
+                "effective_technology_weight"
+            ],
+            "0.000000",
+        )
+
+        self.assertEqual(
+            recommendation[
+                "effective_semantic_weight"
+            ],
+            "0.750000",
+        )
+
+        self.assertFalse(
+            recommendation[
+                "technology_active"
+            ]
+        )
+
+
+    def test_composite_ranking_order_is_preserved(
+        self,
+    ):
+        first = (
+            self.composite_result(
+                career_id=2,
+                career_name=(
+                    "Data Analyst"
+                ),
+                recommendation_score=(
+                    Decimal("91.00")
+                ),
+                rank=1,
+            )
+        )
+
+        second = (
+            self.composite_result(
+                career_id=1,
+                career_name=(
+                    "Software Engineer"
+                ),
+                recommendation_score=(
+                    Decimal("82.00")
+                ),
+                rank=2,
+            )
+        )
+
+        report = (
+            self.composite_report(
+                first,
+                second,
+            )
+        )
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider"
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                return_value=report,
+            ),
+        ):
+            response = (
+                self.authenticated_get()
+            )
 
         self.assertEqual(
             [
                 item["career_id"]
                 for item
-                in response.data["data"]["recommendations"]
+                in (
+                    response
+                    .data["data"]
+                    ["recommendations"]
+                )
             ],
             [
                 2,
@@ -364,302 +836,145 @@ class RecommendationAPITests(APITestCase):
             ],
         )
 
-    def test_scored_result_preserves_score_and_rank(self):
-        result = self.recommendation_result(
-            score_status=ScoreStatus.SCORED,
-            recommendation_score=Decimal("44.44"),
-            rank=3,
+
+    def test_missing_competency_component_stays_explicit(
+        self,
+    ):
+        result = (
+            self.composite_result(
+                competency_score=None,
+                competency_normalized_score=None,
+                competency_status=(
+                    ScoreStatus
+                    .INSUFFICIENT_EVIDENCE
+                ),
+                effective_competency_weight=(
+                    Decimal("0.000000")
+                ),
+                effective_technology_weight=(
+                    Decimal("0.250000")
+                ),
+                effective_semantic_weight=(
+                    Decimal("0.750000")
+                ),
+            )
         )
 
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
-        ):
-            response = self.authenticated_get()
-
-        recommendation = (
-            response
-            .data["data"]["recommendations"][0]
-        )
-        self.assertEqual(
-            recommendation["score_status"],
-            "scored",
-        )
-        self.assertEqual(
-            recommendation["recommendation_score"],
-            "44.44",
-        )
-        self.assertEqual(
-            recommendation["rank"],
-            3,
+        report = (
+            self.composite_report(
+                result
+            )
         )
 
-    def test_insufficient_profile_result_preserves_null_score_and_rank(self):
-        result = self.recommendation_result(
-            score_status=(
-                ScoreStatus.INSUFFICIENT_PROFILE
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider"
             ),
-            recommendation_score=None,
-            rank=None,
-            matched_weight=Decimal("0"),
-            total_weight=Decimal("0"),
-            matched_competencies=(),
-            missing_competencies=(),
-            matched_technologies=(),
-            esco_essential_skills=(),
-            esco_optional_skills=(),
-            esco_essential_matches=0,
-            esco_optional_matches=0,
-        )
-
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
-        ):
-            response = self.authenticated_get()
-
-        recommendation = (
-            response
-            .data["data"]["recommendations"][0]
-        )
-        self.assertEqual(
-            recommendation["score_status"],
-            "insufficient_profile",
-        )
-        self.assertIsNone(
-            recommendation["recommendation_score"]
-        )
-        self.assertIsNone(
-            recommendation["rank"]
-        )
-
-    def test_insufficient_evidence_result_preserves_null_score_and_rank(self):
-        result = self.recommendation_result(
-            score_status=(
-                ScoreStatus.INSUFFICIENT_EVIDENCE
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                return_value=report,
             ),
-            recommendation_score=None,
-            rank=None,
-            matched_weight=Decimal("0"),
-            total_weight=Decimal("0"),
-            matched_competencies=(),
-            missing_competencies=(),
-            matched_technologies=(),
-            esco_essential_skills=(),
-            esco_optional_skills=(),
-            esco_essential_matches=0,
-            esco_optional_matches=0,
-        )
-
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
         ):
-            response = self.authenticated_get()
+            response = (
+                self.authenticated_get()
+            )
 
         recommendation = (
             response
-            .data["data"]["recommendations"][0]
+            .data["data"]
+            ["recommendations"][0]
         )
+
+        self.assertIsNone(
+            recommendation[
+                "competency_score"
+            ]
+        )
+
         self.assertEqual(
-            recommendation["score_status"],
+            recommendation[
+                "competency_status"
+            ],
             "insufficient_evidence",
         )
-        self.assertIsNone(
-            recommendation["recommendation_score"]
-        )
-        self.assertIsNone(
-            recommendation["rank"]
+
+        self.assertEqual(
+            recommendation[
+                "effective_competency_weight"
+            ],
+            "0.000000",
         )
 
-    def test_explanation_fields_are_serialized(self):
-        result = self.recommendation_result()
 
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
-        ):
-            response = self.authenticated_get()
-
-        recommendation = (
-            response
-            .data["data"]["recommendations"][0]
-        )
-        self.assertEqual(
-            recommendation["matched_competencies"],
-            [
-                "Critical Thinking",
-                "Programming",
-            ],
-        )
-        self.assertEqual(
-            recommendation["missing_competencies"],
-            [
-                "Systems Analysis",
-            ],
-        )
-        self.assertEqual(
-            recommendation["matched_technologies"],
-            [
-                "Python",
-            ],
-        )
-        self.assertEqual(
-            recommendation["esco_essential_skills"],
-            [
-                "Communication",
-            ],
-        )
-        self.assertEqual(
-            recommendation["esco_optional_skills"],
-            [
-                "Docker",
-            ],
-        )
-        self.assertEqual(
-            recommendation["esco_essential_matches"],
-            1,
-        )
-        self.assertEqual(
-            recommendation["esco_optional_matches"],
-            1,
-        )
-
-    def test_decimal_values_are_serialized_without_float_conversion(self):
-        result = self.recommendation_result(
-            recommendation_score=Decimal("77.78"),
-            matched_weight=Decimal("140.00"),
-            total_weight=Decimal("180.00"),
+    def test_provider_initialization_failure_returns_503(
+        self,
+    ):
+        from ai_services.exceptions import (
+            AIProviderUnavailableError,
         )
 
         with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
-        ):
-            response = self.authenticated_get()
-
-        recommendation = (
-            response
-            .data["data"]["recommendations"][0]
-        )
-        self.assertEqual(
-            recommendation["recommendation_score"],
-            "77.78",
-        )
-        self.assertEqual(
-            recommendation["matched_weight"],
-            "140.00",
-        )
-        self.assertEqual(
-            recommendation["total_weight"],
-            "180.00",
-        )
-
-    def test_api_response_is_deterministic_for_same_service_output(self):
-        results = (
-            self.recommendation_result(),
-        )
-
-        with patch(
-            "careers.views.generate_recommendations",
-            side_effect=[
-                results,
-                results,
-            ],
-        ):
-            first_response = self.authenticated_get()
-            second_response = self.authenticated_get()
-
-        self.assertEqual(
-            first_response.data,
-            second_response.data,
-        )
-
-    def test_api_delegates_to_wbs_53_service(self):
-        result = self.recommendation_result()
-
-        with patch(
-            "careers.views.generate_recommendations",
-            return_value=(result,),
-        ) as generate_mock:
-            self.authenticated_get()
-
-        generate_mock.assert_called_once_with(
-            student_profile_id=self.profile.id,
-        )
-
-    def test_real_wbs_53_service_result_is_exposed(self):
-        skill = Skill.objects.create(
-            name="API Integration Skill",
-            concept_type=Skill.ConceptType.SKILL,
-        )
-        StudentSkill.objects.create(
-            student_profile=self.profile,
-            skill=skill,
-            proficiency_level=(
-                StudentSkill
-                .ProficiencyLevel
-                .PROFICIENT
+            "careers.views.OpenAIEmbeddingProvider",
+            side_effect=(
+                AIProviderUnavailableError(
+                    "Provider unavailable."
+                )
             ),
-        )
-        career = Career.objects.create(
-            name="API Integration Career",
-        )
-        source = ReferenceSource.objects.create(
-            name="O*NET Database",
-        )
-        dataset = ReferenceDataset.objects.create(
-            source=source,
-            version="31.0-api-test",
-            retrieved_at=date(
-                2026,
-                8,
-                30,
-            ),
-            status=ReferenceDataset.Status.ACTIVE,
-        )
-        career_skill = CareerSkill.objects.create(
-            career=career,
-            skill=skill,
-            review_status=ReviewStatus.APPROVED,
-        )
-        CareerSkillEvidence.objects.create(
-            career_skill=career_skill,
-            dataset=dataset,
-            source_domain="onet_essential_skills",
-            normalized_importance=Decimal("80.00"),
-            not_relevant=False,
-        )
-
-        response = self.authenticated_get()
+        ):
+            response = (
+                self.authenticated_get()
+            )
 
         self.assertEqual(
             response.status_code,
-            status.HTTP_200_OK,
+            503,
         )
+
+        assert_error_envelope(
+            self,
+            response,
+            "ai_service_unavailable",
+        )
+
+
+    def test_provider_runtime_failure_returns_503(
+        self,
+    ):
+        from ai_services.exceptions import (
+            AIProviderUnavailableError,
+        )
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider",
+                return_value=object(),
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                side_effect=(
+                    AIProviderUnavailableError(
+                        "Provider unavailable."
+                    )
+                ),
+            ),
+        ):
+            response = (
+                self.authenticated_get()
+            )
+
         self.assertEqual(
-            response.data["data"]["recommendations"],
-            [
-                {
-                    "career_id": career.id,
-                    "career_name": "API Integration Career",
-                    "score_status": "scored",
-                    "recommendation_score": "100.00",
-                    "rank": 1,
-                    "matched_weight": "80.00",
-                    "total_weight": "80.00",
-                    "matched_competencies": [
-                        "API Integration Skill",
-                    ],
-                    "missing_competencies": [],
-                    "matched_technologies": [],
-                    "esco_essential_skills": [],
-                    "esco_optional_skills": [],
-                    "esco_essential_matches": 0,
-                    "esco_optional_matches": 0,
-                }
-            ],
+            response.status_code,
+            503,
         )
+
+        assert_error_envelope(
+            self,
+            response,
+            "ai_service_unavailable",
+        )
+
 
 
 class LearningRoadmapAPITests(APITestCase):

@@ -1,16 +1,29 @@
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import APIException, NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from careers.serializers import (
     CareerSelectionQuerySerializer,
+    CompositeRecommendationResultSerializer,
     LearningSuggestionSerializer,
-    RecommendationResultSerializer,
     RoadmapStepSerializer,
 )
 from careers.services.learning_roadmap import generate_learning_plan
-from careers.services.recommendation_scoring import generate_recommendations
+from ai_services.exceptions import (
+    AIProviderError,
+)
+
+from ai_services.providers.openai_embeddings import (
+    OpenAIEmbeddingProvider,
+)
+
+from careers.services.composite_recommendation import (
+    COMPETENCY_WEIGHT,
+    SEMANTIC_WEIGHT,
+    TECHNOLOGY_WEIGHT,
+    generate_composite_recommendations,
+)
 from careers.services.readiness_scoring import (
     CareerNotAvailableError,
     CareerNotFoundError,
@@ -18,22 +31,85 @@ from careers.services.readiness_scoring import (
 from profiles.models import StudentProfile
 
 
+class RecommendationAIUnavailable(APIException):
+    """
+    Returned when the AI embedding provider required by the
+    locked WBS 5.3 composite model is unavailable.
+    """
+
+    status_code = 503
+
+    default_detail = (
+        "AI Career Recommendation scoring is "
+        "currently unavailable."
+    )
+
+    default_code = (
+        "ai_service_unavailable"
+    )
+
+
+
 class RecommendationListView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        profile = self._get_profile(request.user)
-        recommendations = generate_recommendations(
-            student_profile_id=profile.id,
+        profile = self._get_profile(
+            request.user
         )
-        serializer = RecommendationResultSerializer(
-            recommendations,
-            many=True,
+
+        try:
+            embedding_provider = (
+                OpenAIEmbeddingProvider()
+            )
+
+            report = (
+                generate_composite_recommendations(
+                    student_profile_id=(
+                        profile.id
+                    ),
+                    embedding_provider=(
+                        embedding_provider
+                    ),
+                )
+            )
+
+        except AIProviderError as error:
+            raise RecommendationAIUnavailable() from error
+
+        serializer = (
+            CompositeRecommendationResultSerializer(
+                report.results,
+                many=True,
+            )
         )
+
         return Response(
             {
                 "data": {
-                    "recommendations": serializer.data,
+                    "scoring_model": (
+                        "composite_v1"
+                    ),
+                    "embedding_model": (
+                        report.model
+                    ),
+                    "career_count": (
+                        report.career_count
+                    ),
+                    "base_weights": {
+                        "competency": str(
+                            COMPETENCY_WEIGHT
+                        ),
+                        "technology": str(
+                            TECHNOLOGY_WEIGHT
+                        ),
+                        "semantic": str(
+                            SEMANTIC_WEIGHT
+                        ),
+                    },
+                    "recommendations": (
+                        serializer.data
+                    ),
                 }
             }
         )
