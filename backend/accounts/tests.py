@@ -232,8 +232,10 @@ class RegistrationAPITests(APITestCase):
                     "id": CareerGoal.objects.get(
                         student_profile__user__email="student@example.com"
                     ).id,
+                    "career_id": None,
                     "target_role": "Software Engineer",
                     "description": "",
+                    "is_primary": True,
                 }
             ],
         )

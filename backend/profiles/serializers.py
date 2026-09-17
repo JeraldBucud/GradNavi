@@ -136,9 +136,20 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class CareerGoalSerializer(serializers.ModelSerializer):
+    career_id = serializers.IntegerField(
+        read_only=True,
+        allow_null=True,
+    )
+
     class Meta:
         model = CareerGoal
-        fields = ("id", "target_role", "description")
+        fields = (
+            "id",
+            "career_id",
+            "target_role",
+            "description",
+            "is_primary",
+        )
         read_only_fields = fields
 
 
@@ -347,13 +358,262 @@ class ProjectWriteSerializer(OwnedModelWriteSerializer):
         }
 
 
-class CareerGoalWriteSerializer(OwnedModelWriteSerializer):
+class CareerGoalWriteSerializer(
+    RejectUnknownFieldsMixin,
+    serializers.Serializer,
+):
+    """
+    Structured Career Goal input.
+
+    Preferred input:
+    - career_id
+    - description
+    - is_primary
+
+    target_role stays accepted as a legacy compatibility path.
+    When target_role matches an active Career, the goal is linked
+    to that Career automatically.
+    """
+
+    id = serializers.IntegerField(
+        required=False,
+    )
+
+    career_id = serializers.IntegerField(
+        required=False,
+    )
+
+    target_role = serializers.CharField(
+        required=False,
+        allow_blank=False,
+        max_length=255,
+    )
+
+    description = serializers.CharField(
+        required=False,
+        allow_blank=True,
+    )
+
+    is_primary = serializers.BooleanField(
+        required=False,
+    )
+
     class Meta:
         model = CareerGoal
-        fields = ("id", "target_role", "description")
-        extra_kwargs = {
-            "description": {"required": False, "allow_blank": True},
-        }
+
+    def validate_id(
+        self,
+        value,
+    ):
+        profile = self.context[
+            "profile"
+        ]
+
+        if not (
+            CareerGoal.objects
+            .filter(
+                pk=value,
+                student_profile=profile,
+            )
+            .exists()
+        ):
+            raise serializers.ValidationError(
+                "CareerGoal does not belong "
+                "to the authenticated profile."
+            )
+
+        return value
+
+    def validate(
+        self,
+        attrs,
+    ):
+        instance = (
+            self._get_existing_instance(
+                attrs
+            )
+        )
+
+        has_career_id = (
+            "career_id"
+            in attrs
+        )
+
+        has_target_role = (
+            "target_role"
+            in attrs
+        )
+
+        career = None
+
+        if has_career_id:
+            career = (
+                self._get_active_career(
+                    attrs[
+                        "career_id"
+                    ]
+                )
+            )
+
+        if (
+            has_career_id
+            and has_target_role
+        ):
+            supplied_role = (
+                attrs[
+                    "target_role"
+                ].strip()
+            )
+
+            if (
+                supplied_role.casefold()
+                != career.name.casefold()
+            ):
+                raise serializers.ValidationError(
+                    {
+                        "target_role": (
+                            "target_role must match "
+                            "the selected career_id."
+                        )
+                    }
+                )
+
+        if career is not None:
+            attrs[
+                "career"
+            ] = career
+
+            attrs[
+                "target_role"
+            ] = career.name
+
+            return attrs
+
+        if has_target_role:
+            target_role = (
+                attrs[
+                    "target_role"
+                ].strip()
+            )
+
+            matched_career = (
+                Career.objects
+                .filter(
+                    active=True,
+                    name__iexact=target_role,
+                )
+                .order_by(
+                    "id"
+                )
+                .first()
+            )
+
+            if (
+                matched_career
+                is not None
+            ):
+                attrs[
+                    "career"
+                ] = matched_career
+
+                attrs[
+                    "target_role"
+                ] = (
+                    matched_career.name
+                )
+
+            elif instance is not None:
+                attrs[
+                    "career"
+                ] = None
+
+                attrs[
+                    "target_role"
+                ] = target_role
+
+            else:
+                # Legacy compatibility for older clients.
+                # New frontend code uses career_id.
+                attrs[
+                    "target_role"
+                ] = target_role
+
+            return attrs
+
+        if instance is not None:
+            if (
+                instance.career_id
+                is not None
+            ):
+                attrs[
+                    "career"
+                ] = instance.career
+
+                attrs[
+                    "target_role"
+                ] = (
+                    instance.career.name
+                )
+
+            else:
+                attrs[
+                    "target_role"
+                ] = (
+                    instance.target_role
+                )
+
+            return attrs
+
+        raise serializers.ValidationError(
+            {
+                "career_id": (
+                    "Provide an active career_id."
+                )
+            }
+        )
+
+    def _get_active_career(
+        self,
+        career_id,
+    ):
+        try:
+            return Career.objects.get(
+                pk=career_id,
+                active=True,
+            )
+
+        except Career.DoesNotExist:
+            raise serializers.ValidationError(
+                {
+                    "career_id": (
+                        "Active Career does not exist."
+                    )
+                }
+            )
+
+    def _get_existing_instance(
+        self,
+        attrs,
+    ):
+        item_id = attrs.get(
+            "id"
+        )
+
+        if item_id is None:
+            return None
+
+        return (
+            CareerGoal.objects
+            .select_related(
+                "career"
+            )
+            .get(
+                pk=item_id,
+                student_profile=self.context[
+                    "profile"
+                ],
+            )
+        )
 
 
 class PersonalityResponseWriteSerializer(OwnedModelWriteSerializer):
@@ -435,10 +695,11 @@ class StudentProfileUpdateSerializer(RejectUnknownFieldsMixin, serializers.Seria
                     self.validated_data["projects"],
                 )
             if "career_goals" in self.validated_data:
-                self._replace_owned_collection(
+                self._replace_career_goals(
                     profile,
-                    CareerGoal,
-                    self.validated_data["career_goals"],
+                    self.validated_data[
+                        "career_goals"
+                    ],
                 )
             if "personality_responses" in self.validated_data:
                 self._replace_owned_collection(
@@ -474,16 +735,156 @@ class StudentProfileUpdateSerializer(RejectUnknownFieldsMixin, serializers.Seria
         )
         return validated_items
 
-    def _validate_career_goals(self, items):
+    def _validate_career_goals(
+        self,
+        items,
+    ):
         normalized_items = [
-            {"target_role": item} if isinstance(item, str) else item
-            for item in items
+            {
+                "target_role": item
+            }
+            if isinstance(
+                item,
+                str,
+            )
+            else item
+            for item
+            in items
         ]
-        return self._validate_model_items(
-            normalized_items,
-            CareerGoalWriteSerializer,
-            self.context["profile"],
+
+        validated_items = (
+            self._validate_model_items(
+                normalized_items,
+                CareerGoalWriteSerializer,
+                self.context[
+                    "profile"
+                ],
+            )
         )
+
+        seen_career_ids = set()
+        seen_legacy_roles = set()
+
+        for item in validated_items:
+            career = item.get(
+                "career"
+            )
+
+            if career is not None:
+                if (
+                    career.id
+                    in seen_career_ids
+                ):
+                    raise serializers.ValidationError(
+                        {
+                            "career_goals": (
+                                "Duplicate Careers "
+                                "are not allowed."
+                            )
+                        }
+                    )
+
+                seen_career_ids.add(
+                    career.id
+                )
+
+            else:
+                legacy_role = (
+                    item[
+                        "target_role"
+                    ]
+                    .strip()
+                    .casefold()
+                )
+
+                if (
+                    legacy_role
+                    in seen_legacy_roles
+                ):
+                    raise serializers.ValidationError(
+                        {
+                            "career_goals": (
+                                "Duplicate Career Goals "
+                                "are not allowed."
+                            )
+                        }
+                    )
+
+                seen_legacy_roles.add(
+                    legacy_role
+                )
+
+        for item in validated_items:
+            if (
+                "is_primary"
+                in item
+            ):
+                continue
+
+            item_id = item.get(
+                "id"
+            )
+
+            if item_id is None:
+                item[
+                    "is_primary"
+                ] = False
+
+                continue
+
+            existing = (
+                CareerGoal.objects
+                .only(
+                    "is_primary"
+                )
+                .get(
+                    pk=item_id,
+                    student_profile=(
+                        self.context[
+                            "profile"
+                        ]
+                    ),
+                )
+            )
+
+            item[
+                "is_primary"
+            ] = (
+                existing.is_primary
+            )
+
+        primary_count = sum(
+            1
+            for item
+            in validated_items
+            if item[
+                "is_primary"
+            ]
+        )
+
+        if (
+            validated_items
+            and primary_count == 0
+        ):
+            validated_items[
+                0
+            ][
+                "is_primary"
+            ] = True
+
+            primary_count = 1
+
+        if primary_count > 1:
+            raise serializers.ValidationError(
+                {
+                    "career_goals": (
+                        "Only one Career Goal "
+                        "may be primary."
+                    )
+                }
+            )
+
+        return validated_items
 
     def _validate_model_items(self, items, serializer_class, profile):
         validated_items = []
@@ -535,6 +936,87 @@ class StudentProfileUpdateSerializer(RejectUnknownFieldsMixin, serializers.Seria
                 for item in items
             ]
         )
+
+    def _replace_career_goals(
+        self,
+        profile,
+        items,
+    ):
+        supplied_ids = [
+            item[
+                "id"
+            ]
+            for item
+            in items
+            if "id"
+            in item
+        ]
+
+        (
+            CareerGoal.objects
+            .filter(
+                student_profile=profile
+            )
+            .exclude(
+                id__in=supplied_ids
+            )
+            .delete()
+        )
+
+        # Clear constrained values first.
+        # This makes Career swaps and primary-goal
+        # changes safe inside the transaction.
+        (
+            CareerGoal.objects
+            .filter(
+                student_profile=profile,
+                id__in=supplied_ids,
+            )
+            .update(
+                career=None,
+                is_primary=False,
+            )
+        )
+
+        for item in items:
+            values = dict(
+                item
+            )
+
+            item_id = values.pop(
+                "id",
+                None,
+            )
+
+            # career_id is an API input field.
+            # Validation resolves it to the Career
+            # model instance stored in "career".
+            #
+            # Keeping both "career_id" and "career"
+            # would assign the same database column
+            # twice during QuerySet.update().
+            values.pop(
+                "career_id",
+                None,
+            )
+
+            if item_id is None:
+                CareerGoal.objects.create(
+                    student_profile=profile,
+                    **values,
+                )
+
+            else:
+                (
+                    CareerGoal.objects
+                    .filter(
+                        id=item_id,
+                        student_profile=profile,
+                    )
+                    .update(
+                        **values
+                    )
+                )
 
     def _replace_owned_collection(self, profile, model, items):
         supplied_ids = [item["id"] for item in items if "id" in item]
