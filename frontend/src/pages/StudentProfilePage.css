@@ -1413,3 +1413,186 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* WBS 5.6 SEARCHABLE REFERENCE FIELD */
+
+.profile-reference-search {
+  position: relative;
+}
+
+.profile-reference-search__control {
+  position: relative;
+}
+
+.profile-reference-search__control input {
+  padding-right: 84px;
+}
+
+.profile-reference-search__status {
+  position: absolute;
+
+  top: 50%;
+  right: 10px;
+
+  transform: translateY(-50%);
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  pointer-events: none;
+}
+
+.profile-reference-search__helper {
+  margin: 6px 0 0;
+
+  color: #64748b;
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.profile-reference-search__results {
+  position: absolute;
+  z-index: 30;
+
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+
+  max-height: 280px;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  border: 1px solid #c8d3e2;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 24px
+    rgba(15, 23, 42, 0.12);
+}
+
+.profile-reference-search__result {
+  display: flex;
+
+  width: 100%;
+
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap: 3px;
+
+  box-sizing: border-box;
+
+  padding: 10px 12px;
+
+  border: 0;
+  border-bottom: 1px solid #e7ecf3;
+
+  background: #ffffff;
+  color: #17233b;
+
+  font: inherit;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.profile-reference-search__result:last-of-type {
+  border-bottom: 0;
+}
+
+.profile-reference-search__result:hover,
+.profile-reference-search__result--active {
+  background: #eef3ff;
+}
+
+.profile-reference-search__result strong {
+  color: #17233b;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-reference-search__result span {
+  color: #64748b;
+
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.profile-reference-search__message {
+  padding: 12px;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+.profile-reference-search__message--error {
+  color: #b42318;
+}
+
+.profile-reference-search__summary {
+  padding: 8px 12px;
+
+  border-top: 1px solid #e7ecf3;
+
+  background: #f8fafc;
+  color: #64748b;
+
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+
+@media (max-width: 720px) {
+  .profile-reference-search__results {
+    max-height: 220px;
+  }
+}
+
+
+/* WBS 5.6 STRUCTURED CAREER GOALS */
+
+.profile-career-goal-title {
+  display: flex;
+
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.profile-career-goal-title strong {
+  margin: 0;
+}
+
+.profile-primary-badge {
+  display: inline-flex;
+
+  min-height: 22px;
+
+  align-items: center;
+
+  box-sizing: border-box;
+
+  padding: 3px 8px;
+
+  border: 1px solid #b8c7f8;
+  border-radius: 999px;
+
+  background: #eef3ff;
+  color: #2448b8;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+}

@@ -268,11 +268,23 @@ function buildProfilePayload(profile) {
               }
             : {}),
 
-          target_role:
-            careerGoal.target_role,
+          ...(careerGoal.career_id
+            ? {
+                career_id:
+                  careerGoal.career_id,
+              }
+            : {
+                target_role:
+                  careerGoal.target_role,
+              }),
 
           description:
             careerGoal.description || '',
+
+          is_primary:
+            Boolean(
+              careerGoal.is_primary,
+            ),
         }),
       ),
 
@@ -414,8 +426,17 @@ function StudentProfilePage() {
       .charAt(0)
       .toUpperCase()
 
+  const primaryCareerGoalRecord =
+    profile.career_goals.find(
+      (careerGoal) =>
+        careerGoal.is_primary,
+    ) ||
+    profile.career_goals[0]
+
+
   const primaryCareerGoal =
-    profile.career_goals[0]?.target_role ||
+    primaryCareerGoalRecord
+      ?.target_role ||
     'No target role'
 
   const answeredPersonalityCount =
@@ -874,10 +895,9 @@ function StudentProfilePage() {
           </h2>
 
           <p>
-            CareerGoal.target_role is
-            profile text. It is not a
-            persisted selected Career
-            relation.
+            Career Goals use active GradNavi
+            Career records. Choose one primary
+            goal for your profile.
           </p>
         </div>
 

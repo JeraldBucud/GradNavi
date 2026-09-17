@@ -1,13 +1,15 @@
 import { useState } from 'react'
 
 import {
-  SPRINT_1_SKILLS,
-} from '../../data/profileReferenceData'
+  searchProfileSkills,
+} from '../../services/profileService'
+
+import SearchableReferenceField from './SearchableReferenceField'
 
 
 function createEmptySkillForm() {
   return {
-    name: '',
+    selectedSkill: null,
     proficiency_level: '',
   }
 }
@@ -17,47 +19,85 @@ function SkillsSection({
   items,
   onChange,
 }) {
-  const [skillForm, setSkillForm] =
-    useState(createEmptySkillForm)
+  const [
+    skillForm,
+    setSkillForm,
+  ] = useState(
+    createEmptySkillForm,
+  )
 
-  const [editingIndex, setEditingIndex] =
-    useState(null)
+  const [
+    editingIndex,
+    setEditingIndex,
+  ] = useState(null)
 
-  const [isFormOpen, setIsFormOpen] =
-    useState(false)
+  const [
+    isFormOpen,
+    setIsFormOpen,
+  ] = useState(false)
 
-  const [error, setError] =
-    useState('')
+  const [
+    error,
+    setError,
+  ] = useState('')
 
 
-  function handleChange(event) {
-    const {
-      name,
-      value,
-    } = event.target
+  function handleProficiencyChange(
+    event,
+  ) {
+    setSkillForm(
+      (currentForm) => ({
+        ...currentForm,
 
-    setSkillForm((currentForm) => ({
-      ...currentForm,
-      [name]: value,
-    }))
+        proficiency_level:
+          event.target.value,
+      }),
+    )
+
+    setError('')
+  }
+
+
+  function handleSkillSelect(
+    skill,
+  ) {
+    setSkillForm(
+      (currentForm) => ({
+        ...currentForm,
+        selectedSkill:
+          skill,
+      }),
+    )
 
     setError('')
   }
 
 
   function handleAddSkill() {
-    setSkillForm(createEmptySkillForm())
+    setSkillForm(
+      createEmptySkillForm(),
+    )
+
     setEditingIndex(null)
     setError('')
     setIsFormOpen(true)
   }
 
 
-  function handleEdit(index) {
-    const skill = items[index]
+  function handleEdit(
+    index,
+  ) {
+    const skill =
+      items[index]
 
     setSkillForm({
-      name: skill.name || '',
+      selectedSkill: {
+        id: skill.id,
+        name: skill.name,
+        category:
+          skill.category || '',
+      },
+
       proficiency_level:
         skill.proficiency_level || '',
     })
@@ -69,18 +109,23 @@ function SkillsSection({
 
 
   function handleCancel() {
-    setSkillForm(createEmptySkillForm())
+    setSkillForm(
+      createEmptySkillForm(),
+    )
+
     setEditingIndex(null)
     setError('')
     setIsFormOpen(false)
   }
 
 
-  function handleSubmit(event) {
+  function handleSubmit(
+    event,
+  ) {
     event.preventDefault()
 
     if (
-      !skillForm.name ||
+      !skillForm.selectedSkill ||
       !skillForm.proficiency_level
     ) {
       setError(
@@ -90,27 +135,21 @@ function SkillsSection({
       return
     }
 
-    const selectedSkill =
-      SPRINT_1_SKILLS.find(
-        (skill) =>
-          skill.name === skillForm.name,
-      )
-
-    if (!selectedSkill) {
-      setError(
-        'Select a valid skill.',
-      )
-
-      return
-    }
 
     const duplicateSkill =
       items.some(
-        (skill, index) =>
-          index !== editingIndex &&
-          skill.name.toLowerCase() ===
-            selectedSkill.name.toLowerCase(),
+        (
+          skill,
+          index,
+        ) =>
+          index !==
+            editingIndex &&
+          skill.id ===
+            skillForm
+              .selectedSkill
+              .id,
       )
+
 
     if (duplicateSkill) {
       setError(
@@ -120,30 +159,58 @@ function SkillsSection({
       return
     }
 
-    if (editingIndex === null) {
+
+    if (
+      editingIndex ===
+      null
+    ) {
       onChange([
         ...items,
+
         {
-          name: selectedSkill.name,
+          id:
+            skillForm
+              .selectedSkill
+              .id,
+
+          name:
+            skillForm
+              .selectedSkill
+              .name,
+
           category:
-            selectedSkill.category,
+            skillForm
+              .selectedSkill
+              .category || '',
+
           proficiency_level:
-            skillForm.proficiency_level,
+            skillForm
+              .proficiency_level,
         },
       ])
     } else {
       onChange(
-        items.map((skill, index) => {
-          if (index !== editingIndex) {
-            return skill
-          }
+        items.map(
+          (
+            skill,
+            index,
+          ) => {
+            if (
+              index !==
+              editingIndex
+            ) {
+              return skill
+            }
 
-          return {
-            ...skill,
-            proficiency_level:
-              skillForm.proficiency_level,
-          }
-        }),
+            return {
+              ...skill,
+
+              proficiency_level:
+                skillForm
+                  .proficiency_level,
+            }
+          },
+        ),
       )
     }
 
@@ -151,19 +218,29 @@ function SkillsSection({
   }
 
 
-  function handleRemove(indexToRemove) {
+  function handleRemove(
+    indexToRemove,
+  ) {
     onChange(
       items.filter(
-        (_, index) =>
-          index !== indexToRemove,
+        (
+          _,
+          index,
+        ) =>
+          index !==
+          indexToRemove,
       ),
     )
 
-    if (editingIndex === indexToRemove) {
+    if (
+      editingIndex ===
+      indexToRemove
+    ) {
       handleCancel()
     } else if (
       editingIndex !== null &&
-      editingIndex > indexToRemove
+      editingIndex >
+        indexToRemove
     ) {
       setEditingIndex(
         (currentIndex) =>
@@ -173,18 +250,48 @@ function SkillsSection({
   }
 
 
-  function getProficiencyLabel(value) {
+  function getProficiencyLabel(
+    value,
+  ) {
     const proficiencyLabels = {
-      foundational: 'Foundational',
-      developing: 'Developing',
-      proficient: 'Proficient',
-      advanced: 'Advanced',
+      foundational:
+        'Foundational',
+
+      developing:
+        'Developing',
+
+      proficient:
+        'Proficient',
+
+      advanced:
+        'Advanced',
     }
 
     return (
-      proficiencyLabels[value] || value
+      proficiencyLabels[
+        value
+      ] || value
     )
   }
+
+
+  const excludedSkillIds =
+    items
+      .filter(
+        (
+          _,
+          index,
+        ) =>
+          index !==
+          editingIndex,
+      )
+      .map(
+        (skill) =>
+          skill.id,
+      )
+      .filter(
+        Boolean,
+      )
 
 
   return (
@@ -198,8 +305,8 @@ function SkillsSection({
         </h2>
 
         <p>
-          Skill proficiency values are Foundational,
-          Developing, Proficient, Advanced.
+          Search the GradNavi Skill catalogue
+          and record your proficiency level.
         </p>
       </div>
 
@@ -222,6 +329,7 @@ function SkillsSection({
           </span>
         </div>
 
+
         {items.length === 0 ? (
           <div className="profile-empty-state">
             No skills added yet.
@@ -229,7 +337,10 @@ function SkillsSection({
         ) : (
           <div className="profile-table__body">
             {items.map(
-              (skill, index) => (
+              (
+                skill,
+                index,
+              ) => (
                 <div
                   className="profile-table__row profile-table__row--skills"
                   key={
@@ -244,15 +355,20 @@ function SkillsSection({
 
                     {skill.category && (
                       <span className="profile-row-secondary">
-                        {skill.category}
+                        {
+                          skill.category
+                        }
                       </span>
                     )}
                   </div>
 
                   <span>
-                    {getProficiencyLabel(
-                      skill.proficiency_level,
-                    )}
+                    {
+                      getProficiencyLabel(
+                        skill
+                          .proficiency_level,
+                      )
+                    }
                   </span>
 
                   <div className="profile-row-actions">
@@ -260,7 +376,9 @@ function SkillsSection({
                       className="profile-text-action"
                       type="button"
                       onClick={() =>
-                        handleEdit(index)
+                        handleEdit(
+                          index,
+                        )
                       }
                     >
                       Edit
@@ -270,7 +388,9 @@ function SkillsSection({
                       className="profile-text-action profile-text-action--danger"
                       type="button"
                       onClick={() =>
-                        handleRemove(index)
+                        handleRemove(
+                          index,
+                        )
                       }
                     >
                       Remove
@@ -287,39 +407,40 @@ function SkillsSection({
       {isFormOpen && (
         <form
           className="profile-inline-form"
-          onSubmit={handleSubmit}
+          onSubmit={
+            handleSubmit
+          }
         >
           <div className="profile-inline-form__grid">
-            <div className="profile-field">
-              <label htmlFor="skill-name">
-                Skill
-              </label>
+            <SearchableReferenceField
+              id="skill-reference-search"
+              label="Skill"
+              placeholder="Search skills, for example Python"
+              searchReference={
+                searchProfileSkills
+              }
+              selectedItem={
+                skillForm
+                  .selectedSkill
+              }
+              onSelect={
+                handleSkillSelect
+              }
+              excludedIds={
+                excludedSkillIds
+              }
+              disabled={
+                editingIndex !==
+                null
+              }
+              helperText={
+                editingIndex !==
+                null
+                  ? 'Remove this skill and add another if you want to change the selected skill.'
+                  : 'Type a skill name or category, then select an approved result.'
+              }
+            />
 
-              <select
-                id="skill-name"
-                name="name"
-                value={skillForm.name}
-                onChange={handleChange}
-                disabled={
-                  editingIndex !== null
-                }
-              >
-                <option value="">
-                  Select a skill
-                </option>
-
-                {SPRINT_1_SKILLS.map(
-                  (skill) => (
-                    <option
-                      key={skill.name}
-                      value={skill.name}
-                    >
-                      {skill.name}
-                    </option>
-                  ),
-                )}
-              </select>
-            </div>
 
             <div className="profile-field">
               <label htmlFor="proficiency-level">
@@ -330,9 +451,12 @@ function SkillsSection({
                 id="proficiency-level"
                 name="proficiency_level"
                 value={
-                  skillForm.proficiency_level
+                  skillForm
+                    .proficiency_level
                 }
-                onChange={handleChange}
+                onChange={
+                  handleProficiencyChange
+                }
               >
                 <option value="">
                   Select proficiency
@@ -357,6 +481,7 @@ function SkillsSection({
             </div>
           </div>
 
+
           {error && (
             <p
               className="profile-error-message"
@@ -366,20 +491,26 @@ function SkillsSection({
             </p>
           )}
 
+
           <div className="profile-inline-form__actions">
             <button
               className="profile-primary-action"
               type="submit"
             >
-              {editingIndex === null
-                ? 'Add Skill'
-                : 'Update Skill'}
+              {
+                editingIndex ===
+                null
+                  ? 'Add Skill'
+                  : 'Update Skill'
+              }
             </button>
 
             <button
               className="profile-secondary-action"
               type="button"
-              onClick={handleCancel}
+              onClick={
+                handleCancel
+              }
             >
               Cancel
             </button>
@@ -393,7 +524,9 @@ function SkillsSection({
           <button
             className="profile-secondary-action"
             type="button"
-            onClick={handleAddSkill}
+            onClick={
+              handleAddSkill
+            }
           >
             Add Skill
           </button>
