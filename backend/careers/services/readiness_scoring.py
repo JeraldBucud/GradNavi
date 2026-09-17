@@ -13,6 +13,10 @@ from decimal import Decimal, ROUND_HALF_UP
 from enum import Enum
 from typing import Iterable, Mapping
 
+from careers.services.evidence_policy import (
+    CORE_COMPETENCY_MINIMUM_IMPORTANCE,
+)
+
 from careers.models import (
     Career,
     CareerSkillEvidence,
@@ -665,7 +669,7 @@ def load_career_readiness_requirements(
     - Belong to an active ReferenceDataset.
     - Come from O*NET Database.
     - Use an approved numerical source domain.
-    - Have normalized Importance.
+    - Have normalized Importance of at least 50.00.
     - Have normalized Level.
     - Use Skill or Knowledge concepts.
     - Not be marked not relevant.
@@ -707,6 +711,9 @@ def load_career_readiness_requirements(
                 ONET_NUMERICAL_SOURCE_DOMAINS
             ),
             normalized_importance__isnull=False,
+            normalized_importance__gte=(
+                CORE_COMPETENCY_MINIMUM_IMPORTANCE
+            ),
             normalized_level__isnull=False,
             not_relevant=False,
         )

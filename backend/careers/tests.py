@@ -2769,19 +2769,24 @@ class RecommendationScoringDatabaseTests(
             ScoreStatus.SCORED,
         )
 
+        # Only the Importance 70 competency survives
+        # the locked core-evidence threshold.
+        #
+        # Importance 20 and 10 evidence is intentionally
+        # excluded before the pure scoring function runs.
         self.assertEqual(
             result.matched_weight,
-            Decimal("90"),
+            Decimal("70"),
         )
 
         self.assertEqual(
             result.total_weight,
-            Decimal("100"),
+            Decimal("70"),
         )
 
         self.assertEqual(
             result.recommendation_score,
-            Decimal("90.00"),
+            Decimal("100.00"),
         )
 
 
@@ -4891,15 +4896,15 @@ class ReadinessScoringDatabaseTests(
         )
 
         # Foundational = 25 against Level 50:
-        # 50 percent attainment on weight 80 = 40.
+        # 50 percent attainment on retained weight 80.
         #
-        # Advanced = 100 against Level 75:
-        # full attainment on weight 20 = 20.
+        # The Importance 20 knowledge requirement is below
+        # the locked core-evidence threshold and is excluded.
         #
-        # Total achieved weight = 60 of 100.
+        # Readiness = 40 achieved weight / 80 retained weight.
         self.assertEqual(
             result.readiness_score,
-            Decimal("60.00"),
+            Decimal("50.00"),
         )
 
         self.assertEqual(
@@ -4914,7 +4919,12 @@ class ReadinessScoringDatabaseTests(
 
         self.assertEqual(
             result.meets_requirement_count,
-            1,
+            0,
+        )
+
+        self.assertEqual(
+            result.missing_requirement_count,
+            0,
         )
 
 
@@ -4991,7 +5001,17 @@ class ReadinessOrchestrationTests(
 
         self.assertEqual(
             result.readiness_score,
-            Decimal("60.00"),
+            Decimal("50.00"),
+        )
+
+        self.assertEqual(
+            result.below_requirement_count,
+            1,
+        )
+
+        self.assertEqual(
+            result.meets_requirement_count,
+            0,
         )
 
         self.assertEqual(
@@ -5668,7 +5688,7 @@ class LearningRoadmapDatabaseTests(
             (),
         )
 
-    def test_existing_wbs55_readiness_behaviour_still_holds(
+    def test_locked_evidence_policy_flows_through_learning_plan(
         self,
     ):
         self._create_readiness_evidence(
@@ -5692,7 +5712,9 @@ class LearningRoadmapDatabaseTests(
             result.score_status,
             ReadinessStatus.SCORED,
         )
+        # The Importance 20 knowledge requirement is
+        # intentionally excluded by the shared core policy.
         self.assertEqual(
             result.readiness_score,
-            Decimal("60.00"),
+            Decimal("50.00"),
         )
