@@ -24,6 +24,12 @@ from careers.services.composite_recommendation import (
     TECHNOLOGY_WEIGHT,
     generate_composite_recommendations,
 )
+from careers.services.recommendation_cache import (
+    SCORING_VERSION,
+    build_recommendation_cache_key,
+    get_valid_recommendation_snapshot,
+    store_recommendation_snapshot,
+)
 from careers.services.readiness_scoring import (
     CareerNotAvailableError,
     CareerNotFoundError,
@@ -58,6 +64,26 @@ class RecommendationListView(APIView):
             request.user
         )
 
+        cache_key = (
+            build_recommendation_cache_key(
+                student_profile=profile,
+            )
+        )
+
+        snapshot = (
+            get_valid_recommendation_snapshot(
+                student_profile=profile,
+                cache_key=cache_key,
+            )
+        )
+
+        if snapshot is not None:
+            return Response(
+                {
+                    "data": snapshot.payload,
+                }
+            )
+
         try:
             embedding_provider = (
                 OpenAIEmbeddingProvider()
@@ -84,33 +110,53 @@ class RecommendationListView(APIView):
             )
         )
 
+        payload = {
+            "scoring_model": (
+                SCORING_VERSION
+            ),
+            "embedding_model": (
+                report.model
+            ),
+            "career_count": (
+                report.career_count
+            ),
+            "base_weights": {
+                "competency": str(
+                    COMPETENCY_WEIGHT
+                ),
+                "technology": str(
+                    TECHNOLOGY_WEIGHT
+                ),
+                "semantic": str(
+                    SEMANTIC_WEIGHT
+                ),
+            },
+            "recommendations": (
+                serializer.data
+            ),
+        }
+
+        store_recommendation_snapshot(
+            student_profile=profile,
+            payload=payload,
+            embedding_model=(
+                report.model or ""
+            ),
+            prompt_tokens=(
+                report.prompt_tokens
+            ),
+            total_tokens=(
+                report.total_tokens
+            ),
+            career_count=(
+                report.career_count
+            ),
+            cache_key=cache_key,
+        )
+
         return Response(
             {
-                "data": {
-                    "scoring_model": (
-                        "composite_v1"
-                    ),
-                    "embedding_model": (
-                        report.model
-                    ),
-                    "career_count": (
-                        report.career_count
-                    ),
-                    "base_weights": {
-                        "competency": str(
-                            COMPETENCY_WEIGHT
-                        ),
-                        "technology": str(
-                            TECHNOLOGY_WEIGHT
-                        ),
-                        "semantic": str(
-                            SEMANTIC_WEIGHT
-                        ),
-                    },
-                    "recommendations": (
-                        serializer.data
-                    ),
-                }
+                "data": payload,
             }
         )
 
@@ -120,7 +166,9 @@ class RecommendationListView(APIView):
                 user=user,
             )
         except StudentProfile.DoesNotExist:
-            raise NotFound("Student profile was not found.")
+            raise NotFound(
+                "Student profile was not found."
+            )
 
 
 class LearningSuggestionListView(APIView):

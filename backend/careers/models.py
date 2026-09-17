@@ -1191,3 +1191,70 @@ class LearningResourceSkill(models.Model):
             f"{self.learning_resource.title} - "
             f"{self.skill.name}"
         )
+
+
+class RecommendationSnapshot(models.Model):
+    """
+    Stores the latest valid Career Recommendation result
+    for one Student Profile.
+
+    The snapshot contains no raw Student Profile payload.
+    Profile state is represented by a SHA-256 fingerprint.
+
+    A cached result stays valid only when:
+
+    - the Student recommendation inputs are unchanged,
+    - the Career reference evidence is unchanged,
+    - the scoring version is unchanged.
+    """
+
+    student_profile = models.OneToOneField(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="recommendation_snapshot",
+    )
+
+    profile_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    reference_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    scoring_version = models.CharField(
+        max_length=50,
+    )
+
+    payload = models.JSONField()
+
+    embedding_model = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    prompt_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    total_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    career_count = models.PositiveIntegerField(
+        default=0,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    def __str__(self):
+        return (
+            "Career Recommendation snapshot for "
+            f"Student Profile {self.student_profile_id}"
+        )
