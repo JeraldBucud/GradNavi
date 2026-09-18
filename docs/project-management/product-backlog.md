@@ -24,11 +24,11 @@ Execution status should reflect actual team progress. Planned dates alone do not
 | ID | Backlog Item | User Outcome | Priority | Planned Sprint | Implementation Leads | Main WBS Tasks | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | FR-01 | Account registration and authentication | Students create accounts, sign in, sign out, and recover access | Must | Sprint 1 | Jerald, Joyee | 4.4, 4.5, 4.8, 4.9 | Testing |
-| FR-02 | Student profile | Students create and update skills, interests, education, experience, projects, goals, and personality responses | Must | Sprint 1 | MD, Joyee, Jerald | 4.6, 4.7, 4.8, 4.9 | Blocked |
-| FR-03 | Career recommendations | Students receive ranked career recommendations from profile data | Must | Sprint 2 | MD, Jerald, Joyee | 5.2, 5.3, 5.4, 5.6, 5.9 | Backlog |
-| FR-04 | Recommendation explanation | Students see recommendation scores and understandable reasons for each result | Must | Sprint 2 | Jerald, MD, Joyee | 5.3, 5.4, 5.6, 5.9 | Backlog |
-| FR-05 | Skill-gap analysis | Students compare current skills with selected career requirements | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Backlog |
-| FR-06 | Career-readiness score | Students receive a readiness score based on documented weighted criteria | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Backlog |
+| FR-02 | Student profile | Students create and update skills, interests, education, experience, projects, goals, and personality responses | Must | Sprint 1 | MD, Joyee, Jerald | 4.6, 4.7, 4.8, 4.9 | Review |
+| FR-03 | Career recommendations | Students receive ranked career recommendations from profile data | Must | Sprint 2 | MD, Jerald, Joyee | 5.2, 5.3, 5.4, 5.6, 5.9 | Review |
+| FR-04 | Recommendation explanation | Students see recommendation scores and understandable reasons for each result | Must | Sprint 2 | Jerald, MD, Joyee | 5.3, 5.4, 5.6, 5.9 | Review |
+| FR-05 | Skill-gap analysis | Students compare current skills with selected career requirements | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Review |
+| FR-06 | Career-readiness score | Students receive a readiness score based on documented weighted criteria | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Review |
 | FR-07 | Job-description matching | Students paste one job description and see matched and missing requirements | Must | Sprint 4 | Jerald, Joyee | 7.2, 7.5, 7.9 | Backlog |
 | FR-08 | Resume builder | Students generate and edit a resume draft from profile data | Must | Sprint 3 | MD, Joyee | 6.3, 6.5, 6.8, 6.9 | Backlog |
 | FR-09 | Cover-letter builder | Students generate and edit a cover letter for a selected job description | Must | Sprint 3 | MD, Joyee | 6.4, 6.5, 6.8, 6.9 | Backlog |
@@ -54,8 +54,8 @@ Related requirements:
 Current planning status:
 
 - Authentication frontend and integration testing has progressed through Sprint 1.
-- Student Profile integration remains dependent on the Student Profile backend implementation.
-- Final Sprint 1 closure depends on remaining Student Profile work and related testing.
+- Student Profile backend support is implemented, and the redesigned Student Profile interface is present on the current WBS 5.6 working branch.
+- Student Profile implementation is under final review through the current WBS 5.6 integration work; formal completion still depends on review and merge.
 
 ## Sprint 2 Backlog
 
@@ -69,6 +69,17 @@ Related requirements:
 - FR-06 Career-readiness score.
 - FR-11 Learning suggestions.
 - FR-12 Career roadmap.
+Current Sprint 2 execution update - 18 September 2026:
+
+- WBS 5.2 Career and Skill Reference Data is implemented.
+- WBS 5.3 Weighted Recommendation Engine is implemented.
+- WBS 5.4 Career Recommendation API is implemented.
+- WBS 5.5 Skill Gap and Readiness Scoring Logic is implemented.
+- WBS 5.6 Recommendation and Readiness Interface is technically implemented and regression-tested; PR #44 remains pending review and merge.
+- WBS 5.7 Learning Suggestions and Roadmap API backend support is implemented.
+- WBS 5.8 Learning Roadmap Interface remains outstanding.
+- WBS 5.9 final Sprint 2 integration status must be updated after the remaining frontend dependency is resolved.
+
 
 Main implementation sequence:
 

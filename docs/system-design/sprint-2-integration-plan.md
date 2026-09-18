@@ -1,6 +1,6 @@
 # GradNavi Sprint 2 Integration Plan
 
-Status: Prepared for WBS 5.9 Sprint 2 Integration and Testing. WBS 5.2, WBS 5.3, and WBS 5.5 are present in the current `feature/sprint-2` branch. Cases depending on WBS 5.4, WBS 5.6, WBS 5.7, or WBS 5.8 remain blocked until those components are merged and available for integration.
+Status: Historical WBS 5.9 integration plan with an implementation-status addendum dated 18 September 2026. The original 3 September repository baseline is retained below as historical evidence.
 
 ## 1. Purpose
 
@@ -90,6 +90,45 @@ Repository review of `feature/sprint-2` on 3 September 2026 confirms:
 
 A missing integration dependency is recorded as Blocked in the Sprint 2 Test Case Tracker. A blocked case is not treated as a failed test.
 
+## 5A. Current Status Addendum - 18 September 2026
+
+The repository baseline recorded in Section 5 remains a historical 3 September checkpoint.
+
+The current implementation position has advanced since that checkpoint.
+
+Current status:
+
+- WBS 5.2 Career and Skill Reference Data is implemented.
+- WBS 5.3 Weighted Recommendation Engine is implemented.
+- WBS 5.4 Career Recommendation API is implemented.
+- WBS 5.5 Skill Gap and Readiness Scoring Logic is implemented.
+- WBS 5.6 Recommendation and Readiness Interface is technically implemented and regression-tested on `jerald/wbs-5.6-recommendation-readiness-interface`.
+- WBS 5.6 Pull Request #44 remains pending review and merge.
+- WBS 5.7 Learning Suggestions and Roadmap API backend support is implemented.
+- WBS 5.8 Learning Roadmap Interface remains outstanding.
+
+Because Sprint 3 work had already started while delayed Sprint 2 frontend work was being recovered, Pull Request #44 currently targets `feature/sprint-3`.
+
+This integration target does not change the original Sprint 2 allocation of WBS 5.6.
+
+The official Microsoft Project owner of WBS 5.6 remains Joyee.
+
+Jerald's recovery and implementation support is recorded separately in the Contribution Log and WBS 5.6 closeout record.
+
+Current WBS 5.6 validation includes:
+
+- Career Recommendations interface.
+- Top Match AI explanation.
+- Selected-career Readiness API.
+- Skill Gap Analysis interface.
+- Deterministic Fix First priorities.
+- AI Gap Summary.
+- Database-backed Recommendation and Skill Gap Summary caching.
+- Controlled Learning Resource empty states.
+- Student Profile integration support required by the Career Analysis flow.
+
+Formal Sprint 2 integration closure is still not reached because WBS 5.8 remains outstanding and final integrated Sprint 2 verification must be updated after the remaining dependency is resolved.
+
 ## 6. Integration Branch Strategy
 
 Integration target: `feature/sprint-2`.
@@ -177,19 +216,68 @@ Verify:
 - Gap ordering is deterministic.
 - Readiness calculation does not modify Dataset 1.0.
 
-### 8.5 WBS 5.6 Frontend Integration
+### 8.5 WBS 5.6 Recommendation and Readiness Integration
 
-After WBS 5.6 is available, verify:
+WBS 5.6 is now technically implemented on the current working branch and should be verified during integration against the real backend contracts.
 
-- Ranked Careers load from the API.
-- Frontend order matches API rank order.
-- Recommendation score and explanation are visible.
-- A Student selects a Career for detailed analysis.
-- Readiness score is displayed separately from recommendation score.
-- Missing and below-requirement Skills are distinguishable.
-- Loading, empty, insufficient-profile, insufficient-evidence, and API-error states are controlled.
-- Core functions work with keyboard navigation.
-- Layout stays usable at common desktop, tablet, and mobile widths.
+Verify Career Recommendations:
+
+- Ranked Careers load from the authenticated Recommendation API.
+- Frontend Career order matches deterministic API rank order.
+- The interface presents one Top Match and up to six Other Career Matches.
+- Career Match scores display as whole-number percentages.
+- Readiness scores display separately from Career Match scores.
+- The Top Match displays one AI-generated explanation.
+- Secondary Career matches do not request additional AI explanations.
+- Secondary Career matches display deterministic strongest-evidence data.
+- View Skill Gaps preserves the selected Career context.
+
+Verify selected-career Readiness:
+
+- `GET /api/v1/readiness/?career_id=<id>` requires authenticated access.
+- Readiness Score remains deterministic under WBS 5.5.
+- Matched, Partially Matched, and Missing counts map to explicit requirement statuses.
+- Requirement Details expose current proficiency, current score, required level, gap, attainment, and status.
+- Recommendation Score and Readiness Score remain separate metrics.
+
+Verify Skill Gap Analysis:
+
+- The selected Career is preserved from Career Recommendations.
+- Readiness Overview uses deterministic WBS 5.5 results.
+- Fix First priority and order remain deterministic.
+- AI does not choose or reorder Fix First Skills.
+- The AI Gap Summary explains the deterministic result.
+- Recommended Next Steps align one-to-one with deterministic Fix First items.
+- The backend restores deterministic Fix First order before returning the final response.
+
+Verify AI and cache behaviour:
+
+- Top Match explanation uses the approved backend AI provider boundary.
+- Skill Gap Summary uses the approved backend AI provider boundary.
+- `RecommendationSnapshot` may reuse a valid unchanged Recommendation result.
+- `SkillGapSummarySnapshot` may reuse a valid unchanged AI Gap Summary.
+- A valid cache hit must not require another OpenAI generation.
+- Frontend code must not expose `OPENAI_API_KEY`.
+
+Verify Learning Resource behaviour inside Skill Gap Analysis:
+
+- Only backend-controlled Learning Resources are displayed.
+- The interface does not invent course names, providers, URLs, or resource links.
+- When no controlled resource exists, the interface displays an honest empty state.
+- This embedded Learning Suggestions presentation does not replace WBS 5.8 Learning Roadmap Interface.
+
+Verify controlled states:
+
+- Loading state.
+- Empty result state.
+- Insufficient-profile state where applicable.
+- Insufficient-evidence state where applicable.
+- Invalid Career ID.
+- Inactive Career.
+- API failure.
+- AI provider failure.
+
+Final accessibility, responsive-layout, and full Sprint 2 end-to-end checks remain part of integration testing rather than being inferred from implementation alone.
 
 ### 8.6 WBS 5.7 Learning Suggestions and Roadmap API
 
@@ -244,9 +332,11 @@ Repeat the flow with:
 | --- | --- | --- | --- |
 | Student Profile to Recommendation Engine | Student Profile | WBS 5.3 | Canonical Skill IDs |
 | Recommendation Engine to API | WBS 5.3 | WBS 5.4 | Career ID, score, rank, status, explanation data |
-| API to Recommendation UI | WBS 5.4 | WBS 5.6 | Authenticated response structure |
+| Recommendation API to Recommendation UI | WBS 5.4 | WBS 5.6 | Career ID, score, rank, status, deterministic evidence |
 | Student Profile to Readiness | Student Profile | WBS 5.5 | Canonical Skill IDs and proficiency |
-| Readiness to UI | WBS 5.5 and API layer | WBS 5.6 | Readiness score, status, Skill gaps |
+| Readiness to UI | WBS 5.5 and selected-career Readiness API | WBS 5.6 | Readiness score, status counts, requirement details, deterministic Fix First data |
+| Top Match Explanation to UI | WBS 5.6 backend AI service | WBS 5.6 frontend | Cached or newly generated Top Match explanation |
+| Skill Gap Summary to UI | WBS 5.6 backend AI service | WBS 5.6 frontend | AI explanation and validated next-step wording aligned to deterministic Fix First order |
 | Readiness to Learning API | WBS 5.5 | WBS 5.7 | Missing and below-requirement Skills plus gap context |
 | Learning API to Roadmap UI | WBS 5.7 | WBS 5.8 | Ordered roadmap items |
 

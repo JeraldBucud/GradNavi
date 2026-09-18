@@ -1614,3 +1614,119 @@ The next implementation step is:
 4. Add `pydantic==2.13.5` to `backend/requirements.txt`.
 5. Create the `backend/ai_services/` package.
 6. Begin with common Pydantic schemas before prompt code.
+
+## 55. WBS 5.6 Provider Integration Addendum
+
+This section records a later implementation update.
+
+It does not replace the historical WBS 6.2 design baseline above.
+
+WBS 6.2 established the provider-independent GradNavi AI foundation, including:
+
+- Structured AI input and output contracts.
+- Prompt templates.
+- Privacy filtering.
+- Safety rules.
+- Provider boundaries.
+- Controlled AI exceptions.
+- Backend-only AI access.
+
+During WBS 5.6 integration, a limited OpenAI-backed text provider was introduced for two approved student-facing explanation operations:
+
+- `career_match_explanation`
+- `skill_gap_summary`
+
+The current default text-generation model is:
+
+`gpt-5-nano`
+
+The model may be overridden with:
+
+`OPENAI_TEXT_MODEL`
+
+Provider credentials are read from the backend environment through:
+
+`OPENAI_API_KEY`
+
+The frontend does not receive or use the OpenAI API key.
+
+### 55.1 Career Match Explanation
+
+The current Career Match explanation contract version is:
+
+`career_match_explanation_v2`
+
+Only the Top Match receives an AI-generated explanation.
+
+Secondary Career matches use deterministic strongest-evidence data and do not request additional AI explanations.
+
+AI does not determine:
+
+- Recommendation factor values.
+- Recommendation Score.
+- Career rank.
+- Career Readiness Score.
+- Requirement status.
+- Skill-gap priority.
+
+### 55.2 Skill Gap Summary
+
+The current Skill Gap Summary contract version is:
+
+`skill_gap_summary_v3`
+
+The AI layer may write:
+
+- A student-facing readiness explanation.
+- One action sentence for each deterministic Fix First item.
+
+The AI layer does not choose the Fix First Skills.
+
+WBS 5.5 remains authoritative for priority and order.
+
+The backend validates the generated action wording and restores deterministic Fix First order before returning the response.
+
+### 55.3 Database Caching
+
+WBS 5.6 uses database-backed caching to reduce repeated provider calls.
+
+Recommendation results use:
+
+`RecommendationSnapshot`
+
+Skill Gap Summary results use:
+
+`SkillGapSummarySnapshot`
+
+A valid cached result may be returned without another OpenAI generation.
+
+Relevant controlled input, model, or contract-version changes invalidate the associated cache.
+
+Caching does not change deterministic scores, ranks, statuses, or priorities.
+
+### 55.4 Provider and Safety Boundary
+
+The approved request path remains:
+
+Student frontend -> GradNavi Django backend -> AI service boundary -> OpenAI
+
+The browser must not call OpenAI directly.
+
+The backend remains responsible for:
+
+- Authentication.
+- Student ownership checks.
+- Privacy filtering.
+- Prompt construction.
+- Structured output validation.
+- Error handling.
+- Cache validation.
+- Safe fallback behaviour.
+
+### 55.5 Relationship to WBS 7.3
+
+The limited WBS 5.6 provider integration does not complete or replace WBS 7.3.
+
+WBS 7.3 remains responsible for broader Sprint 4 OpenAI integration of approved Sprint 3 AI services, including Resume, Cover Letter, Interview Question, and Interview Feedback workflows.
+
+The provider-independent WBS 6.2 architecture remains the shared foundation.

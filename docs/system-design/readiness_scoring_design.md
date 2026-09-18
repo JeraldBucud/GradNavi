@@ -439,7 +439,7 @@ gap_status
 
 The backend service returns structured data.
 
-WBS 5.6 decides how the frontend displays the result.
+WBS 5.6 now consumes this structured result through the selected-career Readiness API and renders it in the Career Recommendations and Skill Gap Analysis interfaces.
 
 ## 15. Skill Gap Ordering
 
@@ -829,3 +829,88 @@ WBS 5.5 is complete when:
 - Real Dataset 1.0 read-only validation passes.
 - Documentation matches implemented behaviour.
 - The implementation is reviewed and merged into `feature/sprint-2`.
+
+## 29. WBS 5.6 Integration Addendum
+
+WBS 5.6 now consumes the deterministic WBS 5.5 readiness result through:
+
+`GET /api/v1/readiness/?career_id=<id>`
+
+The selected-career Readiness API exposes the data required by the implemented Skill Gap Analysis interface, including:
+
+- Readiness Score.
+- Readiness status.
+- Total requirement count.
+- Matched count.
+- Partially Matched count.
+- Missing count.
+- Complete requirement details.
+- Current Student proficiency and score.
+- Required level.
+- Gap amount.
+- Attainment percentage.
+- Requirement status.
+
+### 29.1 Student-Facing Status Counts
+
+The Skill Gap Analysis interface uses the explicit WBS 5.5 status counts.
+
+Matched represents requirements that meet the requirement.
+
+Partially Matched represents requirements that are below the required level.
+
+Missing represents requirements with no approved Student proficiency evidence.
+
+The legacy aggregate matched count is not used for the green Matched summary card.
+
+### 29.2 Fix First Ownership
+
+Fix First remains deterministic.
+
+WBS 5.5 owns the priority and order of unresolved requirements.
+
+WBS 5.6 does not ask AI to choose the priority Skills.
+
+### 29.3 AI Gap Summary Boundary
+
+The implemented flow is:
+
+1. WBS 5.5 calculates deterministic readiness.
+2. WBS 5.5 provides deterministic unresolved Skill priorities.
+3. WBS 5.6 selects the deterministic Fix First items.
+4. AI writes student-facing explanation and action wording.
+5. The backend validates the generated actions.
+6. The backend returns actions in deterministic Fix First order.
+7. The validated result may be reused from the database cache.
+
+The governing rule is:
+
+**WBS 5.5 owns priority and order. AI writes wording only.**
+
+The current Skill Gap Summary contract version is:
+
+`skill_gap_summary_v3`
+
+### 29.4 Dynamic Next-Step Count
+
+The number of AI-written next-step actions follows the deterministic Fix First count:
+
+- 1 unresolved gap -> 1 action.
+- 2 unresolved gaps -> 2 actions.
+- 3 or more unresolved gaps -> deterministic top 3 -> 3 actions.
+
+AI does not add priorities beyond the deterministic Fix First selection.
+
+### 29.5 Skill Gap Summary Cache
+
+Validated Skill Gap Summary results are persisted through `SkillGapSummarySnapshot`.
+
+The cache is based on controlled Student, Career, readiness, learning-resource, model, and summary-version state.
+
+When the controlled cache key remains valid, the backend may return the stored summary without a new OpenAI generation.
+
+When relevant controlled inputs change, the snapshot becomes stale and a new summary may be generated.
+
+Caching exists for performance and provider-cost control.
+
+It does not change readiness scoring, gap classification, or Fix First priority.
