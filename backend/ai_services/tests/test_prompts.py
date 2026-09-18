@@ -79,6 +79,8 @@ class CommonPromptContractTests(SimpleTestCase):
             "interview_feedback",
             "career_match_explanation",
             "skill_gap_summary",
+            "roadmap_guidance",
+            "learning_resource_guidance",
         }
 
         actual = {

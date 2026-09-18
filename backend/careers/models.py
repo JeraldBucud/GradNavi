@@ -1084,6 +1084,22 @@ class LearningResource(models.Model):
         BOOK = "book", "Book"
         OTHER = "other", "Other"
 
+    class AccessType(models.TextChoices):
+        FREE = "free", "Free"
+        FREEMIUM = "freemium", "Freemium"
+        PAID = "paid", "Paid"
+        UNKNOWN = "unknown", "Unknown"
+
+    class SourceType(models.TextChoices):
+        CURATED = "curated", "Curated"
+        DISCOVERED = "discovered", "Discovered"
+
+    class HealthStatus(models.TextChoices):
+        ACTIVE = "active", "Active"
+        NEEDS_REVIEW = "needs_review", "Needs Review"
+        BROKEN = "broken", "Broken"
+        ARCHIVED = "archived", "Archived"
+
     title = models.CharField(
         max_length=255,
     )
@@ -1112,6 +1128,34 @@ class LearningResource(models.Model):
 
     is_active = models.BooleanField(
         default=True,
+    )
+
+    access_type = models.CharField(
+        max_length=20,
+        choices=AccessType.choices,
+        default=AccessType.UNKNOWN,
+    )
+
+    source_type = models.CharField(
+        max_length=20,
+        choices=SourceType.choices,
+        default=SourceType.CURATED,
+    )
+
+    health_status = models.CharField(
+        max_length=20,
+        choices=HealthStatus.choices,
+        default=HealthStatus.ACTIVE,
+    )
+
+    last_checked_at = models.DateTimeField(
+        blank=True,
+        null=True,
+    )
+
+    last_verified_at = models.DateTimeField(
+        blank=True,
+        null=True,
     )
 
     skills = models.ManyToManyField(
@@ -1143,6 +1187,37 @@ class LearningResource(models.Model):
                     ],
                 ),
                 name="valid_learning_resource_type",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    access_type__in=[
+                        "free",
+                        "freemium",
+                        "paid",
+                        "unknown",
+                    ],
+                ),
+                name="valid_learning_resource_access_type",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    source_type__in=[
+                        "curated",
+                        "discovered",
+                    ],
+                ),
+                name="valid_learning_resource_source_type",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    health_status__in=[
+                        "active",
+                        "needs_review",
+                        "broken",
+                        "archived",
+                    ],
+                ),
+                name="valid_learning_resource_health_status",
             ),
         ]
 
@@ -1190,6 +1265,412 @@ class LearningResourceSkill(models.Model):
         return (
             f"{self.learning_resource.title} - "
             f"{self.skill.name}"
+        )
+
+
+class RoadmapProgress(models.Model):
+    """
+    Stores Student progress against one Career roadmap Skill.
+
+    Progress is linked to the Skill rather than a displayed step number
+    because roadmap ordering can change when Student evidence changes.
+    """
+
+    class Status(models.TextChoices):
+        NOT_STARTED = "not_started", "Not Started"
+        IN_PROGRESS = "in_progress", "In Progress"
+        COMPLETED = "completed", "Completed"
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="roadmap_progress",
+    )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.PROTECT,
+        related_name="student_roadmap_progress",
+    )
+
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.PROTECT,
+        related_name="student_roadmap_progress",
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.NOT_STARTED,
+    )
+
+    started_at = models.DateTimeField(
+        blank=True,
+        null=True,
+    )
+
+    completed_at = models.DateTimeField(
+        blank=True,
+        null=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                    "skill",
+                ],
+                name="unique_student_career_roadmap_skill",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    status__in=[
+                        "not_started",
+                        "in_progress",
+                        "completed",
+                    ],
+                ),
+                name="valid_roadmap_progress_status",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"Roadmap progress: "
+            f"{self.student_profile_id} - "
+            f"{self.career_id} - "
+            f"{self.skill_id}"
+        )
+
+
+class RoadmapGuidanceSnapshot(models.Model):
+    """
+    Stores the latest valid personalised Roadmap guidance for one
+    Student Profile and selected Career.
+
+    Raw Student Profile data is not stored here.
+    The cache key fingerprints the approved source context.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="roadmap_guidance_snapshots",
+    )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name="roadmap_guidance_snapshots",
+    )
+
+    cache_key = models.CharField(
+        max_length=64,
+    )
+
+    guidance_version = models.CharField(
+        max_length=50,
+    )
+
+    model = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    payload = models.JSONField()
+
+    prompt_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    total_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                name="unique_roadmap_guidance_snapshot",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Roadmap guidance snapshot for "
+            f"Student Profile {self.student_profile_id}, "
+            f"Career {self.career_id}"
+        )
+
+
+class LearningResourceGuidanceSnapshot(models.Model):
+    """
+    Stores the latest valid personalised Learning Resource
+    guidance for one Student, Career, and Skill.
+
+    The payload contains generated Student-facing explanations.
+
+    Raw Student Profile context is not stored here.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name=(
+            "learning_resource_guidance_snapshots"
+        ),
+    )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name=(
+            "learning_resource_guidance_snapshots"
+        ),
+    )
+
+    skill = models.ForeignKey(
+        "profiles.Skill",
+        on_delete=models.PROTECT,
+        related_name=(
+            "learning_resource_guidance_snapshots"
+        ),
+    )
+
+    cache_key = models.CharField(
+        max_length=64,
+    )
+
+    guidance_version = models.CharField(
+        max_length=50,
+    )
+
+    model = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    payload = models.JSONField()
+
+    prompt_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    total_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                    "skill",
+                ],
+                name=(
+                    "unique_learning_resource_"
+                    "guidance_snapshot"
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Learning Resource guidance snapshot for "
+            f"Student Profile {self.student_profile_id}, "
+            f"Career {self.career_id}, "
+            f"Skill {self.skill_id}"
+        )
+
+
+class LearningResourceFeedback(models.Model):
+    """
+    Stores one Student's current usefulness response for one resource.
+
+    A Student can change their response later without creating
+    duplicate current votes.
+    """
+
+    class FeedbackType(models.TextChoices):
+        HELPFUL = "helpful", "Helpful"
+        NOT_HELPFUL = "not_helpful", "Not Helpful"
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="learning_resource_feedback",
+    )
+
+    learning_resource = models.ForeignKey(
+        LearningResource,
+        on_delete=models.CASCADE,
+        related_name="student_feedback",
+    )
+
+    feedback_type = models.CharField(
+        max_length=20,
+        choices=FeedbackType.choices,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "learning_resource",
+                ],
+                name="unique_student_learning_resource_feedback",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    feedback_type__in=[
+                        "helpful",
+                        "not_helpful",
+                    ],
+                ),
+                name="valid_learning_resource_feedback_type",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.feedback_type}: "
+            f"{self.student_profile_id} - "
+            f"{self.learning_resource_id}"
+        )
+
+
+class LearningResourceReport(models.Model):
+    """
+    Stores Student-reported learning-resource quality issues.
+
+    Reports enter a review workflow. A report does not directly remove
+    or archive a learning resource.
+    """
+
+    class Reason(models.TextChoices):
+        BROKEN_LINK = "broken_link", "Broken Link"
+        OUTDATED = "outdated", "Outdated"
+        NOT_RELEVANT = "not_relevant", "Not Relevant"
+        TOO_DIFFICULT = "too_difficult", "Too Difficult"
+        REQUIRES_PAYMENT = (
+            "requires_payment",
+            "Requires Payment",
+        )
+        DUPLICATE = "duplicate", "Duplicate"
+        OTHER = "other", "Other"
+
+    class Status(models.TextChoices):
+        OPEN = "open", "Open"
+        RESOLVED = "resolved", "Resolved"
+        DISMISSED = "dismissed", "Dismissed"
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="learning_resource_reports",
+    )
+
+    learning_resource = models.ForeignKey(
+        LearningResource,
+        on_delete=models.CASCADE,
+        related_name="student_reports",
+    )
+
+    reason = models.CharField(
+        max_length=30,
+        choices=Reason.choices,
+    )
+
+    comment = models.TextField(
+        blank=True,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.OPEN,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    reason__in=[
+                        "broken_link",
+                        "outdated",
+                        "not_relevant",
+                        "too_difficult",
+                        "requires_payment",
+                        "duplicate",
+                        "other",
+                    ],
+                ),
+                name="valid_learning_resource_report_reason",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    status__in=[
+                        "open",
+                        "resolved",
+                        "dismissed",
+                    ],
+                ),
+                name="valid_learning_resource_report_status",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.reason}: "
+            f"{self.learning_resource_id}"
         )
 
 
