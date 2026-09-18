@@ -507,3 +507,81 @@ class CareerReadinessResultSerializer(
         return len(
             result.skill_gaps
         )
+
+class RoadmapProgressMutationSerializer(
+    serializers.Serializer
+):
+    career_id = serializers.IntegerField(
+        min_value=1,
+        required=True,
+    )
+
+    skill_id = serializers.IntegerField(
+        min_value=1,
+        required=True,
+    )
+
+
+class LearningResourceRecommendationQuerySerializer(
+    serializers.Serializer
+):
+    career_id = serializers.IntegerField(
+        min_value=1,
+        required=True,
+    )
+
+    skill_id = serializers.IntegerField(
+        min_value=1,
+        required=True,
+    )
+
+    access_type = serializers.ChoiceField(
+        choices=(
+            "free",
+            "freemium",
+            "paid",
+            "unknown",
+        ),
+        required=False,
+    )
+
+
+class LearningResourceFeedbackInputSerializer(
+    serializers.Serializer
+):
+    feedback_type = serializers.ChoiceField(
+        choices=(
+            "helpful",
+            "not_helpful",
+        ),
+        required=True,
+    )
+
+
+class LearningResourceReportInputSerializer(
+    serializers.Serializer
+):
+    resource_id = serializers.IntegerField(
+        min_value=1,
+        required=True,
+    )
+
+    reason = serializers.ChoiceField(
+        choices=(
+            "broken_link",
+            "outdated",
+            "not_relevant",
+            "too_difficult",
+            "requires_payment",
+            "duplicate",
+            "other",
+        ),
+        required=True,
+    )
+
+    comment = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        max_length=1000,
+        default="",
+    )

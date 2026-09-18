@@ -237,3 +237,83 @@ class SkillGapSummaryExplanation(AIContractModel):
     recommended_next_steps: list[str]
 
     is_ai_generated: Literal[True]
+
+class RoadmapGuidanceItem(AIContractModel):
+    """
+    Personalised explanation for one deterministic
+    Career Roadmap step.
+
+    The Skill name is supplied by GradNavi.
+
+    AI explains the step only.
+    """
+
+    skill_name: str = Field(
+        min_length=1,
+        max_length=255,
+    )
+
+    why_this_matters: str = Field(
+        min_length=1,
+        max_length=800,
+    )
+
+    your_focus: str = Field(
+        min_length=1,
+        max_length=600,
+    )
+
+
+class RoadmapGuidanceExplanation(AIContractModel):
+    """
+    Personalised guidance for the deterministic
+    top Career Roadmap steps.
+
+    AI must not change the Skill list or ordering.
+    """
+
+    guidance_items: list[
+        RoadmapGuidanceItem
+    ] = Field(
+        min_length=1,
+        max_length=3,
+    )
+
+    is_ai_generated: Literal[True]
+
+class LearningResourceGuidanceItem(AIContractModel):
+    """
+    Personalised explanation for one deterministic
+    Learning Resource recommendation.
+
+    AI writes explanation text only.
+    """
+
+    resource_id: int = Field(
+        gt=0,
+    )
+
+    why_this_fits: str = Field(
+        min_length=1,
+        max_length=700,
+    )
+
+
+class LearningResourceGuidanceExplanation(
+    AIContractModel
+):
+    """
+    Personalised explanations for the strongest
+    deterministic Learning Resource recommendations.
+
+    AI must not add, remove, rank, or reorder resources.
+    """
+
+    guidance_items: list[
+        LearningResourceGuidanceItem
+    ] = Field(
+        min_length=1,
+        max_length=6,
+    )
+
+    is_ai_generated: Literal[True]

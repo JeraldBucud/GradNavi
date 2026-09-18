@@ -1,11 +1,17 @@
 from django.urls import path
 
 from .views import (
+    LearningResourceFeedbackView,
+    LearningResourceRecommendationView,
+    LearningResourceReportCreateView,
     LearningSuggestionListView,
     RecommendationListView,
+    RoadmapListView,
+    RoadmapOverviewView,
+    RoadmapProgressCompleteView,
+    RoadmapProgressStartView,
     SelectedCareerReadinessView,
     SkillGapSummaryView,
-    RoadmapListView,
     TopMatchExplanationView,
 )
 
@@ -42,5 +48,35 @@ urlpatterns = [
         "roadmaps/",
         RoadmapListView.as_view(),
         name="roadmap-list",
+    ),    path(
+        "roadmap-overview/",
+        RoadmapOverviewView.as_view(),
+        name="roadmap-overview",
     ),
+    path(
+        "roadmap-progress/start/",
+        RoadmapProgressStartView.as_view(),
+        name="roadmap-progress-start",
+    ),
+    path(
+        "roadmap-progress/complete/",
+        RoadmapProgressCompleteView.as_view(),
+        name="roadmap-progress-complete",
+    ),
+    path(
+        "learning-resource-recommendations/",
+        LearningResourceRecommendationView.as_view(),
+        name="learning-resource-recommendations",
+    ),
+    path(
+        "learning-resource-feedback/<int:resource_id>/",
+        LearningResourceFeedbackView.as_view(),
+        name="learning-resource-feedback",
+    ),
+    path(
+        "learning-resource-reports/",
+        LearningResourceReportCreateView.as_view(),
+        name="learning-resource-reports",
+    ),
+
 ]
