@@ -77,6 +77,8 @@ class CommonPromptContractTests(SimpleTestCase):
             "cover_letter_generation",
             "interview_question_generation",
             "interview_feedback",
+            "career_match_explanation",
+            "skill_gap_summary",
         }
 
         actual = {
@@ -618,4 +620,3 @@ class InterviewFeedbackPromptTests(SimpleTestCase):
                 phrase,
                 instructions,
             )
-            

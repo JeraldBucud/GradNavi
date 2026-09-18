@@ -549,18 +549,35 @@ The planned relationship is:
 
     StudentProfile 1 ----- * CareerGoal
 
-### 9.1 Planned CareerGoal Fields
+### 9.1 Implemented CareerGoal Fields
 
-The conceptual CareerGoal fields are:
+The implemented `CareerGoal` model supports multiple Career Goals for one Student Profile.
 
 | Field | Purpose |
 | --- | --- |
 | `id` | Primary identifier for the CareerGoal |
 | `student_profile_id` | Links the CareerGoal to the owning Student Profile |
-| `target_role` | Career or role the student wants to pursue |
-| `description` | Optional information about the student's career goal |
+| `career_id` | Optional structured relation to an approved active `Career` |
+| `target_role` | Career-name compatibility field retained for existing records and older clients |
+| `description` | Optional information about the student's Career Goal |
+| `is_primary` | Identifies the student's current Primary Career Goal |
 | `created_at` | Records when the CareerGoal was created |
 | `updated_at` | Records when the CareerGoal was last updated |
+
+The preferred current frontend and API path uses `career_id`.
+
+`target_role` remains available for compatibility with existing records and older API clients.
+
+A Student Profile may store multiple Career Goals.
+
+When Career Goals exist, exactly one is treated as the Primary Career Goal.
+
+The backend enforces:
+
+- No duplicate structured Career Goal for the same Student Profile and Career.
+- At most one Primary Career Goal per Student Profile.
+- Validation of structured Career references.
+- Compatibility handling for older `target_role` input.
 
 ### 9.2 Recommendation and Roadmap Use
 
@@ -610,11 +627,35 @@ The conceptual PersonalityResponse fields are:
 
 ### 10.2 Questionnaire Design
 
-This document does not define the final personality questionnaire, assessment method, or interpretation rules.
+The current Student Profile frontend defines 16 approved work-style personality questions.
 
-Those details require separate agreement before implementation.
+Each stored response uses:
 
-The Student Profile design only establishes a structure for storing approved personality-related responses.
+- `question_key`
+- `response_value`
+
+The student-facing response scale contains five choices:
+
+- Strongly Disagree.
+- Disagree.
+- Neutral.
+- Agree.
+- Strongly Agree.
+
+The redesigned Student Profile presents one question at a time and shows:
+
+- `Question X of 16`.
+- Current answered count.
+- Previous navigation.
+- Save and Continue.
+- Back to Profile Summary.
+- Save Assessment on the final question.
+
+The profile model stores the approved responses.
+
+This data supports GradNavi career-analysis features.
+
+It is not defined as a clinical personality diagnosis or independent psychological assessment.
 
 ### 10.3 Ownership and Privacy
 
@@ -781,7 +822,7 @@ Scoring algorithms, AI prompts, career reference data, learning-resource data, a
 
 ## 19. Design Status
 
-This document is a working system-design artifact for team review.
+This document is an implementation-aligned Student Profile system-design artifact and should be updated when material profile-model or API changes are introduced.
 
 The conceptual entities and relationships provide a proposed foundation for the Student Profile backend module.
 

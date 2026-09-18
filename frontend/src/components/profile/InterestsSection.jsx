@@ -1,8 +1,10 @@
 import { useState } from 'react'
 
 import {
-  SPRINT_1_INTERESTS,
-} from '../../data/profileReferenceData'
+  searchProfileInterests,
+} from '../../services/profileService'
+
+import SearchableReferenceField from './SearchableReferenceField'
 
 
 function InterestsSection({
@@ -13,7 +15,7 @@ function InterestsSection({
   const [
     selectedInterest,
     setSelectedInterest,
-  ] = useState('')
+  ] = useState(null)
 
   const [
     isFormOpen,
@@ -27,17 +29,17 @@ function InterestsSection({
 
 
   function resetForm() {
-    setSelectedInterest('')
+    setSelectedInterest(null)
     setError('')
     setIsFormOpen(false)
   }
 
 
-  function handleInterestChange(
-    event,
+  function handleInterestSelect(
+    interest,
   ) {
     setSelectedInterest(
-      event.target.value,
+      interest,
     )
 
     setError('')
@@ -45,13 +47,15 @@ function InterestsSection({
 
 
   function handleAdd() {
-    setSelectedInterest('')
+    setSelectedInterest(null)
     setError('')
     setIsFormOpen(true)
   }
 
 
-  function handleSubmit(event) {
+  function handleSubmit(
+    event,
+  ) {
     event.preventDefault()
 
     if (!selectedInterest) {
@@ -62,29 +66,14 @@ function InterestsSection({
       return
     }
 
-    const interestReference =
-      SPRINT_1_INTERESTS.find(
-        (interest) =>
-          interest.name ===
-          selectedInterest,
-      )
-
-    if (!interestReference) {
-      setError(
-        'Select a valid interest.',
-      )
-
-      return
-    }
 
     const duplicateInterest =
       items.some(
         (interest) =>
-          interest.name
-            .toLowerCase() ===
-          interestReference.name
-            .toLowerCase(),
+          interest.id ===
+            selectedInterest.id,
       )
+
 
     if (duplicateInterest) {
       setError(
@@ -94,15 +83,19 @@ function InterestsSection({
       return
     }
 
+
     onChange([
       ...items,
 
       {
+        id:
+          selectedInterest.id,
+
         name:
-          interestReference.name,
+          selectedInterest.name,
 
         category:
-          interestReference.category,
+          selectedInterest.category || '',
       },
     ])
 
@@ -115,12 +108,26 @@ function InterestsSection({
   ) {
     onChange(
       items.filter(
-        (_, index) =>
+        (
+          _,
+          index,
+        ) =>
           index !==
           indexToRemove,
       ),
     )
   }
+
+
+  const excludedInterestIds =
+    items
+      .map(
+        (interest) =>
+          interest.id,
+      )
+      .filter(
+        Boolean,
+      )
 
 
   return (
@@ -132,9 +139,9 @@ function InterestsSection({
           </h3>
 
           <p>
-            Interests use the approved
-            Sprint 1 reference data
-            linked to your profile.
+            Search the GradNavi Interest catalogue
+            and select interests linked to your
+            career preferences.
           </p>
         </div>
 
@@ -171,17 +178,13 @@ function InterestsSection({
                     {interest.name}
                   </strong>
 
-                  {
-                    interest
-                      .category && (
-                      <p>
-                        {
-                          interest
-                            .category
-                        }
-                      </p>
-                    )
-                  }
+                  {interest.category && (
+                    <p>
+                      {
+                        interest.category
+                      }
+                    </p>
+                  )}
                 </div>
 
                 <div className="profile-manager-record__actions">
@@ -222,55 +225,37 @@ function InterestsSection({
           className="profile-manager-form"
           onSubmit={handleSubmit}
         >
-          <div className="profile-field">
-            <label htmlFor="interest-name">
-              Interest
-            </label>
-
-            <select
-              id="interest-name"
-              value={
-                selectedInterest
-              }
-              onChange={
-                handleInterestChange
-              }
-            >
-              <option value="">
-                Select an interest
-              </option>
-
-              {
-                SPRINT_1_INTERESTS.map(
-                  (interest) => (
-                    <option
-                      key={
-                        interest.name
-                      }
-                      value={
-                        interest.name
-                      }
-                    >
-                      {
-                        interest.name
-                      }
-                    </option>
-                  ),
-                )
-              }
-            </select>
-          </div>
+          <SearchableReferenceField
+            id="interest-reference-search"
+            label="Interest"
+            placeholder="Search interests, for example data"
+            searchReference={
+              searchProfileInterests
+            }
+            selectedItem={
+              selectedInterest
+            }
+            onSelect={
+              handleInterestSelect
+            }
+            excludedIds={
+              excludedInterestIds
+            }
+            helperText="Type an interest name or category, then select an approved result."
+          />
 
 
           {selectedInterest && (
             <p className="profile-reference-detail">
-              Category:{' '}
+              Selected:{' '}
               {
-                SPRINT_1_INTERESTS.find(
-                  (interest) =>
-                    interest.name ===
-                    selectedInterest,
-                )?.category
+                selectedInterest.name
+              }
+
+              {
+                selectedInterest.category
+                  ? ` · ${selectedInterest.category}`
+                  : ''
               }
             </p>
           )}
@@ -297,7 +282,9 @@ function InterestsSection({
             <button
               className="profile-secondary-action"
               type="button"
-              onClick={resetForm}
+              onClick={
+                resetForm
+              }
             >
               Cancel
             </button>

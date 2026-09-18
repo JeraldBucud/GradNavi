@@ -213,7 +213,7 @@ and:
 
 The Sprint 3 implementation should avoid tightly coupling application features directly to one AI provider.
 
-Sprint 3 backend code should define clear service boundaries so the OpenAI provider implementation introduced in Sprint 4 plugs into the existing application flow without rewriting Resume, Cover Letter, or Interview features.
+Sprint 3 backend code defines clear service boundaries so broader provider integration under WBS 7.3 can plug into the existing Resume, Cover Letter, and Interview flows without rewriting those feature services.
 
 The intended GradNavi AI flow is:
 
@@ -243,6 +243,47 @@ Editable Frontend Draft
 ```
 
 Direct React-to-AI-provider communication is outside the GradNavi architecture.
+### 8.1 WBS 5.6 Limited Provider Integration Update - 18 September 2026
+
+A later WBS 5.6 integration requirement introduced a limited concrete OpenAI text provider through the existing backend AI boundary.
+
+This limited provider integration supports only the approved WBS 5.6 explanation operations:
+
+- `career_match_explanation`.
+- `skill_gap_summary`.
+
+The default WBS 5.6 text model is:
+
+`gpt-5-nano`
+
+The model may be overridden through:
+
+`OPENAI_TEXT_MODEL`
+
+Provider credentials remain backend-only through:
+
+`OPENAI_API_KEY`
+
+The WBS 5.6 integration preserves the Sprint 3 provider-independent service architecture.
+
+It does not make Resume, Cover Letter, Interview Question, or Interview Feedback services directly dependent on OpenAI.
+
+Those broader provider integrations remain assigned to:
+
+`WBS 7.3 OpenAI Service Integration`
+
+Therefore, the WBS 5.6 text-provider work does not complete, replace, or reassign WBS 7.3.
+
+The current responsibility split is:
+
+- WBS 5.6: limited Career Match and Skill Gap explanation generation.
+- WBS 6.2: provider-independent prompt, safety, privacy, schema, and service foundation.
+- WBS 7.3: broader concrete provider integration for approved Sprint 3 AI workflows.
+- WBS 7.4: provider-specific response validation and error-handling work.
+
+Deterministic Career Recommendation and Readiness calculations remain outside generative AI.
+
+WBS 5.6 AI may explain approved deterministic results, but it does not calculate Recommendation Scores, Career ranks, Readiness Scores, requirement statuses, or Fix First priorities.
 
 ## 9. WBS 6.2 AI Prompt Templates and Safety Rules
 

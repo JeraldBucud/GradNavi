@@ -1,6 +1,6 @@
 from django.db import models
 
-from profiles.models import Skill
+from profiles.models import Interest, Skill
 
 
 class MappingMethod(models.TextChoices):
@@ -178,6 +178,248 @@ class Career(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CareerInterest(models.Model):
+    """
+    Reviewed relationship between a GradNavi Career
+    and a detailed Student-facing Interest.
+
+    Detailed Interests stay separate from O*NET RIASEC
+    occupational-interest evidence.
+    """
+
+    class SourceType(models.TextChoices):
+        GRADNAVI_REVIEW = (
+            "gradnavi_review",
+            "GradNavi Review",
+        )
+        EXTERNAL_EVIDENCE = (
+            "external_evidence",
+            "External Evidence",
+        )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name="career_interests",
+    )
+
+    interest = models.ForeignKey(
+        Interest,
+        on_delete=models.PROTECT,
+        related_name="career_interests",
+    )
+
+    relevance_weight = models.PositiveSmallIntegerField()
+
+    review_status = models.CharField(
+        max_length=20,
+        choices=ReviewStatus.choices,
+        default=ReviewStatus.PENDING,
+    )
+
+    source_type = models.CharField(
+        max_length=30,
+        choices=SourceType.choices,
+        default=SourceType.GRADNAVI_REVIEW,
+    )
+
+    source_reference = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "career",
+                    "interest",
+                ],
+                name="unique_career_interest",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    relevance_weight__gte=1,
+                    relevance_weight__lte=5,
+                ),
+                name="valid_career_interest_relevance",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    review_status__in=[
+                        "pending",
+                        "approved",
+                        "rejected",
+                    ],
+                ),
+                name="valid_career_interest_review_status",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    source_type__in=[
+                        "gradnavi_review",
+                        "external_evidence",
+                    ],
+                ),
+                name="valid_career_interest_source_type",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.career.name} - "
+            f"{self.interest.name} "
+            f"({self.relevance_weight})"
+        )
+
+
+class CareerRIASECProfile(models.Model):
+    """
+    Normalized O*NET-style RIASEC evidence for one Career.
+
+    Scores use GradNavi's normalized 0 to 100 scale.
+
+    Source-native evidence stays linked through
+    ReferenceDataset and external reference snapshots.
+    """
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name="riasec_profiles",
+    )
+
+    dataset = models.ForeignKey(
+        ReferenceDataset,
+        on_delete=models.PROTECT,
+        related_name="career_riasec_profiles",
+    )
+
+    realistic_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    investigative_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    artistic_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    social_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    enterprising_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    conventional_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    review_status = models.CharField(
+        max_length=20,
+        choices=ReviewStatus.choices,
+        default=ReviewStatus.PENDING,
+    )
+
+    source_reference = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "career",
+                    "dataset",
+                ],
+                name="unique_career_riasec_dataset",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    realistic_score__gte=0,
+                    realistic_score__lte=100,
+                ),
+                name="valid_riasec_realistic_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    investigative_score__gte=0,
+                    investigative_score__lte=100,
+                ),
+                name="valid_riasec_investigative_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    artistic_score__gte=0,
+                    artistic_score__lte=100,
+                ),
+                name="valid_riasec_artistic_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    social_score__gte=0,
+                    social_score__lte=100,
+                ),
+                name="valid_riasec_social_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    enterprising_score__gte=0,
+                    enterprising_score__lte=100,
+                ),
+                name="valid_riasec_enterprising_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    conventional_score__gte=0,
+                    conventional_score__lte=100,
+                ),
+                name="valid_riasec_conventional_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    review_status__in=[
+                        "pending",
+                        "approved",
+                        "rejected",
+                    ],
+                ),
+                name="valid_career_riasec_review_status",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.career.name} RIASEC "
+            f"({self.dataset})"
+        )
 
 
 class CareerExternalMapping(models.Model):
@@ -692,6 +934,23 @@ class CareerSkillEvidence(models.Model):
         null=True,
     )
 
+    hot_technology = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
+    in_demand = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
+    in_demand_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
+
     source_updated_at = models.DateTimeField(
         blank=True,
         null=True,
@@ -762,6 +1021,29 @@ class CareerSkillEvidence(models.Model):
                     )
                 ),
                 name="valid_evidence_level_scale_range",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        in_demand_percentage__isnull=True,
+                    )
+                    | models.Q(
+                        in_demand_percentage__gte=0,
+                        in_demand_percentage__lte=100,
+                    )
+                ),
+                name="valid_evidence_in_demand_percentage",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        in_demand_percentage__isnull=True,
+                    )
+                    | models.Q(
+                        in_demand=True,
+                    )
+                ),
+                name="evidence_percentage_requires_in_demand",
             ),
             models.UniqueConstraint(
                 fields=[
@@ -908,4 +1190,138 @@ class LearningResourceSkill(models.Model):
         return (
             f"{self.learning_resource.title} - "
             f"{self.skill.name}"
+        )
+
+
+class RecommendationSnapshot(models.Model):
+    """
+    Stores the latest valid Career Recommendation result
+    for one Student Profile.
+
+    The snapshot contains no raw Student Profile payload.
+    Profile state is represented by a SHA-256 fingerprint.
+
+    A cached result stays valid only when:
+
+    - the Student recommendation inputs are unchanged,
+    - the Career reference evidence is unchanged,
+    - the scoring version is unchanged.
+    """
+
+    student_profile = models.OneToOneField(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="recommendation_snapshot",
+    )
+
+    profile_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    reference_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    scoring_version = models.CharField(
+        max_length=50,
+    )
+
+    payload = models.JSONField()
+
+    embedding_model = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    prompt_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    total_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    career_count = models.PositiveIntegerField(
+        default=0,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    def __str__(self):
+        return (
+            "Career Recommendation snapshot for "
+            f"Student Profile {self.student_profile_id}"
+        )
+
+
+class SkillGapSummarySnapshot(models.Model):
+    """
+    Stores the latest valid AI Gap Summary for one
+    Student Profile and selected Career.
+
+    The cache key fingerprints the deterministic
+    readiness state and controlled learning-resource state.
+
+    No raw Student Profile payload is stored.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="skill_gap_summary_snapshots",
+    )
+
+    career = models.ForeignKey(
+        "Career",
+        on_delete=models.CASCADE,
+        related_name="skill_gap_summary_snapshots",
+    )
+
+    cache_key = models.CharField(
+        max_length=64,
+    )
+
+    summary_version = models.CharField(
+        max_length=50,
+    )
+
+    model = models.CharField(
+        max_length=100,
+    )
+
+    payload = models.JSONField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                name=(
+                    "unique_skill_gap_summary_"
+                    "snapshot"
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Skill Gap Summary snapshot for "
+            f"Student Profile {self.student_profile_id} "
+            f"and Career {self.career_id}"
         )
