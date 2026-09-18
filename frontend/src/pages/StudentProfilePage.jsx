@@ -15,7 +15,9 @@ import {
   PROFILE_QUESTIONNAIRE,
 } from '../data/profileQuestionnaire'
 
-import { getStoredUser } from '../services/authService'
+import {
+  getStoredUser,
+} from '../services/authService'
 
 import {
   getStudentProfile,
@@ -23,59 +25,6 @@ import {
 } from '../services/profileService'
 
 import './StudentProfilePage.css'
-
-
-const profileSections = [
-  {
-    key: 'skills',
-    label: 'Skills',
-    target: 'skills',
-    editor: null,
-  },
-  {
-    key: 'interests',
-    label: 'Interests',
-    target: 'career-goals',
-    editor: 'interests',
-  },
-  {
-    key: 'education',
-    label: 'Education',
-    target: 'education',
-    editor: null,
-  },
-  {
-    key: 'experience',
-    label: 'Experience',
-    target: 'experience',
-    editor: null,
-  },
-  {
-    key: 'projects',
-    label: 'Projects',
-    target: 'projects',
-    editor: null,
-  },
-  {
-    key: 'career-goals',
-    label: 'Career Goals',
-    target: 'career-goals',
-    editor: 'career-goals',
-  },
-  {
-    key: 'personality',
-    label: 'Personality',
-    target: 'career-goals',
-    editor: 'personality',
-  },
-]
-
-
-const editorSectionMap = {
-  'career-goals': 'career-goals',
-  interests: 'interests',
-  personality: 'personality',
-}
 
 
 function createEmptyProfile() {
@@ -91,7 +40,9 @@ function createEmptyProfile() {
 }
 
 
-function normalizeProfileResponse(responseData) {
+function normalizeProfileResponse(
+  responseData,
+) {
   const profileData =
     responseData?.data?.profile
 
@@ -101,27 +52,37 @@ function normalizeProfileResponse(responseData) {
 
   return {
     skills:
-      Array.isArray(profileData.skills)
+      Array.isArray(
+        profileData.skills,
+      )
         ? profileData.skills
         : [],
 
     interests:
-      Array.isArray(profileData.interests)
+      Array.isArray(
+        profileData.interests,
+      )
         ? profileData.interests
         : [],
 
     education:
-      Array.isArray(profileData.education)
+      Array.isArray(
+        profileData.education,
+      )
         ? profileData.education
         : [],
 
     experience:
-      Array.isArray(profileData.experience)
+      Array.isArray(
+        profileData.experience,
+      )
         ? profileData.experience
         : [],
 
     projects:
-      Array.isArray(profileData.projects)
+      Array.isArray(
+        profileData.projects,
+      )
         ? profileData.projects
         : [],
 
@@ -134,39 +95,48 @@ function normalizeProfileResponse(responseData) {
 
     personality_responses:
       Array.isArray(
-        profileData.personality_responses,
+        profileData
+          .personality_responses,
       )
-        ? profileData.personality_responses
+        ? profileData
+          .personality_responses
         : [],
   }
 }
 
 
-function buildProfilePayload(profile) {
+function buildProfilePayload(
+  profile,
+) {
   return {
     skills:
-      profile.skills.map((skill) => ({
-        ...(skill.id
-          ? {
-              id: skill.id,
-            }
-          : {
-              name: skill.name,
-            }),
+      profile.skills.map(
+        (skill) => ({
+          ...(skill.id
+            ? {
+                id: skill.id,
+              }
+            : {
+                name:
+                  skill.name,
+              }),
 
-        proficiency_level:
-          skill.proficiency_level,
-      })),
+          proficiency_level:
+            skill.proficiency_level,
+        }),
+      ),
 
     interests:
       profile.interests.map(
         (interest) => ({
           ...(interest.id
             ? {
-                id: interest.id,
+                id:
+                  interest.id,
               }
             : {
-                name: interest.name,
+                name:
+                  interest.name,
               }),
         }),
       ),
@@ -176,27 +146,33 @@ function buildProfilePayload(profile) {
         (education) => ({
           ...(education.id
             ? {
-                id: education.id,
+                id:
+                  education.id,
               }
             : {}),
 
           institution_name:
-            education.institution_name,
+            education
+              .institution_name,
 
           qualification:
-            education.qualification,
+            education
+              .qualification,
 
           field_of_study:
-            education.field_of_study,
+            education
+              .field_of_study,
 
           start_date:
             education.start_date,
 
           end_date:
-            education.end_date || null,
+            education.end_date
+            || null,
 
           description:
-            education.description || '',
+            education.description
+            || '',
         }),
       ),
 
@@ -205,7 +181,8 @@ function buildProfilePayload(profile) {
         (experience) => ({
           ...(experience.id
             ? {
-                id: experience.id,
+                id:
+                  experience.id,
               }
             : {}),
 
@@ -221,7 +198,8 @@ function buildProfilePayload(profile) {
           end_date:
             experience.is_current
               ? null
-              : experience.end_date || null,
+              : experience.end_date
+                || null,
 
           is_current:
             Boolean(
@@ -229,7 +207,8 @@ function buildProfilePayload(profile) {
             ),
 
           description:
-            experience.description || '',
+            experience.description
+            || '',
         }),
       ),
 
@@ -238,7 +217,8 @@ function buildProfilePayload(profile) {
         (project) => ({
           ...(project.id
             ? {
-                id: project.id,
+                id:
+                  project.id,
               }
             : {}),
 
@@ -246,16 +226,19 @@ function buildProfilePayload(profile) {
             project.name,
 
           description:
-            project.description || '',
+            project.description
+            || '',
 
           project_url:
-            project.project_url || '',
+            project.project_url
+            || '',
 
           start_date:
             project.start_date,
 
           end_date:
-            project.end_date || null,
+            project.end_date
+            || null,
         }),
       ),
 
@@ -264,22 +247,26 @@ function buildProfilePayload(profile) {
         (careerGoal) => ({
           ...(careerGoal.id
             ? {
-                id: careerGoal.id,
+                id:
+                  careerGoal.id,
               }
             : {}),
 
           ...(careerGoal.career_id
             ? {
                 career_id:
-                  careerGoal.career_id,
+                  careerGoal
+                    .career_id,
               }
             : {
                 target_role:
-                  careerGoal.target_role,
+                  careerGoal
+                    .target_role,
               }),
 
           description:
-            careerGoal.description || '',
+            careerGoal.description
+            || '',
 
           is_primary:
             Boolean(
@@ -289,39 +276,60 @@ function buildProfilePayload(profile) {
       ),
 
     personality_responses:
-      profile.personality_responses.map(
-        (personalityResponse) => ({
-          ...(personalityResponse.id
-            ? {
-                id:
-                  personalityResponse.id,
-              }
-            : {}),
+      profile
+        .personality_responses
+        .map(
+          (
+            personalityResponse,
+          ) => ({
+            ...(personalityResponse.id
+              ? {
+                  id:
+                    personalityResponse
+                      .id,
+                }
+              : {}),
 
-          question_key:
-            personalityResponse.question_key,
+            question_key:
+              personalityResponse
+                .question_key,
 
-          response_value:
-            personalityResponse.response_value,
-        }),
-      ),
+            response_value:
+              personalityResponse
+                .response_value,
+          }),
+        ),
   }
 }
 
 
-function getFirstErrorMessage(value) {
+function getFirstErrorMessage(
+  value,
+) {
   if (!value) {
     return ''
   }
 
-  if (typeof value === 'string') {
+  if (
+    typeof value
+    === 'string'
+  ) {
     return value
   }
 
-  if (Array.isArray(value)) {
-    for (const item of value) {
+  if (
+    Array.isArray(
+      value,
+    )
+  ) {
+    for (
+      const item
+      of value
+    ) {
       const message =
-        getFirstErrorMessage(item)
+        getFirstErrorMessage(
+          item,
+        )
 
       if (message) {
         return message
@@ -331,10 +339,15 @@ function getFirstErrorMessage(value) {
     return ''
   }
 
-  if (typeof value === 'object') {
+  if (
+    typeof value
+    === 'object'
+  ) {
     for (
       const nestedValue
-      of Object.values(value)
+      of Object.values(
+        value,
+      )
     ) {
       const message =
         getFirstErrorMessage(
@@ -356,13 +369,78 @@ function getRequestErrorMessage(
   fallbackMessage,
 ) {
   const details =
-    requestError?.data?.error?.details
+    requestError
+      ?.data
+      ?.error
+      ?.details
 
   return (
-    getFirstErrorMessage(details) ||
-    requestError?.message ||
-    fallbackMessage
+    getFirstErrorMessage(
+      details,
+    )
+    || requestError?.message
+    || fallbackMessage
   )
+}
+
+
+function getStructuredSummary(
+  items,
+  type,
+) {
+  if (
+    !Array.isArray(items)
+    || items.length === 0
+  ) {
+    return 'No records added yet'
+  }
+
+  const first =
+    items[0]
+
+  let summary = ''
+
+  if (
+    type === 'education'
+  ) {
+    summary = [
+      first.qualification,
+      first.institution_name,
+    ]
+      .filter(Boolean)
+      .join(' · ')
+  }
+
+  if (
+    type === 'experience'
+  ) {
+    summary = [
+      first.job_title,
+      first.company,
+    ]
+      .filter(Boolean)
+      .join(' · ')
+  }
+
+  if (
+    type === 'projects'
+  ) {
+    summary =
+      first.name
+      || 'Project evidence'
+  }
+
+  if (
+    items.length > 1
+  ) {
+    return (
+      `${summary} +${
+        items.length - 1
+      } more`
+    )
+  }
+
+  return summary
 }
 
 
@@ -405,55 +483,68 @@ function StudentProfilePage() {
   ] = useState('')
 
   const [
-    activeProfileEditor,
-    setActiveProfileEditor,
+    activeEditor,
+    setActiveEditor,
   ] = useState(null)
 
-  const [
-    activeProfileSection,
-    setActiveProfileSection,
-  ] = useState('skills')
 
   const currentUser =
     getStoredUser()
 
   const accountName =
-    currentUser?.first_name?.trim() ||
-    'Student'
+    currentUser
+      ?.first_name
+      ?.trim()
+    || 'Student'
 
   const accountInitial =
     accountName
       .charAt(0)
       .toUpperCase()
 
+
   const primaryCareerGoalRecord =
     profile.career_goals.find(
       (careerGoal) =>
         careerGoal.is_primary,
-    ) ||
-    profile.career_goals[0]
+    )
+    || profile.career_goals[0]
+    || null
 
 
   const primaryCareerGoal =
     primaryCareerGoalRecord
-      ?.target_role ||
-    'No target role'
+      ?.target_role
+    || 'Not set'
+
 
   const answeredPersonalityCount =
     PROFILE_QUESTIONNAIRE.filter(
       (question) =>
-        profile.personality_responses.some(
-          (response) =>
-            response.question_key ===
-              question.key &&
-            Boolean(
-              response.response_value,
-            ),
-        ),
+        profile
+          .personality_responses
+          .some(
+            (response) =>
+              response
+                .question_key
+              === question.key
+              && Boolean(
+                response
+                  .response_value,
+              ),
+          ),
     ).length
 
 
+  const structuredEvidenceCount =
+    profile.education.length
+    + profile.experience.length
+    + profile.projects.length
+
+
   useEffect(() => {
+    let isActive = true
+
     async function loadProfile() {
       try {
         setIsLoading(true)
@@ -462,16 +553,30 @@ function StudentProfilePage() {
         const responseData =
           await getStudentProfile()
 
+        if (!isActive) {
+          return
+        }
+
         const loadedProfile =
           normalizeProfileResponse(
             responseData,
           )
 
-        setProfile(loadedProfile)
+        setProfile(
+          loadedProfile,
+        )
+
         setIsDirty(false)
-      } catch (requestError) {
+      } catch (
+        requestError
+      ) {
+        if (!isActive) {
+          return
+        }
+
         if (
-          requestError.status === 404
+          requestError.status
+          === 404
         ) {
           setLoadError(
             'Student profile not found for this account.',
@@ -480,98 +585,26 @@ function StudentProfilePage() {
           setLoadError(
             getRequestErrorMessage(
               requestError,
-              'Unable to load the Student Profile.',
+              (
+                'Unable to load '
+                + 'the Student Profile.'
+              ),
             ),
           )
         }
       } finally {
-        setIsLoading(false)
+        if (isActive) {
+          setIsLoading(false)
+        }
       }
     }
-
 
     loadProfile()
-  }, [])
-
-
-  useEffect(() => {
-    const trackedSections = [
-      'skills',
-      'education',
-      'experience',
-      'projects',
-      'career-goals',
-    ]
-
-
-    function updateActiveSection() {
-      let nextSection = 'skills'
-
-      for (
-        const sectionId
-        of trackedSections
-      ) {
-        const element =
-          document.getElementById(
-            sectionId,
-          )
-
-        if (!element) {
-          continue
-        }
-
-        const sectionTop =
-          element
-            .getBoundingClientRect()
-            .top
-
-        if (sectionTop <= 180) {
-          nextSection =
-            sectionId
-        }
-      }
-
-
-      if (
-        nextSection ===
-          'career-goals' &&
-        activeProfileEditor
-      ) {
-        nextSection =
-          editorSectionMap[
-            activeProfileEditor
-          ] || 'career-goals'
-      }
-
-
-      setActiveProfileSection(
-        (currentSection) =>
-          currentSection ===
-          nextSection
-            ? currentSection
-            : nextSection,
-      )
-    }
-
-
-    window.addEventListener(
-      'scroll',
-      updateActiveSection,
-      {
-        passive: true,
-      },
-    )
-
-    updateActiveSection()
-
 
     return () => {
-      window.removeEventListener(
-        'scroll',
-        updateActiveSection,
-      )
+      isActive = false
     }
-  }, [activeProfileEditor])
+  }, [])
 
 
   function handleSectionChange(
@@ -579,7 +612,9 @@ function StudentProfilePage() {
     nextItems,
   ) {
     setProfile(
-      (currentProfile) => ({
+      (
+        currentProfile,
+      ) => ({
         ...currentProfile,
 
         [sectionName]:
@@ -593,75 +628,48 @@ function StudentProfilePage() {
   }
 
 
-  function scrollToProfileSection(
+  function scrollToSection(
+    sectionId,
+  ) {
+    window
+      .requestAnimationFrame(
+        () => {
+          document
+            .getElementById(
+              sectionId,
+            )
+            ?.scrollIntoView(
+              {
+                behavior:
+                  'smooth',
+
+                block:
+                  'start',
+              },
+            )
+        },
+      )
+  }
+
+
+  function openEditor(
+    editorName,
     targetId,
   ) {
-    const targetElement =
-      document.getElementById(
+    setActiveEditor(
+      editorName,
+    )
+
+    if (targetId) {
+      scrollToSection(
         targetId,
       )
-
-    if (!targetElement) {
-      return
     }
-
-    targetElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
   }
 
 
-  function handleProfileSectionNavigation(
-    section,
-  ) {
-    setActiveProfileSection(
-      section.key,
-    )
-
-    setActiveProfileEditor(
-      section.editor,
-    )
-
-    window.requestAnimationFrame(
-      () => {
-        scrollToProfileSection(
-          section.target,
-        )
-      },
-    )
-  }
-
-
-  function toggleProfileEditor(
-    editorName,
-  ) {
-    const nextEditor =
-      activeProfileEditor ===
-      editorName
-        ? null
-        : editorName
-
-    setActiveProfileEditor(
-      nextEditor,
-    )
-
-    setActiveProfileSection(
-      nextEditor
-        ? editorSectionMap[
-            nextEditor
-          ]
-        : 'career-goals',
-    )
-  }
-
-
-  function closeProfileEditor() {
-    setActiveProfileEditor(null)
-
-    setActiveProfileSection(
-      'career-goals',
-    )
+  function closeEditor() {
+    setActiveEditor(null)
   }
 
 
@@ -686,33 +694,310 @@ function StudentProfilePage() {
           responseData,
         )
 
-      setProfile(savedProfile)
+      setProfile(
+        savedProfile,
+      )
+
       setIsDirty(false)
 
       setSaveMessage(
         'Profile saved successfully.',
       )
-    } catch (requestError) {
+
+      return true
+    } catch (
+      requestError
+    ) {
       setSaveError(
         getRequestErrorMessage(
           requestError,
-          'Unable to save the Student Profile.',
+          (
+            'Unable to save '
+            + 'the Student Profile.'
+          ),
         ),
       )
+
+      return false
     } finally {
       setIsSaving(false)
     }
   }
 
 
+  function renderProfileEvidenceEditor() {
+    if (
+      activeEditor === 'skills'
+    ) {
+      return (
+        <div
+          id="profile-evidence-editor"
+          className="student-profile-redesign__editor"
+        >
+          <div className="student-profile-redesign__editor-heading">
+            <div>
+              <h3>
+                Edit Skills
+              </h3>
+
+              <p>
+                Search approved GradNavi
+                Skills and record your
+                proficiency.
+              </p>
+            </div>
+
+            <button
+              className="student-profile-redesign__secondary-button"
+              type="button"
+              onClick={closeEditor}
+            >
+              Close
+            </button>
+          </div>
+
+          <SkillsSection
+            items={
+              profile.skills
+            }
+            onChange={(
+              nextItems,
+            ) =>
+              handleSectionChange(
+                'skills',
+                nextItems,
+              )
+            }
+          />
+        </div>
+      )
+    }
+
+
+    if (
+      activeEditor
+      === 'career-goals'
+    ) {
+      return (
+        <div
+          id="profile-evidence-editor"
+          className="student-profile-redesign__editor"
+        >
+          <CareerGoalsSection
+            items={
+              profile
+                .career_goals
+            }
+            onChange={(
+              nextItems,
+            ) =>
+              handleSectionChange(
+                'career_goals',
+                nextItems,
+              )
+            }
+            onClose={
+              closeEditor
+            }
+          />
+        </div>
+      )
+    }
+
+
+    if (
+      activeEditor
+      === 'interests'
+    ) {
+      return (
+        <div
+          id="profile-evidence-editor"
+          className="student-profile-redesign__editor"
+        >
+          <InterestsSection
+            items={
+              profile.interests
+            }
+            onChange={(
+              nextItems,
+            ) =>
+              handleSectionChange(
+                'interests',
+                nextItems,
+              )
+            }
+            onClose={
+              closeEditor
+            }
+          />
+        </div>
+      )
+    }
+
+
+    return null
+  }
+
+
+  function renderStructuredEditor() {
+    if (
+      activeEditor
+      === 'education'
+    ) {
+      return (
+        <div
+          id="structured-evidence-editor"
+          className="student-profile-redesign__editor"
+        >
+          <div className="student-profile-redesign__editor-heading">
+            <div>
+              <h3>
+                Education Evidence
+              </h3>
+
+              <p>
+                Add or edit your
+                qualifications and
+                study history.
+              </p>
+            </div>
+
+            <button
+              className="student-profile-redesign__secondary-button"
+              type="button"
+              onClick={closeEditor}
+            >
+              Close
+            </button>
+          </div>
+
+          <EducationSection
+            items={
+              profile.education
+            }
+            onChange={(
+              nextItems,
+            ) =>
+              handleSectionChange(
+                'education',
+                nextItems,
+              )
+            }
+          />
+        </div>
+      )
+    }
+
+
+    if (
+      activeEditor
+      === 'experience'
+    ) {
+      return (
+        <div
+          id="structured-evidence-editor"
+          className="student-profile-redesign__editor"
+        >
+          <div className="student-profile-redesign__editor-heading">
+            <div>
+              <h3>
+                Experience Evidence
+              </h3>
+
+              <p>
+                Add or edit employment
+                and professional
+                experience.
+              </p>
+            </div>
+
+            <button
+              className="student-profile-redesign__secondary-button"
+              type="button"
+              onClick={closeEditor}
+            >
+              Close
+            </button>
+          </div>
+
+          <ExperienceSection
+            items={
+              profile.experience
+            }
+            onChange={(
+              nextItems,
+            ) =>
+              handleSectionChange(
+                'experience',
+                nextItems,
+              )
+            }
+          />
+        </div>
+      )
+    }
+
+
+    if (
+      activeEditor
+      === 'projects'
+    ) {
+      return (
+        <div
+          id="structured-evidence-editor"
+          className="student-profile-redesign__editor"
+        >
+          <div className="student-profile-redesign__editor-heading">
+            <div>
+              <h3>
+                Project Evidence
+              </h3>
+
+              <p>
+                Add or edit portfolio
+                and project evidence.
+              </p>
+            </div>
+
+            <button
+              className="student-profile-redesign__secondary-button"
+              type="button"
+              onClick={closeEditor}
+            >
+              Close
+            </button>
+          </div>
+
+          <ProjectSection
+            items={
+              profile.projects
+            }
+            onChange={(
+              nextItems,
+            ) =>
+              handleSectionChange(
+                'projects',
+                nextItems,
+              )
+            }
+          />
+        </div>
+      )
+    }
+
+
+    return null
+  }
+
+
   if (isLoading) {
     return (
-      <main className="student-profile-page">
-        <div className="profile-state-card">
-          <p>
+      <main className="student-profile-page student-profile-redesign">
+        <section className="student-profile-redesign__state">
+          <span>
             Loading Student Profile...
-          </p>
-        </div>
+          </span>
+        </section>
       </main>
     )
   }
@@ -720,8 +1005,8 @@ function StudentProfilePage() {
 
   if (loadError) {
     return (
-      <main className="student-profile-page">
-        <header className="student-profile-heading">
+      <main className="student-profile-page student-profile-redesign">
+        <header className="student-profile-redesign__heading">
           <div>
             <h1>
               Student Profile
@@ -729,36 +1014,43 @@ function StudentProfilePage() {
           </div>
         </header>
 
-        <div className="profile-state-card">
+        <section className="student-profile-redesign__state">
+          <strong>
+            Profile unavailable
+          </strong>
+
           <p role="alert">
             {loadError}
           </p>
-        </div>
+        </section>
       </main>
     )
   }
 
 
   return (
-    <main className="student-profile-page">
-      <header className="student-profile-heading">
-        <div className="student-profile-heading__copy">
+    <main className="student-profile-page student-profile-redesign">
+      <header className="student-profile-redesign__heading">
+        <div className="student-profile-redesign__heading-copy">
           <h1>
             Student Profile
           </h1>
 
           <p>
-            Manage information GradNavi uses
-            for recommendations, readiness
-            analysis, and AI-assisted
-            application drafts.
+            Build the evidence GradNavi
+            uses for recommendations,
+            readiness, skill gaps, and
+            AI-assisted application
+            drafts.
           </p>
         </div>
 
         <div
           className="student-profile-account-pill"
           aria-label={
-            `Signed in as ${accountName}`
+            `Signed in as ${
+              accountName
+            }`
           }
         >
           <span
@@ -775,283 +1067,147 @@ function StudentProfilePage() {
       </header>
 
 
-      <nav
-        className="profile-section-navigation"
-        aria-label="Student Profile sections"
-      >
-        <div className="profile-section-navigation__heading">
-          <h2>
-            Profile Sections
-          </h2>
-        </div>
-
-        <div className="profile-section-navigation__scroller">
-          <div className="profile-section-navigation__items">
-            {profileSections.map(
-              (section) => {
-                const isActive =
-                  activeProfileSection ===
-                  section.key
-
-                return (
-                  <button
-                    key={section.key}
-                    className={[
-                      'profile-section-navigation__item',
-                      isActive
-                        ? 'profile-section-navigation__item--active'
-                        : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    type="button"
-                    aria-current={
-                      isActive
-                        ? 'location'
-                        : undefined
-                    }
-                    onClick={() =>
-                      handleProfileSectionNavigation(
-                        section,
-                      )
-                    }
-                  >
-                    {section.label}
-                  </button>
-                )
-              },
-            )}
-          </div>
-        </div>
-      </nav>
-
-
-      <div className="profile-content-stack">
-        <SkillsSection
-          items={profile.skills}
-          onChange={(nextItems) =>
-            handleSectionChange(
-              'skills',
-              nextItems,
-            )
-          }
-        />
-
-
-        <section
-          className="profile-section profile-section--evidence profile-section--standalone-evidence"
-        >
-          <EducationSection
-            items={profile.education}
-            onChange={(nextItems) =>
-              handleSectionChange(
-                'education',
-                nextItems,
-              )
-            }
-          />
-        </section>
-
-
-        <section
-          className="profile-section profile-section--evidence profile-section--standalone-evidence"
-        >
-          <ExperienceSection
-            items={profile.experience}
-            onChange={(nextItems) =>
-              handleSectionChange(
-                'experience',
-                nextItems,
-              )
-            }
-          />
-        </section>
-
-
-        <section
-          className="profile-section profile-section--evidence profile-section--standalone-evidence"
-        >
-          <ProjectSection
-            items={profile.projects}
-            onChange={(nextItems) =>
-              handleSectionChange(
-                'projects',
-                nextItems,
-              )
-            }
-          />
-        </section>
-      </div>
-
-
       <section
-        id="career-goals"
-        className="profile-goals-card"
-        aria-labelledby="profile-goals-heading"
+        id="profile-summary"
+        className="student-profile-redesign__section"
       >
-        <div className="profile-card-heading">
-          <h2 id="profile-goals-heading">
-            Career Goals and Interests
-          </h2>
+        <div className="student-profile-redesign__section-heading">
+          <div>
+            <h2>
+              Profile Evidence Summary
+            </h2>
 
-          <p>
-            Career Goals use active GradNavi
-            Career records. Choose one primary
-            goal for your profile.
-          </p>
-        </div>
+            <p>
+              A factual overview of
+              the evidence currently
+              stored in your profile.
+            </p>
+          </div>
 
-
-        <div className="profile-goals-summary-grid">
           <button
-            className="profile-summary-card"
+            className="student-profile-redesign__primary-button"
             type="button"
-            aria-expanded={
-              activeProfileEditor ===
-              'career-goals'
+            onClick={
+              handleSaveProfile
             }
-            onClick={() =>
-              toggleProfileEditor(
-                'career-goals',
-              )
+            disabled={
+              !isDirty
+              || isSaving
             }
           >
-            <span className="profile-summary-card__label">
-              Career Goals
+            {
+              isSaving
+                ? 'Saving Profile...'
+                : 'Save Profile'
+            }
+          </button>
+        </div>
+
+
+        <div className="student-profile-redesign__summary-grid">
+          <article className="student-profile-redesign__metric-card">
+            <span>
+              Structured evidence
             </span>
 
             <strong>
-              {primaryCareerGoal}
+              {
+                structuredEvidenceCount
+              }
             </strong>
 
-            <span className="profile-summary-card__meta">
+            <small>
               {
-                profile.career_goals
+                structuredEvidenceCount
+                === 1
+                  ? 'saved entry'
+                  : 'saved entries'
+              }
+            </small>
+          </article>
+
+
+          <article className="student-profile-redesign__metric-card">
+            <span>
+              Skills saved
+            </span>
+
+            <strong>
+              {
+                profile.skills.length
+              }
+            </strong>
+
+            <small>
+              approved GradNavi skills
+            </small>
+          </article>
+
+
+          <article className="student-profile-redesign__metric-card">
+            <span>
+              Primary goal
+            </span>
+
+            <strong className="student-profile-redesign__metric-card-value--text">
+              {
+                primaryCareerGoal
+              }
+            </strong>
+
+            <small>
+              {
+                profile
+                  .career_goals
                   .length
-              }{' '}
-              {
-                profile.career_goals
+              } career {
+                profile
+                  .career_goals
                   .length === 1
                   ? 'goal'
                   : 'goals'
-              }{' '}
-              saved
-            </span>
-
-            <span className="profile-summary-card__manage">
-              Manage
-            </span>
-          </button>
+              }
+            </small>
+          </article>
 
 
-          <button
-            className="profile-summary-card"
-            type="button"
-            aria-expanded={
-              activeProfileEditor ===
-              'interests'
-            }
-            onClick={() =>
-              toggleProfileEditor(
-                'interests',
-              )
-            }
-          >
-            <span className="profile-summary-card__label">
-              Interests
-            </span>
-
-            <strong>
-              reference data
-            </strong>
-
-            <span className="profile-summary-card__meta">
-              {
-                profile.interests.length
-              }{' '}
-              linked to profile
-            </span>
-
-            <span className="profile-summary-card__manage">
-              Manage
-            </span>
-          </button>
-
-
-          <button
-            className="profile-summary-card"
-            type="button"
-            aria-expanded={
-              activeProfileEditor ===
-              'personality'
-            }
-            onClick={() =>
-              toggleProfileEditor(
-                'personality',
-              )
-            }
-          >
-            <span className="profile-summary-card__label">
+          <article className="student-profile-redesign__metric-card">
+            <span>
               Personality
             </span>
 
             <strong>
-              responses
-            </strong>
-
-            <span className="profile-summary-card__meta">
               {
                 answeredPersonalityCount
               }
-              {' of '}
+              {' / '}
               {
-                PROFILE_QUESTIONNAIRE.length
+                PROFILE_QUESTIONNAIRE
+                  .length
               }
-              {' answered'}
-            </span>
+            </strong>
 
-            <span className="profile-summary-card__manage">
-              Manage
-            </span>
-          </button>
-
-
-          <div className="profile-goals-save-column">
-            <button
-              className="profile-save-button"
-              type="button"
-              onClick={
-                handleSaveProfile
-              }
-              disabled={
-                !isDirty ||
-                isSaving
-              }
-            >
-              {
-                isSaving
-                  ? 'Saving Profile...'
-                  : 'Save Profile'
-              }
-            </button>
-          </div>
+            <small>
+              responses completed
+            </small>
+          </article>
         </div>
 
 
         <div
-          className="profile-save-status"
+          className="student-profile-redesign__save-state"
           aria-live="polite"
         >
           {isDirty && (
-            <p className="profile-unsaved-message">
-              You have unsaved profile
-              changes.
+            <p className="student-profile-redesign__unsaved">
+              You have unsaved
+              profile changes.
             </p>
           )}
 
           {saveError && (
             <p
-              className="profile-error-message"
+              className="student-profile-redesign__error"
               role="alert"
             >
               {saveError}
@@ -1059,79 +1215,572 @@ function StudentProfilePage() {
           )}
 
           {saveMessage && (
-            <p className="profile-success-message">
+            <p className="student-profile-redesign__success">
               {saveMessage}
             </p>
           )}
         </div>
+      </section>
 
 
-        {activeProfileEditor && (
-          <div className="profile-goals-editor">
-            {
-              activeProfileEditor ===
-                'career-goals' && (
-                <CareerGoalsSection
-                  items={
-                    profile.career_goals
-                  }
-                  onChange={(nextItems) =>
-                    handleSectionChange(
-                      'career_goals',
-                      nextItems,
-                    )
-                  }
-                  onClose={
-                    closeProfileEditor
-                  }
-                />
-              )
-            }
+      <section className="student-profile-redesign__section">
+        <div className="student-profile-redesign__section-heading">
+          <div>
+            <h2>
+              Profile Evidence
+            </h2>
 
-
-            {
-              activeProfileEditor ===
-                'interests' && (
-                <InterestsSection
-                  items={
-                    profile.interests
-                  }
-                  onChange={(nextItems) =>
-                    handleSectionChange(
-                      'interests',
-                      nextItems,
-                    )
-                  }
-                  onClose={
-                    closeProfileEditor
-                  }
-                />
-              )
-            }
-
-
-            {
-              activeProfileEditor ===
-                'personality' && (
-                <PersonalityResponsesSection
-                  items={
-                    profile
-                      .personality_responses
-                  }
-                  onChange={(nextItems) =>
-                    handleSectionChange(
-                      'personality_responses',
-                      nextItems,
-                    )
-                  }
-                  onClose={
-                    closeProfileEditor
-                  }
-                />
-              )
-            }
+            <p>
+              Add the skills, career
+              direction, and interests
+              that help GradNavi
+              understand your profile.
+            </p>
           </div>
-        )}
+        </div>
+
+
+        <div className="student-profile-redesign__evidence-grid">
+          <article className="student-profile-redesign__evidence-card">
+            <div>
+              <h3>
+                Skills
+              </h3>
+
+              <p>
+                Search approved skills
+                and record proficiency.
+              </p>
+            </div>
+
+            <div className="student-profile-redesign__chips">
+              {
+                profile.skills
+                  .slice(
+                    0,
+                    6,
+                  )
+                  .map(
+                    (skill) => (
+                      <span
+                        key={
+                          skill.id
+                          || skill.name
+                        }
+                        className="student-profile-redesign__chip"
+                      >
+                        {skill.name}
+                      </span>
+                    ),
+                  )
+              }
+
+              {
+                profile.skills
+                  .length === 0
+                && (
+                  <span className="student-profile-redesign__empty">
+                    No skills saved
+                  </span>
+                )
+              }
+
+              {
+                profile.skills
+                  .length > 6
+                && (
+                  <span className="student-profile-redesign__chip student-profile-redesign__chip--neutral">
+                    +{
+                      profile
+                        .skills
+                        .length - 6
+                    } more
+                  </span>
+                )
+              }
+            </div>
+
+            <button
+              className="student-profile-redesign__secondary-button"
+              type="button"
+              onClick={() =>
+                openEditor(
+                  'skills',
+                  'profile-evidence-editor',
+                )
+              }
+            >
+              Edit Skills
+            </button>
+          </article>
+
+
+          <article className="student-profile-redesign__evidence-card">
+            <div>
+              <h3>
+                Career Goals
+              </h3>
+
+              <p>
+                Keep multiple career
+                goals and choose one
+                Primary Goal.
+              </p>
+            </div>
+
+            <div className="student-profile-redesign__chips">
+              {
+                profile
+                  .career_goals
+                  .slice(
+                    0,
+                    5,
+                  )
+                  .map(
+                    (
+                      careerGoal,
+                    ) => (
+                      <span
+                        key={
+                          careerGoal.id
+                          || careerGoal
+                            .career_id
+                          || careerGoal
+                            .target_role
+                        }
+                        className={[
+                          'student-profile-redesign__chip',
+                          careerGoal
+                            .is_primary
+                            ? 'student-profile-redesign__chip--primary'
+                            : '',
+                        ]
+                          .filter(
+                            Boolean,
+                          )
+                          .join(' ')}
+                      >
+                        {
+                          careerGoal
+                            .target_role
+                        }
+
+                        {
+                          careerGoal
+                            .is_primary
+                          ? ' · Primary'
+                          : ''
+                        }
+                      </span>
+                    ),
+                  )
+              }
+
+              {
+                profile
+                  .career_goals
+                  .length === 0
+                && (
+                  <span className="student-profile-redesign__empty">
+                    No Career Goals saved
+                  </span>
+                )
+              }
+
+              {
+                profile
+                  .career_goals
+                  .length > 5
+                && (
+                  <span className="student-profile-redesign__chip student-profile-redesign__chip--neutral">
+                    +{
+                      profile
+                        .career_goals
+                        .length - 5
+                    } more
+                  </span>
+                )
+              }
+            </div>
+
+            <button
+              className="student-profile-redesign__secondary-button"
+              type="button"
+              onClick={() =>
+                openEditor(
+                  'career-goals',
+                  'profile-evidence-editor',
+                )
+              }
+            >
+              Edit Career Goals
+            </button>
+          </article>
+
+
+          <article className="student-profile-redesign__evidence-card">
+            <div>
+              <h3>
+                Interests
+              </h3>
+
+              <p>
+                Save interests linked
+                to your career
+                preferences.
+              </p>
+            </div>
+
+            <div className="student-profile-redesign__chips">
+              {
+                profile
+                  .interests
+                  .slice(
+                    0,
+                    6,
+                  )
+                  .map(
+                    (
+                      interest,
+                    ) => (
+                      <span
+                        key={
+                          interest.id
+                          || interest.name
+                        }
+                        className="student-profile-redesign__chip"
+                      >
+                        {
+                          interest.name
+                        }
+                      </span>
+                    ),
+                  )
+              }
+
+              {
+                profile
+                  .interests
+                  .length === 0
+                && (
+                  <span className="student-profile-redesign__empty">
+                    No interests saved
+                  </span>
+                )
+              }
+
+              {
+                profile
+                  .interests
+                  .length > 6
+                && (
+                  <span className="student-profile-redesign__chip student-profile-redesign__chip--neutral">
+                    +{
+                      profile
+                        .interests
+                        .length - 6
+                    } more
+                  </span>
+                )
+              }
+            </div>
+
+            <button
+              className="student-profile-redesign__secondary-button"
+              type="button"
+              onClick={() =>
+                openEditor(
+                  'interests',
+                  'profile-evidence-editor',
+                )
+              }
+            >
+              Edit Interests
+            </button>
+          </article>
+        </div>
+
+
+        {
+          [
+            'skills',
+            'career-goals',
+            'interests',
+          ].includes(
+            activeEditor,
+          )
+          && renderProfileEvidenceEditor()
+        }
+      </section>
+
+
+      <section className="student-profile-redesign__section">
+        <div className="student-profile-redesign__section-heading">
+          <div>
+            <h2>
+              Structured Evidence
+            </h2>
+
+            <p>
+              Education, professional
+              experience, and projects
+              provide stronger context
+              for recommendations and
+              readiness analysis.
+            </p>
+          </div>
+        </div>
+
+
+        <div className="student-profile-redesign__structured-list">
+          <article className="student-profile-redesign__structured-row">
+            <div className="student-profile-redesign__structured-main">
+              <span className="student-profile-redesign__structured-icon">
+                E
+              </span>
+
+              <div>
+                <h3>
+                  Education
+                </h3>
+
+                <p>
+                  {
+                    getStructuredSummary(
+                      profile.education,
+                      'education',
+                    )
+                  }
+                </p>
+              </div>
+            </div>
+
+            <div className="student-profile-redesign__structured-actions">
+              <span>
+                {
+                  profile
+                    .education
+                    .length
+                } {
+                  profile
+                    .education
+                    .length === 1
+                    ? 'entry'
+                    : 'entries'
+                }
+              </span>
+
+              <button
+                className="student-profile-redesign__secondary-button"
+                type="button"
+                onClick={() =>
+                  openEditor(
+                    'education',
+                    'structured-evidence-editor',
+                  )
+                }
+              >
+                {
+                  profile
+                    .education
+                    .length > 0
+                    ? 'Edit'
+                    : 'Add'
+                }
+              </button>
+            </div>
+          </article>
+
+
+          <article className="student-profile-redesign__structured-row">
+            <div className="student-profile-redesign__structured-main">
+              <span className="student-profile-redesign__structured-icon">
+                X
+              </span>
+
+              <div>
+                <h3>
+                  Experience
+                </h3>
+
+                <p>
+                  {
+                    getStructuredSummary(
+                      profile.experience,
+                      'experience',
+                    )
+                  }
+                </p>
+              </div>
+            </div>
+
+            <div className="student-profile-redesign__structured-actions">
+              <span>
+                {
+                  profile
+                    .experience
+                    .length
+                } {
+                  profile
+                    .experience
+                    .length === 1
+                    ? 'entry'
+                    : 'entries'
+                }
+              </span>
+
+              <button
+                className="student-profile-redesign__secondary-button"
+                type="button"
+                onClick={() =>
+                  openEditor(
+                    'experience',
+                    'structured-evidence-editor',
+                  )
+                }
+              >
+                {
+                  profile
+                    .experience
+                    .length > 0
+                    ? 'Edit'
+                    : 'Add'
+                }
+              </button>
+            </div>
+          </article>
+
+
+          <article className="student-profile-redesign__structured-row">
+            <div className="student-profile-redesign__structured-main">
+              <span className="student-profile-redesign__structured-icon">
+                P
+              </span>
+
+              <div>
+                <h3>
+                  Projects
+                </h3>
+
+                <p>
+                  {
+                    getStructuredSummary(
+                      profile.projects,
+                      'projects',
+                    )
+                  }
+                </p>
+              </div>
+            </div>
+
+            <div className="student-profile-redesign__structured-actions">
+              <span>
+                {
+                  profile
+                    .projects
+                    .length
+                } {
+                  profile
+                    .projects
+                    .length === 1
+                    ? 'entry'
+                    : 'entries'
+                }
+              </span>
+
+              <button
+                className="student-profile-redesign__secondary-button"
+                type="button"
+                onClick={() =>
+                  openEditor(
+                    'projects',
+                    'structured-evidence-editor',
+                  )
+                }
+              >
+                {
+                  profile
+                    .projects
+                    .length > 0
+                    ? 'Edit'
+                    : 'Add'
+                }
+              </button>
+            </div>
+          </article>
+        </div>
+
+
+        {
+          [
+            'education',
+            'experience',
+            'projects',
+          ].includes(
+            activeEditor,
+          )
+          && renderStructuredEditor()
+        }
+      </section>
+
+
+      <section
+        id="personality-assessment"
+        className="student-profile-redesign__section student-profile-redesign__personality-section"
+      >
+        <div className="student-profile-redesign__section-heading">
+          <div>
+            <h2>
+              Personality Assessment
+            </h2>
+
+            <p>
+              Answer 16 work-style
+              statements one at a time.
+              Your responses support
+              career-analysis features.
+            </p>
+          </div>
+
+          <span className="student-profile-redesign__personality-progress-pill">
+            {
+              answeredPersonalityCount
+            }
+            {' / '}
+            {
+              PROFILE_QUESTIONNAIRE
+                .length
+            }
+            {' answered'}
+          </span>
+        </div>
+
+
+        <PersonalityResponsesSection
+          items={
+            profile
+              .personality_responses
+          }
+          onChange={(
+            nextItems,
+          ) =>
+            handleSectionChange(
+              'personality_responses',
+              nextItems,
+            )
+          }
+          onClose={() =>
+            scrollToSection(
+              'profile-summary',
+            )
+          }
+          onSave={
+            handleSaveProfile
+          }
+          isSaving={
+            isSaving
+          }
+        />
       </section>
     </main>
   )

@@ -1258,3 +1258,70 @@ class RecommendationSnapshot(models.Model):
             "Career Recommendation snapshot for "
             f"Student Profile {self.student_profile_id}"
         )
+
+
+class SkillGapSummarySnapshot(models.Model):
+    """
+    Stores the latest valid AI Gap Summary for one
+    Student Profile and selected Career.
+
+    The cache key fingerprints the deterministic
+    readiness state and controlled learning-resource state.
+
+    No raw Student Profile payload is stored.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="skill_gap_summary_snapshots",
+    )
+
+    career = models.ForeignKey(
+        "Career",
+        on_delete=models.CASCADE,
+        related_name="skill_gap_summary_snapshots",
+    )
+
+    cache_key = models.CharField(
+        max_length=64,
+    )
+
+    summary_version = models.CharField(
+        max_length=50,
+    )
+
+    model = models.CharField(
+        max_length=100,
+    )
+
+    payload = models.JSONField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                name=(
+                    "unique_skill_gap_summary_"
+                    "snapshot"
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Skill Gap Summary snapshot for "
+            f"Student Profile {self.student_profile_id} "
+            f"and Career {self.career_id}"
+        )

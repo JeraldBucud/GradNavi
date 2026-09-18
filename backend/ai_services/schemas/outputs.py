@@ -201,3 +201,39 @@ class InterviewFeedback(AIContractModel):
     is_ai_generated: Literal[True]
 
     requires_user_review: Literal[True]
+
+
+class CareerMatchExplanation(AIContractModel):
+    """
+    Short grounded explanation for one deterministic Career Recommendation.
+
+    AI may explain supplied evidence only.
+
+    It must never replace or modify the deterministic recommendation score,
+    rank, readiness score, or Skill Gap calculations.
+    """
+
+    explanation: str = Field(
+        min_length=1,
+        max_length=600,
+    )
+
+    is_ai_generated: Literal[True]
+
+
+class SkillGapSummaryExplanation(AIContractModel):
+    """
+    Grounded natural-language explanation of an
+    already-calculated Skill Gap Analysis.
+
+    AI does not calculate or alter readiness or gap statuses.
+    """
+
+    readiness_explanation: str = Field(
+        min_length=1,
+        max_length=800,
+    )
+
+    recommended_next_steps: list[str]
+
+    is_ai_generated: Literal[True]

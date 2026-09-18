@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useRef,
   useState,
 } from 'react'
 
@@ -13,45 +14,36 @@ import {
 
 import {
   getCareerRecommendations,
+  getLearningSuggestions,
+  getTopMatchExplanation,
 } from '../services/careerService'
 
 import './CareerGuidancePage.css'
 
 
-const DEFAULT_OTHER_CAREER_COUNT = 5
+const OTHER_CAREER_COUNT = 6
 
-const DEFAULT_EVIDENCE_COUNT = 5
+const TOP_EVIDENCE_COUNT = 2
 
 
-function formatPercentage(value) {
+function formatScore(value) {
   if (
     value === null
     || value === undefined
     || value === ''
   ) {
-    return 'Not available'
+    return '—'
   }
 
   const numericValue = Number(
     value,
   )
 
-  if (
-    !Number.isFinite(
-      numericValue,
-    )
-  ) {
-    return 'Not available'
+  if (!Number.isFinite(numericValue)) {
+    return '—'
   }
 
-  const formattedValue =
-    Number.isInteger(
-      numericValue,
-    )
-      ? numericValue.toFixed(0)
-      : numericValue.toFixed(1)
-
-  return `${formattedValue}%`
+  return `${Math.round(numericValue)}%`
 }
 
 
@@ -67,107 +59,125 @@ function getRequestErrorMessage(
 }
 
 
-function getTopRecommendation(
+function getRankedRecommendations(
   recommendations,
 ) {
-  return (
-    recommendations.find(
-      (recommendation) =>
-        recommendation.rank === 1,
-    )
-    || recommendations[0]
-    || null
-  )
-}
-
-
-function getVisibleEvidence(
-  items,
-  showAll,
-) {
-  if (
-    !Array.isArray(
-      items,
-    )
-  ) {
+  if (!Array.isArray(recommendations)) {
     return []
   }
 
-  if (showAll) {
-    return items
-  }
-
-  return items.slice(
-    0,
-    DEFAULT_EVIDENCE_COUNT,
+  return [
+    ...recommendations,
+  ].sort(
+    (first, second) =>
+      Number(first.rank || 9999)
+      - Number(second.rank || 9999),
   )
 }
 
 
-function EvidenceGroup({
-  title,
-  items,
-  showAll,
-  onToggle,
-  emptyMessage,
-}) {
-  const safeItems =
-    Array.isArray(
-      items,
-    )
-      ? items
-      : []
+function normalizeEvidence(items) {
+  if (!Array.isArray(items)) {
+    return []
+  }
 
-  const visibleItems =
-    getVisibleEvidence(
-      safeItems,
-      showAll,
-    )
+  const seen = new Set()
 
-  return (
-    <div className="career-guidance-evidence-group">
-      <div className="career-guidance-evidence-group__heading">
-        <dt>
-          {title}
-        </dt>
+  return items.reduce(
+    (normalizedItems, item) => {
+      if (typeof item !== 'string') {
+        return normalizedItems
+      }
 
-        <span>
-          {safeItems.length}
-        </span>
-      </div>
+      const value = item.trim()
 
-      <dd>
-        {visibleItems.length > 0 ? (
-          <ul className="career-guidance-evidence-list">
-            {visibleItems.map(
-              (item) => (
-                <li key={item}>
-                  {item}
-                </li>
-              ),
-            )}
-          </ul>
-        ) : (
-          <p className="career-guidance-evidence-empty">
-            {emptyMessage}
-          </p>
-        )}
+      if (!value) {
+        return normalizedItems
+      }
 
-        {safeItems.length >
-          DEFAULT_EVIDENCE_COUNT && (
-          <button
-            className="career-guidance-link-button"
-            type="button"
-            onClick={onToggle}
-          >
-            {showAll
-              ? 'Show top 5'
-              : `View all ${safeItems.length}`}
-          </button>
-        )}
-      </dd>
-    </div>
+      const key = value.toLocaleLowerCase()
+
+      if (seen.has(key)) {
+        return normalizedItems
+      }
+
+      seen.add(key)
+
+      normalizedItems.push(value)
+
+      return normalizedItems
+    },
+    [],
   )
+}
+
+
+function getStrongestEvidence(
+  recommendation,
+) {
+  const competencies =
+    normalizeEvidence(
+      recommendation
+        ?.matched_competencies,
+    )
+
+  const technologies =
+    normalizeEvidence(
+      recommendation
+        ?.matched_technologies,
+    )
+
+  return normalizeEvidence(
+    [
+      ...competencies,
+      ...technologies,
+    ],
+  ).slice(
+    0,
+    TOP_EVIDENCE_COUNT,
+  )
+}
+
+
+function getPriorityGap(
+  recommendation,
+) {
+  const gaps =
+    normalizeEvidence(
+      recommendation
+        ?.missing_competencies,
+    )
+
+  return gaps[0] || null
+}
+
+
+function getMatchExplanation(
+  recommendation,
+) {
+  const explanation =
+    recommendation
+      ?.match_explanation
+
+  if (
+    typeof explanation === 'string'
+    && explanation.trim()
+  ) {
+    return {
+      text: explanation.trim(),
+      available: true,
+    }
+  }
+
+  return {
+    text: (
+      'AI explanation is temporarily unavailable. '
+      + 'The strengths and priority gap below '
+      + 'come from GradNavi\u2019s calculated '
+      + 'recommendation evidence.'
+    ),
+    available: false,
+  }
 }
 
 
@@ -180,6 +190,16 @@ function CareerRecommendationsPage() {
   ] = useState([])
 
   const [
+    recommendationMeta,
+    setRecommendationMeta,
+  ] = useState(null)
+
+  const [
+    readinessByCareer,
+    setReadinessByCareer,
+  ] = useState({})
+
+  const [
     isLoading,
     setIsLoading,
   ] = useState(true)
@@ -190,24 +210,17 @@ function CareerRecommendationsPage() {
   ] = useState('')
 
   const [
-    showAllCareers,
-    setShowAllCareers,
+    showScoringDetails,
+    setShowScoringDetails,
   ] = useState(false)
 
   const [
-    showAllMatchedCompetencies,
-    setShowAllMatchedCompetencies,
-  ] = useState(false)
+    failedExplanationCareerId,
+    setFailedExplanationCareerId,
+  ] = useState(null)
 
-  const [
-    showAllMissingCompetencies,
-    setShowAllMissingCompetencies,
-  ] = useState(false)
-
-  const [
-    showAllMatchedTechnologies,
-    setShowAllMatchedTechnologies,
-  ] = useState(false)
+  const topExplanationRequestRef =
+    useRef(null)
 
 
   const currentUser =
@@ -223,52 +236,184 @@ function CareerRecommendationsPage() {
       .toUpperCase()
 
 
-  const topRecommendation =
-    getTopRecommendation(
+  const rankedRecommendations =
+    getRankedRecommendations(
       recommendations,
     )
 
 
+  const topRecommendation =
+    rankedRecommendations[0] || null
+
+  const topRecommendationId =
+    topRecommendation?.career_id ?? null
+
+
   const otherRecommendations =
-    recommendations.filter(
-      (recommendation) =>
-        recommendation.career_id
-        !== topRecommendation?.career_id,
+    rankedRecommendations.slice(
+      1,
+      1 + OTHER_CAREER_COUNT,
     )
 
 
-  const visibleOtherRecommendations =
-    showAllCareers
-      ? otherRecommendations
-      : otherRecommendations.slice(
-          0,
-          DEFAULT_OTHER_CAREER_COUNT,
-        )
+  const topReadiness =
+    topRecommendation
+      ? (
+        readinessByCareer[
+          topRecommendation.career_id
+        ] ?? null
+      )
+      : null
+
+
+  const strongestEvidence =
+    getStrongestEvidence(
+      topRecommendation,
+    )
+
+
+  const priorityGap =
+    getPriorityGap(
+      topRecommendation,
+    )
+
+
+  const storedMatchExplanation =
+    getMatchExplanation(
+      topRecommendation,
+    )
+
+  const topExplanationFailed =
+    failedExplanationCareerId
+    === topRecommendationId
+
+  const matchExplanation = {
+    ...storedMatchExplanation,
+    loading: Boolean(
+      topRecommendationId
+      && !storedMatchExplanation.available
+      && !topExplanationFailed
+    ),
+    text: (
+      topRecommendationId
+      && !storedMatchExplanation.available
+      && !topExplanationFailed
+    )
+      ? 'Generating AI explanation...'
+      : storedMatchExplanation.text,
+  }
+
+
+  async function loadReadinessForCareers(
+    recommendationItems,
+  ) {
+    const careersToLoad =
+      recommendationItems.slice(
+        0,
+        1 + OTHER_CAREER_COUNT,
+      )
+
+    const readinessResults =
+      await Promise.allSettled(
+        careersToLoad.map(
+          async (recommendation) => {
+            const responseData =
+              await getLearningSuggestions(
+                recommendation.career_id,
+              )
+
+            return {
+              careerId:
+                recommendation.career_id,
+              score:
+                responseData
+                  ?.data
+                  ?.readiness_score
+                ?? null,
+            }
+          },
+        ),
+      )
+
+
+    const readinessMap = {}
+
+
+    readinessResults.forEach(
+      (result) => {
+        if (
+          result.status === 'fulfilled'
+        ) {
+          readinessMap[
+            result.value.careerId
+          ] = result.value.score
+        }
+      },
+    )
+
+
+    return readinessMap
+  }
+
+
+  async function fetchPageData() {
+    const responseData =
+      await getCareerRecommendations()
+
+    const responseRecommendations =
+      responseData
+        ?.data
+        ?.recommendations
+
+    const safeRecommendations =
+      Array.isArray(
+        responseRecommendations,
+      )
+        ? responseRecommendations
+        : []
+
+
+    const readinessMap =
+      await loadReadinessForCareers(
+        getRankedRecommendations(
+          safeRecommendations,
+        ),
+      )
+
+
+    return {
+      recommendations:
+        safeRecommendations,
+      meta:
+        responseData?.data || null,
+      readinessMap,
+    }
+  }
 
 
   useEffect(() => {
     let isActive = true
 
-    async function loadInitialRecommendations() {
+
+    async function loadInitialData() {
       try {
-        const responseData =
-          await getCareerRecommendations()
+        const pageData =
+          await fetchPageData()
 
         if (!isActive) {
           return
         }
 
-        const responseRecommendations =
-          responseData
-            ?.data
-            ?.recommendations
-
         setRecommendations(
-          Array.isArray(
-            responseRecommendations,
-          )
-            ? responseRecommendations
-            : [],
+          pageData.recommendations,
+        )
+
+        setRecommendationMeta(
+          pageData.meta,
+        )
+
+        setReadinessByCareer(
+          pageData.readinessMap,
         )
       } catch (requestError) {
         if (!isActive) {
@@ -283,14 +428,14 @@ function CareerRecommendationsPage() {
         )
       } finally {
         if (isActive) {
-          setIsLoading(
-            false,
-          )
+          setIsLoading(false)
         }
       }
     }
 
-    void loadInitialRecommendations()
+
+    void loadInitialData()
+
 
     return () => {
       isActive = false
@@ -300,28 +445,22 @@ function CareerRecommendationsPage() {
 
   async function retryRecommendations() {
     try {
-      setIsLoading(
-        true,
-      )
+      setIsLoading(true)
+      setLoadError('')
 
-      setLoadError(
-        '',
-      )
-
-      const responseData =
-        await getCareerRecommendations()
-
-      const responseRecommendations =
-        responseData
-          ?.data
-          ?.recommendations
+      const pageData =
+        await fetchPageData()
 
       setRecommendations(
-        Array.isArray(
-          responseRecommendations,
-        )
-          ? responseRecommendations
-          : [],
+        pageData.recommendations,
+      )
+
+      setRecommendationMeta(
+        pageData.meta,
+      )
+
+      setReadinessByCareer(
+        pageData.readinessMap,
       )
     } catch (requestError) {
       setLoadError(
@@ -331,477 +470,480 @@ function CareerRecommendationsPage() {
         ),
       )
     } finally {
-      setIsLoading(
-        false,
-      )
+      setIsLoading(false)
     }
   }
+
+
+  useEffect(() => {
+    if (
+      !topRecommendationId
+      || storedMatchExplanation.available
+      || topExplanationFailed
+      || (
+        topExplanationRequestRef.current
+        === topRecommendationId
+      )
+    ) {
+      return undefined
+    }
+
+    topExplanationRequestRef.current =
+      topRecommendationId
+
+    let isActive = true
+
+    async function loadTopMatchExplanation() {
+      try {
+        const responseData =
+          await getTopMatchExplanation()
+
+        const explanationData =
+          responseData?.data
+
+        const explanation =
+          explanationData
+            ?.match_explanation
+
+        if (!isActive) {
+          return
+        }
+
+        if (
+          explanationData?.career_id
+            !== topRecommendationId
+          || typeof explanation !== 'string'
+          || !explanation.trim()
+        ) {
+          setFailedExplanationCareerId(
+            topRecommendationId,
+          )
+
+          return
+        }
+
+        setRecommendations(
+          (currentRecommendations) =>
+            currentRecommendations.map(
+              (recommendation) =>
+                recommendation.career_id
+                  === explanationData.career_id
+                  ? {
+                    ...recommendation,
+                    match_explanation:
+                      explanation.trim(),
+                  }
+                  : recommendation,
+            ),
+        )
+      } catch {
+        if (isActive) {
+          setFailedExplanationCareerId(
+            topRecommendationId,
+          )
+        }
+      }
+    }
+
+    loadTopMatchExplanation()
+
+    return () => {
+      isActive = false
+    }
+  }, [
+    storedMatchExplanation.available,
+    topExplanationFailed,
+    topRecommendationId,
+  ])
 
 
   function openSkillGapAnalysis(
     careerId,
   ) {
+    if (!careerId) {
+      return
+    }
+
     navigate(
       `/skill-gap-analysis?career_id=${careerId}`,
     )
   }
 
 
+  function renderWeight(
+    key,
+  ) {
+    const rawWeight =
+      recommendationMeta
+        ?.base_weights
+        ?.[key]
+
+    if (
+      rawWeight === null
+      || rawWeight === undefined
+      || rawWeight === ''
+    ) {
+      return 'Not available'
+    }
+
+    const numericWeight =
+      Number(rawWeight)
+
+    if (!Number.isFinite(numericWeight)) {
+      return String(rawWeight)
+    }
+
+    return `${Math.round(
+      numericWeight * 100,
+    )}%`
+  }
+
+
   if (isLoading) {
     return (
-      <main className="career-guidance-page">
-        <section
-          className="career-guidance-loading-card"
-          aria-live="polite"
-          aria-busy="true"
-        >
-          <div
-            className="career-guidance-loading-spinner"
-            aria-hidden="true"
-          />
+      <main className="career-guidance-page career-recommendations-figma">
+        <div className="career-recommendations-figma__content">
+          <section
+            className="career-guidance-loading-card"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <div
+              className="career-guidance-loading-spinner"
+              aria-hidden="true"
+            />
 
-          <div>
-            <h1>
-              Finding your career matches
-            </h1>
+            <div>
+              <h1>
+                Finding your career matches
+              </h1>
 
-            <p>
-              GradNavi is reviewing your profile
-              and comparing it with career
-              requirements and role information.
-            </p>
-
-            <div className="career-guidance-loading-steps">
-              <span>
-                Reviewing your profile
-              </span>
-
-              <span>
-                Comparing skills and knowledge
-              </span>
-
-              <span>
-                Checking technology match
-              </span>
-
-              <span>
-                Comparing your broader profile
-              </span>
+              <p>
+                GradNavi is reviewing your
+                approved profile evidence,
+                calculating career matches,
+                and loading readiness scores.
+              </p>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </main>
     )
   }
 
 
   return (
-    <main className="career-guidance-page">
-      <header className="career-guidance-heading">
-        <div className="career-guidance-heading__copy">
-          <h1>
-            Career Recommendations
-          </h1>
+    <main className="career-guidance-page career-recommendations-figma">
+      <div className="career-recommendations-figma__content">
+        <header className="career-recommendations-figma__header">
+          <div>
+            <h1>
+              Career Recommendations
+            </h1>
 
-          <p>
-            Explore careers matched to your
-            skills, experience, education,
-            projects, and career goals.
-          </p>
-        </div>
+            <p>
+              Explore career matches calculated
+              from your approved profile evidence.
+            </p>
+          </div>
 
-        <div
-          className="career-guidance-account-pill"
-          aria-label={
-            `Signed in as ${accountName}`
-          }
-        >
-          <span
-            className="career-guidance-account-pill__avatar"
-            aria-hidden="true"
-          >
-            {accountInitial}
-          </span>
-
-          <span>
-            {accountName}
-          </span>
-        </div>
-      </header>
-
-
-      {loadError ? (
-        <section
-          className="career-guidance-state-card"
-          aria-live="polite"
-        >
-          <h2>
-            Recommendations unavailable
-          </h2>
-
-          <p role="alert">
-            {loadError}
-          </p>
-
-          <button
-            className="gn-button gn-button--primary"
-            type="button"
-            onClick={
-              retryRecommendations
+          <div
+            className="career-recommendations-figma__account"
+            aria-label={
+              `Signed in as ${accountName}`
             }
           >
-            Try Again
-          </button>
-        </section>
-      ) : (
-        <>
-          <section className="career-guidance-section">
-            <div className="career-guidance-section__heading">
-              <div>
-                <h2>
-                  How GradNavi Finds Your Career Matches
-                </h2>
+            <span
+              className="career-recommendations-figma__avatar"
+              aria-hidden="true"
+            >
+              {accountInitial}
+            </span>
 
-                <p>
-                  GradNavi compares different parts
-                  of your profile with career
-                  requirements and role information
-                  to identify careers aligned with
-                  your current background.
-                </p>
-              </div>
-            </div>
+            <span>
+              {accountName}
+            </span>
+          </div>
+        </header>
 
-            <div className="career-guidance-model-grid">
-              <article className="career-guidance-model-card">
-                <span>
-                  Skills and Knowledge Match
-                </span>
 
-                <small>
-                  How closely your current skills
-                  and knowledge match the core
-                  requirements of each career.
-                </small>
-              </article>
+        {loadError ? (
+          <section className="career-guidance-state-card">
+            <h2>
+              Recommendations unavailable
+            </h2>
 
-              <article className="career-guidance-model-card">
-                <span>
-                  Technology Match
-                </span>
+            <p role="alert">
+              {loadError}
+            </p>
 
-                <small>
-                  How your technology skills compare
-                  with tools and technologies linked
-                  to each career.
-                </small>
-              </article>
-
-              <article className="career-guidance-model-card">
-                <span>
-                  Profile Alignment
-                </span>
-
-                <small>
-                  How your education, experience,
-                  projects, skills, and goals align
-                  with the career.
-                </small>
-              </article>
-            </div>
+            <button
+              className="gn-button gn-button--primary"
+              type="button"
+              onClick={
+                retryRecommendations
+              }
+            >
+              Try Again
+            </button>
           </section>
-
-
-          {topRecommendation ? (
-            <section className="career-guidance-section">
-              <div className="career-guidance-section__heading">
-                <div>
-                  <h2>
-                    Top Recommendation
-                  </h2>
-
-                  <p>
-                    The career currently most
-                    aligned with your profile.
-                  </p>
-                </div>
-              </div>
-
-              <div className="career-guidance-top-recommendation">
-                <div className="career-guidance-top-recommendation__summary">
-                  <div className="career-guidance-top-title">
-                    <span className="gn-badge gn-badge--current">
-                      #{topRecommendation.rank || 1}
-                    </span>
-
-                    <h3>
-                      {
-                        topRecommendation
-                          .career_name
-                      }
-                    </h3>
-                  </div>
-
-                  <article className="career-guidance-final-score-card">
-                    <span>
-                      Career Match
-                    </span>
-
-                    <strong>
-                      {formatPercentage(
-                        topRecommendation
-                          .recommendation_score,
-                      )}
-                    </strong>
-
-                    <small>
-                      Overall alignment with
-                      your profile
-                    </small>
-                  </article>
-
-                  <div className="career-guidance-component-grid">
-                    <article className="career-guidance-component-card">
-                      <span>
-                        Skills and Knowledge
-                      </span>
-
-                      <strong>
-                        {formatPercentage(
-                          topRecommendation
-                            .competency_score,
-                        )}
-                      </strong>
-
-                      <small>
-                        Based on core career
-                        requirements
-                      </small>
-                    </article>
-
-                    <article className="career-guidance-component-card">
-                      <span>
-                        Technology Match
-                      </span>
-
-                      <strong>
-                        {formatPercentage(
-                          topRecommendation
-                            .technology_score,
-                        )}
-                      </strong>
-
-                      <small>
-                        {topRecommendation
-                          .technology_active
-                          ? (
-                            'Technology evidence available'
-                          )
-                          : (
-                            'Limited technology evidence'
-                          )}
-                      </small>
-                    </article>
-
-                    <article className="career-guidance-component-card">
-                      <span>
-                        Profile Alignment
-                      </span>
-
-                      <strong>
-                        {formatPercentage(
-                          topRecommendation
-                            .semantic_alignment_score,
-                        )}
-                      </strong>
-
-                      <small>
-                        Based on your broader
-                        profile
-                      </small>
-                    </article>
-                  </div>
-                </div>
-
-
-                <article className="career-guidance-evidence-card">
-                  <h3>
-                    Why This Career Fits Your Profile
-                  </h3>
-
-                  <dl>
-                    <EvidenceGroup
-                      title={
-                        'Skills and Knowledge You Already Match'
-                      }
-                      items={
-                        topRecommendation
-                          .matched_competencies
-                      }
-                      showAll={
-                        showAllMatchedCompetencies
-                      }
-                      onToggle={() =>
-                        setShowAllMatchedCompetencies(
-                          (current) =>
-                            !current,
-                        )
-                      }
-                      emptyMessage={
-                        'No matching core skills identified yet.'
-                      }
-                    />
-
-                    <EvidenceGroup
-                      title={
-                        'Skills and Knowledge to Develop'
-                      }
-                      items={
-                        topRecommendation
-                          .missing_competencies
-                      }
-                      showAll={
-                        showAllMissingCompetencies
-                      }
-                      onToggle={() =>
-                        setShowAllMissingCompetencies(
-                          (current) =>
-                            !current,
-                        )
-                      }
-                      emptyMessage={
-                        'No development gaps were identified from the current evidence.'
-                      }
-                    />
-
-                    <EvidenceGroup
-                      title={
-                        'Technologies You Already Match'
-                      }
-                      items={
-                        topRecommendation
-                          .matched_technologies
-                      }
-                      showAll={
-                        showAllMatchedTechnologies
-                      }
-                      onToggle={() =>
-                        setShowAllMatchedTechnologies(
-                          (current) =>
-                            !current,
-                        )
-                      }
-                      emptyMessage={
-                        'No matching technologies identified yet.'
-                      }
-                    />
-                  </dl>
-                </article>
-              </div>
-
-              <div className="career-guidance-actions">
-                <button
-                  className="gn-button gn-button--primary"
-                  type="button"
-                  onClick={() =>
-                    openSkillGapAnalysis(
-                      topRecommendation
-                        .career_id,
-                    )
-                  }
-                >
-                  View Skill Gaps
-                </button>
-
-                <button
-                  className="gn-button gn-button--secondary career-guidance-bordered-button"
-                  type="button"
-                  disabled
-                  title="Available in WBS 5.8."
-                >
-                  View Learning Resources
-                </button>
-
-                <button
-                  className="gn-button gn-button--secondary career-guidance-bordered-button"
-                  type="button"
-                  disabled
-                  title="Available in WBS 5.8."
-                >
-                  View Career Roadmap
-                </button>
-              </div>
-            </section>
-          ) : (
-            <section className="career-guidance-state-card">
+        ) : topRecommendation ? (
+          <>
+            <section className="career-recommendations-figma__model-summary">
               <h2>
-                No career recommendations yet
+                Why these careers match you
               </h2>
 
               <p>
-                Add information to your Student
-                Profile so GradNavi has enough
-                context to identify career matches.
+                GradNavi compares your skills,
+                experience, interests, and goals
+                with each career. AI-assisted
+                matching helps identify strong
+                role fit beyond exact keyword
+                matches.
               </p>
 
-              <button
-                className="gn-button gn-button--primary"
-                type="button"
-                onClick={() =>
-                  navigate('/profile')
-                }
-              >
-                Go to Student Profile
-              </button>
-            </section>
-          )}
+              <div className="career-recommendations-figma__model-summary-footer">
+                <div className="career-recommendations-figma__summary-badges">
+                  <span className="career-recommendations-figma__pill career-recommendations-figma__pill--blue">
+                    Uses your profile
+                  </span>
 
-
-          {visibleOtherRecommendations.length > 0 && (
-            <section className="career-guidance-section">
-              <div className="career-guidance-section__heading career-guidance-section__heading--with-action">
-                <div>
-                  <h2>
-                    Other Career Matches
-                  </h2>
-
-                  <p>
-                    Explore other careers that
-                    align with your profile and
-                    compare where you stand for
-                    each option.
-                  </p>
+                  <span className="career-recommendations-figma__pill career-recommendations-figma__pill--blue">
+                    AI-assisted matching
+                  </span>
                 </div>
 
-                {otherRecommendations.length >
-                  DEFAULT_OTHER_CAREER_COUNT && (
-                  <button
-                    className="gn-button gn-button--secondary career-guidance-bordered-button"
-                    type="button"
-                    onClick={() =>
-                      setShowAllCareers(
-                        (current) =>
-                          !current,
-                      )
-                    }
-                  >
-                    {showAllCareers
-                      ? 'Show top matches'
-                      : (
-                        `View all ${recommendations.length} careers`
-                      )}
-                  </button>
-                )}
+                <button
+                  className="career-recommendations-figma__scoring-link"
+                  type="button"
+                  aria-expanded={
+                    showScoringDetails
+                  }
+                  onClick={() =>
+                    setShowScoringDetails(
+                      (current) => !current,
+                    )
+                  }
+                >
+                  How scoring works
+                  <span aria-hidden="true">
+                    {' '}›
+                  </span>
+                </button>
               </div>
 
-              <div className="career-guidance-career-grid">
-                {visibleOtherRecommendations.map(
+              {showScoringDetails && (
+                <div className="career-recommendations-figma__scoring-details">
+                  <strong>
+                    Current scoring model
+                  </strong>
+
+                  <span>
+                    Skills &amp; Knowledge:{' '}
+                    {renderWeight('competency')}
+                  </span>
+
+                  <span>
+                    Technology:{' '}
+                    {renderWeight('technology')}
+                  </span>
+
+                  <span>
+                    Profile Alignment:{' '}
+                    {renderWeight('semantic')}
+                  </span>
+                </div>
+              )}
+            </section>
+
+
+            <section className="career-recommendations-figma__section">
+              <div className="career-recommendations-figma__section-heading">
+                <h2>
+                  Top Match
+                </h2>
+
+                <p>
+                  The strongest recommendation
+                  comes first, with match evidence
+                  and next action in one place.
+                </p>
+              </div>
+
+              <article className="career-recommendations-figma__top-card">
+                <div className="career-recommendations-figma__top-main">
+                  <span className="career-recommendations-figma__rank-pill career-recommendations-figma__rank-pill--primary">
+                    #{topRecommendation.rank || 1}
+                  </span>
+
+                  <h3>
+                    {
+                      topRecommendation
+                        .career_name
+                    }
+                  </h3>
+
+                  <div className="career-recommendations-figma__top-metrics">
+                    <article className="career-recommendations-figma__metric-card">
+                      <span className="career-recommendations-figma__pill career-recommendations-figma__pill--blue">
+                        Career match
+                      </span>
+
+                      <small>
+                        Career Match
+                      </small>
+
+                      <strong>
+                        {formatScore(
+                          topRecommendation
+                            .recommendation_score,
+                        )}
+                      </strong>
+
+                      <p>
+                        AI-assisted score
+                      </p>
+                    </article>
+
+                    <article className="career-recommendations-figma__metric-card">
+                      <span className="career-recommendations-figma__pill career-recommendations-figma__pill--blue">
+                        Readiness
+                      </span>
+
+                      <small>
+                        Readiness
+                      </small>
+
+                      <strong>
+                        {formatScore(
+                          topReadiness,
+                        )}
+                      </strong>
+
+                      <p>
+                        Selected career
+                      </p>
+                    </article>
+                  </div>
+                </div>
+
+
+                <div className="career-recommendations-figma__explanation-panel">
+                  <h3>
+                    Why this career matches
+                  </h3>
+
+                  <p className="career-recommendations-figma__explanation">
+                    {matchExplanation.text}
+                  </p>
+
+                  <span
+                    className={
+                      matchExplanation.available
+                        ? (
+                          'career-recommendations-figma__pill '
+                          + 'career-recommendations-figma__pill--teal'
+                        )
+                        : (
+                          'career-recommendations-figma__pill '
+                          + 'career-recommendations-figma__pill--neutral'
+                        )
+                    }
+                  >
+                    AI explanation
+                  </span>
+
+                  <div className="career-recommendations-figma__evidence-block">
+                    <span className="career-recommendations-figma__evidence-label">
+                      Strongest evidence
+                    </span>
+
+                    {strongestEvidence.length > 0 ? (
+                      <div className="career-recommendations-figma__evidence-chips">
+                        {strongestEvidence.map(
+                          (item) => (
+                            <span
+                              key={item}
+                              className="career-recommendations-figma__pill career-recommendations-figma__pill--green"
+                            >
+                              {item}
+                            </span>
+                          ),
+                        )}
+                      </div>
+                    ) : (
+                      <p className="career-recommendations-figma__empty-evidence">
+                        No matched evidence
+                        available.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="career-recommendations-figma__gap-action-row">
+                    <div>
+                      <span className="career-recommendations-figma__evidence-label">
+                        Priority gap
+                      </span>
+
+                      <div className="career-recommendations-figma__priority-gap">
+                        {priorityGap ? (
+                          <span className="career-recommendations-figma__pill career-recommendations-figma__pill--amber">
+                            {priorityGap}
+                          </span>
+                        ) : (
+                          <p className="career-recommendations-figma__empty-evidence">
+                            No priority gap
+                            identified.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <button
+                      className="gn-button gn-button--primary career-recommendations-figma__top-action"
+                      type="button"
+                      onClick={() =>
+                        openSkillGapAnalysis(
+                          topRecommendation
+                            .career_id,
+                        )
+                      }
+                    >
+                      View Skill Gaps
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </section>
+
+
+            <section className="career-recommendations-figma__section">
+              <div className="career-recommendations-figma__section-heading">
+                <h2>
+                  Other Career Matches
+                </h2>
+
+                <p>
+                  Match shows how closely each
+                  career fits your profile.
+                  Readiness shows how prepared
+                  you are for that career today.
+                </p>
+              </div>
+
+              <div className="career-recommendations-figma__career-grid">
+                {otherRecommendations.map(
                   (recommendation) => {
-                    const developmentNeeds =
-                      getVisibleEvidence(
+                    const readiness =
+                      readinessByCareer[
                         recommendation
-                          .missing_competencies,
-                        false,
+                          .career_id
+                      ]
+
+                    const strongestEvidence =
+                      getStrongestEvidence(
+                        recommendation,
                       )
 
                     return (
@@ -810,84 +952,69 @@ function CareerRecommendationsPage() {
                           recommendation
                             .career_id
                         }
-                        className="career-guidance-career-card"
+                        className="career-recommendations-figma__career-card"
                       >
-                        <div className="career-guidance-career-card__heading">
-                          <span className="gn-badge gn-badge--current">
-                            #{recommendation.rank || '—'}
-                          </span>
-
+                        <div className="career-recommendations-figma__career-card-heading">
                           <h3>
                             {
                               recommendation
                                 .career_name
                             }
                           </h3>
+
+                          <span className="career-recommendations-figma__rank-pill">
+                            #{recommendation.rank || '—'}
+                          </span>
                         </div>
 
-                        <p className="career-guidance-career-card__score">
-                          Career Match:{' '}
-                          <strong>
-                            {formatPercentage(
+                        <div className="career-recommendations-figma__career-card-scores">
+                          <span className="career-recommendations-figma__pill career-recommendations-figma__pill--blue">
+                            Match{' '}
+                            {formatScore(
                               recommendation
                                 .recommendation_score,
                             )}
-                          </strong>
-                        </p>
-
-                        <div className="career-guidance-career-card__components">
-                          <span>
-                            Skills and Knowledge
-
-                            <strong>
-                              {formatPercentage(
-                                recommendation
-                                  .competency_score,
-                              )}
-                            </strong>
                           </span>
 
-                          <span>
-                            Technology Match
-
-                            <strong>
-                              {formatPercentage(
-                                recommendation
-                                  .technology_score,
-                              )}
-                            </strong>
-                          </span>
-
-                          <span>
-                            Profile Alignment
-
-                            <strong>
-                              {formatPercentage(
-                                recommendation
-                                  .semantic_alignment_score,
-                              )}
-                            </strong>
+                          <span className="career-recommendations-figma__pill career-recommendations-figma__pill--blue">
+                            Ready{' '}
+                            {formatScore(
+                              readiness,
+                            )}
                           </span>
                         </div>
 
-                        <p>
-                          Skills and knowledge
-                          to develop:{' '}
+                        <div className="career-recommendations-figma__career-card-evidence">
+                          <span className="career-recommendations-figma__evidence-label">
+                            Strongest evidence
+                          </span>
 
-                          {developmentNeeds.length > 0
-                            ? developmentNeeds.join(
-                                ', ',
-                              )
-                            : 'None identified'}
-                        </p>
+                          {strongestEvidence.length > 0 ? (
+                            <div className="career-recommendations-figma__evidence-chips">
+                              {strongestEvidence.map(
+                                (item) => (
+                                  <span
+                                    key={item}
+                                    className="career-recommendations-figma__pill career-recommendations-figma__pill--green"
+                                  >
+                                    {item}
+                                  </span>
+                                ),
+                              )}
+                            </div>
+                          ) : (
+                            <p className="career-recommendations-figma__empty-evidence">
+                              No matched evidence available.
+                            </p>
+                          )}
+                        </div>
 
                         <button
-                          className="gn-button gn-button--secondary career-guidance-bordered-button"
+                          className="career-recommendations-figma__secondary-button"
                           type="button"
                           onClick={() =>
                             openSkillGapAnalysis(
-                              recommendation
-                                .career_id,
+                              recommendation.career_id,
                             )
                           }
                         >
@@ -898,32 +1025,122 @@ function CareerRecommendationsPage() {
                   },
                 )}
               </div>
+            </section>
 
-              {otherRecommendations.length >
-                DEFAULT_OTHER_CAREER_COUNT && (
-                <div className="career-guidance-view-all-row">
+
+            <section className="career-recommendations-figma__section career-recommendations-figma__actions-section">
+              <div className="career-recommendations-figma__section-heading">
+                <h2>
+                  Recommended Next Actions
+                </h2>
+
+                <p>
+                  Move from recommendation to
+                  evidence improvement, readiness
+                  review, and skill-gap action.
+                </p>
+              </div>
+
+              <div className="career-recommendations-figma__action-list">
+                <article className="career-recommendations-figma__action-row">
+                  <strong>
+                    Choose a top career to compare
+                    skill gaps
+                  </strong>
+
                   <button
-                    className="gn-button gn-button--secondary career-guidance-bordered-button"
+                    className="career-recommendations-figma__secondary-button"
                     type="button"
                     onClick={() =>
-                      setShowAllCareers(
-                        (current) =>
-                          !current,
+                      openSkillGapAnalysis(
+                        topRecommendation
+                          .career_id,
                       )
                     }
                   >
-                    {showAllCareers
-                      ? 'Show top matches'
-                      : (
-                        `View all ${recommendations.length} careers`
-                      )}
+                    View Skill Gaps
                   </button>
-                </div>
-              )}
+                </article>
+
+                <article className="career-recommendations-figma__action-row">
+                  <strong>
+                    Update missing profile evidence
+                  </strong>
+
+                  <button
+                    className="career-recommendations-figma__secondary-button"
+                    type="button"
+                    onClick={() =>
+                      navigate('/profile')
+                    }
+                  >
+                    Edit Profile
+                  </button>
+                </article>
+
+                <article className="career-recommendations-figma__action-row">
+                  <strong>
+                    Review readiness for your
+                    selected career
+                  </strong>
+
+                  <button
+                    className="career-recommendations-figma__secondary-button"
+                    type="button"
+                    onClick={() =>
+                      openSkillGapAnalysis(
+                        topRecommendation
+                          .career_id,
+                      )
+                    }
+                  >
+                    Open
+                  </button>
+                </article>
+
+                <article className="career-recommendations-figma__action-row">
+                  <strong>
+                    Find learning resources once
+                    available
+                  </strong>
+
+                  <button
+                    className="career-recommendations-figma__secondary-button"
+                    type="button"
+                    disabled
+                    title="The Learning Resources screen is not implemented yet."
+                  >
+                    Open
+                  </button>
+                </article>
+              </div>
             </section>
-          )}
-        </>
-      )}
+          </>
+        ) : (
+          <section className="career-guidance-state-card">
+            <h2>
+              No career recommendations yet
+            </h2>
+
+            <p>
+              Add information to your Student
+              Profile so GradNavi has enough
+              evidence to identify career
+              matches.
+            </p>
+
+            <button
+              className="gn-button gn-button--primary"
+              type="button"
+              onClick={() =>
+                navigate('/profile')
+              }
+            >
+              Go to Student Profile
+            </button>
+          </section>
+        )}
+      </div>
     </main>
   )
 }

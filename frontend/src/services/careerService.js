@@ -18,7 +18,51 @@ async function getLearningSuggestions(careerId) {
 }
 
 
+
+async function getTopMatchExplanation() {
+  return apiRequest(
+    '/recommendations/top-explanation/',
+    {
+      requiresAuth: true,
+    },
+  )
+}
+
+
+async function getCareerReadiness(
+  careerId,
+) {
+  const encodedCareerId =
+    encodeURIComponent(careerId)
+
+  return apiRequest(
+    `/readiness/?career_id=${encodedCareerId}`,
+    {
+      requiresAuth: true,
+    },
+  )
+}
+
+
+async function getSkillGapSummary(
+  careerId,
+) {
+  const encodedCareerId =
+    encodeURIComponent(careerId)
+
+  return apiRequest(
+    `/skill-gap-summary/?career_id=${encodedCareerId}`,
+    {
+      requiresAuth: true,
+    },
+  )
+}
+
+
 export {
+  getCareerReadiness,
+  getSkillGapSummary,
   getCareerRecommendations,
   getLearningSuggestions,
+  getTopMatchExplanation,
 }

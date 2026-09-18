@@ -381,3 +381,129 @@ class RoadmapStepSerializer(serializers.Serializer):
             "value",
             step.gap_status,
         )
+
+class SkillGapResultSerializer(serializers.Serializer):
+    """
+    API representation of one deterministic WBS 5.5
+    selected-Career readiness requirement.
+    """
+
+    career_skill_id = serializers.IntegerField()
+
+    skill_id = serializers.IntegerField()
+
+    skill_name = serializers.CharField()
+
+    concept_type = serializers.CharField()
+
+    source_domain = serializers.CharField()
+
+    current_proficiency = serializers.CharField(
+        source="student_proficiency_level",
+        allow_null=True,
+    )
+
+    current_score = serializers.DecimalField(
+        source="student_proficiency_score",
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    required_level = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    gap_amount = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    attainment_percentage = (
+        serializers.DecimalField(
+            max_digits=5,
+            decimal_places=2,
+        )
+    )
+
+    importance = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    status = serializers.SerializerMethodField()
+
+
+    def get_status(
+        self,
+        result,
+    ):
+        return getattr(
+            result.gap_status,
+            "value",
+            result.gap_status,
+        )
+
+
+class CareerReadinessResultSerializer(
+    serializers.Serializer
+):
+    """
+    Complete deterministic WBS 5.5 selected-Career
+    readiness result for the Skill Gap Analysis UI.
+    """
+
+    career_id = serializers.IntegerField()
+
+    career_name = serializers.CharField()
+
+    score_status = (
+        serializers.SerializerMethodField()
+    )
+
+    readiness_score = serializers.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        allow_null=True,
+    )
+
+    meets_requirement_count = (
+        serializers.IntegerField()
+    )
+
+    below_requirement_count = (
+        serializers.IntegerField()
+    )
+
+    missing_requirement_count = (
+        serializers.IntegerField()
+    )
+
+    total_requirement_count = (
+        serializers.SerializerMethodField()
+    )
+
+    requirements = SkillGapResultSerializer(
+        source="skill_gaps",
+        many=True,
+    )
+
+
+    def get_score_status(
+        self,
+        result,
+    ):
+        return getattr(
+            result.score_status,
+            "value",
+            result.score_status,
+        )
+
+
+    def get_total_requirement_count(
+        self,
+        result,
+    ):
+        return len(
+            result.skill_gaps
+        )
