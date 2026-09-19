@@ -5,12 +5,15 @@ import {
 
 import {
   useNavigate,
-  useSearchParams,
 } from 'react-router'
 
 import {
   getStoredUser,
 } from '../services/authService'
+
+import CareerSelector from '../components/career/CareerSelector'
+
+import useCareerContext from '../hooks/useCareerContext'
 
 import {
   getCareerReadiness,
@@ -262,19 +265,16 @@ function SkillGapAnalysisPage() {
   const navigate =
     useNavigate()
 
-  const [
-    searchParams,
-  ] = useSearchParams()
-
-  const rawCareerId =
-    searchParams.get(
-      'career_id',
-    )
-
-  const careerId =
-    Number(
-      rawCareerId,
-    )
+  const {
+    careerOptions,
+    error:
+      careerContextError,
+    isLoading:
+      isCareerContextLoading,
+    selectedCareerId:
+      careerId,
+    selectCareer,
+  } = useCareerContext()
 
   const hasValidCareerId =
     Number.isInteger(
@@ -356,9 +356,12 @@ function SkillGapAnalysisPage() {
 
 
   const isLoading =
-    hasValidCareerId
-    && !currentCoreState
-    && !currentCoreError
+    isCareerContextLoading
+    || (
+      hasValidCareerId
+      && !currentCoreState
+      && !currentCoreError
+    )
 
   const isAILoading =
     Boolean(
@@ -629,6 +632,41 @@ function SkillGapAnalysisPage() {
   }
 
 
+  if (isCareerContextLoading) {
+    return (
+      <main className="career-guidance-page skill-gap-figma">
+        <header className="career-guidance-heading">
+          <div className="career-guidance-heading__copy">
+            <h1>
+              Skill Gap Analysis
+            </h1>
+
+            <p>
+              Compare readiness and skill gaps
+              for your selected career.
+            </p>
+          </div>
+        </header>
+
+        <section className="skill-gap-figma__state-card">
+          <span className="skill-gap-figma__pill skill-gap-figma__pill--neutral">
+            Loading career
+          </span>
+
+          <h2>
+            Loading your career focus
+          </h2>
+
+          <p>
+            GradNavi is opening your saved career
+            selection or your top recommendation.
+          </p>
+        </section>
+      </main>
+    )
+  }
+
+
   if (!hasValidCareerId) {
     return (
       <main className="career-guidance-page skill-gap-figma">
@@ -639,26 +677,29 @@ function SkillGapAnalysisPage() {
             </h1>
 
             <p>
-              Review selected-career readiness,
-              unresolved requirements, and
-              backend-linked learning suggestions.
+              Compare readiness and skill gaps
+              for your selected career.
             </p>
           </div>
         </header>
 
         <section className="skill-gap-figma__state-card">
           <span className="skill-gap-figma__pill skill-gap-figma__pill--amber">
-            Select a career first
+            Career matches needed
           </span>
 
           <h2>
-            Choose a Career Recommendation
+            No career match is available yet
           </h2>
 
-          <p>
-            Skill Gap Analysis requires a selected career.
-            Open Career Recommendations and choose
-            View Skill Gaps.
+          <p role="alert">
+            {
+              careerContextError
+              || (
+                'Complete your profile and review '
+                + 'Career Recommendations first.'
+              )
+            }
           </p>
 
           <button
@@ -688,9 +729,9 @@ function SkillGapAnalysisPage() {
             </h1>
 
             <p>
-              Review selected-career readiness,
-              unresolved requirements, and
-              backend-linked learning suggestions.
+              Compare readiness and skill gaps
+              for your selected career. Change
+              careers here anytime.
             </p>
           </div>
         </header>
@@ -726,9 +767,9 @@ function SkillGapAnalysisPage() {
             </h1>
 
             <p>
-              Review selected-career readiness,
-              unresolved requirements, and
-              backend-linked learning suggestions.
+              Compare readiness and skill gaps
+              for your selected career. Change
+              careers here anytime.
             </p>
           </div>
         </header>
@@ -819,35 +860,38 @@ function SkillGapAnalysisPage() {
         <div className="skill-gap-figma__section-heading">
           <div>
             <h2>
-              Selected Career
+              Career Focus
             </h2>
 
             <p>
-              Readiness and requirement gaps below
-              are calculated only for this selected career.
+              Your top recommendation is used by
+              default. Your career choice stays
+              consistent across guidance pages.
             </p>
           </div>
         </div>
 
-        <div className="skill-gap-figma__selected-career-row">
-          <span className="skill-gap-figma__pill skill-gap-figma__pill--blue">
-            Selected: {
-              readinessData.career_name
-            }
-          </span>
-
-          <button
-            className="skill-gap-figma__button"
-            type="button"
-            onClick={() =>
-              navigate(
-                '/career-recommendations',
-              )
-            }
-          >
-            Change Career
-          </button>
-        </div>
+        <CareerSelector
+          careers={
+            careerOptions
+          }
+          selectedCareerId={
+            careerId
+          }
+          selectedCareerName={
+            readinessData
+              .career_name
+          }
+          helperText={
+            (
+              'Changing your career refreshes '
+              + 'this Skill Gap Analysis.'
+            )
+          }
+          onChange={
+            selectCareer
+          }
+        />
       </section>
 
 

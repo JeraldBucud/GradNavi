@@ -53,12 +53,14 @@ const studentNavigation = [
   {
     label: 'Career Roadmap',
     icon: Route,
-    implemented: false,
+    path: '/career-roadmap',
+    implemented: true,
   },
   {
     label: 'Learning Resources',
     icon: BookOpen,
-    implemented: false,
+    path: '/learning-resources',
+    implemented: true,
   },
   {
     label: 'Resume Builder',
