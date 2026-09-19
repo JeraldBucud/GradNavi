@@ -585,3 +585,75 @@ class LearningResourceReportInputSerializer(
         max_length=1000,
         default="",
     )
+
+
+class ExploreCareerQuerySerializer(
+    serializers.Serializer
+):
+    search = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        max_length=200,
+        default="",
+    )
+
+    category = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        max_length=100,
+        default="",
+    )
+
+    status = serializers.ChoiceField(
+        choices=(
+            "all",
+            "recommended",
+            "evaluated",
+            "not_evaluated",
+        ),
+        required=False,
+        default="all",
+    )
+
+    page = serializers.IntegerField(
+        min_value=1,
+        required=False,
+        default=1,
+    )
+
+    page_size = serializers.IntegerField(
+        min_value=1,
+        max_value=50,
+        required=False,
+        default=12,
+    )
+
+
+class ExploreCareerItemSerializer(
+    serializers.Serializer
+):
+    career_id = serializers.IntegerField()
+
+    career_name = serializers.CharField()
+
+    description = serializers.CharField(
+        allow_blank=True,
+    )
+
+    category = serializers.CharField(
+        allow_blank=True,
+    )
+
+    status = serializers.CharField()
+
+    recommended = serializers.BooleanField()
+
+    evaluated = serializers.BooleanField()
+
+    recommendation_rank = serializers.IntegerField(
+        allow_null=True,
+    )
+
+    match_score = serializers.CharField(
+        allow_null=True,
+    )

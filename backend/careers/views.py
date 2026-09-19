@@ -7,6 +7,8 @@ from careers.serializers import (
     CareerSelectionQuerySerializer,
     CareerReadinessResultSerializer,
     CompositeRecommendationResultSerializer,
+    ExploreCareerItemSerializer,
+    ExploreCareerQuerySerializer,
     LearningResourceFeedbackInputSerializer,
     LearningResourceRecommendationQuerySerializer,
     LearningResourceReportInputSerializer,
@@ -14,6 +16,18 @@ from careers.serializers import (
     RoadmapProgressMutationSerializer,
     RoadmapStepSerializer,
 )
+from careers.services.explore_careers import (
+    CareerEvaluationResultUnavailableError,
+    CareerEvaluationSnapshotUnavailableError,
+    ExploreCareerNotAvailableError,
+    ExploreCareerNotFoundError,
+    RECOMMENDED_CAREER_LIMIT,
+    evaluate_career_from_snapshot,
+    list_explore_career_categories,
+    list_explore_careers,
+    list_guidance_careers,
+)
+
 from careers.services.learning_roadmap import generate_learning_plan
 from ai_services.exceptions import (
     AIProviderError,
@@ -2171,4 +2185,488 @@ class LearningResourceReportCreateView(
                 if result.created
                 else 200
             ),
+        )
+
+
+def _ensure_explore_recommendation_snapshot(
+    student_profile,
+):
+    """
+    Return the current RecommendationSnapshot.
+
+    Existing Career Recommendations behaviour stays
+    unchanged.
+
+    If the Student Profile or reference-data state
+    changed, Explore Careers refreshes the recommendation
+    snapshot before continuing.
+    """
+
+    cache_key = (
+        build_recommendation_cache_key(
+            student_profile=(
+                student_profile
+            ),
+        )
+    )
+
+    snapshot = (
+        get_valid_recommendation_snapshot(
+            student_profile=(
+                student_profile
+            ),
+            cache_key=cache_key,
+        )
+    )
+
+    if snapshot is not None:
+        return (
+            snapshot,
+            False,
+        )
+
+    try:
+        embedding_provider = (
+            OpenAIEmbeddingProvider()
+        )
+
+        report = (
+            generate_composite_recommendations(
+                student_profile_id=(
+                    student_profile.id
+                ),
+                embedding_provider=(
+                    embedding_provider
+                ),
+            )
+        )
+
+    except AIProviderError as error:
+        raise (
+            RecommendationAIUnavailable()
+        ) from error
+
+    serializer = (
+        CompositeRecommendationResultSerializer(
+            report.results,
+            many=True,
+        )
+    )
+
+    payload = {
+        "scoring_model": (
+            SCORING_VERSION
+        ),
+        "embedding_model": (
+            report.model
+        ),
+        "career_count": (
+            report.career_count
+        ),
+        "base_weights": {
+            "competency": str(
+                COMPETENCY_WEIGHT
+            ),
+            "technology": str(
+                TECHNOLOGY_WEIGHT
+            ),
+            "semantic": str(
+                SEMANTIC_WEIGHT
+            ),
+        },
+        "recommendations": (
+            serializer.data
+        ),
+    }
+
+    snapshot = (
+        store_recommendation_snapshot(
+            student_profile=(
+                student_profile
+            ),
+            payload=payload,
+            embedding_model=(
+                report.model
+                or ""
+            ),
+            prompt_tokens=(
+                report.prompt_tokens
+            ),
+            total_tokens=(
+                report.total_tokens
+            ),
+            career_count=(
+                report.career_count
+            ),
+            cache_key=cache_key,
+        )
+    )
+
+    return (
+        snapshot,
+        True,
+    )
+
+
+def _explore_career_item_for_api(
+    *,
+    student_profile,
+    career_id,
+):
+    items = (
+        list_explore_careers(
+            student_profile=(
+                student_profile
+            ),
+        )
+    )
+
+    for item in items:
+        if (
+            item.career_id
+            == career_id
+        ):
+            return item
+
+    raise NotFound(
+        "Career was not found."
+    )
+
+
+class ExploreCareerListView(APIView):
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+
+    def get(
+        self,
+        request,
+    ):
+        profile = (
+            _student_profile_for_api(
+                request.user
+            )
+        )
+
+        query = (
+            ExploreCareerQuerySerializer(
+                data=request.query_params,
+            )
+        )
+
+        query.is_valid(
+            raise_exception=True,
+        )
+
+        _ensure_explore_recommendation_snapshot(
+            profile
+        )
+
+        values = (
+            query.validated_data
+        )
+
+        items = list(
+            list_explore_careers(
+                student_profile=profile,
+                search=values[
+                    "search"
+                ],
+                category=values[
+                    "category"
+                ],
+                status=values[
+                    "status"
+                ],
+            )
+        )
+
+        page = values[
+            "page"
+        ]
+
+        page_size = values[
+            "page_size"
+        ]
+
+        total_count = len(
+            items
+        )
+
+        if total_count:
+            total_pages = (
+                (
+                    total_count
+                    + page_size
+                    - 1
+                )
+                // page_size
+            )
+        else:
+            total_pages = 0
+
+        start = (
+            (page - 1)
+            * page_size
+        )
+
+        end = (
+            start
+            + page_size
+        )
+
+        page_items = (
+            items[
+                start:end
+            ]
+        )
+
+        serializer = (
+            ExploreCareerItemSerializer(
+                page_items,
+                many=True,
+            )
+        )
+
+        categories = (
+            list_explore_career_categories()
+        )
+
+        return Response(
+            {
+                "data": {
+                    "results": (
+                        serializer.data
+                    ),
+                    "pagination": {
+                        "page": page,
+                        "page_size": (
+                            page_size
+                        ),
+                        "total_count": (
+                            total_count
+                        ),
+                        "total_pages": (
+                            total_pages
+                        ),
+                        "has_previous": (
+                            page > 1
+                        ),
+                        "has_next": (
+                            page
+                            < total_pages
+                        ),
+                    },
+                    "filters": {
+                        "search": (
+                            values[
+                                "search"
+                            ]
+                        ),
+                        "category": (
+                            values[
+                                "category"
+                            ]
+                        ),
+                        "status": (
+                            values[
+                                "status"
+                            ]
+                        ),
+                        "categories": list(
+                            categories
+                        ),
+                    },
+                    "recommended_limit": (
+                        RECOMMENDED_CAREER_LIMIT
+                    ),
+                }
+            }
+        )
+
+
+class ExploreCareerDetailView(APIView):
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+
+    def get(
+        self,
+        request,
+        career_id,
+    ):
+        profile = (
+            _student_profile_for_api(
+                request.user
+            )
+        )
+
+        _ensure_explore_recommendation_snapshot(
+            profile
+        )
+
+        item = (
+            _explore_career_item_for_api(
+                student_profile=profile,
+                career_id=career_id,
+            )
+        )
+
+        serializer = (
+            ExploreCareerItemSerializer(
+                item
+            )
+        )
+
+        return Response(
+            {
+                "data": (
+                    serializer.data
+                )
+            }
+        )
+
+
+class ExploreCareerEvaluateView(APIView):
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+
+    def post(
+        self,
+        request,
+        career_id,
+    ):
+        profile = (
+            _student_profile_for_api(
+                request.user
+            )
+        )
+
+        (
+            _snapshot,
+            refreshed,
+        ) = (
+            _ensure_explore_recommendation_snapshot(
+                profile
+            )
+        )
+
+        try:
+            evaluation = (
+                evaluate_career_from_snapshot(
+                    student_profile=profile,
+                    career_id=career_id,
+                )
+            )
+
+        except ExploreCareerNotFoundError:
+            raise NotFound(
+                "Career was not found."
+            )
+
+        except ExploreCareerNotAvailableError:
+            raise ValidationError(
+                {
+                    "career_id": [
+                        (
+                            "Career is "
+                            "not available."
+                        )
+                    ]
+                }
+            )
+
+        except (
+            CareerEvaluationSnapshotUnavailableError,
+            CareerEvaluationResultUnavailableError,
+        ):
+            raise ValidationError(
+                {
+                    "career_id": [
+                        (
+                            "Career evaluation is "
+                            "currently unavailable."
+                        )
+                    ]
+                }
+            )
+
+        item = (
+            _explore_career_item_for_api(
+                student_profile=profile,
+                career_id=career_id,
+            )
+        )
+
+        serializer = (
+            ExploreCareerItemSerializer(
+                item
+            )
+        )
+
+        return Response(
+            {
+                "data": {
+                    "career": (
+                        serializer.data
+                    ),
+                    "evaluation": (
+                        evaluation.payload
+                    ),
+                    "recommendation_refreshed": (
+                        refreshed
+                    ),
+                }
+            }
+        )
+
+
+class GuidanceCareerListView(APIView):
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+
+    def get(
+        self,
+        request,
+    ):
+        profile = (
+            _student_profile_for_api(
+                request.user
+            )
+        )
+
+        _ensure_explore_recommendation_snapshot(
+            profile
+        )
+
+        items = (
+            list_guidance_careers(
+                student_profile=profile,
+            )
+        )
+
+        serializer = (
+            ExploreCareerItemSerializer(
+                items,
+                many=True,
+            )
+        )
+
+        return Response(
+            {
+                "data": {
+                    "careers": (
+                        serializer.data
+                    ),
+                    "recommended_limit": (
+                        RECOMMENDED_CAREER_LIMIT
+                    ),
+                }
+            }
         )
