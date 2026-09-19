@@ -1674,6 +1674,77 @@ class LearningResourceReport(models.Model):
         )
 
 
+
+class StudentCareerEvaluation(models.Model):
+    """
+    Stores one Student's explicit evaluation of one Career.
+
+    Browsing Explore Careers does not create this record.
+
+    The evaluation stays current only while the Student Profile
+    fingerprint, Career reference fingerprint, and scoring version
+    still match the values used when the Career was evaluated.
+
+    The payload stores the calculated result for the selected Career.
+    Raw Student Profile data is not stored here.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="career_evaluations",
+    )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name="student_evaluations",
+    )
+
+    profile_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    reference_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    scoring_version = models.CharField(
+        max_length=50,
+    )
+
+    payload = models.JSONField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    evaluated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                name=(
+                    "unique_student_career_"
+                    "evaluation"
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Career evaluation for "
+            f"Student Profile {self.student_profile_id} "
+            f"and Career {self.career_id}"
+        )
+
+
 class RecommendationSnapshot(models.Model):
     """
     Stores the latest valid Career Recommendation result

@@ -1,6 +1,10 @@
 from django.urls import path
 
 from .views import (
+    ExploreCareerDetailView,
+    ExploreCareerEvaluateView,
+    ExploreCareerListView,
+    GuidanceCareerListView,
     LearningResourceFeedbackView,
     LearningResourceRecommendationView,
     LearningResourceReportCreateView,
@@ -79,4 +83,25 @@ urlpatterns = [
         name="learning-resource-reports",
     ),
 
+
+    path(
+        "explore-careers/",
+        ExploreCareerListView.as_view(),
+        name="explore-career-list",
+    ),
+    path(
+        "explore-careers/<int:career_id>/",
+        ExploreCareerDetailView.as_view(),
+        name="explore-career-detail",
+    ),
+    path(
+        "explore-careers/<int:career_id>/evaluate/",
+        ExploreCareerEvaluateView.as_view(),
+        name="explore-career-evaluate",
+    ),
+    path(
+        "guidance-careers/",
+        GuidanceCareerListView.as_view(),
+        name="guidance-career-list",
+    ),
 ]
