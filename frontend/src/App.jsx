@@ -3,9 +3,11 @@ import { Route, Routes } from 'react-router'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import StudentLayout from './layouts/StudentLayout'
 import CareerRecommendationsPage from './pages/CareerRecommendationsPage'
+import CareerRoadmapPage from './pages/CareerRoadmapPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import LearningResourcesPage from './pages/LearningResourcesPage'
 import NotFoundPage from './pages/NotFoundPage'
 import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
@@ -56,6 +58,16 @@ function App() {
           <Route
             path="/skill-gap-analysis"
             element={<SkillGapAnalysisPage />}
+          />
+
+          <Route
+            path="/career-roadmap"
+            element={<CareerRoadmapPage />}
+          />
+
+          <Route
+            path="/learning-resources"
+            element={<LearningResourcesPage />}
           />
         </Route>
       </Route>

@@ -2439,3 +2439,1680 @@
     width: auto;
   }
 }
+
+
+/* SPRINT 3 SHARED CAREER CONTEXT */
+
+.career-context-selector {
+  display: grid;
+
+  grid-template-columns:
+    minmax(280px, 420px)
+    minmax(240px, 1fr);
+
+  align-items: center;
+
+  gap: 24px;
+
+  margin-top: 22px;
+}
+
+
+.career-context-selector__label {
+  display: flex;
+
+  min-width: 0;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.career-context-selector__label > span {
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+
+.career-context-selector__control {
+  width: 100%;
+  min-height: 48px;
+
+  padding: 0 42px 0 16px;
+
+  border: 1px solid #1d4ed8;
+  border-radius: 10px;
+
+  background-color: #f7faff;
+  color: #0f172a;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  outline: none;
+}
+
+
+.career-context-selector__control:focus {
+  border-color: #1d4ed8;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(29, 78, 216, 0.12);
+}
+
+
+.career-context-selector__control:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.7;
+}
+
+
+.career-context-selector__helper {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+.career-recommendations-figma__top-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  align-items: center;
+}
+
+
+.career-recommendations-figma__career-card-actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-top: 16px;
+}
+
+
+.career-recommendations-figma__career-card-actions
+.career-recommendations-figma__secondary-button {
+  width: 100%;
+
+  margin-top: 0;
+}
+
+
+@media (max-width: 900px) {
+  .career-context-selector {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+}
+
+
+@media (max-width: 720px) {
+  .career-recommendations-figma__top-actions,
+  .career-recommendations-figma__career-card-actions {
+    display: grid;
+
+    width: 100%;
+
+    grid-template-columns: 1fr;
+  }
+
+  .career-recommendations-figma__top-actions
+  .gn-button,
+  .career-recommendations-figma__top-actions
+  .career-recommendations-figma__secondary-button {
+    width: 100%;
+  }
+}
+
+
+/* SPRINT 3 CAREER ROADMAP REDESIGN */
+
+.career-roadmap-figma {
+  box-sizing: border-box;
+}
+
+
+.career-roadmap-figma *,
+.career-roadmap-figma *::before,
+.career-roadmap-figma *::after {
+  box-sizing: border-box;
+}
+
+
+.career-roadmap-figma__plan,
+.career-roadmap-figma__progress,
+.career-roadmap-figma__priority-section,
+.career-roadmap-figma__remaining-section,
+.career-roadmap-figma__next-actions {
+  width: 100%;
+
+  margin-bottom: 30px;
+  padding: 24px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+
+  background: #ffffff;
+}
+
+
+.career-roadmap-figma__section-heading h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+
+.career-roadmap-figma__section-heading p {
+  max-width: 980px;
+
+  margin: 6px 0 0;
+
+  color: #475569;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+.career-roadmap-figma__plan-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 20px;
+
+  margin-top: 16px;
+}
+
+
+.career-roadmap-figma__career-card,
+.career-roadmap-figma__metric {
+  min-width: 0;
+  min-height: 106px;
+
+  padding: 15px 16px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+
+  background: #ffffff;
+}
+
+
+.career-roadmap-figma__career-card {
+  border-color: #1d4ed8;
+
+  background: #f7faff;
+}
+
+
+.career-roadmap-figma__career-card
+.career-context-selector {
+  display: block;
+
+  margin: 0;
+}
+
+
+.career-roadmap-figma__career-card
+.career-context-selector__label {
+  gap: 5px;
+}
+
+
+.career-roadmap-figma__career-card
+.career-context-selector__control {
+  min-height: 38px;
+
+  padding-left: 0;
+
+  border: 0;
+
+  background-color: transparent;
+
+  font-size: 16px;
+}
+
+
+.career-roadmap-figma__career-card
+.career-context-selector__helper {
+  margin-top: 3px;
+
+  font-size: 11px;
+}
+
+
+.career-roadmap-figma__metric {
+  display: flex;
+
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.career-roadmap-figma__metric > span {
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.career-roadmap-figma__metric > strong {
+  overflow-wrap: anywhere;
+
+  margin-top: 6px;
+
+  color: #0f172a;
+
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+
+.career-roadmap-figma__metric > small {
+  overflow: hidden;
+
+  margin-top: 5px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  line-height: 1.4;
+
+  text-overflow: ellipsis;
+}
+
+
+.career-roadmap-figma__progress-pills {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 16px;
+
+  margin-top: 20px;
+}
+
+
+.career-roadmap-figma__progress-pill,
+.career-roadmap-figma__status,
+.career-roadmap-figma__step-number,
+.career-roadmap-figma__remaining-number {
+  display: inline-flex;
+
+  min-height: 28px;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 12px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+
+  background: #f8fafc;
+  color: #475569;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+
+.career-roadmap-figma__progress-pill--complete,
+.career-roadmap-figma__status--complete {
+  border-color: #15803d;
+
+  background: #dcfce7;
+  color: #15803d;
+}
+
+
+.career-roadmap-figma__progress-pill--progress,
+.career-roadmap-figma__status--progress {
+  border-color: #1d4ed8;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+
+.career-roadmap-figma__progress-pill--next {
+  border-color: #0f766e;
+
+  background: #ccfbf1;
+  color: #0f766e;
+}
+
+
+.career-roadmap-figma__guidance-note {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+
+  background: #f8fafc;
+  color: #475569;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+.career-roadmap-figma__priority-list {
+  display: grid;
+
+  gap: 24px;
+
+  margin-top: 18px;
+}
+
+
+.career-roadmap-figma__step-card {
+  padding: 18px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+
+  background: #ffffff;
+}
+
+
+.career-roadmap-figma__step-header {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 18px;
+}
+
+
+.career-roadmap-figma__step-number {
+  border-color: #1d4ed8;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+
+.career-roadmap-figma__step-header h3 {
+  min-width: 0;
+
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 20px;
+  line-height: 1.35;
+
+  overflow-wrap: anywhere;
+}
+
+
+.career-roadmap-figma__step-metrics {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 16px;
+
+  margin-top: 20px;
+}
+
+
+.career-roadmap-figma__step-metrics > div {
+  min-width: 0;
+}
+
+
+.career-roadmap-figma__step-metrics span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.career-roadmap-figma__step-metrics strong {
+  display: block;
+
+  overflow-wrap: anywhere;
+
+  margin-top: 4px;
+
+  color: #0f172a;
+
+  font-size: 18px;
+}
+
+
+.career-roadmap-figma__guidance-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 28px;
+
+  margin-top: 20px;
+}
+
+
+.career-roadmap-figma__guidance-grid h4 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.career-roadmap-figma__guidance-grid p {
+  margin: 6px 0 0;
+
+  color: #475569;
+
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+
+.career-roadmap-figma__step-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+
+.career-roadmap-figma__step-actions
+.gn-button {
+  min-width: 190px;
+}
+
+
+.career-roadmap-figma__action-error,
+.career-roadmap-figma__remaining-error {
+  margin: 12px 0 0;
+
+  color: #b91c1c;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+
+.career-roadmap-figma__remaining-list {
+  display: grid;
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+
+.career-roadmap-figma__remaining-row {
+  display: grid;
+
+  grid-template-columns:
+    52px
+    minmax(180px, 1fr)
+    110px
+    72px
+    112px
+    170px;
+
+  align-items: center;
+
+  gap: 10px;
+
+  min-height: 52px;
+
+  padding: 5px 10px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: #ffffff;
+}
+
+
+.career-roadmap-figma__remaining-number {
+  min-width: 50px;
+}
+
+
+.career-roadmap-figma__remaining-skill {
+  min-width: 0;
+}
+
+
+.career-roadmap-figma__remaining-skill strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #0f172a;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.career-roadmap-figma__remaining-skill small,
+.career-roadmap-figma__remaining-step {
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+
+.career-roadmap-figma__compact-action {
+  min-height: 32px;
+
+  padding: 6px 10px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.career-roadmap-figma__compact-action--primary {
+  border-color: #1d4ed8;
+
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+
+.career-roadmap-figma__compact-action:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.6;
+}
+
+
+.career-roadmap-figma__remaining-error {
+  grid-column:
+    2 / -1;
+
+  margin-top: 0;
+}
+
+
+.career-roadmap-figma__show-more {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 18px;
+
+  margin-top: 18px;
+}
+
+
+.career-roadmap-figma__show-more > span {
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+
+.career-roadmap-figma__next-action-row {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 20px;
+}
+
+
+.career-roadmap-figma__next-action-row > p {
+  flex: 1 1 240px;
+
+  margin: 0 0 0 8px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+
+@media (max-width: 1180px) {
+  .career-roadmap-figma__plan-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .career-roadmap-figma__remaining-row {
+    grid-template-columns:
+      52px
+      minmax(180px, 1fr)
+      110px
+      100px
+      150px;
+  }
+
+  .career-roadmap-figma__remaining-step {
+    display: none;
+  }
+}
+
+
+@media (max-width: 900px) {
+  .career-roadmap-figma__step-metrics,
+  .career-roadmap-figma__guidance-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .career-roadmap-figma__remaining-row {
+    grid-template-columns:
+      52px
+      minmax(0, 1fr)
+      auto;
+
+    align-items: start;
+  }
+
+  .career-roadmap-figma__remaining-step {
+    display: none;
+  }
+
+  .career-roadmap-figma__compact-action {
+    width: 100%;
+
+    grid-column: 2 / -1;
+  }
+}
+
+
+@media (max-width: 720px) {
+  .career-roadmap-figma__plan,
+  .career-roadmap-figma__progress,
+  .career-roadmap-figma__priority-section,
+  .career-roadmap-figma__remaining-section,
+  .career-roadmap-figma__next-actions {
+    padding: 20px;
+  }
+
+  .career-roadmap-figma__plan-grid,
+  .career-roadmap-figma__step-metrics,
+  .career-roadmap-figma__guidance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .career-roadmap-figma__step-header {
+    grid-template-columns:
+      auto
+      minmax(0, 1fr);
+  }
+
+  .career-roadmap-figma__step-header
+  .career-roadmap-figma__status {
+    width: fit-content;
+
+    grid-column: 1 / -1;
+  }
+
+  .career-roadmap-figma__step-actions {
+    display: grid;
+
+    grid-template-columns: 1fr;
+  }
+
+  .career-roadmap-figma__step-actions
+  .gn-button {
+    width: 100%;
+  }
+
+  .career-roadmap-figma__remaining-row {
+    grid-template-columns:
+      46px
+      minmax(0, 1fr);
+  }
+
+  .career-roadmap-figma__remaining-row
+  .career-roadmap-figma__status {
+    width: fit-content;
+
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .career-roadmap-figma__compact-action {
+    grid-column: 1 / -1;
+  }
+
+  .career-roadmap-figma__next-action-row {
+    display: grid;
+
+    grid-template-columns: 1fr;
+  }
+
+  .career-roadmap-figma__next-action-row
+  .gn-button {
+    width: 100%;
+  }
+
+  .career-roadmap-figma__next-action-row > p {
+    margin-left: 0;
+  }
+}
+
+
+/* SPRINT 3 LEARNING RESOURCES REDESIGN */
+
+.learning-resources-figma {
+  box-sizing: border-box;
+}
+
+
+.learning-resources-figma *,
+.learning-resources-figma *::before,
+.learning-resources-figma *::after {
+  box-sizing: border-box;
+}
+
+
+.learning-resources-figma__plan,
+.learning-resources-figma__needs,
+.learning-resources-figma__resources,
+.learning-resources-figma__after {
+  width: 100%;
+
+  margin-bottom: 30px;
+  padding: 24px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+
+  background: #ffffff;
+}
+
+
+.learning-resources-figma__section-heading h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+
+.learning-resources-figma__section-heading p {
+  max-width: 980px;
+
+  margin: 6px 0 0;
+
+  color: #475569;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+.learning-resources-figma__selector-grid,
+.learning-resources-figma__plan-metrics {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+
+  margin-top: 18px;
+}
+
+
+.learning-resources-figma__selector-card,
+.learning-resources-figma__plan-metrics article {
+  min-width: 0;
+
+  padding: 15px 16px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+
+.learning-resources-figma__selector-card {
+  border-color: #1d4ed8;
+
+  background: #f7faff;
+}
+
+
+.learning-resources-figma__selector-card
+.career-context-selector {
+  display: block;
+
+  margin: 0;
+}
+
+
+.learning-resources-figma__selector-card
+.career-context-selector__control {
+  min-height: 36px;
+
+  padding-left: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  font-size: 17px;
+}
+
+
+.learning-resources-figma__selector-card
+.career-context-selector__helper {
+  margin-top: 4px;
+
+  font-size: 11px;
+}
+
+
+.learning-resources-figma__focus-selector {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.learning-resources-figma__focus-selector select {
+  width: 100%;
+  min-height: 36px;
+
+  padding: 0 34px 0 0;
+
+  border: 0;
+
+  background: transparent;
+  color: #0f172a;
+
+  font: inherit;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+
+.learning-resources-figma__focus-selector small {
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+.learning-resources-figma__plan-metrics article {
+  min-height: 106px;
+}
+
+
+.learning-resources-figma__plan-metrics span {
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.learning-resources-figma__plan-metrics strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #0f172a;
+
+  font-size: 24px;
+}
+
+
+.learning-resources-figma__plan-metrics small {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+
+.learning-resources-figma__needs-list {
+  display: grid;
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+
+.learning-resources-figma__need-row {
+  display: grid;
+
+  grid-template-columns:
+    46px
+    minmax(220px, 1fr)
+    110px
+    100px
+    90px
+    120px;
+
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+  min-height: 56px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #475569;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  font: inherit;
+  font-size: 12px;
+}
+
+
+.learning-resources-figma__need-row:hover,
+.learning-resources-figma__need-row--selected {
+  border-color: #1d4ed8;
+
+  background: #f7faff;
+}
+
+
+.learning-resources-figma__need-row strong {
+  min-width: 0;
+
+  color: #0f172a;
+
+  overflow-wrap: anywhere;
+}
+
+
+.learning-resources-figma__need-number {
+  display: inline-grid;
+
+  width: 32px;
+  height: 28px;
+
+  place-items: center;
+
+  border-radius: 999px;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+
+  font-weight: 700;
+}
+
+
+.learning-resources-figma__focus-chips {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+
+.learning-resources-figma__focus-label,
+.learning-resources-figma__focus-chip {
+  min-height: 30px;
+
+  padding: 6px 12px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #475569;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.learning-resources-figma__focus-label {
+  background: #f8fafc;
+}
+
+
+.learning-resources-figma__focus-chip {
+  cursor: pointer;
+}
+
+
+.learning-resources-figma__focus-chip--active {
+  border-color: #1d4ed8;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+
+.learning-resources-figma__resource-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 22px;
+
+  margin-top: 24px;
+}
+
+
+.learning-resources-figma__resource-card {
+  display: flex;
+
+  min-width: 0;
+
+  flex-direction: column;
+
+  padding: 20px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+
+  background: #ffffff;
+}
+
+
+.learning-resources-figma__resource-card h3 {
+  min-height: 48px;
+
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 20px;
+  line-height: 1.3;
+
+  overflow-wrap: anywhere;
+}
+
+
+.learning-resources-figma__provider {
+  margin: 4px 0 0;
+
+  color: #475569;
+
+  font-size: 13px;
+}
+
+
+.learning-resources-figma__badges {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 14px;
+}
+
+
+.learning-resources-figma__badge {
+  display: inline-flex;
+
+  min-height: 28px;
+
+  align-items: center;
+
+  padding: 5px 10px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+
+  background: #f8fafc;
+  color: #475569;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+
+.learning-resources-figma__badge--free {
+  border-color: #15803d;
+
+  background: #dcfce7;
+  color: #15803d;
+}
+
+
+.learning-resources-figma__badge--freemium {
+  border-color: #1d4ed8;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+
+.learning-resources-figma__badge--paid {
+  border-color: #b45309;
+
+  background: #fef3c7;
+  color: #92400e;
+}
+
+
+.learning-resources-figma__badge--unknown {
+  border-color: #64748b;
+
+  background: #f1f5f9;
+  color: #475569;
+}
+
+
+.learning-resources-figma__skill {
+  margin: 14px 0 0;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.learning-resources-figma__resource-meta {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 18px;
+
+  margin-top: 8px;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+
+.learning-resources-figma__description {
+  margin: 14px 0 0;
+
+  color: #475569;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+.learning-resources-figma__why {
+  margin-top: 16px;
+}
+
+
+.learning-resources-figma__why strong {
+  color: #0f172a;
+
+  font-size: 12px;
+}
+
+
+.learning-resources-figma__why p {
+  margin: 5px 0 0;
+
+  color: #475569;
+
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+
+.learning-resources-figma__resource-actions {
+  display: grid;
+
+  grid-template-columns:
+    minmax(120px, 1.4fr)
+    minmax(70px, 0.8fr)
+    minmax(86px, 1fr)
+    minmax(100px, 1fr);
+
+  gap: 8px;
+
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+
+.learning-resources-figma__resource-actions
+.gn-button {
+  display: inline-flex;
+
+  min-width: 0;
+
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+}
+
+
+.learning-resources-figma__feedback-button,
+.learning-resources-figma__report-button {
+  min-height: 42px;
+
+  padding: 7px 9px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #334155;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.learning-resources-figma__feedback-button--active {
+  border-color: #1d4ed8;
+
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+
+.learning-resources-figma__feedback-button:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.65;
+}
+
+
+.learning-resources-figma__error {
+  margin: 12px 0 0;
+
+  color: #b91c1c;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+
+.learning-resources-figma__success {
+  margin: 12px 0 0;
+
+  color: #15803d;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+
+.learning-resources-figma__show-more {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 16px;
+
+  margin-top: 22px;
+}
+
+
+.learning-resources-figma__show-more span {
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+
+.learning-resources-figma__guidance-note {
+  margin: 20px 0 0;
+  padding: 12px 14px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+
+  background: #f8fafc;
+  color: #475569;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+.learning-resources-figma__after-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 20px;
+}
+
+
+.learning-resources-figma__after-actions p {
+  flex: 1 1 280px;
+
+  margin: 0 0 0 8px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+
+.learning-resources-figma__modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+
+  inset: 0;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 20px;
+
+  background:
+    rgba(
+      15,
+      23,
+      42,
+      0.52
+    );
+}
+
+
+.learning-resources-figma__report-modal {
+  width: min(
+    100%,
+    540px
+  );
+
+  padding: 24px;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 24px 60px
+    rgba(
+      15,
+      23,
+      42,
+      0.24
+    );
+}
+
+
+.learning-resources-figma__report-modal h2 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 22px;
+}
+
+
+.learning-resources-figma__report-modal > p {
+  margin: 8px 0 0;
+
+  color: #475569;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+.learning-resources-figma__report-modal form {
+  display: grid;
+
+  gap: 18px;
+
+  margin-top: 22px;
+}
+
+
+.learning-resources-figma__report-modal label {
+  display: grid;
+
+  gap: 7px;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.learning-resources-figma__report-modal select,
+.learning-resources-figma__report-modal textarea {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  font: inherit;
+  font-size: 13px;
+}
+
+
+.learning-resources-figma__report-modal textarea {
+  resize: vertical;
+}
+
+
+.learning-resources-figma__modal-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+
+.learning-resources-figma__report-success {
+  margin-top: 20px;
+  padding: 14px;
+
+  border: 1px solid #86efac;
+  border-radius: 10px;
+
+  background: #f0fdf4;
+  color: #166534;
+
+  font-size: 13px;
+}
+
+
+@media (max-width: 1080px) {
+  .learning-resources-figma__need-row {
+    grid-template-columns:
+      46px
+      minmax(180px, 1fr)
+      100px
+      100px;
+  }
+
+  .learning-resources-figma__need-row
+  > span:nth-last-child(-n + 2) {
+    display: none;
+  }
+
+  .learning-resources-figma__resource-actions {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+@media (max-width: 900px) {
+  .learning-resources-figma__selector-grid,
+  .learning-resources-figma__plan-metrics,
+  .learning-resources-figma__resource-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-resources-figma__need-row {
+    grid-template-columns:
+      42px
+      minmax(0, 1fr)
+      auto;
+  }
+
+  .learning-resources-figma__need-row
+  > span:nth-child(4),
+  .learning-resources-figma__need-row
+  > span:nth-child(5),
+  .learning-resources-figma__need-row
+  > span:nth-child(6) {
+    display: none;
+  }
+}
+
+
+@media (max-width: 720px) {
+  .learning-resources-figma__plan,
+  .learning-resources-figma__needs,
+  .learning-resources-figma__resources,
+  .learning-resources-figma__after {
+    padding: 20px;
+  }
+
+  .learning-resources-figma__resource-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-resources-figma__resource-actions
+  .gn-button,
+  .learning-resources-figma__feedback-button,
+  .learning-resources-figma__report-button {
+    width: 100%;
+  }
+
+  .learning-resources-figma__after-actions {
+    display: grid;
+
+    grid-template-columns: 1fr;
+  }
+
+  .learning-resources-figma__after-actions
+  .gn-button {
+    width: 100%;
+  }
+
+  .learning-resources-figma__after-actions p {
+    margin-left: 0;
+  }
+
+  .learning-resources-figma__modal-actions {
+    display: grid;
+
+    grid-template-columns: 1fr;
+  }
+
+  .learning-resources-figma__modal-actions
+  .gn-button {
+    width: 100%;
+  }
+}

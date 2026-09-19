@@ -18,6 +18,11 @@ import {
   getTopMatchExplanation,
 } from '../services/careerService'
 
+import {
+  getStoredCareerSelection,
+  saveCareerSelection,
+} from '../services/careerSelectionService'
+
 import './CareerGuidancePage.css'
 
 
@@ -248,6 +253,9 @@ function CareerRecommendationsPage() {
   const topRecommendationId =
     topRecommendation?.career_id ?? null
 
+  const topRecommendationName =
+    topRecommendation?.career_name ?? ''
+
 
   const otherRecommendations =
     rankedRecommendations.slice(
@@ -302,6 +310,38 @@ function CareerRecommendationsPage() {
       ? 'Generating AI explanation...'
       : storedMatchExplanation.text,
   }
+
+
+  useEffect(
+    () => {
+      if (
+        !topRecommendationId
+        || !topRecommendationName
+      ) {
+        return
+      }
+
+      const storedSelection =
+        getStoredCareerSelection()
+
+      if (storedSelection) {
+        return
+      }
+
+      saveCareerSelection(
+        {
+          career_id:
+            topRecommendationId,
+          career_name:
+            topRecommendationName,
+        },
+      )
+    },
+    [
+      topRecommendationId,
+      topRecommendationName,
+    ],
+  )
 
 
   async function loadReadinessForCareers(
@@ -557,15 +597,66 @@ function CareerRecommendationsPage() {
   ])
 
 
+  function rememberCareerSelection(
+    careerId,
+  ) {
+    const selectedCareer =
+      rankedRecommendations.find(
+        (recommendation) =>
+          Number(
+            recommendation
+              .career_id,
+          )
+          === Number(
+            careerId,
+          ),
+      )
+
+    if (!selectedCareer) {
+      return null
+    }
+
+    return saveCareerSelection(
+      {
+        career_id:
+          selectedCareer.career_id,
+        career_name:
+          selectedCareer.career_name,
+      },
+    )
+  }
+
+
   function openSkillGapAnalysis(
     careerId,
   ) {
-    if (!careerId) {
+    if (
+      !rememberCareerSelection(
+        careerId,
+      )
+    ) {
       return
     }
 
     navigate(
       `/skill-gap-analysis?career_id=${careerId}`,
+    )
+  }
+
+
+  function openCareerRoadmap(
+    careerId,
+  ) {
+    if (
+      !rememberCareerSelection(
+        careerId,
+      )
+    ) {
+      return
+    }
+
+    navigate(
+      `/career-roadmap?career_id=${careerId}`,
     )
   }
 
@@ -642,8 +733,10 @@ function CareerRecommendationsPage() {
             </h1>
 
             <p>
-              Explore career matches calculated
-              from your approved profile evidence.
+              Explore career matches from your
+              approved profile. Your top match is
+              used as the default career until you
+              choose another.
             </p>
           </div>
 
@@ -900,18 +993,33 @@ function CareerRecommendationsPage() {
                       </div>
                     </div>
 
-                    <button
-                      className="gn-button gn-button--primary career-recommendations-figma__top-action"
-                      type="button"
-                      onClick={() =>
-                        openSkillGapAnalysis(
-                          topRecommendation
-                            .career_id,
-                        )
-                      }
-                    >
-                      View Skill Gaps
-                    </button>
+                    <div className="career-recommendations-figma__top-actions">
+                      <button
+                        className="gn-button gn-button--primary career-recommendations-figma__top-action"
+                        type="button"
+                        onClick={() =>
+                          openSkillGapAnalysis(
+                            topRecommendation
+                              .career_id,
+                          )
+                        }
+                      >
+                        View Skill Gaps
+                      </button>
+
+                      <button
+                        className="career-recommendations-figma__secondary-button"
+                        type="button"
+                        onClick={() =>
+                          openCareerRoadmap(
+                            topRecommendation
+                              .career_id,
+                          )
+                        }
+                      >
+                        View Roadmap
+                      </button>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -1009,17 +1117,31 @@ function CareerRecommendationsPage() {
                           )}
                         </div>
 
-                        <button
-                          className="career-recommendations-figma__secondary-button"
-                          type="button"
-                          onClick={() =>
-                            openSkillGapAnalysis(
-                              recommendation.career_id,
-                            )
-                          }
-                        >
-                          View Skill Gaps
-                        </button>
+                        <div className="career-recommendations-figma__career-card-actions">
+                          <button
+                            className="career-recommendations-figma__secondary-button"
+                            type="button"
+                            onClick={() =>
+                              openSkillGapAnalysis(
+                                recommendation.career_id,
+                              )
+                            }
+                          >
+                            View Skill Gaps
+                          </button>
+
+                          <button
+                            className="career-recommendations-figma__secondary-button"
+                            type="button"
+                            onClick={() =>
+                              openCareerRoadmap(
+                                recommendation.career_id,
+                              )
+                            }
+                          >
+                            View Roadmap
+                          </button>
+                        </div>
                       </article>
                     )
                   },
