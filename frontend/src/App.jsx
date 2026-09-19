@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import StudentLayout from './layouts/StudentLayout'
 import CareerRecommendationsPage from './pages/CareerRecommendationsPage'
+import ExploreCareersPage from './pages/ExploreCareersPage'
 import CareerRoadmapPage from './pages/CareerRoadmapPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import HomePage from './pages/HomePage'
@@ -53,6 +54,11 @@ function App() {
           <Route
             path="/career-recommendations"
             element={<CareerRecommendationsPage />}
+          />
+
+          <Route
+            path="/explore-careers"
+            element={<ExploreCareersPage />}
           />
 
           <Route

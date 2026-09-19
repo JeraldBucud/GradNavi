@@ -198,8 +198,133 @@ async function reportLearningResource({
 }
 
 
+async function getExploreCareers({
+  search = '',
+  category = '',
+  status = 'all',
+  page = 1,
+  pageSize = 12,
+} = {}) {
+  const params =
+    new URLSearchParams()
+
+  const normalizedSearch =
+    String(
+      search || '',
+    ).trim()
+
+  const normalizedCategory =
+    String(
+      category || '',
+    ).trim()
+
+  const normalizedStatus =
+    String(
+      status || 'all',
+    ).trim()
+
+  if (normalizedSearch) {
+    params.set(
+      'search',
+      normalizedSearch,
+    )
+  }
+
+  if (normalizedCategory) {
+    params.set(
+      'category',
+      normalizedCategory,
+    )
+  }
+
+  params.set(
+    'status',
+    normalizedStatus || 'all',
+  )
+
+  params.set(
+    'page',
+    String(
+      page,
+    ),
+  )
+
+  params.set(
+    'page_size',
+    String(
+      pageSize,
+    ),
+  )
+
+  return apiRequest(
+    (
+      '/explore-careers/'
+      + `?${params.toString()}`
+    ),
+    {
+      requiresAuth: true,
+    },
+  )
+}
+
+
+async function getExploreCareerDetail(
+  careerId,
+) {
+  const encodedCareerId =
+    encodeURIComponent(
+      careerId,
+    )
+
+  return apiRequest(
+    (
+      '/explore-careers/'
+      + `${encodedCareerId}/`
+    ),
+    {
+      requiresAuth: true,
+    },
+  )
+}
+
+
+async function evaluateExploreCareer(
+  careerId,
+) {
+  const encodedCareerId =
+    encodeURIComponent(
+      careerId,
+    )
+
+  return apiRequest(
+    (
+      '/explore-careers/'
+      + `${encodedCareerId}/evaluate/`
+    ),
+    {
+      method: 'POST',
+      requiresAuth: true,
+    },
+  )
+}
+
+
+async function getGuidanceCareers() {
+  return apiRequest(
+    '/guidance-careers/',
+    {
+      requiresAuth: true,
+    },
+  )
+}
+
+
 export {
   completeRoadmapStep,
+  evaluateExploreCareer,
+  getExploreCareerDetail,
+  getExploreCareers,
+  getGuidanceCareers,
   getLearningResourceRecommendations,
   getRoadmapOverview,
   reportLearningResource,
