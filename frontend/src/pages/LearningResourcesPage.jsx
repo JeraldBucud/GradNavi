@@ -1568,46 +1568,60 @@ function LearningResourcesPage() {
               </p>
             </div>
 
-            <div className="learning-resources-figma__focus-chips">
+            <div className="learning-resources-figma__focus-toolbar">
               <span className="learning-resources-figma__focus-label">
-                Current focus
+                Learning focus:
               </span>
 
-              {
-                priorityFocuses.map(
-                  (step) => (
-                    <button
-                      key={
-                        step.skill_id
-                      }
-                      type="button"
-                      className={
-                        (
-                          'learning-resources-figma__focus-chip'
-                          + (
-                            Number(
-                              step.skill_id,
-                            )
-                            === selectedSkillId
-                              ? ' learning-resources-figma__focus-chip--active'
-                              : ''
-                          )
-                        )
-                      }
-                      onClick={() =>
-                        changeLearningFocus(
+              <div
+                className="learning-resources-figma__focus-chips"
+                role="group"
+                aria-label="Learning focus options"
+              >
+                {
+                  priorityFocuses.map(
+                    (step) => {
+                      const isActive =
+                        Number(
                           step.skill_id,
                         )
-                      }
-                    >
-                      {
-                        step
-                          .skill_name
-                      }
-                    </button>
-                  ),
-                )
-              }
+                        === selectedSkillId
+
+                      return (
+                        <button
+                          key={
+                            step.skill_id
+                          }
+                          type="button"
+                          className={
+                            (
+                              'learning-resources-figma__focus-chip'
+                              + (
+                                isActive
+                                  ? ' learning-resources-figma__focus-chip--active'
+                                  : ''
+                              )
+                            )
+                          }
+                          aria-pressed={
+                            isActive
+                          }
+                          onClick={() =>
+                            changeLearningFocus(
+                              step.skill_id,
+                            )
+                          }
+                        >
+                          {
+                            step
+                              .skill_name
+                          }
+                        </button>
+                      )
+                    },
+                  )
+                }
+              </div>
             </div>
 
 
