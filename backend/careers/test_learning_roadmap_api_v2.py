@@ -18,6 +18,9 @@ from careers.models import (
     LearningResourceSkill,
     RoadmapProgress,
 )
+from careers.services.learning_resource_discovery import (
+    LearningResourceDiscoveryRunResult,
+)
 from careers.services.learning_roadmap import (
     LearningPlan,
     LearningSuggestion,
@@ -508,6 +511,9 @@ class Sprint3LearningRoadmapAPITests(
 
 
     @patch(
+        "careers.views.ensure_learning_resource_catalogue"
+    )
+    @patch(
         "careers.views.generate_learning_plan"
     )
     @patch(
@@ -522,9 +528,24 @@ class Sprint3LearningRoadmapAPITests(
         provider_class,
         model_mock,
         plan_mock,
+        discovery_mock,
     ):
         resource = (
             self.create_resource()
+        )
+
+        discovery_mock.return_value = (
+            LearningResourceDiscoveryRunResult(
+                attempted=False,
+                reason="cooldown",
+                status="partial",
+                resource_count_before=1,
+                resource_count_after=1,
+                requested_count=0,
+                candidate_count=0,
+                persisted_count=0,
+                next_eligible_at=None,
+            )
         )
 
         plan_mock.return_value = (
@@ -560,6 +581,33 @@ class Sprint3LearningRoadmapAPITests(
             status.HTTP_200_OK,
         )
 
+        discovery_mock.assert_called_once_with(
+            skill_id=(
+                self.skill.id
+            ),
+        )
+
+        self.assertEqual(
+            response.data[
+                "data"
+            ][
+                "discovery"
+            ][
+                "reason"
+            ],
+            "cooldown",
+        )
+
+        self.assertFalse(
+            response.data[
+                "data"
+            ][
+                "discovery"
+            ][
+                "attempted"
+            ]
+        )
+
         self.assertEqual(
             response.data[
                 "data"
@@ -589,6 +637,309 @@ class Sprint3LearningRoadmapAPITests(
                 "explanation_source"
             ],
             "deterministic",
+        )
+
+
+    @patch(
+        "careers.views.get_or_generate_learning_resource_guidance"
+    )
+    @patch(
+        "careers.views.load_ranked_learning_resources"
+    )
+    @patch(
+        "careers.views.ensure_learning_resource_catalogue"
+    )
+    @patch(
+        "careers.views.generate_learning_plan"
+    )
+    def test_learning_resource_api_runs_discovery_before_ranking(
+        self,
+        plan_mock,
+        discovery_mock,
+        ranking_mock,
+        guidance_mock,
+    ):
+        plan_mock.return_value = (
+            self.plan()
+        )
+
+        call_order = []
+
+        def discovery_side_effect(
+            *,
+            skill_id,
+        ):
+            call_order.append(
+                "discovery"
+            )
+
+            return (
+                LearningResourceDiscoveryRunResult(
+                    attempted=True,
+                    reason="completed",
+                    status="success",
+                    resource_count_before=0,
+                    resource_count_after=6,
+                    requested_count=6,
+                    candidate_count=6,
+                    persisted_count=6,
+                    next_eligible_at=None,
+                )
+            )
+
+        def ranking_side_effect(
+            **kwargs,
+        ):
+            call_order.append(
+                "ranking"
+            )
+
+            return ()
+
+        discovery_mock.side_effect = (
+            discovery_side_effect
+        )
+
+        ranking_mock.side_effect = (
+            ranking_side_effect
+        )
+
+        guidance_mock.return_value = {
+            "guidance_items": [],
+            "is_ai_generated": False,
+            "fallback": True,
+            "cached": False,
+            "model": "gpt-test",
+            "version": "test",
+        }
+
+        response = self.client.get(
+            (
+                "/api/v1/"
+                "learning-resource-recommendations/"
+                f"?career_id={self.career.id}"
+                f"&skill_id={self.skill.id}"
+            ),
+            HTTP_AUTHORIZATION=(
+                self.authorization
+            ),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            call_order,
+            [
+                "discovery",
+                "ranking",
+            ],
+        )
+
+        self.assertEqual(
+            response.data[
+                "data"
+            ][
+                "discovery"
+            ][
+                "persisted_count"
+            ],
+            6,
+        )
+
+
+    @patch(
+        "careers.views.ensure_learning_resource_catalogue"
+    )
+    @patch(
+        "careers.views.generate_learning_plan"
+    )
+    @patch(
+        "careers.views.resolve_text_model",
+        return_value="gpt-test",
+    )
+    @patch(
+        "careers.views.OpenAITextProvider"
+    )
+    def test_learning_resource_access_filter_does_not_change_discovery_scope(
+        self,
+        provider_class,
+        model_mock,
+        plan_mock,
+        discovery_mock,
+    ):
+        free_resource = (
+            self.create_resource()
+        )
+
+        plan_mock.return_value = (
+            self.plan()
+        )
+
+        discovery_mock.return_value = (
+            LearningResourceDiscoveryRunResult(
+                attempted=False,
+                reason="enough_resources",
+                status=None,
+                resource_count_before=6,
+                resource_count_after=6,
+                requested_count=0,
+                candidate_count=0,
+                persisted_count=0,
+                next_eligible_at=None,
+            )
+        )
+
+        provider_class.side_effect = (
+            __import__(
+                "ai_services.exceptions",
+                fromlist=[
+                    "AIProviderUnavailableError"
+                ],
+            )
+            .AIProviderUnavailableError(
+                "Unavailable"
+            )
+        )
+
+        response = self.client.get(
+            (
+                "/api/v1/"
+                "learning-resource-recommendations/"
+                f"?career_id={self.career.id}"
+                f"&skill_id={self.skill.id}"
+                "&access_type=free"
+            ),
+            HTTP_AUTHORIZATION=(
+                self.authorization
+            ),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        discovery_mock.assert_called_once_with(
+            skill_id=(
+                self.skill.id
+            ),
+        )
+
+        self.assertEqual(
+            response.data[
+                "data"
+            ][
+                "resources"
+            ][0][
+                "id"
+            ],
+            free_resource.id,
+        )
+
+
+    @patch(
+        "careers.views.ensure_learning_resource_catalogue"
+    )
+    @patch(
+        "careers.views.generate_learning_plan"
+    )
+    @patch(
+        "careers.views.resolve_text_model",
+        return_value="gpt-test",
+    )
+    @patch(
+        "careers.views.OpenAITextProvider"
+    )
+    def test_learning_resource_discovery_failure_keeps_existing_resources_available(
+        self,
+        provider_class,
+        model_mock,
+        plan_mock,
+        discovery_mock,
+    ):
+        resource = (
+            self.create_resource()
+        )
+
+        plan_mock.return_value = (
+            self.plan()
+        )
+
+        discovery_mock.return_value = (
+            LearningResourceDiscoveryRunResult(
+                attempted=True,
+                reason="provider_failure",
+                status="provider_failure",
+                resource_count_before=1,
+                resource_count_after=1,
+                requested_count=5,
+                candidate_count=0,
+                persisted_count=0,
+                next_eligible_at=None,
+            )
+        )
+
+        provider_class.side_effect = (
+            __import__(
+                "ai_services.exceptions",
+                fromlist=[
+                    "AIProviderUnavailableError"
+                ],
+            )
+            .AIProviderUnavailableError(
+                "Unavailable"
+            )
+        )
+
+        response = self.client.get(
+            (
+                "/api/v1/"
+                "learning-resource-recommendations/"
+                f"?career_id={self.career.id}"
+                f"&skill_id={self.skill.id}"
+            ),
+            HTTP_AUTHORIZATION=(
+                self.authorization
+            ),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            response.data[
+                "data"
+            ][
+                "discovery"
+            ][
+                "reason"
+            ],
+            "provider_failure",
+        )
+
+        self.assertEqual(
+            response.data[
+                "data"
+            ][
+                "resource_count"
+            ],
+            1,
+        )
+
+        self.assertEqual(
+            response.data[
+                "data"
+            ][
+                "resources"
+            ][0][
+                "id"
+            ],
+            resource.id,
         )
 
 

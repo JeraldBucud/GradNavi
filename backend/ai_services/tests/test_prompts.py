@@ -36,6 +36,11 @@ from ai_services.prompts.interview_questions import (
     INTERVIEW_QUESTION_OUTPUT_REQUIREMENTS,
     build_interview_question_prompt,
 )
+from ai_services.prompts.learning_resource_discovery import (
+    OUTPUT_REQUIREMENTS as LEARNING_RESOURCE_DISCOVERY_OUTPUT_REQUIREMENTS,
+    SYSTEM_INSTRUCTIONS as LEARNING_RESOURCE_DISCOVERY_SYSTEM_INSTRUCTIONS,
+    build_learning_resource_discovery_prompt,
+)
 from ai_services.prompts.resume import (
     RESUME_OUTPUT_REQUIREMENTS,
     build_resume_prompt,
@@ -48,6 +53,7 @@ from ai_services.schemas.inputs import (
     CoverLetterGenerationInput,
     InterviewFeedbackInput,
     InterviewQuestionInput,
+    LearningResourceDiscoveryInput,
     ResumeGenerationInput,
 )
 
@@ -81,6 +87,7 @@ class CommonPromptContractTests(SimpleTestCase):
             "skill_gap_summary",
             "roadmap_guidance",
             "learning_resource_guidance",
+            "learning_resource_discovery",
         }
 
         actual = {
@@ -622,3 +629,202 @@ class InterviewFeedbackPromptTests(SimpleTestCase):
                 phrase,
                 instructions,
             )
+
+
+class LearningResourceDiscoveryPromptTests(
+    SimpleTestCase
+):
+    def test_discovery_operation_identifier(
+        self,
+    ):
+        package = (
+            build_learning_resource_discovery_prompt(
+                LearningResourceDiscoveryInput(
+                    skill_name=(
+                        "Mathematics Knowledge"
+                    ),
+                    skill_description=(
+                        "Knowledge of arithmetic "
+                        "and mathematics."
+                    ),
+                    career_name=(
+                        "Software Engineer"
+                    ),
+                    access_type="free",
+                    requested_count=4,
+                    existing_urls=[
+                        (
+                            "https://example.com/"
+                            "existing"
+                        )
+                    ],
+                )
+            )
+        )
+
+        self.assertEqual(
+            package.operation,
+            (
+                AIOperation
+                .LEARNING_RESOURCE_DISCOVERY
+            ),
+        )
+
+
+    def test_discovery_context_contains_resource_target(
+        self,
+    ):
+        package = (
+            build_learning_resource_discovery_prompt(
+                LearningResourceDiscoveryInput(
+                    skill_name=(
+                        "Mathematics Knowledge"
+                    ),
+                    access_type="freemium",
+                    requested_count=3,
+                )
+            )
+        )
+
+        self.assertIn(
+            '"skill_name": '
+            '"Mathematics Knowledge"',
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            '"access_type": "freemium"',
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            '"requested_count": 3',
+            package.trusted_context,
+        )
+
+
+    def test_discovery_does_not_use_student_profile(
+        self,
+    ):
+        package = (
+            build_learning_resource_discovery_prompt(
+                LearningResourceDiscoveryInput(
+                    skill_name="Python",
+                    requested_count=2,
+                )
+            )
+        )
+
+        self.assertEqual(
+            package.untrusted_content,
+            "",
+        )
+
+        self.assertNotIn(
+            "student_profile",
+            package.trusted_context,
+        )
+
+
+    def test_discovery_requires_real_web_resources(
+        self,
+    ):
+        instructions = " ".join(
+            LEARNING_RESOURCE_DISCOVERY_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        self.assertIn(
+            "current web-search evidence",
+            instructions,
+        )
+
+        self.assertIn(
+            "never invent",
+            instructions,
+        )
+
+        self.assertIn(
+            "existing_urls",
+            instructions,
+        )
+
+
+
+
+    def test_discovery_access_type_prefers_evidence_based_classification(
+        self,
+    ):
+        requirements = " ".join(
+            LEARNING_RESOURCE_DISCOVERY_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        self.assertIn(
+            "classify access_type",
+            requirements,
+        )
+
+        self.assertIn(
+            "free",
+            requirements,
+        )
+
+        self.assertIn(
+            "freemium",
+            requirements,
+        )
+
+        self.assertIn(
+            "paid",
+            requirements,
+        )
+
+        self.assertIn(
+            "use unknown only",
+            requirements,
+        )
+
+        self.assertIn(
+            "source evidence",
+            requirements,
+        )
+
+
+    def test_discovery_description_excludes_citation_markup(
+        self,
+    ):
+        requirements = " ".join(
+            LEARNING_RESOURCE_DISCOVERY_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        self.assertIn(
+            "do not include markdown links",
+            requirements,
+        )
+
+        self.assertIn(
+            "citations",
+            requirements,
+        )
+
+
+    def test_discovery_output_limits_candidates(
+        self,
+    ):
+        requirements = " ".join(
+            LEARNING_RESOURCE_DISCOVERY_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        self.assertIn(
+            "requested_count",
+            requirements,
+        )
+
+        self.assertIn(
+            "http or https",
+            requirements,
+        )
+
+        self.assertIn(
+            "is_ai_generated to true",
+            requirements,
+        )
