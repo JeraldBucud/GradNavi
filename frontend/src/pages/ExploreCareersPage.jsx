@@ -389,8 +389,6 @@ function ExploreCareersPage() {
     setDetailError('')
     setEvaluationError('')
     setEvaluationMessage('')
-    setEvaluationError('')
-    setEvaluationMessage('')
 
     try {
       const response =

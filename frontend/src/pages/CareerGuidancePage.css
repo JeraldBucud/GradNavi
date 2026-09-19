@@ -1584,16 +1584,6 @@
   line-height: 20px;
 }
 
-.career-recommendations-figma__gap-action-row {
-  display: flex;
-
-  align-items: flex-end;
-  justify-content: space-between;
-
-  gap: 20px;
-
-  margin-top: auto;
-}
 
 .career-recommendations-figma__priority-gap {
   min-height: 28px;
@@ -1863,10 +1853,6 @@
     grid-template-columns: 1fr;
   }
 
-  .career-recommendations-figma__gap-action-row {
-    align-items: stretch;
-    flex-direction: column;
-  }
 
   .career-recommendations-figma__top-action {
     width: 100%;
@@ -4917,23 +4903,8 @@
 
 /* CAREER RECOMMENDATIONS ACTION LAYOUT FIX */
 
-.career-recommendations-figma__gap-action-row {
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    auto;
-
-  align-items: end;
-
-  gap: 20px;
-}
 
 
-.career-recommendations-figma__gap-action-row
-> div:first-child {
-  min-width: 0;
-}
 
 
 .career-recommendations-figma__top-actions {
@@ -4966,11 +4937,6 @@
 
 
 @media (max-width: 720px) {
-  .career-recommendations-figma__gap-action-row {
-    grid-template-columns: 1fr;
-
-    align-items: stretch;
-  }
 
 
   .career-recommendations-figma__top-actions {
