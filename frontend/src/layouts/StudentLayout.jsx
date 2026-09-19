@@ -2,6 +2,7 @@ import {
   BarChart3,
   BookOpen,
   Briefcase,
+  Compass,
   FileText,
   LayoutDashboard,
   LogOut,
@@ -42,6 +43,12 @@ const studentNavigation = [
     label: 'Career Recommendations',
     icon: Briefcase,
     path: '/career-recommendations',
+    implemented: true,
+  },
+  {
+    label: 'Explore Careers',
+    icon: Compass,
+    path: '/explore-careers',
     implemented: true,
   },
   {

@@ -661,6 +661,23 @@ function CareerRecommendationsPage() {
   }
 
 
+  function openLearningResources(
+    careerId,
+  ) {
+    if (
+      !rememberCareerSelection(
+        careerId,
+      )
+    ) {
+      return
+    }
+
+    navigate(
+      `/learning-resources?career_id=${careerId}`,
+    )
+  }
+
+
   function renderWeight(
     key,
   ) {
@@ -973,53 +990,51 @@ function CareerRecommendationsPage() {
                     )}
                   </div>
 
-                  <div className="career-recommendations-figma__gap-action-row">
-                    <div>
-                      <span className="career-recommendations-figma__evidence-label">
-                        Priority gap
-                      </span>
+                  <div className="career-recommendations-figma__priority-gap-section">
+                    <span className="career-recommendations-figma__evidence-label">
+                      Priority gap
+                    </span>
 
-                      <div className="career-recommendations-figma__priority-gap">
-                        {priorityGap ? (
-                          <span className="career-recommendations-figma__pill career-recommendations-figma__pill--amber">
-                            {priorityGap}
-                          </span>
-                        ) : (
-                          <p className="career-recommendations-figma__empty-evidence">
-                            No priority gap
-                            identified.
-                          </p>
-                        )}
-                      </div>
+                    <div className="career-recommendations-figma__priority-gap">
+                      {priorityGap ? (
+                        <span className="career-recommendations-figma__pill career-recommendations-figma__pill--amber">
+                          {priorityGap}
+                        </span>
+                      ) : (
+                        <p className="career-recommendations-figma__empty-evidence">
+                          No priority gap
+                          identified.
+                        </p>
+                      )}
                     </div>
+                  </div>
 
-                    <div className="career-recommendations-figma__top-actions">
-                      <button
-                        className="gn-button gn-button--primary career-recommendations-figma__top-action"
-                        type="button"
-                        onClick={() =>
-                          openSkillGapAnalysis(
-                            topRecommendation
-                              .career_id,
-                          )
-                        }
-                      >
-                        View Skill Gaps
-                      </button>
+                  <div className="career-recommendations-figma__top-actions career-recommendations-figma__top-actions--separate">
+                    <button
+                      className="gn-button gn-button--primary career-recommendations-figma__top-action"
+                      type="button"
+                      onClick={() =>
+                        openSkillGapAnalysis(
+                          topRecommendation
+                            .career_id,
+                        )
+                      }
+                    >
+                      View Skill Gaps
+                    </button>
 
-                      <button
-                        className="career-recommendations-figma__secondary-button"
-                        type="button"
-                        onClick={() =>
-                          openCareerRoadmap(
-                            topRecommendation
-                              .career_id,
-                          )
-                        }
-                      >
-                        View Roadmap
-                      </button>
-                    </div>
+                    <button
+                      className="career-recommendations-figma__secondary-button"
+                      type="button"
+                      onClick={() =>
+                        openCareerRoadmap(
+                          topRecommendation
+                            .career_id,
+                        )
+                      }
+                    >
+                      View Roadmap
+                    </button>
                   </div>
                 </div>
               </article>
@@ -1141,6 +1156,18 @@ function CareerRecommendationsPage() {
                           >
                             View Roadmap
                           </button>
+
+                          <button
+                            className="career-recommendations-figma__secondary-button career-recommendations-figma__resource-action"
+                            type="button"
+                            onClick={() =>
+                              openLearningResources(
+                                recommendation.career_id,
+                              )
+                            }
+                          >
+                            Learning Resources
+                          </button>
                         </div>
                       </article>
                     )
@@ -1222,17 +1249,21 @@ function CareerRecommendationsPage() {
 
                 <article className="career-recommendations-figma__action-row">
                   <strong>
-                    Find learning resources once
-                    available
+                    Find learning resources for
+                    your selected career
                   </strong>
 
                   <button
                     className="career-recommendations-figma__secondary-button"
                     type="button"
-                    disabled
-                    title="The Learning Resources screen is not implemented yet."
+                    onClick={() =>
+                      openLearningResources(
+                        topRecommendation
+                          .career_id,
+                      )
+                    }
                   >
-                    Open
+                    Open Learning Resources
                   </button>
                 </article>
               </div>
