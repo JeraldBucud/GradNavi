@@ -4673,6 +4673,7 @@
   line-height: 20px;
 
   -webkit-box-orient: vertical;
+  line-clamp: 4;
   -webkit-line-clamp: 4;
 }
 
