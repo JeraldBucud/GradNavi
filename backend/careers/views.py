@@ -75,6 +75,9 @@ from careers.services.skill_gap_summary import (
     get_cached_skill_gap_summary,
     store_skill_gap_summary,
 )
+from careers.services.learning_resource_discovery import (
+    ensure_learning_resource_catalogue,
+)
 from careers.services.learning_resource_guidance import (
     get_or_generate_learning_resource_guidance,
 )
@@ -1749,6 +1752,12 @@ class LearningResourceRecommendationView(
                 }
             )
 
+        discovery = (
+            ensure_learning_resource_catalogue(
+                skill_id=skill_id,
+            )
+        )
+
         ranked = (
             load_ranked_learning_resources(
                 skill_id=skill_id,
@@ -1973,6 +1982,46 @@ class LearningResourceRecommendationView(
                             _decimal_api_value(
                                 suggestion
                                 .gap_amount
+                            )
+                        ),
+                    },
+                    "discovery": {
+                        "attempted": (
+                            discovery
+                            .attempted
+                        ),
+                        "reason": (
+                            discovery
+                            .reason
+                        ),
+                        "status": (
+                            discovery
+                            .status
+                        ),
+                        "resource_count_before": (
+                            discovery
+                            .resource_count_before
+                        ),
+                        "resource_count_after": (
+                            discovery
+                            .resource_count_after
+                        ),
+                        "requested_count": (
+                            discovery
+                            .requested_count
+                        ),
+                        "candidate_count": (
+                            discovery
+                            .candidate_count
+                        ),
+                        "persisted_count": (
+                            discovery
+                            .persisted_count
+                        ),
+                        "next_eligible_at": (
+                            _datetime_api_value(
+                                discovery
+                                .next_eligible_at
                             )
                         ),
                     },

@@ -3529,10 +3529,11 @@
 }
 
 
-.learning-resources-figma__focus-chips {
+.learning-resources-figma__focus-toolbar {
   display: flex;
 
   flex-wrap: wrap;
+  align-items: center;
 
   gap: 10px;
 
@@ -3540,7 +3541,26 @@
 }
 
 
-.learning-resources-figma__focus-label,
+.learning-resources-figma__focus-label {
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+
+.learning-resources-figma__focus-chips {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+
 .learning-resources-figma__focus-chip {
   min-height: 30px;
 
@@ -3552,27 +3572,35 @@
   background: #ffffff;
   color: #475569;
 
+  cursor: pointer;
+
   font: inherit;
   font-size: 11px;
   font-weight: 600;
 }
 
 
-.learning-resources-figma__focus-label {
+.learning-resources-figma__focus-chip:hover {
+  border-color: #94a3b8;
+
   background: #f8fafc;
 }
 
 
-.learning-resources-figma__focus-chip {
-  cursor: pointer;
-}
-
-
-.learning-resources-figma__focus-chip--active {
+.learning-resources-figma__focus-chip--active,
+.learning-resources-figma__focus-chip--active:hover {
   border-color: #1d4ed8;
 
   background: #dbeafe;
   color: #1d4ed8;
+}
+
+
+.learning-resources-figma__resources
+> .career-guidance-loading-card,
+.learning-resources-figma__resources
+> .career-guidance-inline-state {
+  margin-top: 24px;
 }
 
 

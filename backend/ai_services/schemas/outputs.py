@@ -14,8 +14,13 @@ validation remain part of later Sprint 4 work.
 """
 
 from typing import Literal
+from urllib.parse import urlparse
 
-from pydantic import Field
+from pydantic import (
+    Field,
+    field_validator,
+    model_validator,
+)
 
 from ai_services.schemas.common import AIContractModel
 
@@ -317,3 +322,126 @@ class LearningResourceGuidanceExplanation(
     )
 
     is_ai_generated: Literal[True]
+
+
+class DiscoveredLearningResourceCandidate(
+    AIContractModel
+):
+    """
+    One externally discovered Learning Resource candidate.
+
+    The URL is treated as untrusted external data and must
+    use HTTP or HTTPS before later validation and persistence.
+    """
+
+    title: str = Field(
+        min_length=1,
+        max_length=255,
+    )
+
+    provider: str = Field(
+        min_length=1,
+        max_length=255,
+    )
+
+    url: str = Field(
+        min_length=1,
+        max_length=2_000,
+    )
+
+    resource_type: Literal[
+        "course",
+        "documentation",
+        "article",
+        "video",
+        "tutorial",
+        "book",
+        "other",
+    ]
+
+    access_type: Literal[
+        "free",
+        "freemium",
+        "paid",
+        "unknown",
+    ]
+
+    description: str = Field(
+        min_length=1,
+        max_length=1_000,
+    )
+
+    @field_validator(
+        "url"
+    )
+    @classmethod
+    def validate_resource_url(
+        cls,
+        value,
+    ):
+        parsed = urlparse(
+            value
+        )
+
+        if (
+            parsed.scheme
+            not in {
+                "http",
+                "https",
+            }
+            or not parsed.netloc
+        ):
+            raise ValueError(
+                "Resource URL must use HTTP or HTTPS."
+            )
+
+        return value
+
+
+class LearningResourceDiscoveryResult(
+    AIContractModel
+):
+    """
+    Structured Learning Resource discovery result.
+
+    Zero candidates is valid when no suitable real
+    resource was found.
+    """
+
+    candidates: list[
+        DiscoveredLearningResourceCandidate
+    ] = Field(
+        max_length=6,
+    )
+
+    is_ai_generated: Literal[True]
+
+    @model_validator(
+        mode="after"
+    )
+    def validate_unique_urls(
+        self,
+    ):
+        normalized_urls = [
+            item.url
+            .strip()
+            .casefold()
+            for item
+            in self.candidates
+        ]
+
+        if (
+            len(
+                normalized_urls
+            )
+            != len(
+                set(
+                    normalized_urls
+                )
+            )
+        ):
+            raise ValueError(
+                "Discovered resource URLs must be unique."
+            )
+
+        return self

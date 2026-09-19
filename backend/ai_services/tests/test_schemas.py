@@ -23,6 +23,7 @@ from ai_services.schemas.common import (
 )
 from ai_services.schemas.inputs import (
     JOB_DESCRIPTION_MAX_LENGTH,
+    LearningResourceDiscoveryInput,
     CoverLetterGenerationInput,
     InterviewFeedbackInput,
     InterviewQuestionInput,
@@ -30,6 +31,8 @@ from ai_services.schemas.inputs import (
 )
 from ai_services.schemas.outputs import (
     CoverLetterDraft,
+    DiscoveredLearningResourceCandidate,
+    LearningResourceDiscoveryResult,
     InterviewFeedback,
     InterviewQuestion,
     InterviewQuestionSet,
@@ -388,3 +391,168 @@ class OutputSchemaTests(SimpleTestCase):
         self.assertTrue(
             feedback.requires_user_review
         )
+
+
+class LearningResourceDiscoverySchemaTests(
+    SimpleTestCase
+):
+    def test_valid_discovery_input(
+        self,
+    ):
+        request = (
+            LearningResourceDiscoveryInput(
+                skill_name=(
+                    "Mathematics Knowledge"
+                ),
+                skill_description=(
+                    "Knowledge of mathematics."
+                ),
+                career_name=(
+                    "Software Engineer"
+                ),
+                access_type="free",
+                requested_count=4,
+                existing_urls=[
+                    (
+                        "https://example.com/"
+                        "existing"
+                    )
+                ],
+            )
+        )
+
+        self.assertEqual(
+            request.requested_count,
+            4,
+        )
+
+        self.assertEqual(
+            request.access_type,
+            "free",
+        )
+
+
+    def test_discovery_input_rejects_more_than_six(
+        self,
+    ):
+        with self.assertRaises(
+            ValidationError
+        ):
+            LearningResourceDiscoveryInput(
+                skill_name="Python",
+                requested_count=7,
+            )
+
+
+    def test_discovery_input_rejects_invalid_access_type(
+        self,
+    ):
+        with self.assertRaises(
+            ValidationError
+        ):
+            LearningResourceDiscoveryInput(
+                skill_name="Python",
+                access_type="subscription",
+                requested_count=1,
+            )
+
+
+    def test_discovered_candidate_requires_http_url(
+        self,
+    ):
+        with self.assertRaises(
+            ValidationError
+        ):
+            DiscoveredLearningResourceCandidate(
+                title="Example",
+                provider="Example Provider",
+                url="ftp://example.com/resource",
+                resource_type="course",
+                access_type="free",
+                description="Example resource.",
+            )
+
+
+    def test_valid_discovery_result(
+        self,
+    ):
+        result = (
+            LearningResourceDiscoveryResult(
+                candidates=[
+                    DiscoveredLearningResourceCandidate(
+                        title=(
+                            "Example Mathematics Course"
+                        ),
+                        provider=(
+                            "Example University"
+                        ),
+                        url=(
+                            "https://example.edu/"
+                            "mathematics"
+                        ),
+                        resource_type="course",
+                        access_type="free",
+                        description=(
+                            "Mathematics learning resource."
+                        ),
+                    )
+                ],
+                is_ai_generated=True,
+            )
+        )
+
+        self.assertEqual(
+            len(
+                result.candidates
+            ),
+            1,
+        )
+
+
+    def test_discovery_result_allows_zero_candidates(
+        self,
+    ):
+        result = (
+            LearningResourceDiscoveryResult(
+                candidates=[],
+                is_ai_generated=True,
+            )
+        )
+
+        self.assertEqual(
+            result.candidates,
+            [],
+        )
+
+
+    def test_discovery_result_rejects_duplicate_urls(
+        self,
+    ):
+        candidate = {
+            "title": "Example Course",
+            "provider": "Example Provider",
+            "url": (
+                "https://example.com/course"
+            ),
+            "resource_type": "course",
+            "access_type": "free",
+            "description": (
+                "Example learning resource."
+            ),
+        }
+
+        with self.assertRaises(
+            ValidationError
+        ):
+            LearningResourceDiscoveryResult(
+                candidates=[
+                    candidate,
+                    {
+                        **candidate,
+                        "title": (
+                            "Duplicate Course"
+                        ),
+                    },
+                ],
+                is_ai_generated=True,
+            )

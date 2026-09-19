@@ -14,6 +14,8 @@ User-supplied job descriptions and interview answers stay classified
 as untrusted content even after structural validation.
 """
 
+from typing import Literal
+
 from pydantic import Field
 
 from ai_services.schemas.common import (
@@ -121,4 +123,57 @@ class InterviewFeedbackInput(AIContractModel):
     student_answer: str = Field(
         min_length=1,
         max_length=STUDENT_ANSWER_MAX_LENGTH,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Learning Resource discovery limits
+# ---------------------------------------------------------------------------
+
+MAX_LEARNING_RESOURCE_DISCOVERY_COUNT = 6
+MAX_EXISTING_RESOURCE_URLS = 100
+
+
+class LearningResourceDiscoveryInput(
+    AIContractModel
+):
+    """
+    Validated input for Learning Resource web discovery.
+
+    Discovery uses canonical GradNavi Skill context.
+
+    Student Profile data is intentionally excluded.
+    """
+
+    skill_name: str = Field(
+        min_length=1,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+    )
+
+    skill_description: str = Field(
+        default="",
+        max_length=5_000,
+    )
+
+    career_name: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+    )
+
+    access_type: Literal[
+        "all",
+        "free",
+        "freemium",
+        "paid",
+    ] = "all"
+
+    requested_count: int = Field(
+        ge=1,
+        le=MAX_LEARNING_RESOURCE_DISCOVERY_COUNT,
+    )
+
+    existing_urls: list[str] = Field(
+        default_factory=list,
+        max_length=MAX_EXISTING_RESOURCE_URLS,
     )

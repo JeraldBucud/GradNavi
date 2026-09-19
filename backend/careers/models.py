@@ -1268,6 +1268,167 @@ class LearningResourceSkill(models.Model):
         )
 
 
+class LearningResourceDiscoveryAttempt(
+    models.Model
+):
+    """
+    Global discovery history for one canonical Skill.
+
+    Discovery state is shared across Students.
+
+    Access filters are intentionally excluded because
+    GradNavi discovers one mixed-access catalogue and
+    applies Free, Freemium, and Paid filtering later.
+    """
+
+    class Status(
+        models.TextChoices
+    ):
+        SUCCESS = (
+            "success",
+            "Success",
+        )
+
+        PARTIAL = (
+            "partial",
+            "Partial",
+        )
+
+        NO_RESULTS = (
+            "no_results",
+            "No Results",
+        )
+
+        PROVIDER_FAILURE = (
+            "provider_failure",
+            "Provider Failure",
+        )
+
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.PROTECT,
+        related_name=(
+            "learning_resource_discovery_attempts"
+        ),
+    )
+
+    status = models.CharField(
+        max_length=30,
+        choices=Status.choices,
+    )
+
+    requested_count = (
+        models.PositiveSmallIntegerField()
+    )
+
+    candidate_count = (
+        models.PositiveSmallIntegerField(
+            default=0,
+        )
+    )
+
+    persisted_count = (
+        models.PositiveSmallIntegerField(
+            default=0,
+        )
+    )
+
+    attempted_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    next_eligible_at = models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=[
+                    "skill",
+                    "-attempted_at",
+                ],
+                name=(
+                    "career_lrd_skill_attempt_idx"
+                ),
+            ),
+            models.Index(
+                fields=[
+                    "skill",
+                    "next_eligible_at",
+                ],
+                name=(
+                    "career_lrd_skill_next_idx"
+                ),
+            ),
+        ]
+
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    status__in=[
+                        "success",
+                        "partial",
+                        "no_results",
+                        "provider_failure",
+                    ],
+                ),
+                name=(
+                    "valid_learning_resource_"
+                    "discovery_status"
+                ),
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        requested_count__gte=1,
+                    )
+                    &
+                    models.Q(
+                        requested_count__lte=6,
+                    )
+                ),
+                name=(
+                    "valid_learning_resource_"
+                    "discovery_request_count"
+                ),
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    candidate_count__lte=(
+                        models.F(
+                            "requested_count"
+                        )
+                    ),
+                ),
+                name=(
+                    "learning_resource_discovery_"
+                    "candidates_lte_requested"
+                ),
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    persisted_count__lte=(
+                        models.F(
+                            "candidate_count"
+                        )
+                    ),
+                ),
+                name=(
+                    "learning_resource_discovery_"
+                    "persisted_lte_candidates"
+                ),
+            ),
+        ]
+
+    def __str__(
+        self,
+    ):
+        return (
+            "Learning Resource discovery: "
+            f"{self.skill_id} - "
+            f"{self.status}"
+        )
+
+
 class RoadmapProgress(models.Model):
     """
     Stores Student progress against one Career roadmap Skill.
