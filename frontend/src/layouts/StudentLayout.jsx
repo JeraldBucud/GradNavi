@@ -72,12 +72,14 @@ const studentNavigation = [
   {
     label: 'Resume Builder',
     icon: FileText,
-    implemented: false,
+    path: '/resume-builder',
+    implemented: true,
   },
   {
     label: 'Cover Letter Builder',
     icon: Mail,
-    implemented: false,
+    path: '/cover-letter-builder',
+    implemented: true,
   },
   {
     label: 'Interview Preparation',
