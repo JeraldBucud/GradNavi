@@ -5085,3 +5085,228 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* DEF-S2-003 RESPONSIVE TOP MATCH */
+
+@media (max-width: 1024px) {
+  .career-recommendations-figma__top-card {
+    min-height: 0;
+
+    grid-template-columns: 1fr;
+
+    gap: 24px;
+  }
+
+
+  .career-recommendations-figma__top-main {
+    width: 100%;
+  }
+
+
+  .career-recommendations-figma__top-metrics {
+    width: min(100%, 460px);
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+  }
+
+
+  .career-recommendations-figma__explanation-panel {
+    width: 100%;
+    min-height: 0;
+  }
+}
+
+
+@media (max-width: 767px) {
+  .career-recommendations-figma__account {
+    display: none;
+  }
+
+
+  .career-recommendations-figma__header {
+    min-height: 0;
+  }
+
+
+  .career-recommendations-figma__top-card {
+    gap: 18px;
+  }
+
+
+  .career-recommendations-figma__top-metrics {
+    width: 100%;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+  }
+
+
+  .career-recommendations-figma__metric-card {
+    min-width: 0;
+    min-height: 148px;
+
+    padding: 14px;
+  }
+
+
+  .career-recommendations-figma__metric-card
+  .career-recommendations-figma__pill {
+    min-width: 0;
+
+    justify-content: center;
+
+    text-align: center;
+  }
+
+
+  .career-recommendations-figma__explanation-panel {
+    padding: 22px 20px 18px;
+  }
+}
+
+
+@media (max-width: 420px) {
+  .career-recommendations-figma__top-card {
+    padding: 16px;
+  }
+
+
+  .career-recommendations-figma__top-main > h3 {
+    font-size: 26px;
+    line-height: 32px;
+  }
+
+
+  .career-recommendations-figma__top-metrics {
+    gap: 10px;
+  }
+
+
+  .career-recommendations-figma__metric-card {
+    min-height: 142px;
+
+    padding: 12px;
+  }
+
+
+  .career-recommendations-figma__metric-card small {
+    margin-top: 12px;
+
+    font-size: 12px;
+  }
+
+
+  .career-recommendations-figma__metric-card strong {
+    font-size: 26px;
+    line-height: 32px;
+  }
+
+
+  .career-recommendations-figma__metric-card p {
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+
+  .career-recommendations-figma__explanation-panel {
+    padding: 20px 16px 16px;
+  }
+}
+
+/* DEF-S2-003 MOBILE METRIC BALANCE */
+
+@media (max-width: 767px) {
+  .career-recommendations-figma__top-main {
+    width: 100%;
+  }
+
+
+  .career-recommendations-figma__top-metrics {
+    display: grid;
+
+    width: 100%;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+  }
+
+
+  .career-recommendations-figma__metric-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 138px;
+
+    padding: 14px;
+  }
+
+
+  .career-recommendations-figma__metric-card
+  .career-recommendations-figma__pill {
+    width: 100%;
+
+    align-self: stretch;
+    justify-content: center;
+
+    padding-inline: 8px;
+
+    text-align: center;
+  }
+
+
+  .career-recommendations-figma__metric-card small {
+    margin-top: 12px;
+
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+
+  .career-recommendations-figma__metric-card strong {
+    margin-top: 2px;
+
+    font-size: 27px;
+    line-height: 32px;
+  }
+
+
+  .career-recommendations-figma__metric-card p {
+    margin-top: 2px;
+
+    font-size: 11px;
+    line-height: 16px;
+  }
+}
+
+
+@media (max-width: 420px) {
+  .career-recommendations-figma__top-metrics {
+    gap: 10px;
+  }
+
+
+  .career-recommendations-figma__metric-card {
+    min-height: 132px;
+
+    padding: 12px;
+  }
+
+
+  .career-recommendations-figma__metric-card
+  .career-recommendations-figma__pill {
+    min-height: 30px;
+
+    font-size: 11px;
+  }
+
+
+  .career-recommendations-figma__metric-card strong {
+    font-size: 26px;
+  }
+}
