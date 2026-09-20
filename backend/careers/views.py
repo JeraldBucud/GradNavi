@@ -152,6 +152,11 @@ class RecommendationListView(APIView):
             request.user
         )
 
+        if not (
+            profile.student_skills.exists()
+        ):
+            raise RecommendationProfileIncomplete()
+
         cache_key = (
             build_recommendation_cache_key(
                 student_profile=profile,
