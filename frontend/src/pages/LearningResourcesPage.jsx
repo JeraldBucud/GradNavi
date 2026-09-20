@@ -1552,7 +1552,10 @@ function LearningResourcesPage() {
 
 
       {
-        selectedSkillId
+        Number.isInteger(
+          selectedSkillId,
+        )
+        && selectedSkillId > 0
         && (
           <section className="learning-resources-figma__resources">
             <div className="learning-resources-figma__section-heading">
