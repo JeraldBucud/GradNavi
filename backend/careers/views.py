@@ -30,6 +30,7 @@ from careers.services.explore_careers import (
 
 from careers.services.learning_roadmap import generate_learning_plan
 from ai_services.exceptions import (
+    AIMissingContextError,
     AIProviderError,
 )
 
@@ -125,6 +126,24 @@ class RecommendationAIUnavailable(APIException):
 
 
 
+class RecommendationProfileIncomplete(APIException):
+    """
+    Returned when the student profile does not contain enough
+    approved context to generate career recommendations.
+    """
+
+    status_code = 400
+
+    default_detail = (
+        "Complete your profile before generating "
+        "career recommendations."
+    )
+
+    default_code = (
+        "insufficient_profile_context"
+    )
+
+
 class RecommendationListView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -168,6 +187,9 @@ class RecommendationListView(APIView):
                     ),
                 )
             )
+
+        except AIMissingContextError as error:
+            raise RecommendationProfileIncomplete() from error
 
         except AIProviderError as error:
             raise RecommendationAIUnavailable() from error
