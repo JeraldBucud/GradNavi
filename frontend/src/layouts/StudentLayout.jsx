@@ -1,4 +1,9 @@
 import {
+  useEffect,
+  useState,
+} from 'react'
+
+import {
   BarChart3,
   BookOpen,
   Briefcase,
@@ -7,9 +12,11 @@ import {
   LayoutDashboard,
   LogOut,
   Mail,
+  Menu,
   MessageSquare,
   Route,
   User,
+  X,
 } from 'lucide-react'
 
 import {
@@ -91,6 +98,11 @@ function StudentLayout() {
   const navigate = useNavigate()
   const currentUser = getStoredUser()
 
+  const [
+    isMobileNavigationOpen,
+    setIsMobileNavigationOpen,
+  ] = useState(false)
+
   const studentName =
     currentUser?.first_name?.trim() || 'Student'
 
@@ -98,7 +110,51 @@ function StudentLayout() {
     studentName.charAt(0).toUpperCase()
 
 
+  useEffect(
+    () => {
+      if (!isMobileNavigationOpen) {
+        return undefined
+      }
+
+      const previousOverflow =
+        document.body.style.overflow
+
+      document.body.style.overflow =
+        'hidden'
+
+      function handleKeyDown(event) {
+        if (event.key === 'Escape') {
+          setIsMobileNavigationOpen(false)
+        }
+      }
+
+      document.addEventListener(
+        'keydown',
+        handleKeyDown,
+      )
+
+      return () => {
+        document.body.style.overflow =
+          previousOverflow
+
+        document.removeEventListener(
+          'keydown',
+          handleKeyDown,
+        )
+      }
+    },
+    [isMobileNavigationOpen],
+  )
+
+
+  function closeMobileNavigation() {
+    setIsMobileNavigationOpen(false)
+  }
+
+
   async function handleLogout() {
+    closeMobileNavigation()
+
     try {
       await logoutAccount()
     } finally {
@@ -111,11 +167,99 @@ function StudentLayout() {
 
   return (
     <div className="student-shell">
-      <aside className="student-sidebar">
+      <header className="student-mobile-header">
+        <Link
+          className="student-mobile-header__brand"
+          to="/"
+          onClick={closeMobileNavigation}
+        >
+          GradNavi
+        </Link>
+
+        <div className="student-mobile-header__actions">
+          <div
+            className="student-mobile-header__account"
+            aria-label={`Signed in as ${studentName}`}
+          >
+            <span
+              className="student-account-avatar"
+              aria-hidden="true"
+            >
+              {studentInitial}
+            </span>
+
+            <span className="student-mobile-header__name">
+              {studentName}
+            </span>
+          </div>
+
+          <button
+            className="student-mobile-header__menu"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-controls="student-navigation-drawer"
+            aria-expanded={isMobileNavigationOpen}
+            onClick={() =>
+              setIsMobileNavigationOpen(true)
+            }
+          >
+            <Menu
+              size={24}
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+      </header>
+
+      <button
+        className={[
+          'student-mobile-overlay',
+          isMobileNavigationOpen
+            ? 'student-mobile-overlay--visible'
+            : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        type="button"
+        aria-label="Close navigation menu"
+        tabIndex={
+          isMobileNavigationOpen
+            ? 0
+            : -1
+        }
+        onClick={closeMobileNavigation}
+      />
+
+      <aside
+        id="student-navigation-drawer"
+        className={[
+          'student-sidebar',
+          isMobileNavigationOpen
+            ? 'student-sidebar--mobile-open'
+            : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        <button
+          className="student-sidebar__mobile-close"
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={closeMobileNavigation}
+        >
+          <X
+            size={24}
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
+        </button>
+
         <div className="student-sidebar__top">
           <Link
             className="student-sidebar__brand"
             to="/"
+            onClick={closeMobileNavigation}
           >
             GradNavi
           </Link>
@@ -133,6 +277,9 @@ function StudentLayout() {
                     key={item.label}
                     to={item.path}
                     end
+                    onClick={
+                      closeMobileNavigation
+                    }
                     className={({ isActive }) =>
                       [
                         'student-nav-item',
