@@ -17,6 +17,7 @@ from dataclasses import FrozenInstanceError
 from datetime import date
 
 from django.test import SimpleTestCase
+from pydantic import ValidationError
 
 from ai_services.prompts.common import (
     AIOperation,
@@ -25,6 +26,7 @@ from ai_services.prompts.common import (
 )
 from ai_services.prompts.cover_letter import (
     COVER_LETTER_OUTPUT_REQUIREMENTS,
+    COVER_LETTER_SYSTEM_INSTRUCTIONS,
     build_cover_letter_prompt,
 )
 from ai_services.prompts.interview_feedback import (
@@ -43,6 +45,7 @@ from ai_services.prompts.learning_resource_discovery import (
 )
 from ai_services.prompts.resume import (
     RESUME_OUTPUT_REQUIREMENTS,
+    RESUME_SYSTEM_INSTRUCTIONS,
     build_resume_prompt,
 )
 from ai_services.schemas.common import (
@@ -251,6 +254,41 @@ class ResumePromptTests(SimpleTestCase):
             package.untrusted_content,
         )
 
+    def test_resume_instructions_require_ats_friendly_grounded_content(
+        self,
+    ):
+        instructions = " ".join(
+            RESUME_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        required = (
+            "ats-friendly",
+            "applicant tracking systems",
+            "keyword stuffing",
+            "never invent",
+            "measurable results",
+            "missing_information",
+            "contact information",
+        )
+
+        for phrase in required:
+            with self.subTest(phrase=phrase):
+                self.assertIn(
+                    phrase,
+                    instructions,
+                )
+
+    def test_resume_generation_contract_rejects_job_description(
+        self,
+    ):
+        with self.assertRaises(ValidationError):
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+                job_description=(
+                    "This belongs to Sprint 4 job matching."
+                ),
+            )
+
     def test_resume_output_requires_draft_status(self):
         requirements = " ".join(
             RESUME_OUTPUT_REQUIREMENTS
@@ -366,6 +404,31 @@ class CoverLetterPromptTests(SimpleTestCase):
                 delimiter,
                 package.untrusted_content,
             )
+
+    def test_cover_letter_instructions_require_ats_grounding(
+        self,
+    ):
+        instructions = " ".join(
+            COVER_LETTER_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        required = (
+            "ats-friendly",
+            "job description",
+            "verified student profile evidence",
+            "keyword stuffing",
+            "never invent",
+            "measurable achievements",
+            "missing_information",
+            "contact information",
+        )
+
+        for phrase in required:
+            with self.subTest(phrase=phrase):
+                self.assertIn(
+                    phrase,
+                    instructions,
+                )
 
     def test_cover_letter_output_requires_draft_status(self):
         requirements = " ".join(
