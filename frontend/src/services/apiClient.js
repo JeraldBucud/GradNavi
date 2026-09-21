@@ -40,7 +40,29 @@ async function apiRequest(endpoint, options = {}) {
   let responseData = null
 
   if (response.status !== 204) {
-    responseData = await response.json()
+    const contentType =
+      response.headers.get('content-type')
+      || ''
+
+    if (
+      contentType
+        .toLowerCase()
+        .includes('application/json')
+    ) {
+      responseData =
+        await response.json()
+    }
+    else {
+      const error = new Error(
+        'The server returned an unexpected response. '
+        + 'Please try again.',
+      )
+
+      error.status = response.status
+      error.data = null
+
+      throw error
+    }
   }
 
   if (!response.ok) {

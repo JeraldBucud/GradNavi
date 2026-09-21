@@ -122,6 +122,25 @@ class RecommendationAPITests(APITestCase):
             )
         )
 
+        self.default_skill = (
+            Skill.objects.create(
+                name="Recommendation API Skill",
+                concept_type=(
+                    Skill.ConceptType.SKILL
+                ),
+            )
+        )
+
+        StudentSkill.objects.create(
+            student_profile=self.profile,
+            skill=self.default_skill,
+            proficiency_level=(
+                StudentSkill
+                .ProficiencyLevel
+                .DEVELOPING
+            ),
+        )
+
         self.access_token = str(
             RefreshToken
             .for_user(self.user)
@@ -374,6 +393,92 @@ class RecommendationAPITests(APITestCase):
             "not_found",
         )
 
+
+    def test_empty_student_skills_returns_controlled_profile_error(
+        self,
+    ):
+        StudentSkill.objects.filter(
+            student_profile=self.profile,
+        ).delete()
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider"
+            ) as provider_mock,
+            patch(
+                "careers.views."
+                "generate_composite_recommendations"
+            ) as service_mock,
+        ):
+            response = (
+                self.authenticated_get()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        provider_mock.assert_not_called()
+        service_mock.assert_not_called()
+
+        assert_error_envelope(
+            self,
+            response,
+            "insufficient_profile_context",
+        )
+
+        self.assertEqual(
+            response.data["error"]["message"],
+            (
+                "Complete your profile before generating "
+                "career recommendations."
+            ),
+        )
+
+
+    def test_missing_semantic_context_returns_controlled_profile_error(
+        self,
+    ):
+        from ai_services.exceptions import (
+            AIMissingContextError,
+        )
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider"
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                side_effect=AIMissingContextError(
+                    "Student profile has no approved "
+                    "career-relevant semantic context."
+                ),
+            ),
+        ):
+            response = (
+                self.authenticated_get()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "insufficient_profile_context",
+        )
+
+        self.assertEqual(
+            response.data["error"]["message"],
+            (
+                "Complete your profile before generating "
+                "career recommendations."
+            ),
+        )
 
     def test_authenticated_request_uses_composite_service(
         self,

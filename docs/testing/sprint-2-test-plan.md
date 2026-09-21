@@ -1,6 +1,6 @@
 # GradNavi Sprint 2 Test Plan
 
-Status: Prepared for WBS 5.9 Sprint 2 Integration and Testing. Verified WBS 5.2, WBS 5.3, and WBS 5.5 scoring and Dataset 1.0 cases are recorded as Pass. Cases depending on WBS 5.4, WBS 5.6, WBS 5.7, or WBS 5.8 stay Blocked until those components are integrated.
+Status: Active Sprint 2 closeout test plan reflecting the verified testing checkpoint through 20 September 2026. The integrated Career Analysis flow has been tested across recommendations, readiness, Skill Gap Analysis, Learning Resources, Career Roadmap, responsive layouts, keyboard behaviour, Student ownership isolation, and browser compatibility. The tracker records 72 Pass and 8 Blocked cases. The remaining blocked cases are the MD-assigned WBS 5.7 Learning Suggestions and Roadmap API tests.
 
 ## 1. Purpose
 
@@ -223,7 +223,7 @@ Regression testing covers the working Sprint 1 foundation after Sprint 2 integra
 | API Testing | Django automated tests and manual API checks where required |
 | Browser Testing | Current Chrome, Edge, and Firefox |
 | Version Control | Git and GitHub |
-| Integration Branch | `feature/sprint-2` |
+| Integration Branch | `feature/sprint-3` current integrated verification branch |
 
 Exact ports and environment variables should follow the approved local development configuration.
 
@@ -257,38 +257,58 @@ Dataset 1.0 must not be modified by read-only scoring tests.
 
 The Sprint 2 Test Case Tracker contains 80 cases.
 
-At this checkpoint:
+At the 20 September 2026 closeout checkpoint:
 
-- Pass: 28.
+- Pass: 72.
 - Fail: 0.
-- Blocked: 42.
+- Blocked: 8.
 - Retest: 0.
-- Not Run: 10.
+- Not Run: 0.
 
-The 28 recorded Pass cases cover the verified WBS 5.2 reference-data checks, WBS 5.3 recommendation scoring checks, and WBS 5.5 Skill Gap and Readiness checks.
+The completed cases cover reference data, recommendation scoring, Career Recommendation API behaviour, Skill Gap Analysis, Career Readiness, recommendation and readiness interfaces, Learning Resources and Career Roadmap integration, controlled empty and error states, end-to-end Career Analysis flows, Student ownership isolation, responsive layouts, keyboard behaviour, and Chrome, Edge, and Firefox compatibility.
 
-The 42 Blocked cases depend on unmerged or unavailable WBS 5.4, WBS 5.6, WBS 5.7, WBS 5.8, or the full WBS 5.9 integration gate.
+The eight remaining blocked cases are:
 
-The 10 Not Run cases are ready for later execution or require the final integrated branch and quality review.
+- `S2-LEARN-01`
+- `S2-LEARN-02`
+- `S2-LEARN-03`
+- `S2-LEARN-04`
+- `S2-LEARN-05`
+- `S2-LEARN-06`
+- `S2-LEARN-07`
+- `S2-LEARN-08`
 
-A blocked test is not a failed test.
+These cases are the dedicated WBS 5.7 Learning Suggestions and Roadmap API tests assigned to MD.
+
+Closeout integration testing also identified and verified fixes for:
+
+- DEF-S2-003: responsive Student navigation and Career Recommendations layout.
+- DEF-S2-004: `NaN` rendered in the Learning Resources empty state.
+- DEF-S2-005: Career Recommendations returned ranked results when the Student had no saved Skills.
+
+All three closeout defects were corrected and retested before this documentation update.
+
+A Blocked test is not a Failed test.
 
 ## 11. Entry Criteria
 
-Before full WBS 5.9 execution:
+The implementation dependencies required for broad WBS 5.9 integration are now available on the current integrated branch:
 
-- WBS 5.4 must be merged.
-- WBS 5.5 must be merged. This condition is satisfied at the current repository checkpoint.
-- WBS 5.7 must be merged.
-- WBS 5.8 must be merged.
-- WBS 5.6 must be available for frontend integration.
-- Django checks and required migrations must pass.
-- Backend automated tests must pass.
-- React lint and production build must pass.
-- Dataset 1.0 must be loaded.
-- The tracker must be ready for result and evidence capture.
+- WBS 5.4 Career Recommendation API is available.
+- WBS 5.5 Skill Gap and Readiness Scoring Logic is available.
+- WBS 5.6 Recommendation and Readiness Interface is available.
+- WBS 5.7 Learning Suggestions and Roadmap API implementation is available.
+- WBS 5.8 Learning Roadmap Interface is available.
+- Dataset 1.0 is available for Career Analysis testing.
+- Django system checks and targeted backend tests have passed during defect verification.
+- React lint and production builds have passed during frontend and defect verification.
+- Responsive desktop, tablet, and mobile behaviour has been exercised.
+- Chrome, Edge, and Firefox compatibility has been manually verified.
+- Cross-Student profile-derived result isolation has been verified.
 
-Missing dependencies leave affected tests Blocked.
+The remaining Sprint 2 testing gate is execution of the eight dedicated WBS 5.7 Learning Suggestions and Roadmap API test cases assigned to MD.
+
+Until those cases are completed, Sprint 2 remains in closeout rather than being marked fully complete.
 
 ## 12. Reference Data Tests
 
@@ -538,17 +558,36 @@ Do not mark a failed case Pass until the retest confirms the expected behaviour.
 
 ## 28. Current Verified Baseline
 
-Repository and existing test preparation confirm:
+The 20 September 2026 integrated repository baseline confirms:
 
-- WBS 5.2 reference-data foundations are present in `feature/sprint-2`.
-- WBS 5.3 recommendation scoring implementation and design are present.
-- WBS 5.5 readiness scoring implementation and design are present.
-- WBS 5.4 Career Recommendation API is not yet available in the shared branch. `backend/careers/views.py` still contains the default Django placeholder at this checkpoint.
-- WBS 5.6, WBS 5.7, and WBS 5.8 are not yet available in the shared branch at this checkpoint.
+- WBS 5.2 Career and Skill Reference Data is implemented.
+- WBS 5.3 Weighted Recommendation Engine is implemented.
+- WBS 5.4 Career Recommendation API is implemented.
+- WBS 5.5 Skill Gap and Readiness Scoring Logic is implemented.
+- WBS 5.6 Recommendation and Readiness Interface is implemented and integrated.
+- WBS 5.7 Learning Suggestions and Roadmap API implementation is present.
+- WBS 5.8 Learning Roadmap Interface is implemented and integrated into the Student flow.
+- WBS 5.9 integration and testing has progressed to 72 Pass cases from 80 planned Sprint 2 tests.
 
-Verified WBS 5.2, WBS 5.3, and WBS 5.5 cases stay recorded as Pass.
+The current integrated verification branch is `feature/sprint-3`, which contains the merged Sprint 2 implementation and closeout fixes.
 
-Dependent API, frontend, learning, roadmap, end-to-end, and selected regression cases stay Blocked until their prerequisites are available.
+Verified integration behaviour includes:
+
+- Career Recommendation ranking and explanation presentation.
+- Skill Gap and Career Readiness presentation.
+- Learning Resources and Career Roadmap navigation.
+- Controlled empty-profile behaviour.
+- Controlled insufficient-evidence behaviour.
+- Cross-Student ownership isolation.
+- Responsive desktop, tablet, and mobile layouts.
+- Keyboard interaction.
+- Chrome, Edge, and Firefox compatibility.
+
+Closeout testing identified DEF-S2-003, DEF-S2-004, and DEF-S2-005. Each defect was fixed and retested successfully.
+
+The remaining eight Blocked cases are `S2-LEARN-01` through `S2-LEARN-08`, assigned to MD under WBS 5.7.
+
+Sprint 2 must not be marked fully complete until those remaining test cases and the final team closeout review are completed.
 
 ## 29. Sprint 2 Exit Criteria
 
@@ -563,6 +602,18 @@ Sprint 2 testing is complete when:
 - Required evidence exists.
 - Deferred issues are documented.
 - The team agrees WBS 5.9 is ready for Sprint 2 review.
+
+Current closeout status:
+
+- The core integrated Career Analysis flow is working.
+- No unresolved defect from DEF-S2-003, DEF-S2-004, or DEF-S2-005 remains after retesting.
+- Security and Student ownership isolation checks have passed.
+- Responsive, keyboard, and browser compatibility checks have passed.
+- Required evidence for the completed integration tests has been recorded.
+- Eight WBS 5.7 Learning Suggestions and Roadmap API cases remain Blocked and assigned to MD.
+- Final Sprint 2 closure remains pending those tests and team review.
+
+The Sprint 2 exit criteria are therefore not yet fully satisfied.
 
 ## 30. Test Plan Maintenance
 
