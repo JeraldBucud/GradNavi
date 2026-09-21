@@ -33,8 +33,8 @@ Execution status should reflect actual team progress. Planned dates alone do not
 | FR-08 | Resume builder | Students generate and edit a resume draft from profile data | Must | Sprint 3 | MD, Joyee | 6.3, 6.5, 6.8, 6.9 | Backlog |
 | FR-09 | Cover-letter builder | Students generate and edit a cover letter for a selected job description | Must | Sprint 3 | MD, Joyee | 6.4, 6.5, 6.8, 6.9 | Backlog |
 | FR-10 | Interview preparation | Students receive interview questions and feedback on typed answers | Must | Sprint 3 | Jerald, Joyee | 6.2, 6.6, 6.7, 6.8, 6.9 | Backlog |
-| FR-11 | Learning suggestions | Students receive learning resources linked to identified skill gaps | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Backlog |
-| FR-12 | Career roadmap | Students receive ordered development steps for a selected career | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Backlog |
+| FR-11 | Learning suggestions | Students receive learning resources linked to identified skill gaps | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Testing |
+| FR-12 | Career roadmap | Students receive ordered development steps for a selected career | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Testing |
 | FR-13 | Progress dashboard | Students view saved careers, gaps, readiness, roadmap progress, and interview history | Should | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Backlog |
 | FR-14 | Basic administration | Authorised administrators manage users, careers, skills, and learning resources | Must | Sprint 4 | MD, Joyee, Jerald | 7.6, 7.7, 7.8, 7.9 | Backlog |
 | FR-15 | Admin analytics | Administrators view aggregated statistics such as popular careers and common skill gaps | Should | Sprint 4, provisional mapping | MD, Joyee | 7.6, 7.7 | Backlog |
@@ -69,17 +69,36 @@ Related requirements:
 - FR-06 Career-readiness score.
 - FR-11 Learning suggestions.
 - FR-12 Career roadmap.
-Current Sprint 2 execution update - 18 September 2026:
+
+Current Sprint 2 execution update - 20 September 2026:
 
 - WBS 5.2 Career and Skill Reference Data is implemented.
 - WBS 5.3 Weighted Recommendation Engine is implemented.
 - WBS 5.4 Career Recommendation API is implemented.
 - WBS 5.5 Skill Gap and Readiness Scoring Logic is implemented.
-- WBS 5.6 Recommendation and Readiness Interface is technically implemented and regression-tested; PR #44 remains pending review and merge.
-- WBS 5.7 Learning Suggestions and Roadmap API backend support is implemented.
-- WBS 5.8 Learning Roadmap Interface remains outstanding.
-- WBS 5.9 final Sprint 2 integration status must be updated after the remaining frontend dependency is resolved.
+- WBS 5.6 Recommendation and Readiness Interface is implemented and integrated.
+- WBS 5.7 Learning Suggestions and Roadmap API implementation is present.
+- WBS 5.8 Learning Roadmap Interface is implemented and integrated.
+- WBS 5.9 Sprint 2 Integration and Testing has reached 72 Pass cases from 80 planned cases.
+- The remaining 8 Blocked cases are `S2-LEARN-01` through `S2-LEARN-08`, assigned to MD under WBS 5.7.
+- No Sprint 2 test case is currently recorded as Fail or Not Run.
+- Sprint 2 remains in closeout until the remaining WBS 5.7 tests and final team review are completed.
 
+Closeout testing identified and resolved:
+
+- DEF-S2-003: responsive Student navigation and Career Recommendations layout.
+- DEF-S2-004: `NaN` displayed in the Learning Resources empty state.
+- DEF-S2-005: ranked Career Recommendations returned when Student Skills were empty.
+
+Current closeout position:
+
+- Core Career Analysis integration is working.
+- Recommendation, readiness, Skill Gap, roadmap, ownership, responsive, keyboard, and browser checks have been completed in the integrated flow.
+- FR-11 and FR-12 remain in Testing because the dedicated WBS 5.7 test set is still Blocked.
+- A preliminary Sprint 2 review and retrospective has been drafted for closeout. WBS 5.10 remains open while WBS 5.9 still has blocked testing work.
+- WBS 5.11 Sprint 2 Complete must not be recorded until the remaining tests and team review are finished.
+
+Sprint 2 retrospective actions carried forward into Sprint 3 include earlier frontend/backend integration, earlier ownership confirmation for test execution, faster documentation updates after merges, and earlier responsive, error-state, empty-state, and browser testing.
 
 Main implementation sequence:
 
