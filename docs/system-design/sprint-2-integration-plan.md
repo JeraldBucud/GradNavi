@@ -1,6 +1,6 @@
 # GradNavi Sprint 2 Integration Plan
 
-Status: Historical WBS 5.9 integration plan with an implementation-status addendum dated 18 September 2026. The original 3 September repository baseline is retained below as historical evidence.
+Status: Sprint 2 integration closeout plan reflecting the verified integration checkpoint through 20 September 2026. The historical integration baseline is retained, while the current status records 72 Pass and 8 Blocked test cases. The remaining Blocked cases are the MD-assigned WBS 5.7 Learning Suggestions and Roadmap API tests.
 
 ## 1. Purpose
 
@@ -497,8 +497,94 @@ This plan was aligned against the following current repository paths:
 
 ## 20. Current Plan Status
 
-Prepared and aligned with the current shared Sprint 2 branch.
+Sprint 2 integration has progressed beyond the original shared Sprint 2 branch baseline.
 
-WBS 5.2, WBS 5.3, and WBS 5.5 have integration-ready backend foundations in `feature/sprint-2`.
+Current implementation status at 20 September 2026:
 
-Cases dependent on WBS 5.4, WBS 5.6, WBS 5.7, or WBS 5.8 stay Blocked until those components satisfy their entry criteria.
+- WBS 5.2 Career and Skill Reference Data is implemented.
+- WBS 5.3 Weighted Recommendation Engine is implemented.
+- WBS 5.4 Career Recommendation API is implemented.
+- WBS 5.5 Skill Gap and Readiness Scoring Logic is implemented.
+- WBS 5.6 Recommendation and Readiness Interface is implemented and integrated.
+- WBS 5.7 Learning Suggestions and Roadmap API implementation is present.
+- WBS 5.8 Learning Roadmap Interface is implemented and integrated.
+- WBS 5.9 integration testing has reached 72 Pass cases from 80 planned cases.
+
+The current integrated verification branch is `feature/sprint-3`.
+
+Verified integrated behaviour includes:
+
+- Career Recommendation results and explanation presentation.
+- Skill Gap and Career Readiness results.
+- Learning Resources and Career Roadmap flows.
+- Empty-profile and insufficient-evidence states.
+- Student ownership isolation.
+- Desktop, tablet, and mobile responsiveness.
+- Keyboard interaction.
+- Chrome, Edge, and Firefox compatibility.
+
+Closeout integration testing identified three defects that were fixed and retested:
+
+- DEF-S2-003: responsive Student navigation and Career Recommendations layout.
+- DEF-S2-004: `NaN` displayed in the Learning Resources empty state.
+- DEF-S2-005: ranked Career Recommendations returned when Student Skills were empty.
+
+The remaining Sprint 2 testing work is limited to eight dedicated WBS 5.7 Learning Suggestions and Roadmap API cases:
+
+- `S2-LEARN-01`
+- `S2-LEARN-02`
+- `S2-LEARN-03`
+- `S2-LEARN-04`
+- `S2-LEARN-05`
+- `S2-LEARN-06`
+- `S2-LEARN-07`
+- `S2-LEARN-08`
+
+These cases remain assigned to MD.
+
+WBS 5.9 and Sprint 2 should remain in closeout until the remaining tests and final team review are completed.
+
+
+## 21. Preliminary Sprint 2 Review and Retrospective
+
+### 21.1 Review
+
+Sprint 2 delivered the planned Career Analysis foundation across Career recommendations, recommendation explanations, Skill Gap Analysis, Career Readiness, Learning Resources, and Career Roadmap integration.
+
+The current tracker records:
+
+- 80 planned Sprint 2 test cases.
+- 72 Pass.
+- 0 Fail.
+- 8 Blocked.
+- 0 Not Run.
+
+The remaining Blocked cases belong to the dedicated WBS 5.7 Learning Suggestions and Roadmap API test set.
+
+### 21.2 What Worked Well
+
+- Deterministic recommendation and readiness logic provided repeatable structured outputs for testing.
+- The shared test tracker made ownership, evidence, defects, and retest status visible.
+- End-to-end testing identified issues that isolated implementation tests did not expose.
+- Defect branches kept application fixes separate from testing evidence.
+- Responsive, keyboard, browser, empty-state, and ownership testing strengthened the integrated Student flow.
+- Retesting after each defect fix prevented failed behaviour from being marked complete without verification.
+
+### 21.3 Challenges
+
+- Sprint 2 integration extended beyond the original Sprint dates because several dependent components became available at different times.
+- Some documentation retained older repository status after implementation had moved forward.
+- Several frontend and cross-component issues became visible only during final manual integration testing.
+- Testing ownership needed repeated checking to avoid completing another member's assigned cases under the wrong tester.
+
+### 21.4 Actions for Sprint 3
+
+For Sprint 3:
+
+- Integrate frontend and backend work earlier instead of waiting for the end of the Sprint.
+- Keep test ownership visible before test execution begins.
+- Update Sprint documentation after major merges so project records match the repository.
+- Run empty-state, error-state, ownership, responsive, and browser checks earlier.
+- Keep defect fixes on focused branches with targeted regression tests.
+- Preserve evidence during testing rather than reconstructing evidence during closeout.
+- Continue development on available Sprint 3 work while unrelated Sprint 1 and Sprint 2 owner-specific testing is completed.
