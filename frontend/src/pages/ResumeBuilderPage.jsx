@@ -8,8 +8,23 @@ import {
 } from 'react-router'
 
 import {
+  RESUME_FOCUS_OPTIONS,
   generateResumeDraft,
 } from '../services/documentService'
+
+import {
+  loadDocumentCareerOptions,
+} from '../services/documentCareerService'
+
+import {
+  clearLegacyResumeDraft,
+  createResumeVersionId,
+  getActiveResumeVersion,
+  listResumeDraftVersions,
+  loadLegacyResumeDraft,
+  setActiveResumeVersion,
+  upsertResumeDraftVersion,
+} from '../services/resumeDraftLibraryService'
 
 import {
   downloadResumeDocx,
@@ -272,11 +287,61 @@ function buildResumePlainText(
 }
 
 
+function getCareerOptionLabel(
+  option,
+) {
+  const sources = []
+
+  if (option?.from_career_goal) {
+    sources.push(
+      'Career Goal',
+    )
+  }
+
+  if (option?.from_recommendation) {
+    if (
+      option.recommendation_rank
+      !== null
+      && option.recommendation_rank
+      !== undefined
+    ) {
+      sources.push(
+        `Recommendation #${option.recommendation_rank}`,
+      )
+    }
+    else {
+      sources.push(
+        'Recommendation',
+      )
+    }
+  }
+
+  const sourceText =
+    sources.join(
+      ' + ',
+    )
+
+  if (!sourceText) {
+    return (
+      option?.career_name
+      || 'Career'
+    )
+  }
+
+  return (
+    `${option.career_name} (${sourceText})`
+  )
+}
+
+
 function ResumeBuilderPage() {
   const navigate = useNavigate()
 
-  const storedUser =
-    getStoredUser()
+  const [
+    storedUser,
+  ] = useState(
+    () => getStoredUser(),
+  )
 
   const [
     storedDraft,
@@ -377,6 +442,87 @@ function ResumeBuilderPage() {
   )
 
 
+  const [
+    careerOptions,
+    setCareerOptions,
+  ] = useState([])
+
+  const [
+    careerOptionsLoading,
+    setCareerOptionsLoading,
+  ] = useState(true)
+
+  const [
+    careerOptionsError,
+    setCareerOptionsError,
+  ] = useState('')
+
+  const [
+    targetCareerId,
+    setTargetCareerId,
+  ] = useState('')
+
+  const [
+    resumeFocus,
+    setResumeFocus,
+  ] = useState('balanced')
+
+  const [
+    jobDescription,
+    setJobDescription,
+  ] = useState('')
+
+  const [
+    versionName,
+    setVersionName,
+  ] = useState('General Resume')
+
+  const [
+    activeVersionId,
+    setActiveVersionId,
+  ] = useState(null)
+
+  const [
+    resumeVersions,
+    setResumeVersions,
+  ] = useState([])
+
+  const storageUser =
+    currentUser
+    || storedUser
+
+  const selectedTargetCareer =
+    careerOptions.find(
+      (career) =>
+        String(
+          career.career_id,
+        )
+        === String(
+          targetCareerId,
+        ),
+    )
+    || null
+
+  const selectedCareerVersions =
+    resumeVersions.filter(
+      (version) =>
+        String(
+          version.target_career_id,
+        )
+        === String(
+          targetCareerId,
+        ),
+    )
+
+  const selectedResumeFocusLabel =
+    RESUME_FOCUS_OPTIONS.find(
+      (option) =>
+        option.value
+        === resumeFocus,
+    )?.label
+    || 'Balanced'
+
+
   useEffect(() => {
     let active = true
 
@@ -463,6 +609,265 @@ function ResumeBuilderPage() {
       active = false
     }
   }, [])
+
+  useEffect(() => {
+    let active = true
+
+    async function loadResumeTargets() {
+      setCareerOptionsLoading(
+        true,
+      )
+
+      setCareerOptionsError('')
+
+      try {
+        const result =
+          await loadDocumentCareerOptions()
+
+        if (!active) {
+          return
+        }
+
+        const options =
+          Array.isArray(
+            result?.career_options,
+          )
+            ? result.career_options
+            : []
+
+        setCareerOptions(
+          options,
+        )
+
+        const user =
+          currentUser
+          || storedUser
+
+        let activeVersion =
+          user
+            ? getActiveResumeVersion(
+                user,
+              )
+            : null
+
+        const activeVersionCareerExists =
+          activeVersion
+          && options.some(
+            (career) =>
+              String(
+                career.career_id,
+              )
+              === String(
+                activeVersion
+                  .target_career_id,
+              ),
+          )
+
+        if (!activeVersionCareerExists) {
+          activeVersion = null
+        }
+
+        const primaryCareerOption =
+          options.find(
+            (career) =>
+              career.is_primary,
+          )
+          || null
+
+        const topRecommendationOption =
+          options.find(
+            (career) =>
+              career.recommendation_rank
+              === 1,
+          )
+          || null
+
+        let defaultCareerId =
+          activeVersion
+            ?.target_career_id
+          ?? primaryCareerOption
+            ?.career_id
+          ?? topRecommendationOption
+            ?.career_id
+          ?? options[0]
+            ?.career_id
+          ?? ''
+
+        if (
+          user
+          && !activeVersion
+          && defaultCareerId
+        ) {
+          const legacyDraft =
+            loadLegacyResumeDraft(
+              user,
+            )
+
+          if (legacyDraft?.draft) {
+            const targetCareer =
+              options.find(
+                (career) =>
+                  String(
+                    career.career_id,
+                  )
+                  === String(
+                    defaultCareerId,
+                  ),
+              )
+
+            if (targetCareer) {
+              activeVersion =
+                upsertResumeDraftVersion(
+                  user,
+                  {
+                    targetCareerId:
+                      targetCareer
+                        .career_id,
+                    targetCareerName:
+                      targetCareer
+                        .career_name,
+                    versionName:
+                      'General Resume',
+                    resumeFocus:
+                      'balanced',
+                    jobDescription:
+                      '',
+                    contact:
+                      legacyDraft
+                        .contact
+                      || {},
+                    draft:
+                      legacyDraft
+                        .draft,
+                    savedAt:
+                      legacyDraft
+                        .savedAt
+                      || null,
+                  },
+                )
+
+              if (activeVersion) {
+                clearLegacyResumeDraft(
+                  user,
+                )
+
+                defaultCareerId =
+                  activeVersion
+                    .target_career_id
+              }
+            }
+          }
+        }
+
+        setTargetCareerId(
+          defaultCareerId
+            ? String(
+                defaultCareerId,
+              )
+            : '',
+        )
+
+        if (user) {
+          setResumeVersions(
+            listResumeDraftVersions(
+              user,
+            ),
+          )
+        }
+        else {
+          setResumeVersions([])
+        }
+
+        if (activeVersion) {
+          setActiveVersionId(
+            activeVersion.id,
+          )
+
+          setVersionName(
+            activeVersion
+              .version_name
+            || 'General Resume',
+          )
+
+          setResumeFocus(
+            activeVersion
+              .resume_focus
+            || 'balanced',
+          )
+
+          setJobDescription(
+            activeVersion
+              .job_description
+            || '',
+          )
+
+          setContact(
+            (current) => ({
+              ...current,
+              ...(
+                activeVersion
+                  .contact
+                || {}
+              ),
+            }),
+          )
+
+          setDraft(
+            activeVersion.draft
+            || null,
+          )
+
+          setSavedAt(
+            activeVersion.saved_at
+            || null,
+          )
+
+          setGenerationState(
+            activeVersion.draft
+              ? 'success'
+              : 'empty',
+          )
+
+          if (activeVersion.draft) {
+            setActionMessage(
+              'Saved resume version '
+              + 'restored from this browser.',
+            )
+          }
+        }
+      }
+      catch (error) {
+        if (!active) {
+          return
+        }
+
+        setCareerOptionsError(
+          error?.message
+          || (
+            'Resume career options '
+            + 'could not be loaded.'
+          ),
+        )
+      }
+      finally {
+        if (active) {
+          setCareerOptionsLoading(
+            false,
+          )
+        }
+      }
+    }
+
+    loadResumeTargets()
+
+    return () => {
+      active = false
+    }
+  }, [
+    currentUser,
+    storedUser,
+  ])
+
 
 
   const studentName =
@@ -664,7 +1069,261 @@ function ResumeBuilderPage() {
   }
 
 
+  function applyResumeVersion(
+    version,
+  ) {
+    if (!version) {
+      return
+    }
+
+    setActiveVersionId(
+      version.id,
+    )
+
+    setTargetCareerId(
+      String(
+        version.target_career_id,
+      ),
+    )
+
+    setVersionName(
+      version.version_name
+      || 'General Resume',
+    )
+
+    setResumeFocus(
+      version.resume_focus
+      || 'balanced',
+    )
+
+    setJobDescription(
+      version.job_description
+      || '',
+    )
+
+    setContact(
+      (current) => ({
+        ...current,
+        ...(
+          version.contact
+          || {}
+        ),
+      }),
+    )
+
+    setDraft(
+      version.draft
+      || null,
+    )
+
+    setSavedAt(
+      version.saved_at
+      || null,
+    )
+
+    setGenerationState(
+      version.draft
+        ? 'success'
+        : 'empty',
+    )
+
+    setGenerationError('')
+    setEditingSection(null)
+
+    setActionMessage(
+      version.draft
+        ? (
+            'Saved resume version '
+            + 'loaded.'
+          )
+        : '',
+    )
+  }
+
+
+  function resetResumeVersionEditor() {
+    setActiveVersionId(
+      createResumeVersionId(),
+    )
+
+    setVersionName(
+      'General Resume',
+    )
+
+    setResumeFocus(
+      'balanced',
+    )
+
+    setJobDescription('')
+    setDraft(null)
+    setSavedAt(null)
+    setGenerationState('empty')
+    setGenerationError('')
+    setEditingSection(null)
+
+    setActionMessage(
+      'New resume version started.',
+    )
+  }
+
+
+  function handleTargetCareerChange(
+    event,
+  ) {
+    const nextCareerId =
+      event.target.value
+
+    setTargetCareerId(
+      nextCareerId,
+    )
+
+    setGenerationError('')
+    setEditingSection(null)
+
+    if (!nextCareerId) {
+      setActiveVersionId(null)
+      setDraft(null)
+      setSavedAt(null)
+      setGenerationState('empty')
+      setActionMessage('')
+      return
+    }
+
+    const latestVersion =
+      resumeVersions
+        .filter(
+          (version) =>
+            String(
+              version
+                .target_career_id,
+            )
+            === String(
+              nextCareerId,
+            ),
+        )
+        .sort(
+          (
+            first,
+            second,
+          ) => (
+            (
+              Date.parse(
+                second.saved_at,
+              )
+              || 0
+            )
+            - (
+              Date.parse(
+                first.saved_at,
+              )
+              || 0
+            )
+          ),
+        )[0]
+
+    if (latestVersion) {
+      if (storageUser) {
+        setActiveResumeVersion(
+          storageUser,
+          latestVersion.id,
+        )
+      }
+
+      applyResumeVersion(
+        latestVersion,
+      )
+
+      return
+    }
+
+    setActiveVersionId(
+      createResumeVersionId(),
+    )
+
+    setVersionName(
+      'General Resume',
+    )
+
+    setResumeFocus(
+      'balanced',
+    )
+
+    setJobDescription('')
+    setDraft(null)
+    setSavedAt(null)
+    setGenerationState('empty')
+
+    setActionMessage(
+      'No saved resume exists '
+      + 'for this career yet.',
+    )
+  }
+
+
+  function handleSavedVersionChange(
+    event,
+  ) {
+    const versionId =
+      event.target.value
+
+    if (!versionId) {
+      return
+    }
+
+    const version =
+      resumeVersions.find(
+        (candidate) =>
+          candidate.id
+          === versionId,
+      )
+
+    if (!version) {
+      return
+    }
+
+    if (storageUser) {
+      setActiveResumeVersion(
+        storageUser,
+        version.id,
+      )
+    }
+
+    applyResumeVersion(
+      version,
+    )
+  }
+
+
+  function handleNewResumeVersion() {
+    if (!selectedTargetCareer) {
+      setActionMessage(
+        'Select a target career '
+        + 'before starting a '
+        + 'new resume version.',
+      )
+
+      return
+    }
+
+    resetResumeVersionEditor()
+  }
+
+
   async function handleGenerate() {
+    if (!selectedTargetCareer) {
+      setGenerationState(
+        'error',
+      )
+
+      setGenerationError(
+        'Select a target career '
+        + 'before generating '
+        + 'a resume.',
+      )
+
+      return
+    }
+
     setGenerationState(
       'generating',
     )
@@ -675,7 +1334,13 @@ function ResumeBuilderPage() {
 
     try {
       const response =
-        await generateResumeDraft()
+        await generateResumeDraft({
+          targetCareerId:
+            selectedTargetCareer
+              .career_id,
+          resumeFocus,
+          jobDescription,
+        })
 
       const generatedDraft =
         normaliseResumeDraft(
@@ -695,13 +1360,21 @@ function ResumeBuilderPage() {
         generatedDraft,
       )
 
+      if (!activeVersionId) {
+        setActiveVersionId(
+          createResumeVersionId(),
+        )
+      }
+
       setGenerationState(
         'success',
       )
 
       setActionMessage(
-        'Resume draft generated. '
-        + 'Review every section '
+        'Resume draft generated for '
+        + selectedTargetCareer
+            .career_name
+        + '. Review every section '
         + 'before use.',
       )
     }
@@ -720,23 +1393,26 @@ function ResumeBuilderPage() {
     }
   }
 
-
   function handleSaveDraft() {
     if (!draft) {
       return
     }
 
-    const timestamp =
-      new Date()
-        .toISOString()
-
-    const storageKey =
-      getResumeStorageKey(
-        currentUser
-        || storedUser,
+    if (!selectedTargetCareer) {
+      setActionMessage(
+        'Select a target career '
+        + 'before saving '
+        + 'this resume.',
       )
 
-    if (!storageKey) {
+      return
+    }
+
+    const user =
+      currentUser
+      || storedUser
+
+    if (!user) {
       setActionMessage(
         'Sign in before saving '
         + 'this draft.',
@@ -745,24 +1421,70 @@ function ResumeBuilderPage() {
       return
     }
 
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        contact,
-        draft,
-        savedAt: timestamp,
-      }),
+    const timestamp =
+      new Date()
+        .toISOString()
+
+    const versionId =
+      activeVersionId
+      || createResumeVersionId()
+
+    const savedVersion =
+      upsertResumeDraftVersion(
+        user,
+        {
+          id:
+            versionId,
+          targetCareerId:
+            selectedTargetCareer
+              .career_id,
+          targetCareerName:
+            selectedTargetCareer
+              .career_name,
+          versionName,
+          resumeFocus,
+          jobDescription,
+          contact,
+          draft,
+          savedAt:
+            timestamp,
+        },
+      )
+
+    if (!savedVersion) {
+      setActionMessage(
+        'Resume version could '
+        + 'not be saved.',
+      )
+
+      return
+    }
+
+    setActiveVersionId(
+      savedVersion.id,
+    )
+
+    setVersionName(
+      savedVersion
+        .version_name,
     )
 
     setSavedAt(
-      timestamp,
+      savedVersion
+        .saved_at,
+    )
+
+    setResumeVersions(
+      listResumeDraftVersions(
+        user,
+      ),
     )
 
     setActionMessage(
-      'Draft saved in this browser.',
+      'Resume version saved '
+      + 'to this browser.',
     )
   }
-
 
   async function handleCopyContent() {
     if (!draft) {
@@ -1050,13 +1772,19 @@ function ResumeBuilderPage() {
               <li>
                 Selected career:
                 {' '}
-                {targetCareer}
+                {
+                  selectedTargetCareer
+                    ?.career_name
+                  || targetCareer
+                }
               </li>
 
               <li>
                 Resume focus:
                 {' '}
-                graduate roles
+                {
+                  selectedResumeFocusLabel
+                }
               </li>
 
               <li>
@@ -1119,52 +1847,264 @@ function ResumeBuilderPage() {
           >
             <div>
               <h2>
-                Target Context
+                Resume Target
               </h2>
 
               <p>
-                Review the career context
-                used by the Resume Builder.
-                These display fields do not
-                add unsupported facts to
-                your profile.
+                Choose one career for this
+                resume. GradNavi keeps
+                separate resume versions for
+                different careers and
+                vacancies.
               </p>
             </div>
+
+            <span
+              className="resume-builder__ai-badge"
+            >
+              ATS targeting
+            </span>
           </div>
 
           <div
-            className="resume-builder__field-grid"
+            className="resume-builder__document-config-grid"
           >
-            <div>
+            <label>
               <span>
-                Target career
+                Target Career
               </span>
 
-              <strong>
-                {targetCareer}
-              </strong>
-            </div>
+              <select
+                value={
+                  targetCareerId
+                }
+                disabled={
+                  careerOptionsLoading
+                }
+                onChange={
+                  handleTargetCareerChange
+                }
+              >
+                <option value="">
+                  {
+                    careerOptionsLoading
+                      ? 'Loading careers...'
+                      : 'Select a career'
+                  }
+                </option>
 
-            <div>
+                {
+                  careerOptions.map(
+                    (career) => (
+                      <option
+                        key={
+                          career.career_id
+                        }
+                        value={
+                          career.career_id
+                        }
+                      >
+                        {
+                          getCareerOptionLabel(
+                            career,
+                          )
+                        }
+                      </option>
+                    ),
+                  )
+                }
+              </select>
+
+              <small>
+                Career Goals and current
+                GradNavi recommendations
+                appear here.
+              </small>
+            </label>
+
+            <label>
               <span>
-                Resume focus
+                Resume Focus
               </span>
 
-              <strong>
-                Graduate / entry-level role
-              </strong>
-            </div>
+              <select
+                value={
+                  resumeFocus
+                }
+                onChange={
+                  (event) => {
+                    setResumeFocus(
+                      event.target.value,
+                    )
 
-            <div>
+                    setActionMessage('')
+                  }
+                }
+              >
+                {
+                  RESUME_FOCUS_OPTIONS.map(
+                    (option) => (
+                      <option
+                        key={
+                          option.value
+                        }
+                        value={
+                          option.value
+                        }
+                      >
+                        {option.label}
+                      </option>
+                    ),
+                  )
+                }
+              </select>
+
+              <small>
+                Current focus:
+                {' '}
+                {
+                  selectedResumeFocusLabel
+                }.
+              </small>
+            </label>
+
+            <label>
               <span>
-                Tone
+                Version Name
               </span>
 
-              <strong>
-                Professional and concise
-              </strong>
-            </div>
+              <input
+                type="text"
+                value={
+                  versionName
+                }
+                placeholder={
+                  'General Resume or Company Name'
+                }
+                onChange={
+                  (event) => {
+                    setVersionName(
+                      event.target.value,
+                    )
+
+                    setActionMessage('')
+                  }
+                }
+              />
+
+              <small>
+                Stored locally. This name
+                is not sent to AI.
+              </small>
+            </label>
+
+            <label>
+              <span>
+                Saved Version
+              </span>
+
+              <select
+                value={
+                  activeVersionId
+                  || ''
+                }
+                disabled={
+                  !selectedCareerVersions
+                    .length
+                }
+                onChange={
+                  handleSavedVersionChange
+                }
+              >
+                <option value="">
+                  {
+                    selectedCareerVersions
+                      .length
+                      ? 'Select a saved version'
+                      : 'No saved versions'
+                  }
+                </option>
+
+                {
+                  selectedCareerVersions.map(
+                    (version) => (
+                      <option
+                        key={
+                          version.id
+                        }
+                        value={
+                          version.id
+                        }
+                      >
+                        {
+                          version.version_name
+                        }
+                      </option>
+                    ),
+                  )
+                }
+              </select>
+
+              <small>
+                Saved versions are kept
+                separately for the selected
+                career.
+              </small>
+            </label>
+
+            <label
+              className="resume-builder__config-full"
+            >
+              <span>
+                Job Description
+                {' '}
+                <em>
+                  Optional
+                </em>
+              </span>
+
+              <textarea
+                value={
+                  jobDescription
+                }
+                placeholder={
+                  'Paste a job description '
+                  + 'to tailor this resume '
+                  + 'to a specific vacancy.'
+                }
+                onChange={
+                  (event) => {
+                    setJobDescription(
+                      event.target.value,
+                    )
+
+                    setActionMessage('')
+                  }
+                }
+              />
+
+              <small>
+                Leave this empty for a
+                general ATS-friendly resume
+                for the selected career.
+                Add a vacancy to tailor
+                terminology and emphasis.
+              </small>
+            </label>
           </div>
+
+          {
+            careerOptionsError
+              ? (
+                <div
+                  className="resume-builder__state-inline resume-builder__state-inline--error"
+                  role="alert"
+                >
+                  {careerOptionsError}
+                </div>
+              )
+              : null
+          }
 
           <div
             className="resume-builder__button-row"
@@ -1175,6 +2115,7 @@ function ResumeBuilderPage() {
               disabled={
                 generationState
                 === 'generating'
+                || !selectedTargetCareer
               }
               onClick={
                 handleGenerate
@@ -1186,6 +2127,19 @@ function ResumeBuilderPage() {
                   ? 'Generating Resume...'
                   : 'Generate Resume Draft'
               }
+            </button>
+
+            <button
+              className="resume-builder__secondary-button"
+              type="button"
+              disabled={
+                !selectedTargetCareer
+              }
+              onClick={
+                handleNewResumeVersion
+              }
+            >
+              New Resume Version
             </button>
 
             <button
@@ -1616,10 +2570,11 @@ function ResumeBuilderPage() {
                 </h2>
 
                 <p>
-                  Review your profile
-                  evidence and contact
-                  details, then generate
-                  a draft when ready.
+                  Select a target career,
+                  choose your resume
+                  focus, review your
+                  profile evidence, then
+                  generate a draft.
                 </p>
 
                 <button

@@ -44,7 +44,9 @@ function extractProfileData(
   response,
 ) {
   return (
-    response?.data
+    response?.data?.profile
+    ?? response?.profile
+    ?? response?.data
     ?? response
     ?? {}
   )
@@ -88,15 +90,25 @@ function createCareerOption({
     return null
   }
 
-  const numericRank =
-    Number(
+  const hasRecommendationRank =
+    recommendationRank !== null
+    && recommendationRank !== undefined
+    && String(
       recommendationRank,
-    )
+    ).trim() !== ''
+
+  const numericRank =
+    hasRecommendationRank
+      ? Number(
+          recommendationRank,
+        )
+      : NaN
 
   const normalizedRank =
     Number.isInteger(
       numericRank,
     )
+    && numericRank > 0
       ? numericRank
       : null
 
