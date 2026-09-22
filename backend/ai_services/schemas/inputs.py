@@ -38,17 +38,51 @@ MIN_INTERVIEW_QUESTION_COUNT = 1
 MAX_INTERVIEW_QUESTION_COUNT = 10
 
 
+ResumeFocus = Literal[
+    "balanced",
+    "technical_skills",
+    "professional_experience",
+    "projects",
+    "transferable_skills",
+]
+
+CoverLetterTone = Literal[
+    "professional",
+    "warm",
+    "technical",
+    "concise",
+]
+
+CoverLetterFocus = Literal[
+    "balanced",
+    "skills_match",
+    "experience",
+    "projects",
+    "career_transition",
+]
+
+
 class ResumeGenerationInput(AIContractModel):
     """
     Validated input for resume-draft generation.
 
-    Student Profile facts provide the evidence base.
+    target_career_name is canonical GradNavi Career data resolved by the
+    authenticated document endpoint.
+
+    resume_focus is a controlled GradNavi emphasis option.
 
     job_description is optional vacancy context. When supplied, it stays
     classified as untrusted content during prompt construction.
     """
 
     profile: StudentProfileContext
+
+    target_career_name: str = Field(
+        min_length=1,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+    )
+
+    resume_focus: ResumeFocus = "balanced"
 
     job_description: str | None = Field(
         default=None,
@@ -61,13 +95,25 @@ class CoverLetterGenerationInput(AIContractModel):
     """
     Validated input for cover-letter generation.
 
-    job_title, company, and job_description identify the target vacancy.
+    target_career_name is canonical GradNavi Career data resolved by the
+    authenticated document endpoint.
 
-    All three values are user-supplied vacancy context and stay classified
-    as untrusted content during prompt construction.
+    tone and cover_letter_focus are controlled GradNavi writing options.
+
+    job_title, company, and job_description are user-supplied vacancy
+    context and stay classified as untrusted content.
     """
 
     profile: StudentProfileContext
+
+    target_career_name: str = Field(
+        min_length=1,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+    )
+
+    tone: CoverLetterTone = "professional"
+
+    cover_letter_focus: CoverLetterFocus = "balanced"
 
     job_title: str = Field(
         min_length=1,

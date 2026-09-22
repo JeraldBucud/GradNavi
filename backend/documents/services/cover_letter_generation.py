@@ -16,10 +16,13 @@ from profiles.models import StudentProfile
 def generate_cover_letter_draft(
     *,
     student_profile: StudentProfile,
+    target_career_name: str,
     job_title: str,
     company: str,
     job_description: str,
     ai_provider: AIProvider,
+    tone: str = "professional",
+    cover_letter_focus: str = "balanced",
 ) -> CoverLetterDraft:
     """
     Generate a validated editable cover-letter draft for an authorized profile.
@@ -31,6 +34,9 @@ def generate_cover_letter_draft(
 
     request = CoverLetterGenerationInput(
         profile=profile_context,
+        target_career_name=target_career_name,
+        tone=tone,
+        cover_letter_focus=cover_letter_focus,
         job_title=job_title,
         company=company,
         job_description=job_description,

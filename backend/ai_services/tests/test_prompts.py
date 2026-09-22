@@ -189,6 +189,7 @@ class ResumePromptTests(SimpleTestCase):
     def test_resume_operation_identifier(self):
         package = build_resume_prompt(
             ResumeGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
             )
         )
@@ -223,6 +224,7 @@ class ResumePromptTests(SimpleTestCase):
 
         package = build_resume_prompt(
             ResumeGenerationInput(
+                target_career_name="Software Engineer",
                 profile=profile,
             )
         )
@@ -240,6 +242,7 @@ class ResumePromptTests(SimpleTestCase):
     def test_resume_untrusted_profile_delimiters_exist(self):
         package = build_resume_prompt(
             ResumeGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
             )
         )
@@ -285,6 +288,7 @@ class ResumePromptTests(SimpleTestCase):
         )
 
         request = ResumeGenerationInput(
+            target_career_name="Software Engineer",
             profile=build_empty_profile(),
             job_description=job_description,
         )
@@ -296,6 +300,7 @@ class ResumePromptTests(SimpleTestCase):
 
     def test_resume_generation_contract_allows_missing_job_description(self):
         request = ResumeGenerationInput(
+            target_career_name="Software Engineer",
             profile=build_empty_profile(),
         )
 
@@ -326,6 +331,7 @@ class ResumePromptTests(SimpleTestCase):
 
         package = build_resume_prompt(
             ResumeGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
                 job_description=job_description,
             )
@@ -349,6 +355,7 @@ class ResumePromptTests(SimpleTestCase):
     def test_resume_without_job_description_omits_vacancy_block(self):
         package = build_resume_prompt(
             ResumeGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
             )
         )
@@ -359,6 +366,55 @@ class ResumePromptTests(SimpleTestCase):
         )
 
 
+    def test_resume_target_and_focus_are_trusted_controls(self):
+        package = build_resume_prompt(
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Cloud Engineer"
+                ),
+                resume_focus=(
+                    "technical_skills"
+                ),
+            )
+        )
+
+        self.assertIn(
+            "Cloud Engineer",
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "technical_skills",
+            package.trusted_context,
+        )
+
+        self.assertNotIn(
+            "Cloud Engineer",
+            package.untrusted_content,
+        )
+
+    def test_resume_rejects_unknown_focus(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Software Engineer"
+                ),
+                resume_focus="creative",
+            )
+
+    def test_resume_requires_target_career(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+            )
+
+
 class CoverLetterPromptTests(SimpleTestCase):
     """
     Tests for Cover Letter prompt construction.
@@ -367,6 +423,7 @@ class CoverLetterPromptTests(SimpleTestCase):
     def test_cover_letter_operation_identifier(self):
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
                 job_title="Software Developer",
                 company="Example Employer",
@@ -386,6 +443,7 @@ class CoverLetterPromptTests(SimpleTestCase):
 
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
                 job_title="Software Developer",
                 company="Example Employer",
@@ -427,6 +485,7 @@ class CoverLetterPromptTests(SimpleTestCase):
 
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=profile,
                 job_title="Software Developer",
                 company="Example Employer",
@@ -447,6 +506,7 @@ class CoverLetterPromptTests(SimpleTestCase):
     def test_cover_letter_untrusted_delimiters_exist(self):
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
                 job_title="Software Developer",
                 company="Example Employer",
@@ -514,6 +574,7 @@ class CoverLetterPromptTests(SimpleTestCase):
 
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
                 job_title=job_title,
                 company=company,
@@ -546,6 +607,123 @@ class CoverLetterPromptTests(SimpleTestCase):
             self.assertIn(
                 delimiter,
                 package.untrusted_content,
+            )
+
+
+    def test_cover_letter_target_tone_and_focus_are_trusted_controls(self):
+        package = build_cover_letter_prompt(
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Cloud Engineer"
+                ),
+                tone="technical",
+                cover_letter_focus=(
+                    "skills_match"
+                ),
+                job_title=(
+                    "Junior Cloud Engineer"
+                ),
+                company="Example Employer",
+                job_description=(
+                    "Cloud engineering vacancy."
+                ),
+            )
+        )
+
+        self.assertIn(
+            "Cloud Engineer",
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "technical",
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "skills_match",
+            package.trusted_context,
+        )
+
+        self.assertNotIn(
+            "<UNTRUSTED_TARGET_CAREER>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            "<UNTRUSTED_JOB_TITLE>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            "Junior Cloud Engineer",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            "<UNTRUSTED_JOB_DESCRIPTION>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            "Cloud engineering vacancy.",
+            package.untrusted_content,
+        )
+
+    def test_cover_letter_rejects_unknown_tone(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Software Engineer"
+                ),
+                tone="casual",
+                job_title=(
+                    "Software Developer"
+                ),
+                company="Example Employer",
+                job_description=(
+                    "Software vacancy."
+                ),
+            )
+
+    def test_cover_letter_rejects_unknown_focus(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Software Engineer"
+                ),
+                cover_letter_focus=(
+                    "salary"
+                ),
+                job_title=(
+                    "Software Developer"
+                ),
+                company="Example Employer",
+                job_description=(
+                    "Software vacancy."
+                ),
+            )
+
+    def test_cover_letter_requires_target_career(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                job_title=(
+                    "Software Developer"
+                ),
+                company="Example Employer",
+                job_description=(
+                    "Software vacancy."
+                ),
             )
 
 

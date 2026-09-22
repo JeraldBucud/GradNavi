@@ -4,6 +4,30 @@ from ai_services.schemas.common import SHORT_TEXT_MAX_LENGTH
 from ai_services.schemas.inputs import JOB_DESCRIPTION_MAX_LENGTH
 
 
+RESUME_FOCUS_CHOICES = (
+    "balanced",
+    "technical_skills",
+    "professional_experience",
+    "projects",
+    "transferable_skills",
+)
+
+COVER_LETTER_TONE_CHOICES = (
+    "professional",
+    "warm",
+    "technical",
+    "concise",
+)
+
+COVER_LETTER_FOCUS_CHOICES = (
+    "balanced",
+    "skills_match",
+    "experience",
+    "projects",
+    "career_transition",
+)
+
+
 class RejectUnknownFieldsMixin:
     def to_internal_value(self, data):
         if not isinstance(data, dict):
@@ -26,10 +50,19 @@ class ResumeGenerationRequestSerializer(
     serializers.Serializer,
 ):
     """
-    Resume generation accepts optional vacancy context only.
+    Resume generation requires one authorized target Career.
 
     Student Profile data is resolved from the authenticated account.
     """
+
+    target_career_id = serializers.IntegerField(
+        min_value=1,
+    )
+
+    resume_focus = serializers.ChoiceField(
+        choices=RESUME_FOCUS_CHOICES,
+        default="balanced",
+    )
 
     job_description = serializers.CharField(
         required=False,
@@ -43,6 +76,20 @@ class CoverLetterGenerationRequestSerializer(
     RejectUnknownFieldsMixin,
     serializers.Serializer,
 ):
+    target_career_id = serializers.IntegerField(
+        min_value=1,
+    )
+
+    tone = serializers.ChoiceField(
+        choices=COVER_LETTER_TONE_CHOICES,
+        default="professional",
+    )
+
+    cover_letter_focus = serializers.ChoiceField(
+        choices=COVER_LETTER_FOCUS_CHOICES,
+        default="balanced",
+    )
+
     job_title = serializers.CharField(
         allow_blank=False,
         max_length=SHORT_TEXT_MAX_LENGTH,

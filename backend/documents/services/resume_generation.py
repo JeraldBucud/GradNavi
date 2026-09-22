@@ -16,7 +16,9 @@ from profiles.models import StudentProfile
 def generate_resume_draft(
     *,
     student_profile: StudentProfile,
+    target_career_name: str,
     ai_provider: AIProvider,
+    resume_focus: str = "balanced",
     job_description: str | None = None,
 ) -> ResumeDraft:
     """
@@ -29,6 +31,8 @@ def generate_resume_draft(
 
     request = ResumeGenerationInput(
         profile=profile_context,
+        target_career_name=target_career_name,
+        resume_focus=resume_focus,
         job_description=job_description,
     )
 
