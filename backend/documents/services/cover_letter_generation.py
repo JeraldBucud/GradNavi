@@ -16,6 +16,8 @@ from profiles.models import StudentProfile
 def generate_cover_letter_draft(
     *,
     student_profile: StudentProfile,
+    job_title: str,
+    company: str,
     job_description: str,
     ai_provider: AIProvider,
 ) -> CoverLetterDraft:
@@ -29,6 +31,8 @@ def generate_cover_letter_draft(
 
     request = CoverLetterGenerationInput(
         profile=profile_context,
+        job_title=job_title,
+        company=company,
         job_description=job_description,
     )
 
@@ -40,4 +44,3 @@ def generate_cover_letter_draft(
         prompt_package=prompt_package,
         output_model=CoverLetterDraft,
     )
-

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from ai_services.schemas.common import SHORT_TEXT_MAX_LENGTH
 from ai_services.schemas.inputs import JOB_DESCRIPTION_MAX_LENGTH
 
 
@@ -20,30 +21,40 @@ class RejectUnknownFieldsMixin:
         return super().to_internal_value(data)
 
 
-class ResumeGenerationRequestSerializer(serializers.Serializer):
+class ResumeGenerationRequestSerializer(
+    RejectUnknownFieldsMixin,
+    serializers.Serializer,
+):
     """
-    Resume generation accepts no client-supplied profile or prompt data.
+    Resume generation accepts optional vacancy context only.
+
+    Student Profile data is resolved from the authenticated account.
     """
 
-    def to_internal_value(self, data):
-        if not isinstance(data, dict):
-            raise serializers.ValidationError("Expected an object.")
-
-        if data:
-            raise serializers.ValidationError(
-                {
-                    field: "This field is not allowed."
-                    for field in sorted(data)
-                }
-            )
-
-        return {}
+    job_description = serializers.CharField(
+        required=False,
+        allow_blank=False,
+        max_length=JOB_DESCRIPTION_MAX_LENGTH,
+        trim_whitespace=True,
+    )
 
 
 class CoverLetterGenerationRequestSerializer(
     RejectUnknownFieldsMixin,
     serializers.Serializer,
 ):
+    job_title = serializers.CharField(
+        allow_blank=False,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+        trim_whitespace=True,
+    )
+
+    company = serializers.CharField(
+        allow_blank=False,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+        trim_whitespace=True,
+    )
+
     job_description = serializers.CharField(
         allow_blank=False,
         max_length=JOB_DESCRIPTION_MAX_LENGTH,
@@ -92,4 +103,3 @@ class CoverLetterDraftSerializer(serializers.Serializer):
     )
     is_draft = serializers.BooleanField()
     requires_user_review = serializers.BooleanField()
-

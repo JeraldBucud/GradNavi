@@ -278,16 +278,30 @@ class ResumePromptTests(SimpleTestCase):
                     instructions,
                 )
 
-    def test_resume_generation_contract_rejects_job_description(
-        self,
-    ):
-        with self.assertRaises(ValidationError):
-            ResumeGenerationInput(
-                profile=build_empty_profile(),
-                job_description=(
-                    "This belongs to Sprint 4 job matching."
-                ),
-            )
+    def test_resume_generation_contract_accepts_optional_job_description(self):
+        job_description = (
+            "Software Developer role requiring "
+            "Python and Django."
+        )
+
+        request = ResumeGenerationInput(
+            profile=build_empty_profile(),
+            job_description=job_description,
+        )
+
+        self.assertEqual(
+            request.job_description,
+            job_description,
+        )
+
+    def test_resume_generation_contract_allows_missing_job_description(self):
+        request = ResumeGenerationInput(
+            profile=build_empty_profile(),
+        )
+
+        self.assertIsNone(
+            request.job_description,
+        )
 
     def test_resume_output_requires_draft_status(self):
         requirements = " ".join(
@@ -305,6 +319,46 @@ class ResumePromptTests(SimpleTestCase):
         )
 
 
+    def test_resume_optional_job_description_stays_untrusted(self):
+        job_description = (
+            "Python Django developer role."
+        )
+
+        package = build_resume_prompt(
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+                job_description=job_description,
+            )
+        )
+
+        self.assertNotIn(
+            job_description,
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "<UNTRUSTED_JOB_DESCRIPTION>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            job_description,
+            package.untrusted_content,
+        )
+
+    def test_resume_without_job_description_omits_vacancy_block(self):
+        package = build_resume_prompt(
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+            )
+        )
+
+        self.assertNotIn(
+            "<UNTRUSTED_JOB_DESCRIPTION>",
+            package.untrusted_content,
+        )
+
+
 class CoverLetterPromptTests(SimpleTestCase):
     """
     Tests for Cover Letter prompt construction.
@@ -314,6 +368,8 @@ class CoverLetterPromptTests(SimpleTestCase):
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
                 profile=build_empty_profile(),
+                job_title="Software Developer",
+                company="Example Employer",
                 job_description="Software Developer role.",
             )
         )
@@ -331,6 +387,8 @@ class CoverLetterPromptTests(SimpleTestCase):
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
                 profile=build_empty_profile(),
+                job_title="Software Developer",
+                company="Example Employer",
                 job_description=malicious_job_description,
             )
         )
@@ -370,6 +428,8 @@ class CoverLetterPromptTests(SimpleTestCase):
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
                 profile=profile,
+                job_title="Software Developer",
+                company="Example Employer",
                 job_description="Software Developer role.",
             )
         )
@@ -388,6 +448,8 @@ class CoverLetterPromptTests(SimpleTestCase):
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
                 profile=build_empty_profile(),
+                job_title="Software Developer",
+                company="Example Employer",
                 job_description="Software Developer role.",
             )
         )
@@ -444,6 +506,47 @@ class CoverLetterPromptTests(SimpleTestCase):
             "requires_user_review to true",
             requirements,
         )
+
+
+    def test_cover_letter_vacancy_identity_stays_untrusted(self):
+        job_title = "Software Developer"
+        company = "Example Employer"
+
+        package = build_cover_letter_prompt(
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                job_title=job_title,
+                company=company,
+                job_description="Example vacancy.",
+            )
+        )
+
+        for value in (
+            job_title,
+            company,
+        ):
+            self.assertNotIn(
+                value,
+                package.trusted_context,
+            )
+
+            self.assertIn(
+                value,
+                package.untrusted_content,
+            )
+
+        required = (
+            "<UNTRUSTED_JOB_TITLE>",
+            "</UNTRUSTED_JOB_TITLE>",
+            "<UNTRUSTED_COMPANY>",
+            "</UNTRUSTED_COMPANY>",
+        )
+
+        for delimiter in required:
+            self.assertIn(
+                delimiter,
+                package.untrusted_content,
+            )
 
 
 class InterviewQuestionPromptTests(SimpleTestCase):

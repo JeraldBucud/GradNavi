@@ -42,25 +42,42 @@ class ResumeGenerationInput(AIContractModel):
     """
     Validated input for resume-draft generation.
 
-    Resume generation uses approved Student Profile facts only.
+    Student Profile facts provide the evidence base.
 
-    Job-description context is intentionally excluded because FR-08
-    defines resume generation from Student Profile data. Job-description
-    matching belongs to separate project scope.
+    job_description is optional vacancy context. When supplied, it stays
+    classified as untrusted content during prompt construction.
     """
 
     profile: StudentProfileContext
+
+    job_description: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=JOB_DESCRIPTION_MAX_LENGTH,
+    )
 
 
 class CoverLetterGenerationInput(AIContractModel):
     """
     Validated input for cover-letter generation.
 
-    job_description is user-supplied and must stay classified as
-    untrusted content during prompt construction.
+    job_title, company, and job_description identify the target vacancy.
+
+    All three values are user-supplied vacancy context and stay classified
+    as untrusted content during prompt construction.
     """
 
     profile: StudentProfileContext
+
+    job_title: str = Field(
+        min_length=1,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+    )
+
+    company: str = Field(
+        min_length=1,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+    )
 
     job_description: str = Field(
         min_length=1,
