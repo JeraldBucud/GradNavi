@@ -12,6 +12,11 @@ import {
 } from '../services/documentService'
 
 import {
+  downloadResumeDocx,
+  downloadResumePdf,
+} from '../services/documentExportService'
+
+import {
   getCurrentUser,
   getStoredUser,
 } from '../services/authService'
@@ -23,8 +28,38 @@ import {
 import './ResumeBuilderPage.css'
 
 
-const RESUME_STORAGE_KEY =
+const RESUME_STORAGE_BASE_KEY =
   'gradnavi_resume_builder_draft_v1'
+
+const LEGACY_RESUME_STORAGE_KEY =
+  'gradnavi_resume_builder_draft_v1'
+
+
+function getResumeStorageKey(user) {
+  const identity =
+    user?.id
+    ?? user?.email
+
+  if (
+    identity === undefined
+    || identity === null
+    || String(identity).trim() === ''
+  ) {
+    return null
+  }
+
+  const scopedIdentity =
+    encodeURIComponent(
+      String(identity)
+        .trim()
+        .toLowerCase(),
+    )
+
+  return (
+    `${RESUME_STORAGE_BASE_KEY}:`
+    + scopedIdentity
+  )
+}
 
 
 const EMPTY_CONTACT_DETAILS = {
@@ -123,11 +158,24 @@ function listFromTextarea(value) {
 }
 
 
-function loadLocalDraft() {
+function loadLocalDraft(user) {
   try {
+    localStorage.removeItem(
+      LEGACY_RESUME_STORAGE_KEY,
+    )
+
+    const storageKey =
+      getResumeStorageKey(
+        user,
+      )
+
+    if (!storageKey) {
+      return null
+    }
+
     const stored =
       localStorage.getItem(
-        RESUME_STORAGE_KEY,
+        storageKey,
       )
 
     if (!stored) {
@@ -233,7 +281,9 @@ function ResumeBuilderPage() {
   const [
     storedDraft,
   ] = useState(
-    () => loadLocalDraft(),
+    () => loadLocalDraft(
+      storedUser,
+    ),
   )
 
   const [
@@ -680,8 +730,23 @@ function ResumeBuilderPage() {
       new Date()
         .toISOString()
 
+    const storageKey =
+      getResumeStorageKey(
+        currentUser
+        || storedUser,
+      )
+
+    if (!storageKey) {
+      setActionMessage(
+        'Sign in before saving '
+        + 'this draft.',
+      )
+
+      return
+    }
+
     localStorage.setItem(
-      RESUME_STORAGE_KEY,
+      storageKey,
       JSON.stringify({
         contact,
         draft,
@@ -725,6 +790,54 @@ function ResumeBuilderPage() {
       setActionMessage(
         'Copy failed. Select and '
         + 'copy the draft manually.',
+      )
+    }
+  }
+
+
+  async function handleDownloadWord() {
+    if (!draft) {
+      return
+    }
+
+    try {
+      await downloadResumeDocx(
+        contact,
+        draft,
+      )
+
+      setActionMessage(
+        'Word resume downloaded.',
+      )
+    }
+    catch {
+      setActionMessage(
+        'Word download failed. '
+        + 'Please try again.',
+      )
+    }
+  }
+
+
+  async function handleDownloadPdf() {
+    if (!draft) {
+      return
+    }
+
+    try {
+      await downloadResumePdf(
+        contact,
+        draft,
+      )
+
+      setActionMessage(
+        'PDF resume downloaded.',
+      )
+    }
+    catch {
+      setActionMessage(
+        'PDF download failed. '
+        + 'Please try again.',
       )
     }
   }
@@ -1848,6 +1961,26 @@ function ResumeBuilderPage() {
                     }
                   >
                     Save Draft
+                  </button>
+
+                  <button
+                    className="resume-builder__secondary-button"
+                    type="button"
+                    onClick={
+                      handleDownloadWord
+                    }
+                  >
+                    Download Word
+                  </button>
+
+                  <button
+                    className="resume-builder__secondary-button"
+                    type="button"
+                    onClick={
+                      handleDownloadPdf
+                    }
+                  >
+                    Download PDF
                   </button>
 
                   <button

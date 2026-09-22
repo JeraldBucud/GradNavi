@@ -1,13 +1,61 @@
-import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-} from 'docx'
+let Document
+let Packer
+let Paragraph
+let TextRun
+let jsPDF
 
-import {
-  jsPDF,
-} from 'jspdf'
+let docxModulePromise
+let jsPdfModulePromise
+
+
+async function ensureDocxLibrary() {
+  if (
+    Document
+    && Packer
+    && Paragraph
+    && TextRun
+  ) {
+    return
+  }
+
+  if (!docxModulePromise) {
+    docxModulePromise =
+      import('docx')
+  }
+
+  const module =
+    await docxModulePromise
+
+  Document =
+    module.Document
+
+  Packer =
+    module.Packer
+
+  Paragraph =
+    module.Paragraph
+
+  TextRun =
+    module.TextRun
+}
+
+
+async function ensurePdfLibrary() {
+  if (jsPDF) {
+    return
+  }
+
+  if (!jsPdfModulePromise) {
+    jsPdfModulePromise =
+      import('jspdf')
+  }
+
+  const module =
+    await jsPdfModulePromise
+
+  jsPDF =
+    module.jsPDF
+}
 
 
 const WORD_FONT = 'Arial'
@@ -925,6 +973,8 @@ async function downloadResumeDocx(
   contact,
   draft,
 ) {
+  await ensureDocxLibrary()
+
   const wordDocument =
     buildResumeWordDocument(
       contact,
@@ -943,10 +993,12 @@ async function downloadResumeDocx(
 }
 
 
-function downloadResumePdf(
+async function downloadResumePdf(
   contact,
   draft,
 ) {
+  await ensurePdfLibrary()
+
   const pdf =
     buildResumePdf(
       contact,
@@ -964,6 +1016,8 @@ async function downloadCoverLetterDocx(
   jobContext,
   draft,
 ) {
+  await ensureDocxLibrary()
+
   const wordDocument =
     buildCoverLetterWordDocument(
       contact,
@@ -988,11 +1042,13 @@ async function downloadCoverLetterDocx(
 }
 
 
-function downloadCoverLetterPdf(
+async function downloadCoverLetterPdf(
   contact,
   jobContext,
   draft,
 ) {
+  await ensurePdfLibrary()
+
   const pdf =
     buildCoverLetterPdf(
       contact,

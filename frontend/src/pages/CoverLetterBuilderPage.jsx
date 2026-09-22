@@ -9,6 +9,11 @@ import {
 } from '../services/documentService'
 
 import {
+  downloadCoverLetterDocx,
+  downloadCoverLetterPdf,
+} from '../services/documentExportService'
+
+import {
   getCurrentUser,
   getStoredUser,
 } from '../services/authService'
@@ -20,7 +25,10 @@ import {
 import './CoverLetterBuilderPage.css'
 
 
-const STORAGE_KEY =
+const COVER_LETTER_STORAGE_BASE_KEY =
+  'gradnavi_cover_letter_builder_draft_v1'
+
+const LEGACY_COVER_LETTER_STORAGE_KEY =
   'gradnavi_cover_letter_builder_draft_v1'
 
 
@@ -29,6 +37,181 @@ const EMPTY_JOB_CONTEXT = {
   company: '',
   applicationFocus: '',
   jobDescription: '',
+}
+
+
+const RESUME_STORAGE_BASE_KEY =
+  'gradnavi_resume_builder_draft_v1'
+
+
+function getDraftStorageIdentity(user) {
+  const identity =
+    user?.id
+    ?? user?.email
+
+  if (
+    identity === undefined
+    || identity === null
+    || String(identity).trim() === ''
+  ) {
+    return null
+  }
+
+  return encodeURIComponent(
+    String(identity)
+      .trim()
+      .toLowerCase(),
+  )
+}
+
+
+function getCoverLetterStorageKey(
+  user,
+) {
+  const identity =
+    getDraftStorageIdentity(
+      user,
+    )
+
+  if (!identity) {
+    return null
+  }
+
+  return (
+    `${COVER_LETTER_STORAGE_BASE_KEY}:`
+    + identity
+  )
+}
+
+
+function getResumeStorageKey(user) {
+  const identity =
+    getDraftStorageIdentity(
+      user,
+    )
+
+  if (!identity) {
+    return null
+  }
+
+  return (
+    `${RESUME_STORAGE_BASE_KEY}:`
+    + identity
+  )
+}
+
+
+const EMPTY_EXPORT_CONTACT = {
+  fullName: '',
+  email: '',
+  phone: '',
+  location: '',
+  linkedin: '',
+  portfolio: '',
+}
+
+
+function buildUserFullName(user) {
+  return [
+    user?.first_name,
+    user?.last_name,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .trim()
+}
+
+
+function getCoverLetterExportContact(
+  user,
+) {
+  const fallback = {
+    ...EMPTY_EXPORT_CONTACT,
+
+    fullName:
+      buildUserFullName(
+        user,
+      ),
+
+    email:
+      user?.email
+      || '',
+  }
+
+  try {
+    const storageKey =
+      getResumeStorageKey(
+        user,
+      )
+
+    if (!storageKey) {
+      return fallback
+    }
+
+    const stored =
+      localStorage.getItem(
+        storageKey,
+      )
+
+    if (!stored) {
+      return fallback
+    }
+
+    const parsed =
+      JSON.parse(stored)
+
+    const storedContact =
+      parsed?.contact
+
+    if (
+      !storedContact
+      || typeof storedContact
+      !== 'object'
+    ) {
+      return fallback
+    }
+
+    const currentEmail =
+      String(
+        user?.email
+        || '',
+      )
+        .trim()
+        .toLowerCase()
+
+    const storedEmail =
+      String(
+        storedContact.email
+        || '',
+      )
+        .trim()
+        .toLowerCase()
+
+    if (
+      currentEmail
+      && storedEmail
+      && currentEmail
+      !== storedEmail
+    ) {
+      return fallback
+    }
+
+    return {
+      ...fallback,
+      ...storedContact,
+
+      fullName:
+        storedContact.fullName
+        || fallback.fullName,
+
+      email:
+        storedContact.email
+        || fallback.email,
+    }
+  }
+  catch {
+    return fallback
+  }
 }
 
 
@@ -93,11 +276,24 @@ function normaliseDraft(value) {
 }
 
 
-function loadSavedDraft() {
+function loadSavedDraft(user) {
   try {
+    localStorage.removeItem(
+      LEGACY_COVER_LETTER_STORAGE_KEY,
+    )
+
+    const storageKey =
+      getCoverLetterStorageKey(
+        user,
+      )
+
+    if (!storageKey) {
+      return null
+    }
+
     const stored =
       localStorage.getItem(
-        STORAGE_KEY,
+        storageKey,
       )
 
     if (!stored) {
@@ -161,7 +357,9 @@ function CoverLetterBuilderPage() {
   const [
     storedDraft,
   ] = useState(
-    () => loadSavedDraft(),
+    () => loadSavedDraft(
+      storedUser,
+    ),
   )
 
   const [
@@ -534,8 +732,23 @@ function CoverLetterBuilderPage() {
       new Date()
         .toISOString()
 
+    const storageKey =
+      getCoverLetterStorageKey(
+        currentUser
+        || storedUser,
+      )
+
+    if (!storageKey) {
+      setActionMessage(
+        'Sign in before saving '
+        + 'this draft.',
+      )
+
+      return
+    }
+
     localStorage.setItem(
-      STORAGE_KEY,
+      storageKey,
       JSON.stringify({
         jobContext,
         draft,
@@ -575,6 +788,66 @@ function CoverLetterBuilderPage() {
       setActionMessage(
         'Copy failed. Select and '
         + 'copy the draft manually.',
+      )
+    }
+  }
+
+
+  async function handleDownloadWord() {
+    if (!draft) {
+      return
+    }
+
+    const exportContact =
+      getCoverLetterExportContact(
+        currentUser,
+      )
+
+    try {
+      await downloadCoverLetterDocx(
+        exportContact,
+        jobContext,
+        draft,
+      )
+
+      setActionMessage(
+        'Word cover letter downloaded.',
+      )
+    }
+    catch {
+      setActionMessage(
+        'Word download failed. '
+        + 'Please try again.',
+      )
+    }
+  }
+
+
+  async function handleDownloadPdf() {
+    if (!draft) {
+      return
+    }
+
+    const exportContact =
+      getCoverLetterExportContact(
+        currentUser,
+      )
+
+    try {
+      await downloadCoverLetterPdf(
+        exportContact,
+        jobContext,
+        draft,
+      )
+
+      setActionMessage(
+        'PDF cover letter downloaded.',
+      )
+    }
+    catch {
+      setActionMessage(
+        'PDF download failed. '
+        + 'Please try again.',
       )
     }
   }
@@ -1590,6 +1863,26 @@ function CoverLetterBuilderPage() {
                     }
                   >
                     Save Draft
+                  </button>
+
+                  <button
+                    className="cover-letter-builder__secondary-button"
+                    type="button"
+                    onClick={
+                      handleDownloadWord
+                    }
+                  >
+                    Download Word
+                  </button>
+
+                  <button
+                    className="cover-letter-builder__secondary-button"
+                    type="button"
+                    onClick={
+                      handleDownloadPdf
+                    }
+                  >
+                    Download PDF
                   </button>
 
                   <button
