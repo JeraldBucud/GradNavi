@@ -1,5 +1,9 @@
 from rest_framework import serializers
 
+from ai_services.schemas.inputs import (
+    JOB_DESCRIPTION_MAX_LENGTH,
+)
+
 
 class CareerSelectionQuerySerializer(serializers.Serializer):
     career_id = serializers.IntegerField(
@@ -656,4 +660,123 @@ class ExploreCareerItemSerializer(
 
     match_score = serializers.CharField(
         allow_null=True,
+    )
+
+class JobDescriptionMatchRequestSerializer(
+    serializers.Serializer
+):
+    """
+    Input contract for deterministic WBS 7.2 matching.
+
+    The authenticated Student Profile is resolved by the backend.
+    Client-supplied profile or user identifiers are not accepted.
+    """
+
+    job_description = serializers.CharField(
+        allow_blank=False,
+        min_length=1,
+        max_length=(
+            JOB_DESCRIPTION_MAX_LENGTH
+        ),
+        trim_whitespace=True,
+    )
+
+
+    def to_internal_value(
+        self,
+        data,
+    ):
+        if not hasattr(
+            data,
+            "keys",
+        ):
+            raise serializers.ValidationError(
+                "Expected an object."
+            )
+
+        unknown_fields = (
+            set(
+                data.keys()
+            )
+            - set(
+                self.fields
+            )
+        )
+
+        if unknown_fields:
+            raise serializers.ValidationError(
+                {
+                    field: (
+                        "This field is not allowed."
+                    )
+                    for field
+                    in sorted(
+                        unknown_fields
+                    )
+                }
+            )
+
+        return super().to_internal_value(
+            data
+        )
+
+
+class JobRequirementMatchSerializer(
+    serializers.Serializer
+):
+    skill_id = serializers.IntegerField()
+
+    skill_name = serializers.CharField()
+
+    concept_type = serializers.CharField()
+
+    matched_term = serializers.CharField()
+
+    match_source = serializers.ChoiceField(
+        choices=(
+            "canonical",
+            "alias",
+        )
+    )
+
+    current_proficiency = (
+        serializers.CharField(
+            allow_null=True,
+        )
+    )
+
+
+class JobDescriptionMatchResultSerializer(
+    serializers.Serializer
+):
+    matched_requirement_count = (
+        serializers.IntegerField()
+    )
+
+    missing_requirement_count = (
+        serializers.IntegerField()
+    )
+
+    total_requirement_count = (
+        serializers.IntegerField()
+    )
+
+    canonical_match_count = (
+        serializers.IntegerField()
+    )
+
+    alias_match_count = (
+        serializers.IntegerField()
+    )
+
+    matched_requirements = (
+        JobRequirementMatchSerializer(
+            many=True,
+        )
+    )
+
+    missing_requirements = (
+        JobRequirementMatchSerializer(
+            many=True,
+        )
     )

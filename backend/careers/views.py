@@ -6,6 +6,8 @@ from rest_framework.views import APIView
 from careers.serializers import (
     CareerSelectionQuerySerializer,
     CareerReadinessResultSerializer,
+    JobDescriptionMatchRequestSerializer,
+    JobDescriptionMatchResultSerializer,
     CompositeRecommendationResultSerializer,
     ExploreCareerItemSerializer,
     ExploreCareerQuerySerializer,
@@ -67,6 +69,10 @@ from careers.services.readiness_scoring import (
     calculate_selected_career_readiness,
 )
 
+from careers.services.job_description_matching import (
+    match_job_description,
+)
+
 from careers.services.skill_gap_summary import (
     SKILL_GAP_SUMMARY_VERSION,
     build_fix_first,
@@ -105,6 +111,79 @@ from careers.services.roadmap_progress import (
     start_roadmap_step,
 )
 from profiles.models import StudentProfile
+
+
+class JobDescriptionMatchView(APIView):
+    """
+    Deterministic FR-07 Job Description Matching endpoint.
+
+    The endpoint uses only the authenticated Student's profile.
+    It performs no generative AI request.
+    """
+
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+
+    def post(
+        self,
+        request,
+    ):
+        request_serializer = (
+            JobDescriptionMatchRequestSerializer(
+                data=request.data,
+            )
+        )
+
+        request_serializer.is_valid(
+            raise_exception=True,
+        )
+
+        profile = self._get_profile(
+            request.user
+        )
+
+        result = match_job_description(
+            student_profile=profile,
+            job_description=(
+                request_serializer
+                .validated_data[
+                    "job_description"
+                ]
+            ),
+        )
+
+        response_serializer = (
+            JobDescriptionMatchResultSerializer(
+                result
+            )
+        )
+
+        return Response(
+            {
+                "data": (
+                    response_serializer.data
+                ),
+            }
+        )
+
+
+    def _get_profile(
+        self,
+        user,
+    ):
+        try:
+            return (
+                StudentProfile.objects.get(
+                    user=user,
+                )
+            )
+
+        except StudentProfile.DoesNotExist:
+            raise NotFound(
+                "Student profile was not found."
+            )
 
 
 class RecommendationAIUnavailable(APIException):
