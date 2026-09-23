@@ -30,6 +30,7 @@ function getRequestErrorMessage(
       ?.data
       ?.error
       ?.details
+    || requestError?.data
 
   if (
     details
@@ -63,6 +64,9 @@ function getRequestErrorMessage(
       ?.data
       ?.error
       ?.message
+    || requestError
+      ?.data
+      ?.detail
     || requestError?.message
     || fallbackMessage
   )
@@ -337,9 +341,21 @@ function JobMatchingPage() {
             normalizedJobDescription,
         })
 
-      setResult(
+      const responseData =
         response?.data
-        || null,
+
+      if (
+        !responseData
+        || typeof responseData
+        !== 'object'
+      ) {
+        throw new Error(
+          'Job Matching returned an invalid response.',
+        )
+      }
+
+      setResult(
+        responseData,
       )
 
       setRequestState('success')
