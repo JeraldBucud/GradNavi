@@ -1,0 +1,674 @@
+.cover-letter-builder {
+  min-height: 100vh;
+  padding: 56px 48px 72px;
+  background: #f8fafc;
+}
+
+.cover-letter-builder *,
+.cover-letter-builder *::before,
+.cover-letter-builder *::after {
+  box-sizing: border-box;
+}
+
+.cover-letter-builder__content {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.cover-letter-builder__header {
+  display: flex;
+  min-height: 104px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.cover-letter-builder__header h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 40px;
+}
+
+.cover-letter-builder__header p {
+  max-width: 800px;
+  margin: 10px 0 0;
+  color: #475569;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.cover-letter-builder__account {
+  display: flex;
+  width: 180px;
+  min-height: 52px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cover-letter-builder__avatar {
+  display: grid;
+  width: 34px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid #1d4ed8;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.cover-letter-builder__intro-grid,
+.cover-letter-builder__evidence-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.cover-letter-builder__intro-grid article,
+.cover-letter-builder__evidence-grid article {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.cover-letter-builder__intro-grid h2,
+.cover-letter-builder__evidence-grid h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cover-letter-builder__intro-grid ul,
+.cover-letter-builder__evidence-grid ul {
+  margin: 16px 0 0;
+  padding-left: 20px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 21px;
+}
+
+.cover-letter-builder__intro-grid li + li,
+.cover-letter-builder__evidence-grid li + li {
+  margin-top: 9px;
+}
+
+.cover-letter-builder__evidence-grid p {
+  margin: 14px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.cover-letter-builder__section,
+.cover-letter-builder__state-card {
+  margin-top: 30px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow:
+    0 12px 18px
+    rgba(15, 23, 42, 0.05);
+}
+
+.cover-letter-builder__section-heading,
+.cover-letter-builder__draft-heading,
+.cover-letter-builder__draft-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.cover-letter-builder__section-heading h2,
+.cover-letter-builder__draft-heading h2,
+.cover-letter-builder__state-card h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.cover-letter-builder__section-heading p,
+.cover-letter-builder__draft-heading p,
+.cover-letter-builder__state-card > p {
+  max-width: 820px;
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.cover-letter-builder__privacy-badge,
+.cover-letter-builder__ai-badge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.cover-letter-builder__privacy-badge {
+  border: 1px solid #0f766e;
+  background: #ccfbf1;
+  color: #0f766e;
+}
+
+.cover-letter-builder__ai-badge {
+  border: 1px solid #1d4ed8;
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.cover-letter-builder__context-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.cover-letter-builder__context-grid label,
+.cover-letter-builder__job-description {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cover-letter-builder__job-description {
+  margin-top: 18px;
+}
+
+.cover-letter-builder__context-grid input,
+.cover-letter-builder__job-description textarea,
+.cover-letter-builder__draft-textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.cover-letter-builder__context-grid input {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.cover-letter-builder__job-description textarea,
+.cover-letter-builder__draft-textarea {
+  padding: 12px;
+  resize: vertical;
+  line-height: 21px;
+}
+
+.cover-letter-builder__field-note {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.cover-letter-builder__button-row,
+.cover-letter-builder__draft-actions,
+.cover-letter-builder__final-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cover-letter-builder__button-row {
+  margin-top: 20px;
+}
+
+.cover-letter-builder__primary-button,
+.cover-letter-builder__secondary-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cover-letter-builder__primary-button {
+  border: 1px solid #1d4ed8;
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.cover-letter-builder__secondary-button {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.cover-letter-builder__inline-state,
+.cover-letter-builder__notice {
+  margin-top: 18px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.cover-letter-builder__inline-state {
+  border: 1px solid #bae6fd;
+  background: #f0f9ff;
+  color: #075985;
+}
+
+.cover-letter-builder__notice--error,
+.cover-letter-builder__state-card--error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.cover-letter-builder__state-card--warning {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.cover-letter-builder__spinner {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 16px;
+  border: 4px solid #dbeafe;
+  border-top-color: #1d4ed8;
+  border-radius: 50%;
+  animation:
+    cover-letter-spin
+    0.8s linear infinite;
+}
+
+@keyframes cover-letter-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cover-letter-builder__draft-toolbar {
+  margin-top: 16px;
+}
+
+.cover-letter-builder__draft-toolbar p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.cover-letter-builder__draft-actions {
+  flex: 0 0 auto;
+}
+
+.cover-letter-builder__draft-actions button {
+  min-width: 142px;
+}
+
+.cover-letter-builder__draft-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.65fr)
+    minmax(280px, 0.9fr);
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.cover-letter-builder__draft-main,
+.cover-letter-builder__draft-sidebar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cover-letter-builder__draft-section,
+.cover-letter-builder__review-panel {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.cover-letter-builder__draft-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cover-letter-builder__draft-section-heading h3,
+.cover-letter-builder__review-panel h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cover-letter-builder__text-button {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #1d4ed8;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cover-letter-builder__draft-copy {
+  margin: 12px 0 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 22px;
+  white-space: pre-wrap;
+}
+
+.cover-letter-builder__draft-textarea {
+  min-height: 130px;
+  margin-top: 12px;
+}
+
+.cover-letter-builder__review-panel > p {
+  margin: 14px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.cover-letter-builder__review-panel ul {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cover-letter-builder__review-panel li {
+  display: grid;
+  grid-template-columns:
+    34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  color: #475569;
+  font-size: 13px;
+}
+
+.cover-letter-builder__dot {
+  display: block;
+  width: 34px;
+  height: 30px;
+  border-radius: 999px;
+}
+
+.cover-letter-builder__dot--safe {
+  border: 1px solid #0f766e;
+  background: #ccfbf1;
+}
+
+.cover-letter-builder__dot--warning {
+  border: 1px solid #f59e0b;
+  background: #fef3c7;
+}
+
+.cover-letter-builder__final-actions {
+  margin-top: 28px;
+}
+
+.cover-letter-builder__action-message {
+  margin: 14px 0 0;
+  color: #166534;
+  font-size: 13px;
+}
+
+.cover-letter-builder button:focus-visible,
+.cover-letter-builder input:focus-visible,
+.cover-letter-builder textarea:focus-visible {
+  outline: 3px solid
+    rgba(29, 78, 216, 0.25);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1000px) {
+  .cover-letter-builder {
+    padding-inline: 32px;
+  }
+
+  .cover-letter-builder__intro-grid,
+  .cover-letter-builder__evidence-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .cover-letter-builder__evidence-grid article:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 920px) {
+  .cover-letter-builder__draft-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cover-letter-builder__draft-sidebar {
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .cover-letter-builder {
+    padding: 36px 20px 56px;
+  }
+
+  .cover-letter-builder__header,
+  .cover-letter-builder__section-heading,
+  .cover-letter-builder__draft-heading,
+  .cover-letter-builder__draft-toolbar {
+    flex-direction: column;
+  }
+
+  .cover-letter-builder__account {
+    width: auto;
+  }
+
+  .cover-letter-builder__intro-grid,
+  .cover-letter-builder__evidence-grid,
+  .cover-letter-builder__context-grid,
+  .cover-letter-builder__draft-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .cover-letter-builder__evidence-grid article:last-child {
+    grid-column: auto;
+  }
+
+  .cover-letter-builder__draft-actions {
+    width: 100%;
+  }
+
+  .cover-letter-builder__draft-actions button {
+    flex: 1 1 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .cover-letter-builder {
+    padding-inline: 16px;
+  }
+
+  .cover-letter-builder__section,
+  .cover-letter-builder__state-card,
+  .cover-letter-builder__intro-grid article {
+    padding: 18px;
+  }
+
+  .cover-letter-builder__button-row,
+  .cover-letter-builder__draft-actions,
+  .cover-letter-builder__final-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .cover-letter-builder__primary-button,
+  .cover-letter-builder__secondary-button {
+    width: 100%;
+  }
+}
+
+
+/* WBS 6.5 MULTI-APPLICATION COVER LETTER TARGET CONTROLS */
+
+.cover-letter-builder__application-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.cover-letter-builder__application-grid label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cover-letter-builder__application-grid label > span {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 19px;
+}
+
+.cover-letter-builder__application-grid label > span em {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.cover-letter-builder__application-grid input,
+.cover-letter-builder__application-grid select,
+.cover-letter-builder__application-grid textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.cover-letter-builder__application-grid input,
+.cover-letter-builder__application-grid select {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.cover-letter-builder__application-grid textarea {
+  min-height: 180px;
+  padding: 12px;
+  resize: vertical;
+  line-height: 21px;
+}
+
+.cover-letter-builder__application-grid input:focus,
+.cover-letter-builder__application-grid select:focus,
+.cover-letter-builder__application-grid textarea:focus {
+  border-color: #1d4ed8;
+  outline: none;
+  box-shadow:
+    0 0 0 3px
+    rgba(29, 78, 216, 0.12);
+}
+
+.cover-letter-builder__application-grid select:disabled {
+  cursor: not-allowed;
+  background: #f8fafc;
+  color: #94a3b8;
+}
+
+.cover-letter-builder__application-grid small {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.cover-letter-builder__application-full {
+  grid-column: 1 / -1;
+}
+
+.cover-letter-builder__state-inline--error {
+  margin-top: 16px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.cover-letter-builder select:focus-visible {
+  outline: 3px solid
+    rgba(29, 78, 216, 0.25);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .cover-letter-builder__application-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cover-letter-builder__application-full {
+    grid-column: auto;
+  }
+}
+/* WBS 6.5 COVER LETTER DISABLED BUTTON STATES */
+
+.cover-letter-builder__primary-button:disabled,
+.cover-letter-builder__primary-button:disabled:hover {
+  border-color: #cbd5e1;
+  background: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.cover-letter-builder__secondary-button:disabled,
+.cover-letter-builder__secondary-button:disabled:hover {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

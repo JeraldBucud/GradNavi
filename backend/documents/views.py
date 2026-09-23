@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.exceptions import APIException, NotFound
+from rest_framework.exceptions import APIException, NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -17,6 +17,10 @@ from documents.serializers import (
 )
 from documents.services.cover_letter_generation import generate_cover_letter_draft
 from documents.services.resume_generation import generate_resume_draft
+from documents.services.target_career import (
+    TargetCareerNotAvailableError,
+    resolve_document_target_career,
+)
 from profiles.models import StudentProfile
 
 
@@ -40,11 +44,52 @@ class ResumeGenerationView(APIView):
 
         try:
             profile = self._get_profile(request.user)
-            ai_provider = get_resume_generation_provider()
+
+            target_career = (
+                resolve_document_target_career(
+                    student_profile=profile,
+                    career_id=(
+                        serializer.validated_data[
+                            "target_career_id"
+                        ]
+                    ),
+                )
+            )
+
+            ai_provider = (
+                get_resume_generation_provider()
+            )
+
             resume_draft = generate_resume_draft(
                 student_profile=profile,
+                target_career_name=(
+                    target_career.name
+                ),
+                resume_focus=(
+                    serializer.validated_data[
+                        "resume_focus"
+                    ]
+                ),
+                job_description=(
+                    serializer.validated_data.get(
+                        "job_description"
+                    )
+                ),
                 ai_provider=ai_provider,
             )
+
+        except TargetCareerNotAvailableError as exc:
+            raise ValidationError(
+                {
+                    "target_career_id": [
+                        (
+                            "Selected target career "
+                            "is not available."
+                        )
+                    ]
+                }
+            ) from exc
+
         except AIServiceError as exc:
             raise ExternalServiceUnavailable() from exc
 
@@ -86,12 +131,69 @@ class CoverLetterGenerationView(APIView):
 
         try:
             profile = self._get_profile(request.user)
-            ai_provider = get_cover_letter_generation_provider()
-            cover_letter_draft = generate_cover_letter_draft(
-                student_profile=profile,
-                job_description=serializer.validated_data["job_description"],
-                ai_provider=ai_provider,
+
+            target_career = (
+                resolve_document_target_career(
+                    student_profile=profile,
+                    career_id=(
+                        serializer.validated_data[
+                            "target_career_id"
+                        ]
+                    ),
+                )
             )
+
+            ai_provider = (
+                get_cover_letter_generation_provider()
+            )
+
+            cover_letter_draft = (
+                generate_cover_letter_draft(
+                    student_profile=profile,
+                    target_career_name=(
+                        target_career.name
+                    ),
+                    tone=(
+                        serializer.validated_data[
+                            "tone"
+                        ]
+                    ),
+                    cover_letter_focus=(
+                        serializer.validated_data[
+                            "cover_letter_focus"
+                        ]
+                    ),
+                    job_title=(
+                        serializer.validated_data[
+                            "job_title"
+                        ]
+                    ),
+                    company=(
+                        serializer.validated_data[
+                            "company"
+                        ]
+                    ),
+                    job_description=(
+                        serializer.validated_data[
+                            "job_description"
+                        ]
+                    ),
+                    ai_provider=ai_provider,
+                )
+            )
+
+        except TargetCareerNotAvailableError as exc:
+            raise ValidationError(
+                {
+                    "target_career_id": [
+                        (
+                            "Selected target career "
+                            "is not available."
+                        )
+                    ]
+                }
+            ) from exc
+
         except AIServiceError as exc:
             raise ExternalServiceUnavailable() from exc
 

@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import StudentLayout from './layouts/StudentLayout'
 import CareerRecommendationsPage from './pages/CareerRecommendationsPage'
+import CoverLetterBuilderPage from './pages/CoverLetterBuilderPage'
+import ResumeBuilderPage from './pages/ResumeBuilderPage'
 import ExploreCareersPage from './pages/ExploreCareersPage'
 import CareerRoadmapPage from './pages/CareerRoadmapPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
@@ -74,6 +76,16 @@ function App() {
           <Route
             path="/learning-resources"
             element={<LearningResourcesPage />}
+          />
+
+          <Route
+            path="/resume-builder"
+            element={<ResumeBuilderPage />}
+          />
+
+          <Route
+            path="/cover-letter-builder"
+            element={<CoverLetterBuilderPage />}
           />
         </Route>
       </Route>
