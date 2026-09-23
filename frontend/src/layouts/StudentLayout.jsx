@@ -77,6 +77,12 @@ const studentNavigation = [
     implemented: true,
   },
   {
+    label: 'Job Matching',
+    icon: Search,
+    path: '/job-matching',
+    implemented: true,
+  },
+  {
     label: 'Resume Builder',
     icon: FileText,
     path: '/resume-builder',
