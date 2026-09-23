@@ -798,61 +798,99 @@ function ResumeBuilderPage() {
         }
 
         if (activeVersion) {
-          setActiveVersionId(
-            activeVersion.id,
-          )
+          if (incomingJobDescription) {
+            setActiveVersionId(null)
 
-          setVersionName(
-            activeVersion
-              .version_name
-            || 'General Resume',
-          )
-
-          setResumeFocus(
-            activeVersion
-              .resume_focus
-            || 'balanced',
-          )
-
-          setJobDescription(
-            incomingJobDescription
-            || activeVersion
-              .job_description
-            || '',
-          )
-
-          setContact(
-            (current) => ({
-              ...current,
-              ...(
-                activeVersion
-                  .contact
-                || {}
-              ),
-            }),
-          )
-
-          setDraft(
-            activeVersion.draft
-            || null,
-          )
-
-          setSavedAt(
-            activeVersion.saved_at
-            || null,
-          )
-
-          setGenerationState(
-            activeVersion.draft
-              ? 'success'
-              : 'empty',
-          )
-
-          if (activeVersion.draft) {
-            setActionMessage(
-              'Saved resume version '
-              + 'restored from this browser.',
+            setVersionName(
+              'Job-tailored Resume',
             )
+
+            setResumeFocus('balanced')
+
+            setJobDescription(
+              incomingJobDescription,
+            )
+
+            setContact(
+              (current) => ({
+                ...current,
+                ...(
+                  activeVersion
+                    .contact
+                  || {}
+                ),
+              }),
+            )
+
+            setDraft(null)
+            setSavedAt(null)
+
+            setGenerationState(
+              'empty',
+            )
+
+            setActionMessage(
+              'Job description carried over '
+              + 'from Job Matching. Generate '
+              + 'a new draft before saving.',
+            )
+          }
+          else {
+            setActiveVersionId(
+              activeVersion.id,
+            )
+
+            setVersionName(
+              activeVersion
+                .version_name
+              || 'General Resume',
+            )
+
+            setResumeFocus(
+              activeVersion
+                .resume_focus
+              || 'balanced',
+            )
+
+            setJobDescription(
+              activeVersion
+                .job_description
+              || '',
+            )
+
+            setContact(
+              (current) => ({
+                ...current,
+                ...(
+                  activeVersion
+                    .contact
+                  || {}
+                ),
+              }),
+            )
+
+            setDraft(
+              activeVersion.draft
+              || null,
+            )
+
+            setSavedAt(
+              activeVersion.saved_at
+              || null,
+            )
+
+            setGenerationState(
+              activeVersion.draft
+                ? 'success'
+                : 'empty',
+            )
+
+            if (activeVersion.draft) {
+              setActionMessage(
+                'Saved resume version '
+                + 'restored from this browser.',
+              )
+            }
           }
         }
       }
