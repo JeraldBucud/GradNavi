@@ -818,68 +818,101 @@ function CoverLetterBuilderPage() {
         }
 
         if (activeVersion) {
-          setActiveVersionId(
-            activeVersion.id,
-          )
+          if (incomingJobDescription) {
+            setActiveVersionId(null)
 
-          setTone(
-            activeVersion.tone
-            || 'professional',
-          )
+            setTone('professional')
 
-          setCoverLetterFocus(
-            activeVersion
-              .cover_letter_focus
-            || 'balanced',
-          )
-
-          setVersionName(
-            activeVersion
-              .version_name
-            || '',
-          )
-
-          setVersionNameEdited(
-            true,
-          )
-
-          setJobContext({
-            jobTitle:
-              activeVersion
-                .job_title
-              || '',
-            company:
-              activeVersion
-                .company
-              || '',
-            jobDescription:
-              incomingJobDescription
-              || activeVersion
-                .job_description
-              || '',
-          })
-
-          setDraft(
-            activeVersion.draft
-            || null,
-          )
-
-          setSavedAt(
-            activeVersion.saved_at
-            || null,
-          )
-
-          setGenerationState(
-            activeVersion.draft
-              ? 'success'
-              : 'empty',
-          )
-
-          if (activeVersion.draft) {
-            setActionMessage(
-              'Saved cover letter version '
-              + 'restored from this browser.',
+            setCoverLetterFocus(
+              'balanced',
             )
+
+            setVersionName('')
+            setVersionNameEdited(false)
+
+            setJobContext({
+              jobTitle: '',
+              company: '',
+              jobDescription:
+                incomingJobDescription,
+            })
+
+            setDraft(null)
+            setSavedAt(null)
+
+            setGenerationState(
+              'empty',
+            )
+
+            setActionMessage(
+              'Job description carried over '
+              + 'from Job Matching. Add the '
+              + 'job title and company to continue.',
+            )
+          }
+          else {
+            setActiveVersionId(
+              activeVersion.id,
+            )
+
+            setTone(
+              activeVersion.tone
+              || 'professional',
+            )
+
+            setCoverLetterFocus(
+              activeVersion
+                .cover_letter_focus
+              || 'balanced',
+            )
+
+            setVersionName(
+              activeVersion
+                .version_name
+              || '',
+            )
+
+            setVersionNameEdited(
+              true,
+            )
+
+            setJobContext({
+              jobTitle:
+                activeVersion
+                  .job_title
+                || '',
+              company:
+                activeVersion
+                  .company
+                || '',
+              jobDescription:
+                activeVersion
+                  .job_description
+                || '',
+            })
+
+            setDraft(
+              activeVersion.draft
+              || null,
+            )
+
+            setSavedAt(
+              activeVersion.saved_at
+              || null,
+            )
+
+            setGenerationState(
+              activeVersion.draft
+                ? 'success'
+                : 'empty',
+            )
+
+            if (activeVersion.draft) {
+              setActionMessage(
+                'Saved cover letter version '
+                + 'restored from this browser.',
+              )
+            }
           }
         }
       }
