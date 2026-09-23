@@ -5,6 +5,7 @@ from .views import (
     ExploreCareerEvaluateView,
     ExploreCareerListView,
     GuidanceCareerListView,
+    JobDescriptionMatchView,
     LearningResourceFeedbackView,
     LearningResourceRecommendationView,
     LearningResourceReportCreateView,
@@ -23,6 +24,11 @@ from .views import (
 app_name = "careers"
 
 urlpatterns = [
+    path(
+        "careers/job-match/",
+        JobDescriptionMatchView.as_view(),
+        name="job-description-match",
+    ),
     path(
         "recommendations/",
         RecommendationListView.as_view(),
