@@ -3,6 +3,10 @@ import {
   useState,
 } from 'react'
 
+import {
+  useLocation,
+} from 'react-router'
+
 
 import {
   COVER_LETTER_FOCUS_OPTIONS,
@@ -415,6 +419,15 @@ function getDocumentCareerOptionLabel(
 
 
 function CoverLetterBuilderPage() {
+  const location = useLocation()
+
+  const incomingJobDescription =
+    typeof location.state?.jobDescription
+    === 'string'
+      ? location.state.jobDescription
+        .trim()
+        .slice(0, 20_000)
+      : ''
 
   const [
     storedUser,
@@ -455,8 +468,21 @@ function CoverLetterBuilderPage() {
     jobContext,
     setJobContext,
   ] = useState(
-    storedDraft?.jobContext
-    || EMPTY_JOB_CONTEXT,
+    () => ({
+      ...EMPTY_JOB_CONTEXT,
+      ...(
+        storedDraft?.jobContext
+        || {}
+      ),
+      ...(
+        incomingJobDescription
+          ? {
+            jobDescription:
+              incomingJobDescription,
+          }
+          : {}
+      ),
+    }),
   )
 
   const [
@@ -490,12 +516,18 @@ function CoverLetterBuilderPage() {
     actionMessage,
     setActionMessage,
   ] = useState(
-    storedDraft?.draft
+    incomingJobDescription
       ? (
-        'Saved draft restored '
-        + 'from this browser.'
+        'Job description carried over '
+        + 'from Job Matching. Add the '
+        + 'job title and company to continue.'
       )
-      : '',
+      : storedDraft?.draft
+        ? (
+          'Saved draft restored '
+          + 'from this browser.'
+        )
+        : '',
   )
 
   const [
@@ -821,7 +853,8 @@ function CoverLetterBuilderPage() {
                 .company
               || '',
             jobDescription:
-              activeVersion
+              incomingJobDescription
+              || activeVersion
                 .job_description
               || '',
           })
