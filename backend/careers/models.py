@@ -1,6 +1,6 @@
 from django.db import models
 
-from profiles.models import Skill
+from profiles.models import Interest, Skill
 
 
 class MappingMethod(models.TextChoices):
@@ -178,6 +178,248 @@ class Career(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CareerInterest(models.Model):
+    """
+    Reviewed relationship between a GradNavi Career
+    and a detailed Student-facing Interest.
+
+    Detailed Interests stay separate from O*NET RIASEC
+    occupational-interest evidence.
+    """
+
+    class SourceType(models.TextChoices):
+        GRADNAVI_REVIEW = (
+            "gradnavi_review",
+            "GradNavi Review",
+        )
+        EXTERNAL_EVIDENCE = (
+            "external_evidence",
+            "External Evidence",
+        )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name="career_interests",
+    )
+
+    interest = models.ForeignKey(
+        Interest,
+        on_delete=models.PROTECT,
+        related_name="career_interests",
+    )
+
+    relevance_weight = models.PositiveSmallIntegerField()
+
+    review_status = models.CharField(
+        max_length=20,
+        choices=ReviewStatus.choices,
+        default=ReviewStatus.PENDING,
+    )
+
+    source_type = models.CharField(
+        max_length=30,
+        choices=SourceType.choices,
+        default=SourceType.GRADNAVI_REVIEW,
+    )
+
+    source_reference = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "career",
+                    "interest",
+                ],
+                name="unique_career_interest",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    relevance_weight__gte=1,
+                    relevance_weight__lte=5,
+                ),
+                name="valid_career_interest_relevance",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    review_status__in=[
+                        "pending",
+                        "approved",
+                        "rejected",
+                    ],
+                ),
+                name="valid_career_interest_review_status",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    source_type__in=[
+                        "gradnavi_review",
+                        "external_evidence",
+                    ],
+                ),
+                name="valid_career_interest_source_type",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.career.name} - "
+            f"{self.interest.name} "
+            f"({self.relevance_weight})"
+        )
+
+
+class CareerRIASECProfile(models.Model):
+    """
+    Normalized O*NET-style RIASEC evidence for one Career.
+
+    Scores use GradNavi's normalized 0 to 100 scale.
+
+    Source-native evidence stays linked through
+    ReferenceDataset and external reference snapshots.
+    """
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name="riasec_profiles",
+    )
+
+    dataset = models.ForeignKey(
+        ReferenceDataset,
+        on_delete=models.PROTECT,
+        related_name="career_riasec_profiles",
+    )
+
+    realistic_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    investigative_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    artistic_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    social_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    enterprising_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    conventional_score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+    )
+
+    review_status = models.CharField(
+        max_length=20,
+        choices=ReviewStatus.choices,
+        default=ReviewStatus.PENDING,
+    )
+
+    source_reference = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "career",
+                    "dataset",
+                ],
+                name="unique_career_riasec_dataset",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    realistic_score__gte=0,
+                    realistic_score__lte=100,
+                ),
+                name="valid_riasec_realistic_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    investigative_score__gte=0,
+                    investigative_score__lte=100,
+                ),
+                name="valid_riasec_investigative_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    artistic_score__gte=0,
+                    artistic_score__lte=100,
+                ),
+                name="valid_riasec_artistic_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    social_score__gte=0,
+                    social_score__lte=100,
+                ),
+                name="valid_riasec_social_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    enterprising_score__gte=0,
+                    enterprising_score__lte=100,
+                ),
+                name="valid_riasec_enterprising_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    conventional_score__gte=0,
+                    conventional_score__lte=100,
+                ),
+                name="valid_riasec_conventional_score",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    review_status__in=[
+                        "pending",
+                        "approved",
+                        "rejected",
+                    ],
+                ),
+                name="valid_career_riasec_review_status",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.career.name} RIASEC "
+            f"({self.dataset})"
+        )
 
 
 class CareerExternalMapping(models.Model):
@@ -692,6 +934,23 @@ class CareerSkillEvidence(models.Model):
         null=True,
     )
 
+    hot_technology = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
+    in_demand = models.BooleanField(
+        blank=True,
+        null=True,
+    )
+
+    in_demand_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
+
     source_updated_at = models.DateTimeField(
         blank=True,
         null=True,
@@ -763,6 +1022,29 @@ class CareerSkillEvidence(models.Model):
                 ),
                 name="valid_evidence_level_scale_range",
             ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        in_demand_percentage__isnull=True,
+                    )
+                    | models.Q(
+                        in_demand_percentage__gte=0,
+                        in_demand_percentage__lte=100,
+                    )
+                ),
+                name="valid_evidence_in_demand_percentage",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        in_demand_percentage__isnull=True,
+                    )
+                    | models.Q(
+                        in_demand=True,
+                    )
+                ),
+                name="evidence_percentage_requires_in_demand",
+            ),
             models.UniqueConstraint(
                 fields=[
                     "career_skill",
@@ -802,6 +1084,22 @@ class LearningResource(models.Model):
         BOOK = "book", "Book"
         OTHER = "other", "Other"
 
+    class AccessType(models.TextChoices):
+        FREE = "free", "Free"
+        FREEMIUM = "freemium", "Freemium"
+        PAID = "paid", "Paid"
+        UNKNOWN = "unknown", "Unknown"
+
+    class SourceType(models.TextChoices):
+        CURATED = "curated", "Curated"
+        DISCOVERED = "discovered", "Discovered"
+
+    class HealthStatus(models.TextChoices):
+        ACTIVE = "active", "Active"
+        NEEDS_REVIEW = "needs_review", "Needs Review"
+        BROKEN = "broken", "Broken"
+        ARCHIVED = "archived", "Archived"
+
     title = models.CharField(
         max_length=255,
     )
@@ -830,6 +1128,34 @@ class LearningResource(models.Model):
 
     is_active = models.BooleanField(
         default=True,
+    )
+
+    access_type = models.CharField(
+        max_length=20,
+        choices=AccessType.choices,
+        default=AccessType.UNKNOWN,
+    )
+
+    source_type = models.CharField(
+        max_length=20,
+        choices=SourceType.choices,
+        default=SourceType.CURATED,
+    )
+
+    health_status = models.CharField(
+        max_length=20,
+        choices=HealthStatus.choices,
+        default=HealthStatus.ACTIVE,
+    )
+
+    last_checked_at = models.DateTimeField(
+        blank=True,
+        null=True,
+    )
+
+    last_verified_at = models.DateTimeField(
+        blank=True,
+        null=True,
     )
 
     skills = models.ManyToManyField(
@@ -861,6 +1187,37 @@ class LearningResource(models.Model):
                     ],
                 ),
                 name="valid_learning_resource_type",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    access_type__in=[
+                        "free",
+                        "freemium",
+                        "paid",
+                        "unknown",
+                    ],
+                ),
+                name="valid_learning_resource_access_type",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    source_type__in=[
+                        "curated",
+                        "discovered",
+                    ],
+                ),
+                name="valid_learning_resource_source_type",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    health_status__in=[
+                        "active",
+                        "needs_review",
+                        "broken",
+                        "archived",
+                    ],
+                ),
+                name="valid_learning_resource_health_status",
             ),
         ]
 
@@ -908,4 +1265,776 @@ class LearningResourceSkill(models.Model):
         return (
             f"{self.learning_resource.title} - "
             f"{self.skill.name}"
+        )
+
+
+class LearningResourceDiscoveryAttempt(
+    models.Model
+):
+    """
+    Global discovery history for one canonical Skill.
+
+    Discovery state is shared across Students.
+
+    Access filters are intentionally excluded because
+    GradNavi discovers one mixed-access catalogue and
+    applies Free, Freemium, and Paid filtering later.
+    """
+
+    class Status(
+        models.TextChoices
+    ):
+        SUCCESS = (
+            "success",
+            "Success",
+        )
+
+        PARTIAL = (
+            "partial",
+            "Partial",
+        )
+
+        NO_RESULTS = (
+            "no_results",
+            "No Results",
+        )
+
+        PROVIDER_FAILURE = (
+            "provider_failure",
+            "Provider Failure",
+        )
+
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.PROTECT,
+        related_name=(
+            "learning_resource_discovery_attempts"
+        ),
+    )
+
+    status = models.CharField(
+        max_length=30,
+        choices=Status.choices,
+    )
+
+    requested_count = (
+        models.PositiveSmallIntegerField()
+    )
+
+    candidate_count = (
+        models.PositiveSmallIntegerField(
+            default=0,
+        )
+    )
+
+    persisted_count = (
+        models.PositiveSmallIntegerField(
+            default=0,
+        )
+    )
+
+    attempted_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    next_eligible_at = models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=[
+                    "skill",
+                    "-attempted_at",
+                ],
+                name=(
+                    "career_lrd_skill_attempt_idx"
+                ),
+            ),
+            models.Index(
+                fields=[
+                    "skill",
+                    "next_eligible_at",
+                ],
+                name=(
+                    "career_lrd_skill_next_idx"
+                ),
+            ),
+        ]
+
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    status__in=[
+                        "success",
+                        "partial",
+                        "no_results",
+                        "provider_failure",
+                    ],
+                ),
+                name=(
+                    "valid_learning_resource_"
+                    "discovery_status"
+                ),
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        requested_count__gte=1,
+                    )
+                    &
+                    models.Q(
+                        requested_count__lte=6,
+                    )
+                ),
+                name=(
+                    "valid_learning_resource_"
+                    "discovery_request_count"
+                ),
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    candidate_count__lte=(
+                        models.F(
+                            "requested_count"
+                        )
+                    ),
+                ),
+                name=(
+                    "learning_resource_discovery_"
+                    "candidates_lte_requested"
+                ),
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    persisted_count__lte=(
+                        models.F(
+                            "candidate_count"
+                        )
+                    ),
+                ),
+                name=(
+                    "learning_resource_discovery_"
+                    "persisted_lte_candidates"
+                ),
+            ),
+        ]
+
+    def __str__(
+        self,
+    ):
+        return (
+            "Learning Resource discovery: "
+            f"{self.skill_id} - "
+            f"{self.status}"
+        )
+
+
+class RoadmapProgress(models.Model):
+    """
+    Stores Student progress against one Career roadmap Skill.
+
+    Progress is linked to the Skill rather than a displayed step number
+    because roadmap ordering can change when Student evidence changes.
+    """
+
+    class Status(models.TextChoices):
+        NOT_STARTED = "not_started", "Not Started"
+        IN_PROGRESS = "in_progress", "In Progress"
+        COMPLETED = "completed", "Completed"
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="roadmap_progress",
+    )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.PROTECT,
+        related_name="student_roadmap_progress",
+    )
+
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.PROTECT,
+        related_name="student_roadmap_progress",
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.NOT_STARTED,
+    )
+
+    started_at = models.DateTimeField(
+        blank=True,
+        null=True,
+    )
+
+    completed_at = models.DateTimeField(
+        blank=True,
+        null=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                    "skill",
+                ],
+                name="unique_student_career_roadmap_skill",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    status__in=[
+                        "not_started",
+                        "in_progress",
+                        "completed",
+                    ],
+                ),
+                name="valid_roadmap_progress_status",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"Roadmap progress: "
+            f"{self.student_profile_id} - "
+            f"{self.career_id} - "
+            f"{self.skill_id}"
+        )
+
+
+class RoadmapGuidanceSnapshot(models.Model):
+    """
+    Stores the latest valid personalised Roadmap guidance for one
+    Student Profile and selected Career.
+
+    Raw Student Profile data is not stored here.
+    The cache key fingerprints the approved source context.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="roadmap_guidance_snapshots",
+    )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name="roadmap_guidance_snapshots",
+    )
+
+    cache_key = models.CharField(
+        max_length=64,
+    )
+
+    guidance_version = models.CharField(
+        max_length=50,
+    )
+
+    model = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    payload = models.JSONField()
+
+    prompt_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    total_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                name="unique_roadmap_guidance_snapshot",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Roadmap guidance snapshot for "
+            f"Student Profile {self.student_profile_id}, "
+            f"Career {self.career_id}"
+        )
+
+
+class LearningResourceGuidanceSnapshot(models.Model):
+    """
+    Stores the latest valid personalised Learning Resource
+    guidance for one Student, Career, and Skill.
+
+    The payload contains generated Student-facing explanations.
+
+    Raw Student Profile context is not stored here.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name=(
+            "learning_resource_guidance_snapshots"
+        ),
+    )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name=(
+            "learning_resource_guidance_snapshots"
+        ),
+    )
+
+    skill = models.ForeignKey(
+        "profiles.Skill",
+        on_delete=models.PROTECT,
+        related_name=(
+            "learning_resource_guidance_snapshots"
+        ),
+    )
+
+    cache_key = models.CharField(
+        max_length=64,
+    )
+
+    guidance_version = models.CharField(
+        max_length=50,
+    )
+
+    model = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    payload = models.JSONField()
+
+    prompt_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    total_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                    "skill",
+                ],
+                name=(
+                    "unique_learning_resource_"
+                    "guidance_snapshot"
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Learning Resource guidance snapshot for "
+            f"Student Profile {self.student_profile_id}, "
+            f"Career {self.career_id}, "
+            f"Skill {self.skill_id}"
+        )
+
+
+class LearningResourceFeedback(models.Model):
+    """
+    Stores one Student's current usefulness response for one resource.
+
+    A Student can change their response later without creating
+    duplicate current votes.
+    """
+
+    class FeedbackType(models.TextChoices):
+        HELPFUL = "helpful", "Helpful"
+        NOT_HELPFUL = "not_helpful", "Not Helpful"
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="learning_resource_feedback",
+    )
+
+    learning_resource = models.ForeignKey(
+        LearningResource,
+        on_delete=models.CASCADE,
+        related_name="student_feedback",
+    )
+
+    feedback_type = models.CharField(
+        max_length=20,
+        choices=FeedbackType.choices,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "learning_resource",
+                ],
+                name="unique_student_learning_resource_feedback",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    feedback_type__in=[
+                        "helpful",
+                        "not_helpful",
+                    ],
+                ),
+                name="valid_learning_resource_feedback_type",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.feedback_type}: "
+            f"{self.student_profile_id} - "
+            f"{self.learning_resource_id}"
+        )
+
+
+class LearningResourceReport(models.Model):
+    """
+    Stores Student-reported learning-resource quality issues.
+
+    Reports enter a review workflow. A report does not directly remove
+    or archive a learning resource.
+    """
+
+    class Reason(models.TextChoices):
+        BROKEN_LINK = "broken_link", "Broken Link"
+        OUTDATED = "outdated", "Outdated"
+        NOT_RELEVANT = "not_relevant", "Not Relevant"
+        TOO_DIFFICULT = "too_difficult", "Too Difficult"
+        REQUIRES_PAYMENT = (
+            "requires_payment",
+            "Requires Payment",
+        )
+        DUPLICATE = "duplicate", "Duplicate"
+        OTHER = "other", "Other"
+
+    class Status(models.TextChoices):
+        OPEN = "open", "Open"
+        RESOLVED = "resolved", "Resolved"
+        DISMISSED = "dismissed", "Dismissed"
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="learning_resource_reports",
+    )
+
+    learning_resource = models.ForeignKey(
+        LearningResource,
+        on_delete=models.CASCADE,
+        related_name="student_reports",
+    )
+
+    reason = models.CharField(
+        max_length=30,
+        choices=Reason.choices,
+    )
+
+    comment = models.TextField(
+        blank=True,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.OPEN,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    reason__in=[
+                        "broken_link",
+                        "outdated",
+                        "not_relevant",
+                        "too_difficult",
+                        "requires_payment",
+                        "duplicate",
+                        "other",
+                    ],
+                ),
+                name="valid_learning_resource_report_reason",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    status__in=[
+                        "open",
+                        "resolved",
+                        "dismissed",
+                    ],
+                ),
+                name="valid_learning_resource_report_status",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.reason}: "
+            f"{self.learning_resource_id}"
+        )
+
+
+
+class StudentCareerEvaluation(models.Model):
+    """
+    Stores one Student's explicit evaluation of one Career.
+
+    Browsing Explore Careers does not create this record.
+
+    The evaluation stays current only while the Student Profile
+    fingerprint, Career reference fingerprint, and scoring version
+    still match the values used when the Career was evaluated.
+
+    The payload stores the calculated result for the selected Career.
+    Raw Student Profile data is not stored here.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="career_evaluations",
+    )
+
+    career = models.ForeignKey(
+        Career,
+        on_delete=models.CASCADE,
+        related_name="student_evaluations",
+    )
+
+    profile_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    reference_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    scoring_version = models.CharField(
+        max_length=50,
+    )
+
+    payload = models.JSONField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    evaluated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                name=(
+                    "unique_student_career_"
+                    "evaluation"
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Career evaluation for "
+            f"Student Profile {self.student_profile_id} "
+            f"and Career {self.career_id}"
+        )
+
+
+class RecommendationSnapshot(models.Model):
+    """
+    Stores the latest valid Career Recommendation result
+    for one Student Profile.
+
+    The snapshot contains no raw Student Profile payload.
+    Profile state is represented by a SHA-256 fingerprint.
+
+    A cached result stays valid only when:
+
+    - the Student recommendation inputs are unchanged,
+    - the Career reference evidence is unchanged,
+    - the scoring version is unchanged.
+    """
+
+    student_profile = models.OneToOneField(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="recommendation_snapshot",
+    )
+
+    profile_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    reference_fingerprint = models.CharField(
+        max_length=64,
+    )
+
+    scoring_version = models.CharField(
+        max_length=50,
+    )
+
+    payload = models.JSONField()
+
+    embedding_model = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    prompt_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    total_tokens = models.PositiveIntegerField(
+        default=0,
+    )
+
+    career_count = models.PositiveIntegerField(
+        default=0,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    def __str__(self):
+        return (
+            "Career Recommendation snapshot for "
+            f"Student Profile {self.student_profile_id}"
+        )
+
+
+class SkillGapSummarySnapshot(models.Model):
+    """
+    Stores the latest valid AI Gap Summary for one
+    Student Profile and selected Career.
+
+    The cache key fingerprints the deterministic
+    readiness state and controlled learning-resource state.
+
+    No raw Student Profile payload is stored.
+    """
+
+    student_profile = models.ForeignKey(
+        "profiles.StudentProfile",
+        on_delete=models.CASCADE,
+        related_name="skill_gap_summary_snapshots",
+    )
+
+    career = models.ForeignKey(
+        "Career",
+        on_delete=models.CASCADE,
+        related_name="skill_gap_summary_snapshots",
+    )
+
+    cache_key = models.CharField(
+        max_length=64,
+    )
+
+    summary_version = models.CharField(
+        max_length=50,
+    )
+
+    model = models.CharField(
+        max_length=100,
+    )
+
+    payload = models.JSONField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    generated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                name=(
+                    "unique_skill_gap_summary_"
+                    "snapshot"
+                ),
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            "Skill Gap Summary snapshot for "
+            f"Student Profile {self.student_profile_id} "
+            f"and Career {self.career_id}"
         )

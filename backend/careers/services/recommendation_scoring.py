@@ -15,6 +15,10 @@ from typing import Iterable
 
 from django.db.models import Q
 
+from careers.services.evidence_policy import (
+    CORE_COMPETENCY_MINIMUM_IMPORTANCE,
+)
+
 from careers.models import (
     Career,
     CareerSkillEvidence,
@@ -198,6 +202,7 @@ def load_weighted_competencies_by_career(
     - Source is O*NET Database.
     - Source domain is approved for numerical scoring.
     - normalized_importance is present.
+    - normalized_importance is at least 50.00.
     - Evidence is not marked not relevant.
     - Evidence is not marked recommend suppress.
 
@@ -242,6 +247,9 @@ def load_weighted_competencies_by_career(
                 ONET_NUMERICAL_SOURCE_DOMAINS
             ),
             normalized_importance__isnull=False,
+            normalized_importance__gte=(
+                CORE_COMPETENCY_MINIMUM_IMPORTANCE
+            ),
             not_relevant=False,
         )
         .exclude(

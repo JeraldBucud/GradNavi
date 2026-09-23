@@ -697,7 +697,7 @@ The deterministic scoring service produces:
 - Ranking.
 - Structured matching information.
 
-A separate explanation layer may later convert structured scoring information into readable text.
+WBS 5.6 now implements a separate explanation layer that converts approved structured Top Match information into student-facing text.
 
 Example:
 
@@ -801,20 +801,29 @@ The scoring service should not create hidden database side effects while calcula
 
 ## 36. AI Layer Responsibility
 
-The AI layer is separate from numerical scoring.
+The AI layer is separate from numerical recommendation scoring.
 
-AI-related work might later support:
+The implemented WBS 5.6 AI layer currently supports:
 
-- Recommendation explanation text.
-- Readable summaries.
-- Other approved generated content.
+- One AI-generated explanation for the Top Match.
+- Student-facing readable explanation text derived from approved recommendation evidence.
 
-AI must not determine:
+Secondary Career matches do not request additional AI explanations.
+
+They display deterministic strongest-evidence data from the Recommendation result.
+
+The AI layer must not determine or modify:
 
 - Factor weights.
 - Numerical factor scores.
-- Numerical recommendation scores.
+- Numerical Recommendation Scores.
 - Career ranking order.
+- Career Readiness Score.
+- Requirement statuses.
+- Skill-gap ordering.
+- Fix First priority or order.
+
+Broader approved generated content remains outside the WBS 5.3 numerical scoring service.
 
 ## 37. Validation Rules
 
@@ -864,37 +873,40 @@ Ranking must not use the displayed rounded value when a more precise internal va
 
 ## 39. Recommendation Count
 
-WBS 5.4 and WBS 5.6 must agree on how many Careers are returned.
+The Recommendation API preserves deterministic rank order.
 
-Possible options include:
+The WBS 5.6 frontend currently presents:
 
-- All scored Careers.
-- Top three Careers.
-- Top five Careers.
-- A controlled result limit.
+- 1 Top Match.
+- Up to 6 Other Career Matches.
 
-Final recommendation count:
+This is a presentation limit only.
 
-```text
-TBD
-```
+It does not modify the underlying deterministic score or ranking rules.
 
 ## 40. Recommendation Persistence
 
-The team must decide whether recommendation results are:
+Recommendation caching is implemented through `RecommendationSnapshot`.
 
-- Calculated on request only.
-- Stored after generation.
-- Stored only after Student action.
-- Stored through another approved workflow.
+The snapshot stores the latest valid recommendation result for the Student Profile together with controlled cache metadata including:
 
-Final persistence behaviour:
+- Profile-state fingerprint.
+- Scoring version.
+- Recommendation payload.
+- Embedding-model metadata.
+- Career and reference-data metadata used by cache validation.
 
-```text
-TBD
-```
+The snapshot does not store the raw Student Profile payload.
 
-This decision affects the Career Recommendation API and database design.
+Profile state is represented through a SHA-256 fingerprint.
+
+When the current cache key and controlled metadata still match, the Recommendation API may reuse the stored payload instead of recalculating embeddings and composite recommendation scoring.
+
+When relevant profile, scoring-version, model, Career, or controlled reference state changes, the stored snapshot is treated as stale and a new recommendation result is produced.
+
+This persistence exists for performance and cost control.
+
+It does not change the deterministic recommendation formula.
 
 ## 41. Determinism Requirements
 
@@ -1088,13 +1100,14 @@ Resolved:
 10. Returned precision: 2 decimal places.
 11. Ranking precision: unrounded internal value.
 
-Remaining cross-WBS decisions:
+Cross-WBS decisions now resolved by the implemented WBS 5.4 to WBS 5.6 flow include:
 
-1. Number of recommendations returned by WBS 5.4.
-2. Final API serializer field names.
-3. Recommendation persistence behaviour.
-4. Final WBS 5.5 readiness formula.
-5. Future inclusion rules for non-Skill profile factors.
+1. Recommendation API response fields used by the current frontend.
+2. Recommendation snapshot persistence and cache validation.
+3. The WBS 5.5 readiness formula and selected-career readiness contract.
+4. The WBS 5.6 presentation of one Top Match plus controlled secondary matches.
+
+Future inclusion rules for additional non-Skill profile factors remain outside the current WBS 5.3 Version 1 numerical formula.
 
 ## 47. Decisions Already Established
 

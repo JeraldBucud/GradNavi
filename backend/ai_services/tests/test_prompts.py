@@ -17,6 +17,7 @@ from dataclasses import FrozenInstanceError
 from datetime import date
 
 from django.test import SimpleTestCase
+from pydantic import ValidationError
 
 from ai_services.prompts.common import (
     AIOperation,
@@ -25,6 +26,7 @@ from ai_services.prompts.common import (
 )
 from ai_services.prompts.cover_letter import (
     COVER_LETTER_OUTPUT_REQUIREMENTS,
+    COVER_LETTER_SYSTEM_INSTRUCTIONS,
     build_cover_letter_prompt,
 )
 from ai_services.prompts.interview_feedback import (
@@ -36,8 +38,14 @@ from ai_services.prompts.interview_questions import (
     INTERVIEW_QUESTION_OUTPUT_REQUIREMENTS,
     build_interview_question_prompt,
 )
+from ai_services.prompts.learning_resource_discovery import (
+    OUTPUT_REQUIREMENTS as LEARNING_RESOURCE_DISCOVERY_OUTPUT_REQUIREMENTS,
+    SYSTEM_INSTRUCTIONS as LEARNING_RESOURCE_DISCOVERY_SYSTEM_INSTRUCTIONS,
+    build_learning_resource_discovery_prompt,
+)
 from ai_services.prompts.resume import (
     RESUME_OUTPUT_REQUIREMENTS,
+    RESUME_SYSTEM_INSTRUCTIONS,
     build_resume_prompt,
 )
 from ai_services.schemas.common import (
@@ -48,6 +56,7 @@ from ai_services.schemas.inputs import (
     CoverLetterGenerationInput,
     InterviewFeedbackInput,
     InterviewQuestionInput,
+    LearningResourceDiscoveryInput,
     ResumeGenerationInput,
 )
 
@@ -77,6 +86,11 @@ class CommonPromptContractTests(SimpleTestCase):
             "cover_letter_generation",
             "interview_question_generation",
             "interview_feedback",
+            "career_match_explanation",
+            "skill_gap_summary",
+            "roadmap_guidance",
+            "learning_resource_guidance",
+            "learning_resource_discovery",
         }
 
         actual = {
@@ -175,6 +189,7 @@ class ResumePromptTests(SimpleTestCase):
     def test_resume_operation_identifier(self):
         package = build_resume_prompt(
             ResumeGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
             )
         )
@@ -209,6 +224,7 @@ class ResumePromptTests(SimpleTestCase):
 
         package = build_resume_prompt(
             ResumeGenerationInput(
+                target_career_name="Software Engineer",
                 profile=profile,
             )
         )
@@ -226,6 +242,7 @@ class ResumePromptTests(SimpleTestCase):
     def test_resume_untrusted_profile_delimiters_exist(self):
         package = build_resume_prompt(
             ResumeGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
             )
         )
@@ -238,6 +255,57 @@ class ResumePromptTests(SimpleTestCase):
         self.assertIn(
             "</UNTRUSTED_PROFILE_DESCRIPTIONS>",
             package.untrusted_content,
+        )
+
+    def test_resume_instructions_require_ats_friendly_grounded_content(
+        self,
+    ):
+        instructions = " ".join(
+            RESUME_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        required = (
+            "ats-friendly",
+            "applicant tracking systems",
+            "keyword stuffing",
+            "never invent",
+            "measurable results",
+            "missing_information",
+            "contact information",
+        )
+
+        for phrase in required:
+            with self.subTest(phrase=phrase):
+                self.assertIn(
+                    phrase,
+                    instructions,
+                )
+
+    def test_resume_generation_contract_accepts_optional_job_description(self):
+        job_description = (
+            "Software Developer role requiring "
+            "Python and Django."
+        )
+
+        request = ResumeGenerationInput(
+            target_career_name="Software Engineer",
+            profile=build_empty_profile(),
+            job_description=job_description,
+        )
+
+        self.assertEqual(
+            request.job_description,
+            job_description,
+        )
+
+    def test_resume_generation_contract_allows_missing_job_description(self):
+        request = ResumeGenerationInput(
+            target_career_name="Software Engineer",
+            profile=build_empty_profile(),
+        )
+
+        self.assertIsNone(
+            request.job_description,
         )
 
     def test_resume_output_requires_draft_status(self):
@@ -256,6 +324,97 @@ class ResumePromptTests(SimpleTestCase):
         )
 
 
+    def test_resume_optional_job_description_stays_untrusted(self):
+        job_description = (
+            "Python Django developer role."
+        )
+
+        package = build_resume_prompt(
+            ResumeGenerationInput(
+                target_career_name="Software Engineer",
+                profile=build_empty_profile(),
+                job_description=job_description,
+            )
+        )
+
+        self.assertNotIn(
+            job_description,
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "<UNTRUSTED_JOB_DESCRIPTION>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            job_description,
+            package.untrusted_content,
+        )
+
+    def test_resume_without_job_description_omits_vacancy_block(self):
+        package = build_resume_prompt(
+            ResumeGenerationInput(
+                target_career_name="Software Engineer",
+                profile=build_empty_profile(),
+            )
+        )
+
+        self.assertNotIn(
+            "<UNTRUSTED_JOB_DESCRIPTION>",
+            package.untrusted_content,
+        )
+
+
+    def test_resume_target_and_focus_are_trusted_controls(self):
+        package = build_resume_prompt(
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Cloud Engineer"
+                ),
+                resume_focus=(
+                    "technical_skills"
+                ),
+            )
+        )
+
+        self.assertIn(
+            "Cloud Engineer",
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "technical_skills",
+            package.trusted_context,
+        )
+
+        self.assertNotIn(
+            "Cloud Engineer",
+            package.untrusted_content,
+        )
+
+    def test_resume_rejects_unknown_focus(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Software Engineer"
+                ),
+                resume_focus="creative",
+            )
+
+    def test_resume_requires_target_career(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+            )
+
+
 class CoverLetterPromptTests(SimpleTestCase):
     """
     Tests for Cover Letter prompt construction.
@@ -264,7 +423,10 @@ class CoverLetterPromptTests(SimpleTestCase):
     def test_cover_letter_operation_identifier(self):
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
+                job_title="Software Developer",
+                company="Example Employer",
                 job_description="Software Developer role.",
             )
         )
@@ -281,7 +443,10 @@ class CoverLetterPromptTests(SimpleTestCase):
 
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
+                job_title="Software Developer",
+                company="Example Employer",
                 job_description=malicious_job_description,
             )
         )
@@ -320,7 +485,10 @@ class CoverLetterPromptTests(SimpleTestCase):
 
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=profile,
+                job_title="Software Developer",
+                company="Example Employer",
                 job_description="Software Developer role.",
             )
         )
@@ -338,7 +506,10 @@ class CoverLetterPromptTests(SimpleTestCase):
     def test_cover_letter_untrusted_delimiters_exist(self):
         package = build_cover_letter_prompt(
             CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
                 profile=build_empty_profile(),
+                job_title="Software Developer",
+                company="Example Employer",
                 job_description="Software Developer role.",
             )
         )
@@ -356,6 +527,31 @@ class CoverLetterPromptTests(SimpleTestCase):
                 package.untrusted_content,
             )
 
+    def test_cover_letter_instructions_require_ats_grounding(
+        self,
+    ):
+        instructions = " ".join(
+            COVER_LETTER_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        required = (
+            "ats-friendly",
+            "job description",
+            "verified student profile evidence",
+            "keyword stuffing",
+            "never invent",
+            "measurable achievements",
+            "missing_information",
+            "contact information",
+        )
+
+        for phrase in required:
+            with self.subTest(phrase=phrase):
+                self.assertIn(
+                    phrase,
+                    instructions,
+                )
+
     def test_cover_letter_output_requires_draft_status(self):
         requirements = " ".join(
             COVER_LETTER_OUTPUT_REQUIREMENTS
@@ -370,6 +566,165 @@ class CoverLetterPromptTests(SimpleTestCase):
             "requires_user_review to true",
             requirements,
         )
+
+
+    def test_cover_letter_vacancy_identity_stays_untrusted(self):
+        job_title = "Software Developer"
+        company = "Example Employer"
+
+        package = build_cover_letter_prompt(
+            CoverLetterGenerationInput(
+                target_career_name="Software Engineer",
+                profile=build_empty_profile(),
+                job_title=job_title,
+                company=company,
+                job_description="Example vacancy.",
+            )
+        )
+
+        for value in (
+            job_title,
+            company,
+        ):
+            self.assertNotIn(
+                value,
+                package.trusted_context,
+            )
+
+            self.assertIn(
+                value,
+                package.untrusted_content,
+            )
+
+        required = (
+            "<UNTRUSTED_JOB_TITLE>",
+            "</UNTRUSTED_JOB_TITLE>",
+            "<UNTRUSTED_COMPANY>",
+            "</UNTRUSTED_COMPANY>",
+        )
+
+        for delimiter in required:
+            self.assertIn(
+                delimiter,
+                package.untrusted_content,
+            )
+
+
+    def test_cover_letter_target_tone_and_focus_are_trusted_controls(self):
+        package = build_cover_letter_prompt(
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Cloud Engineer"
+                ),
+                tone="technical",
+                cover_letter_focus=(
+                    "skills_match"
+                ),
+                job_title=(
+                    "Junior Cloud Engineer"
+                ),
+                company="Example Employer",
+                job_description=(
+                    "Cloud engineering vacancy."
+                ),
+            )
+        )
+
+        self.assertIn(
+            "Cloud Engineer",
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "technical",
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "skills_match",
+            package.trusted_context,
+        )
+
+        self.assertNotIn(
+            "<UNTRUSTED_TARGET_CAREER>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            "<UNTRUSTED_JOB_TITLE>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            "Junior Cloud Engineer",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            "<UNTRUSTED_JOB_DESCRIPTION>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            "Cloud engineering vacancy.",
+            package.untrusted_content,
+        )
+
+    def test_cover_letter_rejects_unknown_tone(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Software Engineer"
+                ),
+                tone="casual",
+                job_title=(
+                    "Software Developer"
+                ),
+                company="Example Employer",
+                job_description=(
+                    "Software vacancy."
+                ),
+            )
+
+    def test_cover_letter_rejects_unknown_focus(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Software Engineer"
+                ),
+                cover_letter_focus=(
+                    "salary"
+                ),
+                job_title=(
+                    "Software Developer"
+                ),
+                company="Example Employer",
+                job_description=(
+                    "Software vacancy."
+                ),
+            )
+
+    def test_cover_letter_requires_target_career(self):
+        with self.assertRaises(
+            ValidationError
+        ):
+            CoverLetterGenerationInput(
+                profile=build_empty_profile(),
+                job_title=(
+                    "Software Developer"
+                ),
+                company="Example Employer",
+                job_description=(
+                    "Software vacancy."
+                ),
+            )
 
 
 class InterviewQuestionPromptTests(SimpleTestCase):
@@ -618,4 +973,202 @@ class InterviewFeedbackPromptTests(SimpleTestCase):
                 phrase,
                 instructions,
             )
-            
+
+
+class LearningResourceDiscoveryPromptTests(
+    SimpleTestCase
+):
+    def test_discovery_operation_identifier(
+        self,
+    ):
+        package = (
+            build_learning_resource_discovery_prompt(
+                LearningResourceDiscoveryInput(
+                    skill_name=(
+                        "Mathematics Knowledge"
+                    ),
+                    skill_description=(
+                        "Knowledge of arithmetic "
+                        "and mathematics."
+                    ),
+                    career_name=(
+                        "Software Engineer"
+                    ),
+                    access_type="free",
+                    requested_count=4,
+                    existing_urls=[
+                        (
+                            "https://example.com/"
+                            "existing"
+                        )
+                    ],
+                )
+            )
+        )
+
+        self.assertEqual(
+            package.operation,
+            (
+                AIOperation
+                .LEARNING_RESOURCE_DISCOVERY
+            ),
+        )
+
+
+    def test_discovery_context_contains_resource_target(
+        self,
+    ):
+        package = (
+            build_learning_resource_discovery_prompt(
+                LearningResourceDiscoveryInput(
+                    skill_name=(
+                        "Mathematics Knowledge"
+                    ),
+                    access_type="freemium",
+                    requested_count=3,
+                )
+            )
+        )
+
+        self.assertIn(
+            '"skill_name": '
+            '"Mathematics Knowledge"',
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            '"access_type": "freemium"',
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            '"requested_count": 3',
+            package.trusted_context,
+        )
+
+
+    def test_discovery_does_not_use_student_profile(
+        self,
+    ):
+        package = (
+            build_learning_resource_discovery_prompt(
+                LearningResourceDiscoveryInput(
+                    skill_name="Python",
+                    requested_count=2,
+                )
+            )
+        )
+
+        self.assertEqual(
+            package.untrusted_content,
+            "",
+        )
+
+        self.assertNotIn(
+            "student_profile",
+            package.trusted_context,
+        )
+
+
+    def test_discovery_requires_real_web_resources(
+        self,
+    ):
+        instructions = " ".join(
+            LEARNING_RESOURCE_DISCOVERY_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        self.assertIn(
+            "current web-search evidence",
+            instructions,
+        )
+
+        self.assertIn(
+            "never invent",
+            instructions,
+        )
+
+        self.assertIn(
+            "existing_urls",
+            instructions,
+        )
+
+
+
+
+    def test_discovery_access_type_prefers_evidence_based_classification(
+        self,
+    ):
+        requirements = " ".join(
+            LEARNING_RESOURCE_DISCOVERY_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        self.assertIn(
+            "classify access_type",
+            requirements,
+        )
+
+        self.assertIn(
+            "free",
+            requirements,
+        )
+
+        self.assertIn(
+            "freemium",
+            requirements,
+        )
+
+        self.assertIn(
+            "paid",
+            requirements,
+        )
+
+        self.assertIn(
+            "use unknown only",
+            requirements,
+        )
+
+        self.assertIn(
+            "source evidence",
+            requirements,
+        )
+
+
+    def test_discovery_description_excludes_citation_markup(
+        self,
+    ):
+        requirements = " ".join(
+            LEARNING_RESOURCE_DISCOVERY_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        self.assertIn(
+            "do not include markdown links",
+            requirements,
+        )
+
+        self.assertIn(
+            "citations",
+            requirements,
+        )
+
+
+    def test_discovery_output_limits_candidates(
+        self,
+    ):
+        requirements = " ".join(
+            LEARNING_RESOURCE_DISCOVERY_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        self.assertIn(
+            "requested_count",
+            requirements,
+        )
+
+        self.assertIn(
+            "http or https",
+            requirements,
+        )
+
+        self.assertIn(
+            "is_ai_generated to true",
+            requirements,
+        )

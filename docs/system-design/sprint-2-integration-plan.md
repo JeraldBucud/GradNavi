@@ -1,6 +1,6 @@
 # GradNavi Sprint 2 Integration Plan
 
-Status: Prepared for WBS 5.9 Sprint 2 Integration and Testing. WBS 5.2, WBS 5.3, and WBS 5.5 are present in the current `feature/sprint-2` branch. Cases depending on WBS 5.4, WBS 5.6, WBS 5.7, or WBS 5.8 remain blocked until those components are merged and available for integration.
+Status: Sprint 2 integration closeout plan reflecting the verified integration checkpoint through 20 September 2026. The historical integration baseline is retained, while the current status records 72 Pass and 8 Blocked test cases. The remaining Blocked cases are the MD-assigned WBS 5.7 Learning Suggestions and Roadmap API tests.
 
 ## 1. Purpose
 
@@ -90,6 +90,45 @@ Repository review of `feature/sprint-2` on 3 September 2026 confirms:
 
 A missing integration dependency is recorded as Blocked in the Sprint 2 Test Case Tracker. A blocked case is not treated as a failed test.
 
+## 5A. Current Status Addendum - 18 September 2026
+
+The repository baseline recorded in Section 5 remains a historical 3 September checkpoint.
+
+The current implementation position has advanced since that checkpoint.
+
+Current status:
+
+- WBS 5.2 Career and Skill Reference Data is implemented.
+- WBS 5.3 Weighted Recommendation Engine is implemented.
+- WBS 5.4 Career Recommendation API is implemented.
+- WBS 5.5 Skill Gap and Readiness Scoring Logic is implemented.
+- WBS 5.6 Recommendation and Readiness Interface is technically implemented and regression-tested on `jerald/wbs-5.6-recommendation-readiness-interface`.
+- WBS 5.6 Pull Request #44 remains pending review and merge.
+- WBS 5.7 Learning Suggestions and Roadmap API backend support is implemented.
+- WBS 5.8 Learning Roadmap Interface remains outstanding.
+
+Because Sprint 3 work had already started while delayed Sprint 2 frontend work was being recovered, Pull Request #44 currently targets `feature/sprint-3`.
+
+This integration target does not change the original Sprint 2 allocation of WBS 5.6.
+
+The official Microsoft Project owner of WBS 5.6 remains Joyee.
+
+Jerald's recovery and implementation support is recorded separately in the Contribution Log and WBS 5.6 closeout record.
+
+Current WBS 5.6 validation includes:
+
+- Career Recommendations interface.
+- Top Match AI explanation.
+- Selected-career Readiness API.
+- Skill Gap Analysis interface.
+- Deterministic Fix First priorities.
+- AI Gap Summary.
+- Database-backed Recommendation and Skill Gap Summary caching.
+- Controlled Learning Resource empty states.
+- Student Profile integration support required by the Career Analysis flow.
+
+Formal Sprint 2 integration closure is still not reached because WBS 5.8 remains outstanding and final integrated Sprint 2 verification must be updated after the remaining dependency is resolved.
+
 ## 6. Integration Branch Strategy
 
 Integration target: `feature/sprint-2`.
@@ -177,19 +216,68 @@ Verify:
 - Gap ordering is deterministic.
 - Readiness calculation does not modify Dataset 1.0.
 
-### 8.5 WBS 5.6 Frontend Integration
+### 8.5 WBS 5.6 Recommendation and Readiness Integration
 
-After WBS 5.6 is available, verify:
+WBS 5.6 is now technically implemented on the current working branch and should be verified during integration against the real backend contracts.
 
-- Ranked Careers load from the API.
-- Frontend order matches API rank order.
-- Recommendation score and explanation are visible.
-- A Student selects a Career for detailed analysis.
-- Readiness score is displayed separately from recommendation score.
-- Missing and below-requirement Skills are distinguishable.
-- Loading, empty, insufficient-profile, insufficient-evidence, and API-error states are controlled.
-- Core functions work with keyboard navigation.
-- Layout stays usable at common desktop, tablet, and mobile widths.
+Verify Career Recommendations:
+
+- Ranked Careers load from the authenticated Recommendation API.
+- Frontend Career order matches deterministic API rank order.
+- The interface presents one Top Match and up to six Other Career Matches.
+- Career Match scores display as whole-number percentages.
+- Readiness scores display separately from Career Match scores.
+- The Top Match displays one AI-generated explanation.
+- Secondary Career matches do not request additional AI explanations.
+- Secondary Career matches display deterministic strongest-evidence data.
+- View Skill Gaps preserves the selected Career context.
+
+Verify selected-career Readiness:
+
+- `GET /api/v1/readiness/?career_id=<id>` requires authenticated access.
+- Readiness Score remains deterministic under WBS 5.5.
+- Matched, Partially Matched, and Missing counts map to explicit requirement statuses.
+- Requirement Details expose current proficiency, current score, required level, gap, attainment, and status.
+- Recommendation Score and Readiness Score remain separate metrics.
+
+Verify Skill Gap Analysis:
+
+- The selected Career is preserved from Career Recommendations.
+- Readiness Overview uses deterministic WBS 5.5 results.
+- Fix First priority and order remain deterministic.
+- AI does not choose or reorder Fix First Skills.
+- The AI Gap Summary explains the deterministic result.
+- Recommended Next Steps align one-to-one with deterministic Fix First items.
+- The backend restores deterministic Fix First order before returning the final response.
+
+Verify AI and cache behaviour:
+
+- Top Match explanation uses the approved backend AI provider boundary.
+- Skill Gap Summary uses the approved backend AI provider boundary.
+- `RecommendationSnapshot` may reuse a valid unchanged Recommendation result.
+- `SkillGapSummarySnapshot` may reuse a valid unchanged AI Gap Summary.
+- A valid cache hit must not require another OpenAI generation.
+- Frontend code must not expose `OPENAI_API_KEY`.
+
+Verify Learning Resource behaviour inside Skill Gap Analysis:
+
+- Only backend-controlled Learning Resources are displayed.
+- The interface does not invent course names, providers, URLs, or resource links.
+- When no controlled resource exists, the interface displays an honest empty state.
+- This embedded Learning Suggestions presentation does not replace WBS 5.8 Learning Roadmap Interface.
+
+Verify controlled states:
+
+- Loading state.
+- Empty result state.
+- Insufficient-profile state where applicable.
+- Insufficient-evidence state where applicable.
+- Invalid Career ID.
+- Inactive Career.
+- API failure.
+- AI provider failure.
+
+Final accessibility, responsive-layout, and full Sprint 2 end-to-end checks remain part of integration testing rather than being inferred from implementation alone.
 
 ### 8.6 WBS 5.7 Learning Suggestions and Roadmap API
 
@@ -244,9 +332,11 @@ Repeat the flow with:
 | --- | --- | --- | --- |
 | Student Profile to Recommendation Engine | Student Profile | WBS 5.3 | Canonical Skill IDs |
 | Recommendation Engine to API | WBS 5.3 | WBS 5.4 | Career ID, score, rank, status, explanation data |
-| API to Recommendation UI | WBS 5.4 | WBS 5.6 | Authenticated response structure |
+| Recommendation API to Recommendation UI | WBS 5.4 | WBS 5.6 | Career ID, score, rank, status, deterministic evidence |
 | Student Profile to Readiness | Student Profile | WBS 5.5 | Canonical Skill IDs and proficiency |
-| Readiness to UI | WBS 5.5 and API layer | WBS 5.6 | Readiness score, status, Skill gaps |
+| Readiness to UI | WBS 5.5 and selected-career Readiness API | WBS 5.6 | Readiness score, status counts, requirement details, deterministic Fix First data |
+| Top Match Explanation to UI | WBS 5.6 backend AI service | WBS 5.6 frontend | Cached or newly generated Top Match explanation |
+| Skill Gap Summary to UI | WBS 5.6 backend AI service | WBS 5.6 frontend | AI explanation and validated next-step wording aligned to deterministic Fix First order |
 | Readiness to Learning API | WBS 5.5 | WBS 5.7 | Missing and below-requirement Skills plus gap context |
 | Learning API to Roadmap UI | WBS 5.7 | WBS 5.8 | Ordered roadmap items |
 
@@ -407,8 +497,94 @@ This plan was aligned against the following current repository paths:
 
 ## 20. Current Plan Status
 
-Prepared and aligned with the current shared Sprint 2 branch.
+Sprint 2 integration has progressed beyond the original shared Sprint 2 branch baseline.
 
-WBS 5.2, WBS 5.3, and WBS 5.5 have integration-ready backend foundations in `feature/sprint-2`.
+Current implementation status at 20 September 2026:
 
-Cases dependent on WBS 5.4, WBS 5.6, WBS 5.7, or WBS 5.8 stay Blocked until those components satisfy their entry criteria.
+- WBS 5.2 Career and Skill Reference Data is implemented.
+- WBS 5.3 Weighted Recommendation Engine is implemented.
+- WBS 5.4 Career Recommendation API is implemented.
+- WBS 5.5 Skill Gap and Readiness Scoring Logic is implemented.
+- WBS 5.6 Recommendation and Readiness Interface is implemented and integrated.
+- WBS 5.7 Learning Suggestions and Roadmap API implementation is present.
+- WBS 5.8 Learning Roadmap Interface is implemented and integrated.
+- WBS 5.9 integration testing has reached 72 Pass cases from 80 planned cases.
+
+The current integrated verification branch is `feature/sprint-3`.
+
+Verified integrated behaviour includes:
+
+- Career Recommendation results and explanation presentation.
+- Skill Gap and Career Readiness results.
+- Learning Resources and Career Roadmap flows.
+- Empty-profile and insufficient-evidence states.
+- Student ownership isolation.
+- Desktop, tablet, and mobile responsiveness.
+- Keyboard interaction.
+- Chrome, Edge, and Firefox compatibility.
+
+Closeout integration testing identified three defects that were fixed and retested:
+
+- DEF-S2-003: responsive Student navigation and Career Recommendations layout.
+- DEF-S2-004: `NaN` displayed in the Learning Resources empty state.
+- DEF-S2-005: ranked Career Recommendations returned when Student Skills were empty.
+
+The remaining Sprint 2 testing work is limited to eight dedicated WBS 5.7 Learning Suggestions and Roadmap API cases:
+
+- `S2-LEARN-01`
+- `S2-LEARN-02`
+- `S2-LEARN-03`
+- `S2-LEARN-04`
+- `S2-LEARN-05`
+- `S2-LEARN-06`
+- `S2-LEARN-07`
+- `S2-LEARN-08`
+
+These cases remain assigned to MD.
+
+WBS 5.9 and Sprint 2 should remain in closeout until the remaining tests and final team review are completed.
+
+
+## 21. Preliminary Sprint 2 Review and Retrospective
+
+### 21.1 Review
+
+Sprint 2 delivered the planned Career Analysis foundation across Career recommendations, recommendation explanations, Skill Gap Analysis, Career Readiness, Learning Resources, and Career Roadmap integration.
+
+The current tracker records:
+
+- 80 planned Sprint 2 test cases.
+- 72 Pass.
+- 0 Fail.
+- 8 Blocked.
+- 0 Not Run.
+
+The remaining Blocked cases belong to the dedicated WBS 5.7 Learning Suggestions and Roadmap API test set.
+
+### 21.2 What Worked Well
+
+- Deterministic recommendation and readiness logic provided repeatable structured outputs for testing.
+- The shared test tracker made ownership, evidence, defects, and retest status visible.
+- End-to-end testing identified issues that isolated implementation tests did not expose.
+- Defect branches kept application fixes separate from testing evidence.
+- Responsive, keyboard, browser, empty-state, and ownership testing strengthened the integrated Student flow.
+- Retesting after each defect fix prevented failed behaviour from being marked complete without verification.
+
+### 21.3 Challenges
+
+- Sprint 2 integration extended beyond the original Sprint dates because several dependent components became available at different times.
+- Some documentation retained older repository status after implementation had moved forward.
+- Several frontend and cross-component issues became visible only during final manual integration testing.
+- Testing ownership needed repeated checking to avoid completing another member's assigned cases under the wrong tester.
+
+### 21.4 Actions for Sprint 3
+
+For Sprint 3:
+
+- Integrate frontend and backend work earlier instead of waiting for the end of the Sprint.
+- Keep test ownership visible before test execution begins.
+- Update Sprint documentation after major merges so project records match the repository.
+- Run empty-state, error-state, ownership, responsive, and browser checks earlier.
+- Keep defect fixes on focused branches with targeted regression tests.
+- Preserve evidence during testing rather than reconstructing evidence during closeout.
+- Continue development on available Sprint 3 work while unrelated Sprint 1 and Sprint 2 owner-specific testing is completed.

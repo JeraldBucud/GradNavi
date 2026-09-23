@@ -1,29 +1,149 @@
-* {
+/*
+ * GradNavi global styles.
+ *
+ * Shared design values live in styles/tokens.css.
+ * Page and feature CSS should reference those tokens instead
+ * of defining separate colour and typography systems.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "./styles/tokens.css";
+@import "./styles/components.css";
+
+
+/* -------------------------------------------------
+ * Browser reset
+ * ------------------------------------------------- */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+html {
+  min-width: 320px;
+  background: var(--color-page);
+}
+
 body {
+  min-width: 320px;
+  min-height: 100vh;
   margin: 0;
-  font-family: Arial, sans-serif;
+
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-medium);
+
+  color: var(--color-body);
+  background: var(--color-page);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-nav {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
+#root {
+  min-height: 100vh;
 }
 
-nav a {
-  color: #222;
+
+/* -------------------------------------------------
+ * Global typography
+ * ------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-heading);
+  font-weight: var(--font-weight-semibold);
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-h1);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-h2);
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-h3);
+}
+
+h4 {
+  font-size: var(--font-size-h4);
+  line-height: var(--line-height-h4);
+}
+
+p {
+  color: var(--color-body);
+}
+
+
+/* -------------------------------------------------
+ * Links
+ * ------------------------------------------------- */
+
+a {
+  color: var(--color-primary);
   text-decoration: none;
 }
 
-nav a:hover {
+a:hover {
   text-decoration: underline;
 }
 
-main {
-  padding: 2rem;
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-small);
+}
+
+
+/* -------------------------------------------------
+ * Basic form inheritance
+ *
+ * Individual component styling comes in the next checkpoint.
+ * ------------------------------------------------- */
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+
+/* -------------------------------------------------
+ * Accessible keyboard focus
+ * ------------------------------------------------- */
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

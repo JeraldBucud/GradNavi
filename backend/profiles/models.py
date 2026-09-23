@@ -215,17 +215,76 @@ class Project(models.Model):
 
 
 class CareerGoal(models.Model):
+    """
+    Student-selected Career target.
+
+    career is the structured GradNavi Career reference.
+
+    target_role stays during the transition so existing
+    records and older API consumers keep their original text.
+    """
+
     student_profile = models.ForeignKey(
         StudentProfile,
         on_delete=models.CASCADE,
         related_name="career_goals",
     )
-    target_role = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
+    career = models.ForeignKey(
+        "careers.Career",
+        on_delete=models.PROTECT,
+        related_name="student_career_goals",
+        blank=True,
+        null=True,
+    )
+
+    target_role = models.CharField(
+        max_length=255,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    is_primary = models.BooleanField(
+        default=False,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                ],
+                condition=models.Q(
+                    is_primary=True,
+                ),
+                name="unique_primary_career_goal_per_profile",
+            ),
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                condition=models.Q(
+                    career__isnull=False,
+                ),
+                name="unique_profile_career_goal",
+            ),
+        ]
 
     def __str__(self):
+        if self.career_id:
+            return self.career.name
+
         return self.target_role
 
 

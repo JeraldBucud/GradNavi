@@ -16,7 +16,10 @@ from profiles.models import StudentProfile
 def generate_resume_draft(
     *,
     student_profile: StudentProfile,
+    target_career_name: str,
     ai_provider: AIProvider,
+    resume_focus: str = "balanced",
+    job_description: str | None = None,
 ) -> ResumeDraft:
     """
     Generate a validated editable resume draft for an authorized profile.
@@ -28,6 +31,9 @@ def generate_resume_draft(
 
     request = ResumeGenerationInput(
         profile=profile_context,
+        target_career_name=target_career_name,
+        resume_focus=resume_focus,
+        job_description=job_description,
     )
 
     prompt_package = build_resume_prompt(
@@ -38,4 +44,3 @@ def generate_resume_draft(
         prompt_package=prompt_package,
         output_model=ResumeDraft,
     )
-

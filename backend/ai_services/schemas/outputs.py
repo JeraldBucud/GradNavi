@@ -14,8 +14,13 @@ validation remain part of later Sprint 4 work.
 """
 
 from typing import Literal
+from urllib.parse import urlparse
 
-from pydantic import Field
+from pydantic import (
+    Field,
+    field_validator,
+    model_validator,
+)
 
 from ai_services.schemas.common import AIContractModel
 
@@ -201,3 +206,242 @@ class InterviewFeedback(AIContractModel):
     is_ai_generated: Literal[True]
 
     requires_user_review: Literal[True]
+
+
+class CareerMatchExplanation(AIContractModel):
+    """
+    Short grounded explanation for one deterministic Career Recommendation.
+
+    AI may explain supplied evidence only.
+
+    It must never replace or modify the deterministic recommendation score,
+    rank, readiness score, or Skill Gap calculations.
+    """
+
+    explanation: str = Field(
+        min_length=1,
+        max_length=600,
+    )
+
+    is_ai_generated: Literal[True]
+
+
+class SkillGapSummaryExplanation(AIContractModel):
+    """
+    Grounded natural-language explanation of an
+    already-calculated Skill Gap Analysis.
+
+    AI does not calculate or alter readiness or gap statuses.
+    """
+
+    readiness_explanation: str = Field(
+        min_length=1,
+        max_length=800,
+    )
+
+    recommended_next_steps: list[str]
+
+    is_ai_generated: Literal[True]
+
+class RoadmapGuidanceItem(AIContractModel):
+    """
+    Personalised explanation for one deterministic
+    Career Roadmap step.
+
+    The Skill name is supplied by GradNavi.
+
+    AI explains the step only.
+    """
+
+    skill_name: str = Field(
+        min_length=1,
+        max_length=255,
+    )
+
+    why_this_matters: str = Field(
+        min_length=1,
+        max_length=800,
+    )
+
+    your_focus: str = Field(
+        min_length=1,
+        max_length=600,
+    )
+
+
+class RoadmapGuidanceExplanation(AIContractModel):
+    """
+    Personalised guidance for the deterministic
+    top Career Roadmap steps.
+
+    AI must not change the Skill list or ordering.
+    """
+
+    guidance_items: list[
+        RoadmapGuidanceItem
+    ] = Field(
+        min_length=1,
+        max_length=3,
+    )
+
+    is_ai_generated: Literal[True]
+
+class LearningResourceGuidanceItem(AIContractModel):
+    """
+    Personalised explanation for one deterministic
+    Learning Resource recommendation.
+
+    AI writes explanation text only.
+    """
+
+    resource_id: int = Field(
+        gt=0,
+    )
+
+    why_this_fits: str = Field(
+        min_length=1,
+        max_length=700,
+    )
+
+
+class LearningResourceGuidanceExplanation(
+    AIContractModel
+):
+    """
+    Personalised explanations for the strongest
+    deterministic Learning Resource recommendations.
+
+    AI must not add, remove, rank, or reorder resources.
+    """
+
+    guidance_items: list[
+        LearningResourceGuidanceItem
+    ] = Field(
+        min_length=1,
+        max_length=6,
+    )
+
+    is_ai_generated: Literal[True]
+
+
+class DiscoveredLearningResourceCandidate(
+    AIContractModel
+):
+    """
+    One externally discovered Learning Resource candidate.
+
+    The URL is treated as untrusted external data and must
+    use HTTP or HTTPS before later validation and persistence.
+    """
+
+    title: str = Field(
+        min_length=1,
+        max_length=255,
+    )
+
+    provider: str = Field(
+        min_length=1,
+        max_length=255,
+    )
+
+    url: str = Field(
+        min_length=1,
+        max_length=2_000,
+    )
+
+    resource_type: Literal[
+        "course",
+        "documentation",
+        "article",
+        "video",
+        "tutorial",
+        "book",
+        "other",
+    ]
+
+    access_type: Literal[
+        "free",
+        "freemium",
+        "paid",
+        "unknown",
+    ]
+
+    description: str = Field(
+        min_length=1,
+        max_length=1_000,
+    )
+
+    @field_validator(
+        "url"
+    )
+    @classmethod
+    def validate_resource_url(
+        cls,
+        value,
+    ):
+        parsed = urlparse(
+            value
+        )
+
+        if (
+            parsed.scheme
+            not in {
+                "http",
+                "https",
+            }
+            or not parsed.netloc
+        ):
+            raise ValueError(
+                "Resource URL must use HTTP or HTTPS."
+            )
+
+        return value
+
+
+class LearningResourceDiscoveryResult(
+    AIContractModel
+):
+    """
+    Structured Learning Resource discovery result.
+
+    Zero candidates is valid when no suitable real
+    resource was found.
+    """
+
+    candidates: list[
+        DiscoveredLearningResourceCandidate
+    ] = Field(
+        max_length=6,
+    )
+
+    is_ai_generated: Literal[True]
+
+    @model_validator(
+        mode="after"
+    )
+    def validate_unique_urls(
+        self,
+    ):
+        normalized_urls = [
+            item.url
+            .strip()
+            .casefold()
+            for item
+            in self.candidates
+        ]
+
+        if (
+            len(
+                normalized_urls
+            )
+            != len(
+                set(
+                    normalized_urls
+                )
+            )
+        ):
+            raise ValueError(
+                "Discovered resource URLs must be unique."
+            )
+
+        return self

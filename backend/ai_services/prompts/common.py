@@ -22,6 +22,11 @@ class AIOperation(StrEnum):
     COVER_LETTER_GENERATION = "cover_letter_generation"
     INTERVIEW_QUESTION_GENERATION = "interview_question_generation"
     INTERVIEW_FEEDBACK = "interview_feedback"
+    CAREER_MATCH_EXPLANATION = "career_match_explanation"
+    SKILL_GAP_SUMMARY = "skill_gap_summary"
+    ROADMAP_GUIDANCE = "roadmap_guidance"
+    LEARNING_RESOURCE_GUIDANCE = "learning_resource_guidance"
+    LEARNING_RESOURCE_DISCOVERY = "learning_resource_discovery"
 
 
 @dataclass(frozen=True)

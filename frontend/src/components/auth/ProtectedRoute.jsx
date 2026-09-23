@@ -1,71 +1,138 @@
-import { useEffect, useState } from 'react'
-import { Navigate, Outlet, useLocation } from 'react-router'
+import {
+  useEffect,
+  useState,
+} from 'react'
+
+import {
+  Navigate,
+  Outlet,
+  useLocation,
+} from 'react-router'
 
 import {
   clearAuthSession,
   getCurrentUser,
+  hasStoredAccessToken,
   refreshAccessToken,
 } from '../../services/authService'
+
 
 function ProtectedRoute() {
   const location = useLocation()
 
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] =
+    useState(true)
+
+  const [isAuthenticated, setIsAuthenticated] =
+    useState(false)
+
 
   useEffect(() => {
-    async function checkAuthentication() {
-      const accessToken = localStorage.getItem('gradnavi_access_token')
+    let isMounted = true
 
-      if (!accessToken) {
-        setIsAuthenticated(false)
-        setIsCheckingAuth(false)
+
+    async function checkAuthentication() {
+      if (!hasStoredAccessToken()) {
+        if (isMounted) {
+          setIsAuthenticated(false)
+          setIsCheckingAuth(false)
+        }
+
         return
       }
+
 
       try {
         await getCurrentUser()
 
-        setIsAuthenticated(true)
+        if (isMounted) {
+          setIsAuthenticated(true)
+        }
       } catch (requestError) {
         if (requestError.status === 401) {
           try {
+            /*
+             * Access tokens are short-lived.
+             *
+             * A 401 from /auth/me/ first attempts the
+             * approved refresh-token flow before the
+             * session is considered invalid.
+             */
             await refreshAccessToken()
             await getCurrentUser()
 
-            setIsAuthenticated(true)
+            if (isMounted) {
+              setIsAuthenticated(true)
+            }
+
             return
           } catch {
             clearAuthSession()
-            setIsAuthenticated(false)
+
+            if (isMounted) {
+              setIsAuthenticated(false)
+            }
           }
         } else {
+          /*
+           * Preserve the existing Sprint 1 behaviour.
+           *
+           * Authentication verification failures outside
+           * the refresh flow do not grant protected access.
+           */
           clearAuthSession()
-          setIsAuthenticated(false)
+
+          if (isMounted) {
+            setIsAuthenticated(false)
+          }
         }
       } finally {
-        setIsCheckingAuth(false)
+        if (isMounted) {
+          setIsCheckingAuth(false)
+        }
       }
     }
 
+
     checkAuthentication()
+
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
+
   if (isCheckingAuth) {
-    return <p>Checking authentication...</p>
+    return (
+      <p>
+        Checking authentication...
+      </p>
+    )
   }
 
+
   if (!isAuthenticated) {
+    const requestedLocation = [
+      location.pathname,
+      location.search,
+      location.hash,
+    ].join('')
+
     return (
       <Navigate
         to="/login"
-        state={{ from: location.pathname }}
+        state={{
+          from: requestedLocation,
+        }}
         replace
       />
     )
   }
 
+
   return <Outlet />
 }
+
 
 export default ProtectedRoute

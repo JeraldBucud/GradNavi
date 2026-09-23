@@ -1,0 +1,607 @@
+/*
+ * GradNavi shared UI component styles.
+ *
+ * Source:
+ * Figma -> 02 - Design System -> Component Library
+ *
+ * Figma reference sections:
+ * - Buttons
+ * - Inputs and Form Controls
+ * - Cards, Scores, and Badges
+ * - Notices, AI, Analysis, and Placeholder Treatments
+ *
+ * These classes provide the shared visual foundation.
+ * Feature-specific layout stays inside each feature/page stylesheet.
+ */
+
+
+/* =================================================
+ * BUTTONS
+ * ================================================= */
+
+.gn-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: var(--control-height-medium);
+  padding: 0 var(--control-padding-inline);
+
+  border: 0;
+  border-radius: var(--radius-medium);
+
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-button);
+
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease,
+    opacity 120ms ease;
+}
+
+
+/* Primary button */
+
+.gn-button--primary {
+  color: var(--color-neutral-0);
+  background: var(--color-primary);
+}
+
+.gn-button--primary:hover:not(:disabled) {
+  color: var(--color-neutral-0);
+  background: rgb(29 78 216 / 92%);
+  text-decoration: none;
+}
+
+.gn-button--primary:active:not(:disabled) {
+  background: rgb(29 78 216 / 84%);
+}
+
+.gn-button--primary[aria-busy="true"] {
+  background: rgb(29 78 216 / 72%);
+}
+
+
+/* Secondary button */
+
+.gn-button--secondary {
+  color: var(--color-heading);
+  background: var(--color-neutral-0);
+}
+
+.gn-button--secondary:hover:not(:disabled) {
+  color: var(--color-heading);
+  background: rgb(255 255 255 / 92%);
+  text-decoration: none;
+}
+
+.gn-button--secondary:active:not(:disabled) {
+  background: rgb(255 255 255 / 84%);
+}
+
+.gn-button--secondary[aria-busy="true"] {
+  background: rgb(255 255 255 / 72%);
+}
+
+
+/* Tertiary button */
+
+.gn-button--tertiary {
+  color: var(--color-primary);
+  background: var(--color-neutral-50);
+}
+
+.gn-button--tertiary:hover:not(:disabled) {
+  color: var(--color-primary);
+  background: rgb(248 250 252 / 92%);
+  text-decoration: none;
+}
+
+.gn-button--tertiary:active:not(:disabled) {
+  background: rgb(248 250 252 / 84%);
+}
+
+.gn-button--tertiary[aria-busy="true"] {
+  background: rgb(248 250 252 / 72%);
+}
+
+
+/* Danger button */
+
+.gn-button--danger {
+  color: var(--color-neutral-0);
+  background: var(--color-error);
+}
+
+.gn-button--danger:hover:not(:disabled) {
+  color: var(--color-neutral-0);
+  background: rgb(185 28 28 / 92%);
+  text-decoration: none;
+}
+
+.gn-button--danger:active:not(:disabled) {
+  background: rgb(185 28 28 / 84%);
+}
+
+.gn-button--danger[aria-busy="true"] {
+  background: rgb(185 28 28 / 72%);
+}
+
+
+/* Link-style button */
+
+.gn-button--link {
+  color: var(--color-primary);
+  background: var(--color-neutral-0);
+}
+
+.gn-button--link:hover:not(:disabled) {
+  color: var(--color-primary);
+  background: rgb(255 255 255 / 92%);
+  text-decoration: none;
+}
+
+.gn-button--link:active:not(:disabled) {
+  background: rgb(255 255 255 / 84%);
+}
+
+.gn-button--link[aria-busy="true"] {
+  background: rgb(255 255 255 / 72%);
+}
+
+
+/* Shared focus state */
+
+.gn-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+
+/* Shared disabled state */
+
+.gn-button:disabled,
+.gn-button[aria-disabled="true"] {
+  color: var(--color-muted);
+  background: rgb(226 232 240 / 45%);
+
+  cursor: not-allowed;
+}
+
+
+/* Shared loading state */
+
+.gn-button[aria-busy="true"] {
+  cursor: wait;
+  pointer-events: none;
+}
+
+
+/* Optional layout helpers */
+
+.gn-button--full {
+  width: 100%;
+}
+
+
+/* =================================================
+ * FORM CONTROLS
+ * ================================================= */
+
+.gn-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+/* Visible field label */
+
+.gn-label {
+  color: var(--color-body);
+
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-label-medium);
+}
+
+
+/* Shared text control foundation */
+
+.gn-input,
+.gn-textarea,
+.gn-select {
+  width: 100%;
+
+  color: var(--color-body);
+  background: var(--color-neutral-0);
+
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-medium);
+
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-small);
+
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+
+.gn-input,
+.gn-select {
+  height: var(--input-height);
+  padding: 0 12px;
+}
+
+
+.gn-textarea {
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+
+/* Placeholder */
+
+.gn-input::placeholder,
+.gn-textarea::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+
+/* Focus */
+
+.gn-input:focus,
+.gn-textarea:focus,
+.gn-select:focus {
+  border: 2px solid var(--color-primary);
+  outline: 0;
+}
+
+
+/* Disabled */
+
+.gn-input:disabled,
+.gn-textarea:disabled,
+.gn-select:disabled {
+  color: var(--color-text-disabled);
+  background: var(--color-neutral-100);
+  border-color: var(--color-neutral-300);
+
+  cursor: not-allowed;
+}
+
+.gn-input:disabled::placeholder,
+.gn-textarea:disabled::placeholder {
+  color: var(--color-text-disabled);
+}
+
+
+/* Error state */
+
+.gn-input--error,
+.gn-textarea--error,
+.gn-select--error,
+.gn-input[aria-invalid="true"],
+.gn-textarea[aria-invalid="true"],
+.gn-select[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+
+/* Helper text */
+
+.gn-helper {
+  margin: 0;
+
+  color: var(--color-muted);
+
+  font-size: var(--font-size-label-small);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-label-small);
+}
+
+
+/* Error message */
+
+.gn-error {
+  margin: 0;
+
+  color: var(--color-error);
+
+  font-size: var(--font-size-label-small);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-label-small);
+}
+
+
+/* Password input wrapper */
+
+.gn-password-control {
+  position: relative;
+}
+
+.gn-password-control .gn-input {
+  padding-right: 84px;
+}
+
+.gn-password-action {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+
+  padding: 0;
+
+  color: var(--color-primary);
+  background: transparent;
+  border: 0;
+
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-label-medium);
+
+  transform: translateY(-50%);
+
+  cursor: pointer;
+}
+
+
+/* =================================================
+ * CARDS
+ * ================================================= */
+
+.gn-card {
+  min-height: 112px;
+  padding: 16px 18px;
+
+  background: var(--color-neutral-0);
+
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-large);
+}
+
+
+/*
+ * Current Figma card variants share the same base visual
+ * treatment. Variant classes provide semantic hooks for
+ * future page-specific treatment without duplicating CSS.
+ */
+
+.gn-card--standard,
+.gn-card--metric,
+.gn-card--feature,
+.gn-card--action,
+.gn-card--resource,
+.gn-card--career,
+.gn-card--ai,
+.gn-card--admin {
+  background: var(--color-neutral-0);
+}
+
+
+.gn-card__title {
+  margin: 0;
+
+  color: var(--color-heading);
+
+  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 24px;
+}
+
+
+.gn-card__description {
+  margin: 6px 0 0;
+
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-small);
+}
+
+
+/* =================================================
+ * STATUS BADGES
+ * ================================================= */
+
+.gn-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 34px;
+  padding: 7px 12px;
+
+  border-radius: var(--radius-medium);
+
+  font-size: var(--font-size-label-medium);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-label-medium);
+
+  text-align: center;
+}
+
+
+.gn-badge--matched {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success);
+}
+
+
+.gn-badge--partial {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning);
+}
+
+
+.gn-badge--missing {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error);
+}
+
+
+.gn-badge--info {
+  color: var(--color-info);
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-info);
+}
+
+
+.gn-badge--inactive {
+  color: var(--color-text-secondary);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-text-secondary);
+}
+
+
+.gn-badge--current {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+}
+
+
+.gn-badge--placeholder {
+  color: var(--color-text-disabled);
+  background: var(--color-neutral-50);
+  border: 1px dashed var(--color-text-disabled);
+}
+
+
+/* =================================================
+ * NOTICES
+ * ================================================= */
+
+.gn-notice {
+  min-height: 100px;
+  padding: 16px 18px;
+
+  background: var(--color-neutral-0);
+
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-large);
+}
+
+
+.gn-notice__title {
+  margin: 0;
+
+  color: var(--color-heading);
+
+  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 24px;
+}
+
+
+.gn-notice__body {
+  margin: 6px 0 0;
+
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-small);
+}
+
+
+.gn-notice--info {
+  border-color: var(--color-info);
+}
+
+
+.gn-notice--success {
+  border-color: var(--color-success);
+}
+
+
+.gn-notice--warning {
+  border-color: var(--color-warning);
+}
+
+
+.gn-notice--error {
+  border-color: var(--color-error);
+}
+
+
+.gn-notice--ai {
+  border-color: var(--color-secondary);
+}
+
+
+.gn-notice--placeholder {
+  border-color: var(--color-text-disabled);
+  border-style: dashed;
+}
+
+
+/* =================================================
+ * AI AND GRADNAVI ANALYSIS PANELS
+ * ================================================= */
+
+.gn-content-panel {
+  min-height: 120px;
+  padding: 16px 18px;
+
+  background: var(--color-neutral-0);
+
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-large);
+}
+
+
+.gn-content-panel__title {
+  margin: 0;
+
+  color: var(--color-heading);
+
+  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 24px;
+}
+
+
+.gn-content-panel__body {
+  margin: 6px 0 0;
+
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body-small);
+}
+
+
+/*
+ * Product distinction:
+ *
+ * AI content:
+ * Generated text that requires student review.
+ *
+ * GradNavi Analysis:
+ * Deterministic system scoring and analysis.
+ */
+
+.gn-content-panel--ai,
+.gn-content-panel--analysis {
+  border-color: var(--color-neutral-300);
+}

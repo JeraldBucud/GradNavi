@@ -1,0 +1,38 @@
+=== S2-E2E-02 SOFTWARE ENGINEER SNAPSHOT ===
+
+Generated at: 2026-09-20 06:53:11.164702+00:00
+Scoring version: composite_v1
+Embedding model: text-embedding-3-small
+Payload career count: 36
+Recommendation records: 36
+
+=== SOFTWARE ENGINEER RESULT ===
+career_id: 3
+career_name: Software Engineer
+rank: 16
+recommendation_score: 18.61
+competency_score: 0.00
+competency_normalized_score: 0.000000
+competency_status: scored
+technology_score: None
+technology_normalized_score: None
+technology_status: insufficient_profile
+technology_student_alignment_ratio: None
+technology_active: False
+semantic_alignment_score: 43.55
+semantic_normalized_score: 24.813559
+semantic_context_mode: identity_esco
+effective_competency_weight: 0.250000
+effective_technology_weight: 0.000000
+effective_semantic_weight: 0.750000
+matched_competencies: []
+matched_technologies: []
+
+=== ACCOUNTING CAREER COMPARISON ===
+Accountant (General) | RANK=1 | MATCH=75.00 | COMPETENCY=0.00 | TECHNOLOGY=None | SEMANTIC=65.73
+Taxation Accountant | RANK=2 | MATCH=73.02 | COMPETENCY=0.00 | TECHNOLOGY=None | SEMANTIC=64.95
+Management Accountant | RANK=3 | MATCH=70.70 | COMPETENCY=0.00 | TECHNOLOGY=None | SEMANTIC=64.04
+
+INSPECTION EXIT CODE: 0
+S2-E2E-02 SNAPSHOT INSPECTION: PASS
+READ ONLY: YES

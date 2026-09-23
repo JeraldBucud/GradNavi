@@ -218,7 +218,7 @@ The team also uses the CQU Microsoft 365 shared workspace for collaborative file
 | Database | PostgreSQL through Psycopg |
 | CORS | django-cors-headers |
 | AI architecture | Provider-independent AI service layer, structured schemas, prompt templates, safety rules, privacy mapping, and validated output contracts |
-| Planned AI provider | OpenAI API integration through the Django backend under Sprint 4 |
+| AI provider status | Provider-independent AI layer plus limited Django-backed OpenAI text generation using `gpt-5-nano` for WBS 5.6 explanations; broader provider integration remains under WBS 7.3 |
 | Planning | Scrum, Trello, GitHub, Microsoft Project |
 | Communication | Microsoft Teams |
 | Planned deployment | Vercel frontend, Railway backend and PostgreSQL |
@@ -250,9 +250,9 @@ The current AI service foundation includes:
 - AI-generated content indicators
 - Student-review requirements
 
-Resume, Cover Letter, and Interview services currently use a provider boundary that fails closed when no approved external AI provider is configured.
+Resume, Cover Letter, and Interview services continue to use the provider boundary established during Sprint 3.
 
-Concrete OpenAI provider integration is scheduled under WBS 7.3 in Sprint 4.
+WBS 5.6 now uses a limited Django-backed OpenAI text provider with `gpt-5-nano` as the default text model for the Top Match explanation and AI Gap Summary. Recommendation scoring, ranking, readiness scoring, requirement status, and Fix First priority remain deterministic. Broader provider integration for Resume, Cover Letter, and Interview services remains under WBS 7.3.
 
 ## Current implementation status
 
@@ -294,7 +294,7 @@ Implemented and merged Sprint 2 backend work includes:
 - Learning Roadmap API
 - Sprint 2 backend regression coverage
 
-Sprint 2 frontend implementation and final integrated Sprint 2 verification still depend on the remaining interface work.
+WBS 5.6 Recommendation and Readiness Interface is now implemented and regression-tested on its working branch. It includes the redesigned Career Recommendations and Skill Gap Analysis interfaces, selected-career Readiness API, Top Match AI explanation, AI Gap Summary, deterministic Fix First presentation, and controlled Learning Resource states. The separate WBS 5.8 Learning Roadmap Interface remains outside this WBS 5.6 completion.
 
 ### Sprint 3
 
@@ -302,7 +302,7 @@ The current Sprint 3 shared branch includes:
 
 | WBS | Task | Current repository status |
 | --- | --- | --- |
-| 6.1 | Sprint 3 Planning | Started |
+| 6.1 | Sprint 3 Planning | Complete and merged |
 | 6.2 | AI Prompt Templates and Safety Rules | Implemented and merged |
 | 6.3 | Resume Generation Backend | Implemented and merged |
 | 6.4 | Cover Letter Generation Backend | Implemented and merged |
@@ -384,19 +384,31 @@ The Interview API does not provide hiring probability, pass or fail classificati
 
 ## Current testing baseline
 
-The project uses automated backend tests, manual integration tests, frontend checks, and evidence records.
+The latest WBS 5.6 full-branch regression completed with no recorded failures:
 
-The latest Sprint 3 backend validation performed before the WBS 6.6 merge included:
+- Full backend regression: `673 / 673 PASS`
+- Student Profile model and API regression: `38 / 38 PASS`
+- Selected-career Readiness API: `8 / 8 PASS`
+- Top Match AI regression: `4 / 4 PASS`
+- AI Gap Summary regression: `7 / 7 PASS`
+- AI services regression: `119 / 119 PASS`
+- Recommendation cache regression: `19 / 19 PASS`
+- Recommendation API regression: `12 / 12 PASS`
+- Readiness and Learning regression: `37 / 37 PASS`
+- Django system check: `PASS`
+- Migration drift check: `No changes detected`
+- Frontend lint: `0 warnings, 0 errors`
+- Frontend production build: `PASS`
+- Git diff check: `PASS`
 
-```text
-Interview test suite: 38 / 38 PASS
-Full backend regression: 410 / 410 PASS
-Django system check: PASS
-makemigrations --check: No changes detected
-Failures: 0
-```
+Automated AI regression tests use mocked provider calls.
 
-Sprint 3 integration testing will continue after the remaining frontend dependencies are available.
+Separate controlled live validation confirmed real `gpt-5-nano` generation and database-cache reuse for:
+
+- Top Match career explanation.
+- AI Gap Summary.
+
+The second request for each valid cached result reused the database cache without another OpenAI generation.
 
 ## Delivery planning
 
