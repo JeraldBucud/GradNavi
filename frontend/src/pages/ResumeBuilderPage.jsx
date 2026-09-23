@@ -40,6 +40,8 @@ import {
   getStudentProfile,
 } from '../services/profileService'
 
+import HelpTip from '../components/HelpTip'
+
 import './ResumeBuilderPage.css'
 
 
@@ -1796,7 +1798,7 @@ function ResumeBuilderPage() {
 
           <article>
             <h2>
-              AI creates the first draft
+              GradNavi creates the first draft
             </h2>
 
             <ul>
@@ -1860,9 +1862,19 @@ function ResumeBuilderPage() {
             </div>
 
             <span
-              className="resume-builder__ai-badge"
+              className="document-help-heading"
             >
-              ATS targeting
+              <span
+                className="resume-builder__ai-badge"
+              >
+                ATS-friendly
+              </span>
+
+              <HelpTip
+                  label="What does ATS-friendly mean?"
+                  title="ATS-friendly"
+                  text="Many employers use applicant tracking systems to scan applications. GradNavi keeps your document clear, structured, and focused on relevant job terms so these systems read the document more easily. Review the final document before applying."
+                />
             </span>
           </div>
 
@@ -1870,8 +1882,16 @@ function ResumeBuilderPage() {
             className="resume-builder__document-config-grid"
           >
             <label>
-              <span>
+              <span
+                className="document-help-heading"
+              >
                 Target Career
+
+                <HelpTip
+                  label="Help with Target Career"
+                  title="Target Career"
+                  text="Choose the career you want this document to focus on. Career Goal means a role you selected in your Student Profile. Recommendation means a career GradNavi matched to your profile."
+                />
               </span>
 
               <select
@@ -1923,8 +1943,16 @@ function ResumeBuilderPage() {
             </label>
 
             <label>
-              <span>
+              <span
+                className="document-help-heading"
+              >
                 Resume Focus
+
+                <HelpTip
+                  label="Help with Resume Focus"
+                  title="Resume Focus"
+                  text="Choose what your resume should emphasise. Select a balanced resume or focus on skills, projects, experience, or another available option."
+                />
               </span>
 
               <select
@@ -1993,8 +2021,7 @@ function ResumeBuilderPage() {
               />
 
               <small>
-                Stored locally. This name
-                is not sent to AI.
+                Use a name that helps you identify this resume. You may rename it anytime.
               </small>
             </label>
 
@@ -2084,11 +2111,7 @@ function ResumeBuilderPage() {
               />
 
               <small>
-                Leave this empty for a
-                general ATS-friendly resume
-                for the selected career.
-                Add a vacancy to tailor
-                terminology and emphasis.
+                Leave this empty for a general ATS-friendly resume. Add a job description to tailor the resume to a specific role.
               </small>
             </label>
           </div>
@@ -2174,9 +2197,19 @@ function ResumeBuilderPage() {
             </div>
 
             <span
-              className="resume-builder__privacy-badge"
+              className="document-help-heading"
             >
-              Not sent to AI
+              <span
+                className="resume-builder__privacy-badge"
+              >
+                Private contact details
+              </span>
+
+              <HelpTip
+                  label="How GradNavi uses your information"
+                  title="Privacy"
+                  text="GradNavi uses the information needed to prepare your document. Personal contact details are kept out of the writing request and are added only to the final document."
+                />
             </span>
           </div>
 
@@ -2311,11 +2344,7 @@ function ResumeBuilderPage() {
           <div
             className="resume-builder__privacy-notice"
           >
-            Contact details stay outside
-            the AI generation prompt.
-            They are added only to the
-            student-controlled final
-            document.
+            GradNavi does not use your contact details to write the draft. They are added only to your final resume.
           </div>
         </section>
 
@@ -2327,8 +2356,16 @@ function ResumeBuilderPage() {
             className="resume-builder__section-heading"
           >
             <div>
-              <h2>
+              <h2
+                className="document-help-heading"
+              >
                 Profile Evidence
+
+                <HelpTip
+                  label="Help with Profile Evidence"
+                  title="Profile Evidence"
+                  text="These details come from your Student Profile, including skills, projects, experience, education, and career goals. Review them before generating your document."
+                />
               </h2>
 
               <p>
@@ -2469,10 +2506,7 @@ function ResumeBuilderPage() {
               </h2>
 
               <p>
-                A quick check before
-                generation keeps the
-                draft grounded and
-                easier to review.
+                Check these details before generating your resume.
               </p>
             </div>
           </div>
@@ -2514,7 +2548,7 @@ function ResumeBuilderPage() {
 
             <article>
               <h3>
-                AI will not add
+                GradNavi will not add
               </h3>
 
               <ul>

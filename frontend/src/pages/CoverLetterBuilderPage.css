@@ -542,3 +542,133 @@
     width: 100%;
   }
 }
+
+
+/* WBS 6.5 MULTI-APPLICATION COVER LETTER TARGET CONTROLS */
+
+.cover-letter-builder__application-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.cover-letter-builder__application-grid label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cover-letter-builder__application-grid label > span {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 19px;
+}
+
+.cover-letter-builder__application-grid label > span em {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.cover-letter-builder__application-grid input,
+.cover-letter-builder__application-grid select,
+.cover-letter-builder__application-grid textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.cover-letter-builder__application-grid input,
+.cover-letter-builder__application-grid select {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.cover-letter-builder__application-grid textarea {
+  min-height: 180px;
+  padding: 12px;
+  resize: vertical;
+  line-height: 21px;
+}
+
+.cover-letter-builder__application-grid input:focus,
+.cover-letter-builder__application-grid select:focus,
+.cover-letter-builder__application-grid textarea:focus {
+  border-color: #1d4ed8;
+  outline: none;
+  box-shadow:
+    0 0 0 3px
+    rgba(29, 78, 216, 0.12);
+}
+
+.cover-letter-builder__application-grid select:disabled {
+  cursor: not-allowed;
+  background: #f8fafc;
+  color: #94a3b8;
+}
+
+.cover-letter-builder__application-grid small {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.cover-letter-builder__application-full {
+  grid-column: 1 / -1;
+}
+
+.cover-letter-builder__state-inline--error {
+  margin-top: 16px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.cover-letter-builder select:focus-visible {
+  outline: 3px solid
+    rgba(29, 78, 216, 0.25);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .cover-letter-builder__application-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cover-letter-builder__application-full {
+    grid-column: auto;
+  }
+}
+/* WBS 6.5 COVER LETTER DISABLED BUTTON STATES */
+
+.cover-letter-builder__primary-button:disabled,
+.cover-letter-builder__primary-button:disabled:hover {
+  border-color: #cbd5e1;
+  background: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.cover-letter-builder__secondary-button:disabled,
+.cover-letter-builder__secondary-button:disabled:hover {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

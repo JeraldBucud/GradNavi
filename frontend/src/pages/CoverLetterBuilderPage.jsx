@@ -5,8 +5,25 @@ import {
 
 
 import {
+  COVER_LETTER_FOCUS_OPTIONS,
+  COVER_LETTER_TONE_OPTIONS,
   generateCoverLetterDraft,
 } from '../services/documentService'
+
+import {
+  loadDocumentCareerOptions,
+} from '../services/documentCareerService'
+
+import {
+  buildCoverLetterVersionLabel,
+  clearLegacyCoverLetterDraft,
+  createCoverLetterVersionId,
+  getActiveCoverLetterVersion,
+  listCoverLetterDraftVersions,
+  loadLegacyCoverLetterDraft,
+  setActiveCoverLetterVersion,
+  upsertCoverLetterDraftVersion,
+} from '../services/coverLetterDraftLibraryService'
 
 import {
   downloadCoverLetterDocx,
@@ -22,6 +39,8 @@ import {
   getStudentProfile,
 } from '../services/profileService'
 
+import HelpTip from '../components/HelpTip'
+
 import './CoverLetterBuilderPage.css'
 
 
@@ -35,7 +54,6 @@ const LEGACY_COVER_LETTER_STORAGE_KEY =
 const EMPTY_JOB_CONTEXT = {
   jobTitle: '',
   company: '',
-  applicationFocus: '',
   jobDescription: '',
 }
 
@@ -349,11 +367,60 @@ function buildPlainText(draft) {
 }
 
 
+function getDocumentCareerOptionLabel(
+  option,
+) {
+  const sources = []
+
+  if (option?.from_career_goal) {
+    sources.push(
+      'Career Goal',
+    )
+  }
+
+  if (option?.from_recommendation) {
+    if (
+      option.recommendation_rank
+      !== null
+      && option.recommendation_rank
+      !== undefined
+    ) {
+      sources.push(
+        `Recommendation #${option.recommendation_rank}`,
+      )
+    }
+    else {
+      sources.push(
+        'Recommendation',
+      )
+    }
+  }
+
+  const sourceText =
+    sources.join(
+      ' + ',
+    )
+
+  if (!sourceText) {
+    return (
+      option?.career_name
+      || 'Career'
+    )
+  }
+
+  return (
+    `${option.career_name} (${sourceText})`
+  )
+}
+
+
 function CoverLetterBuilderPage() {
 
-  const storedUser =
-    getStoredUser()
-
+  const [
+    storedUser,
+  ] = useState(
+    () => getStoredUser(),
+  )
   const [
     storedDraft,
   ] = useState(
@@ -438,6 +505,382 @@ function CoverLetterBuilderPage() {
     storedDraft?.savedAt
     || null,
   )
+
+
+  const [
+    careerOptions,
+    setCareerOptions,
+  ] = useState([])
+
+  const [
+    careerOptionsLoading,
+    setCareerOptionsLoading,
+  ] = useState(true)
+
+  const [
+    careerOptionsError,
+    setCareerOptionsError,
+  ] = useState('')
+
+  const [
+    targetCareerId,
+    setTargetCareerId,
+  ] = useState('')
+
+  const [
+    tone,
+    setTone,
+  ] = useState('professional')
+
+  const [
+    coverLetterFocus,
+    setCoverLetterFocus,
+  ] = useState('balanced')
+
+  const [
+    versionName,
+    setVersionName,
+  ] = useState('')
+
+  const [
+    versionNameEdited,
+    setVersionNameEdited,
+  ] = useState(false)
+
+  const [
+    activeVersionId,
+    setActiveVersionId,
+  ] = useState(null)
+
+  const [
+    coverLetterVersions,
+    setCoverLetterVersions,
+  ] = useState([])
+
+  const storageUser =
+    currentUser
+    || storedUser
+
+  const selectedTargetCareer =
+    careerOptions.find(
+      (career) =>
+        String(
+          career.career_id,
+        )
+        === String(
+          targetCareerId,
+        ),
+    )
+    || null
+
+  const selectedCareerVersions =
+    coverLetterVersions.filter(
+      (version) =>
+        String(
+          version.target_career_id,
+        )
+        === String(
+          targetCareerId,
+        ),
+    )
+
+  const automaticVersionName =
+    buildCoverLetterVersionLabel({
+      jobTitle:
+        jobContext.jobTitle,
+      company:
+        jobContext.company,
+    })
+
+  const displayedVersionName =
+    versionNameEdited
+      ? versionName
+      : automaticVersionName
+
+  const isGenerationReady =
+    Boolean(
+      selectedTargetCareer
+      && jobContext.jobTitle.trim()
+      && jobContext.company.trim()
+      && jobContext.jobDescription.trim()
+    )
+
+
+  useEffect(() => {
+    let active = true
+
+    async function loadCoverLetterTargets() {
+      setCareerOptionsLoading(
+        true,
+      )
+
+      setCareerOptionsError('')
+
+      try {
+        const result =
+          await loadDocumentCareerOptions()
+
+        if (!active) {
+          return
+        }
+
+        const options =
+          Array.isArray(
+            result?.career_options,
+          )
+            ? result.career_options
+            : []
+
+        setCareerOptions(
+          options,
+        )
+
+        const user =
+          currentUser
+          || storedUser
+
+        let activeVersion =
+          user
+            ? getActiveCoverLetterVersion(
+                user,
+              )
+            : null
+
+        const activeCareerExists =
+          activeVersion
+          && options.some(
+            (career) =>
+              String(
+                career.career_id,
+              )
+              === String(
+                activeVersion
+                  .target_career_id,
+              ),
+          )
+
+        if (!activeCareerExists) {
+          activeVersion = null
+        }
+
+        const primaryCareerOption =
+          options.find(
+            (career) =>
+              career.is_primary,
+          )
+          || null
+
+        const topRecommendationOption =
+          options.find(
+            (career) =>
+              career.recommendation_rank
+              === 1,
+          )
+          || null
+
+        let defaultCareerId =
+          activeVersion
+            ?.target_career_id
+          ?? primaryCareerOption
+            ?.career_id
+          ?? topRecommendationOption
+            ?.career_id
+          ?? options[0]
+            ?.career_id
+          ?? ''
+
+        if (
+          user
+          && !activeVersion
+          && defaultCareerId
+        ) {
+          const legacyDraft =
+            loadLegacyCoverLetterDraft(
+              user,
+            )
+
+          if (legacyDraft?.draft) {
+            const targetCareer =
+              options.find(
+                (career) =>
+                  String(
+                    career.career_id,
+                  )
+                  === String(
+                    defaultCareerId,
+                  ),
+              )
+
+            const legacyContext =
+              legacyDraft.jobContext
+              || {}
+
+            if (targetCareer) {
+              activeVersion =
+                upsertCoverLetterDraftVersion(
+                  user,
+                  {
+                    targetCareerId:
+                      targetCareer
+                        .career_id,
+                    targetCareerName:
+                      targetCareer
+                        .career_name,
+                    versionName:
+                      '',
+                    tone:
+                      'professional',
+                    coverLetterFocus:
+                      'balanced',
+                    jobTitle:
+                      legacyContext
+                        .jobTitle
+                      || '',
+                    company:
+                      legacyContext
+                        .company
+                      || '',
+                    jobDescription:
+                      legacyContext
+                        .jobDescription
+                      || '',
+                    draft:
+                      legacyDraft.draft,
+                    savedAt:
+                      legacyDraft
+                        .savedAt
+                      || null,
+                  },
+                )
+
+              if (activeVersion) {
+                clearLegacyCoverLetterDraft(
+                  user,
+                )
+
+                defaultCareerId =
+                  activeVersion
+                    .target_career_id
+              }
+            }
+          }
+        }
+
+        setTargetCareerId(
+          defaultCareerId
+            ? String(
+                defaultCareerId,
+              )
+            : '',
+        )
+
+        if (user) {
+          setCoverLetterVersions(
+            listCoverLetterDraftVersions(
+              user,
+            ),
+          )
+        }
+        else {
+          setCoverLetterVersions([])
+        }
+
+        if (activeVersion) {
+          setActiveVersionId(
+            activeVersion.id,
+          )
+
+          setTone(
+            activeVersion.tone
+            || 'professional',
+          )
+
+          setCoverLetterFocus(
+            activeVersion
+              .cover_letter_focus
+            || 'balanced',
+          )
+
+          setVersionName(
+            activeVersion
+              .version_name
+            || '',
+          )
+
+          setVersionNameEdited(
+            true,
+          )
+
+          setJobContext({
+            jobTitle:
+              activeVersion
+                .job_title
+              || '',
+            company:
+              activeVersion
+                .company
+              || '',
+            jobDescription:
+              activeVersion
+                .job_description
+              || '',
+          })
+
+          setDraft(
+            activeVersion.draft
+            || null,
+          )
+
+          setSavedAt(
+            activeVersion.saved_at
+            || null,
+          )
+
+          setGenerationState(
+            activeVersion.draft
+              ? 'success'
+              : 'empty',
+          )
+
+          if (activeVersion.draft) {
+            setActionMessage(
+              'Saved cover letter version '
+              + 'restored from this browser.',
+            )
+          }
+        }
+      }
+      catch (error) {
+        if (!active) {
+          return
+        }
+
+        setCareerOptionsError(
+          error?.message
+          || (
+            'Cover letter career options '
+            + 'failed to load.'
+          ),
+        )
+      }
+      finally {
+        if (active) {
+          setCareerOptionsLoading(
+            false,
+          )
+        }
+      }
+    }
+
+    loadCoverLetterTargets()
+
+    return () => {
+      active = false
+    }
+  }, [
+    currentUser,
+    storedUser,
+  ])
 
 
   useEffect(() => {
@@ -628,20 +1071,268 @@ function CoverLetterBuilderPage() {
   }
 
 
-  async function handleGenerate() {
-    const jobDescription =
-      jobContext
-        .jobDescription
-        .trim()
+  function applyCoverLetterVersion(
+    version,
+  ) {
+    if (!version) {
+      return
+    }
 
-    if (!jobDescription) {
+    setActiveVersionId(
+      version.id,
+    )
+
+    setTargetCareerId(
+      String(
+        version.target_career_id,
+      ),
+    )
+
+    setTone(
+      version.tone
+      || 'professional',
+    )
+
+    setCoverLetterFocus(
+      version.cover_letter_focus
+      || 'balanced',
+    )
+
+    setVersionName(
+      version.version_name
+      || '',
+    )
+
+    setVersionNameEdited(
+      true,
+    )
+
+    setJobContext({
+      jobTitle:
+        version.job_title
+        || '',
+      company:
+        version.company
+        || '',
+      jobDescription:
+        version.job_description
+        || '',
+    })
+
+    setDraft(
+      version.draft
+      || null,
+    )
+
+    setSavedAt(
+      version.saved_at
+      || null,
+    )
+
+    setGenerationState(
+      version.draft
+        ? 'success'
+        : 'empty',
+    )
+
+    setGenerationError('')
+    setEditingSection(null)
+
+    setActionMessage(
+      version.draft
+        ? 'Saved cover letter version loaded.'
+        : '',
+    )
+  }
+
+
+  function resetCoverLetterVersionEditor() {
+    setActiveVersionId(
+      createCoverLetterVersionId(),
+    )
+
+    setTone(
+      'professional',
+    )
+
+    setCoverLetterFocus(
+      'balanced',
+    )
+
+    setVersionName('')
+    setVersionNameEdited(false)
+
+    setJobContext({
+      ...EMPTY_JOB_CONTEXT,
+    })
+
+    setDraft(null)
+    setSavedAt(null)
+    setGenerationState('empty')
+    setGenerationError('')
+    setEditingSection(null)
+
+    setActionMessage(
+      'New cover letter version started.',
+    )
+  }
+
+
+  function handleTargetCareerChange(
+    event,
+  ) {
+    const nextCareerId =
+      event.target.value
+
+    setTargetCareerId(
+      nextCareerId,
+    )
+
+    setGenerationError('')
+    setEditingSection(null)
+
+    if (!nextCareerId) {
+      setActiveVersionId(null)
+      setDraft(null)
+      setSavedAt(null)
+      setGenerationState('empty')
+      setActionMessage('')
+      return
+    }
+
+    const latestVersion =
+      coverLetterVersions
+        .filter(
+          (version) =>
+            String(
+              version.target_career_id,
+            )
+            === String(
+              nextCareerId,
+            ),
+        )
+        .sort(
+          (
+            first,
+            second,
+          ) => (
+            (
+              Date.parse(
+                second.saved_at,
+              )
+              || 0
+            )
+            - (
+              Date.parse(
+                first.saved_at,
+              )
+              || 0
+            )
+          ),
+        )[0]
+
+    if (latestVersion) {
+      if (storageUser) {
+        setActiveCoverLetterVersion(
+          storageUser,
+          latestVersion.id,
+        )
+      }
+
+      applyCoverLetterVersion(
+        latestVersion,
+      )
+
+      return
+    }
+
+    resetCoverLetterVersionEditor()
+
+    setTargetCareerId(
+      nextCareerId,
+    )
+
+    setActionMessage(
+      'No saved cover letter exists '
+      + 'for this career yet.',
+    )
+  }
+
+
+  function handleSavedVersionChange(
+    event,
+  ) {
+    const versionId =
+      event.target.value
+
+    if (!versionId) {
+      return
+    }
+
+    const version =
+      coverLetterVersions.find(
+        (candidate) =>
+          candidate.id
+          === versionId,
+      )
+
+    if (!version) {
+      return
+    }
+
+    if (storageUser) {
+      setActiveCoverLetterVersion(
+        storageUser,
+        version.id,
+      )
+    }
+
+    applyCoverLetterVersion(
+      version,
+    )
+  }
+
+
+  function handleNewCoverLetterVersion() {
+    if (!selectedTargetCareer) {
+      setActionMessage(
+        'Select a target career '
+        + 'before starting a new '
+        + 'cover letter version.',
+      )
+
+      return
+    }
+
+    resetCoverLetterVersionEditor()
+  }
+
+
+  async function handleGenerate() {
+    const jobTitle =
+      jobContext.jobTitle.trim()
+
+    const company =
+      jobContext.company.trim()
+
+    const jobDescription =
+      jobContext.jobDescription.trim()
+
+    if (
+      !selectedTargetCareer
+      || !jobTitle
+      || !company
+      || !jobDescription
+    ) {
       setGenerationState(
         'validation',
       )
 
       setGenerationError(
-        'Add a job description '
-        + 'before generating.',
+        'Select a target career and '
+        + 'add the job title, company, '
+        + 'and job description before '
+        + 'generating.',
       )
 
       return
@@ -657,9 +1348,16 @@ function CoverLetterBuilderPage() {
 
     try {
       const response =
-        await generateCoverLetterDraft(
+        await generateCoverLetterDraft({
+          targetCareerId:
+            selectedTargetCareer
+              .career_id,
+          tone,
+          coverLetterFocus,
+          jobTitle,
+          company,
           jobDescription,
-        )
+        })
 
       const generatedDraft =
         normaliseDraft(
@@ -679,13 +1377,22 @@ function CoverLetterBuilderPage() {
         generatedDraft,
       )
 
+      if (!activeVersionId) {
+        setActiveVersionId(
+          createCoverLetterVersionId(),
+        )
+      }
+
       setGenerationState(
         'success',
       )
 
       setActionMessage(
-        'Cover letter draft generated. '
-        + 'Review every claim before use.',
+        'Cover letter draft generated for '
+        + jobTitle
+        + ' at '
+        + company
+        + '. Review every claim before use.',
       )
     }
     catch (error) {
@@ -697,12 +1404,11 @@ function CoverLetterBuilderPage() {
         error?.message
         || (
           'Cover letter draft '
-          + 'could not be created.'
+          + 'was not created.'
         ),
       )
     }
   }
-
 
   function handleClearJobDescription() {
     setJobContext(
@@ -728,17 +1434,21 @@ function CoverLetterBuilderPage() {
       return
     }
 
-    const timestamp =
-      new Date()
-        .toISOString()
-
-    const storageKey =
-      getCoverLetterStorageKey(
-        currentUser
-        || storedUser,
+    if (!selectedTargetCareer) {
+      setActionMessage(
+        'Select a target career '
+        + 'before saving this '
+        + 'cover letter.',
       )
 
-    if (!storageKey) {
+      return
+    }
+
+    const user =
+      currentUser
+      || storedUser
+
+    if (!user) {
       setActionMessage(
         'Sign in before saving '
         + 'this draft.',
@@ -747,24 +1457,79 @@ function CoverLetterBuilderPage() {
       return
     }
 
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        jobContext,
-        draft,
-        savedAt: timestamp,
-      }),
+    const timestamp =
+      new Date()
+        .toISOString()
+
+    const versionId =
+      activeVersionId
+      || createCoverLetterVersionId()
+
+    const savedVersion =
+      upsertCoverLetterDraftVersion(
+        user,
+        {
+          id:
+            versionId,
+          targetCareerId:
+            selectedTargetCareer
+              .career_id,
+          targetCareerName:
+            selectedTargetCareer
+              .career_name,
+          versionName:
+            displayedVersionName,
+          tone,
+          coverLetterFocus,
+          jobTitle:
+            jobContext.jobTitle,
+          company:
+            jobContext.company,
+          jobDescription:
+            jobContext
+              .jobDescription,
+          draft,
+          savedAt:
+            timestamp,
+        },
+      )
+
+    if (!savedVersion) {
+      setActionMessage(
+        'Cover letter version '
+        + 'was not saved.',
+      )
+
+      return
+    }
+
+    setActiveVersionId(
+      savedVersion.id,
+    )
+
+    setVersionName(
+      savedVersion.version_name,
+    )
+
+    setVersionNameEdited(
+      true,
     )
 
     setSavedAt(
-      timestamp,
+      savedVersion.saved_at,
+    )
+
+    setCoverLetterVersions(
+      listCoverLetterDraftVersions(
+        user,
+      ),
     )
 
     setActionMessage(
-      'Draft saved in this browser.',
+      'Cover letter version saved '
+      + 'to this browser.',
     )
   }
-
 
   async function handleCopyContent() {
     if (!draft) {
@@ -1057,8 +1822,7 @@ function CoverLetterBuilderPage() {
               </li>
 
               <li>
-                Paste the job description
-                for AI tailoring
+                Paste the job description to tailor your letter
               </li>
             </ul>
           </article>
@@ -1115,31 +1879,234 @@ function CoverLetterBuilderPage() {
           >
             <div>
               <h2>
-                Job Context
+                Cover Letter Target
               </h2>
 
               <p>
-                A cover letter needs a
-                specific role. The job
-                description is the only
-                role information sent to
-                the generation endpoint.
+                Choose the career and job you are applying for. Add the job title, company, and job description to create a tailored cover letter.
               </p>
             </div>
 
             <span
-              className="cover-letter-builder__privacy-badge"
+              className="document-help-heading"
             >
-              Job description only to AI
+              <span
+                className="cover-letter-builder__ai-badge"
+              >
+                ATS-friendly
+              </span>
+
+              <HelpTip
+                  label="What does ATS-friendly mean?"
+                  title="ATS-friendly"
+                  text="Many employers use applicant tracking systems to scan applications. GradNavi keeps your document clear, structured, and focused on relevant job terms so these systems read the document more easily. Review the final document before applying."
+                />
             </span>
           </div>
 
           <div
-            className="cover-letter-builder__context-grid"
+            className="cover-letter-builder__application-grid"
           >
             <label>
+              <span
+                className="document-help-heading"
+              >
+                Target Career
+
+                <HelpTip
+                  label="Help with Target Career"
+                  title="Target Career"
+                  text="Choose the career you want this document to focus on. Career Goal means a role you selected in your Student Profile. Recommendation means a career GradNavi matched to your profile."
+                />
+              </span>
+
+              <select
+                value={
+                  targetCareerId
+                }
+                disabled={
+                  careerOptionsLoading
+                }
+                onChange={
+                  handleTargetCareerChange
+                }
+              >
+                <option value="">
+                  {
+                    careerOptionsLoading
+                      ? 'Loading careers...'
+                      : 'Select a career'
+                  }
+                </option>
+
+                {
+                  careerOptions.map(
+                    (career) => (
+                      <option
+                        key={
+                          career.career_id
+                        }
+                        value={
+                          career.career_id
+                        }
+                      >
+                        {
+                          getDocumentCareerOptionLabel(
+                            career,
+                          )
+                        }
+                      </option>
+                    ),
+                  )
+                }
+              </select>
+
+              <small>
+                Includes your Career Goals
+                and current GradNavi
+                recommendations.
+              </small>
+            </label>
+
+            <label>
               <span>
-                Job title
+                Tone
+              </span>
+
+              <select
+                value={tone}
+                onChange={
+                  (event) => {
+                    setTone(
+                      event.target.value,
+                    )
+
+                    setActionMessage('')
+                  }
+                }
+              >
+                {
+                  COVER_LETTER_TONE_OPTIONS
+                    .map(
+                      (option) => (
+                        <option
+                          key={
+                            option.value
+                          }
+                          value={
+                            option.value
+                          }
+                        >
+                          {option.label}
+                        </option>
+                      ),
+                    )
+                }
+              </select>
+
+              <small>
+                Controls the writing style
+                of the generated letter.
+              </small>
+            </label>
+
+            <label>
+              <span
+                className="document-help-heading"
+              >
+                Cover Letter Focus
+
+                <HelpTip
+                  label="Help with Cover Letter Focus"
+                  title="Cover Letter Focus"
+                  text="Choose what your cover letter should emphasise, such as matching skills, experience, projects, or a career transition."
+                />
+              </span>
+
+              <select
+                value={
+                  coverLetterFocus
+                }
+                onChange={
+                  (event) => {
+                    setCoverLetterFocus(
+                      event.target.value,
+                    )
+
+                    setActionMessage('')
+                  }
+                }
+              >
+                {
+                  COVER_LETTER_FOCUS_OPTIONS
+                    .map(
+                      (option) => (
+                        <option
+                          key={
+                            option.value
+                          }
+                          value={
+                            option.value
+                          }
+                        >
+                          {option.label}
+                        </option>
+                      ),
+                    )
+                }
+              </select>
+
+              <small>
+                Choose which evidence the
+                letter should emphasise.
+              </small>
+            </label>
+
+            <label>
+              <span>
+                Version Name
+              </span>
+
+              <input
+                type="text"
+                value={
+                  displayedVersionName
+                }
+                placeholder={
+                  'Cover Letter - Role at Company'
+                }
+                onChange={
+                  (event) => {
+                    const nextValue =
+                      event.target.value
+
+                    setVersionName(
+                      nextValue,
+                    )
+
+                    setVersionNameEdited(
+                      Boolean(
+                        nextValue.trim(),
+                      ),
+                    )
+
+                    setActionMessage('')
+                  }
+                }
+              />
+
+              <small>
+                The name updates automatically from the job title and company. You may rename it anytime.
+              </small>
+            </label>
+
+            <label>
+              <span>
+                Job Title
+                {' '}
+                <em>
+                  Required
+                </em>
               </span>
 
               <input
@@ -1147,7 +2114,9 @@ function CoverLetterBuilderPage() {
                 value={
                   jobContext.jobTitle
                 }
-                placeholder="Junior Software Developer"
+                placeholder={
+                  'Software Engineer'
+                }
                 onChange={
                   (event) =>
                     updateJobContext(
@@ -1161,6 +2130,10 @@ function CoverLetterBuilderPage() {
             <label>
               <span>
                 Company
+                {' '}
+                <em>
+                  Required
+                </em>
               </span>
 
               <input
@@ -1168,7 +2141,9 @@ function CoverLetterBuilderPage() {
                 value={
                   jobContext.company
                 }
-                placeholder="Sample Company"
+                placeholder={
+                  'Atlassian'
+                }
                 onChange={
                   (event) =>
                     updateJobContext(
@@ -1181,61 +2156,115 @@ function CoverLetterBuilderPage() {
 
             <label>
               <span>
-                Application focus
+                Saved Version
               </span>
 
-              <input
-                type="text"
+              <select
                 value={
-                  jobContext.applicationFocus
+                  activeVersionId
+                  || ''
                 }
-                placeholder="Software development role"
+                disabled={
+                  !selectedCareerVersions
+                    .length
+                }
+                onChange={
+                  handleSavedVersionChange
+                }
+              >
+                <option value="">
+                  {
+                    selectedCareerVersions
+                      .length
+                      ? 'Select a saved version'
+                      : 'No saved versions'
+                  }
+                </option>
+
+                {
+                  selectedCareerVersions.map(
+                    (version) => (
+                      <option
+                        key={
+                          version.id
+                        }
+                        value={
+                          version.id
+                        }
+                      >
+                        {
+                          version.version_name
+                        }
+                      </option>
+                    ),
+                  )
+                }
+              </select>
+
+              <small>
+                Saved applications stay
+                separate for each career.
+              </small>
+            </label>
+
+            <label
+              className="cover-letter-builder__application-full"
+            >
+              <span>
+                Job Description
+                {' '}
+                <em>
+                  Required
+                </em>
+              </span>
+
+              <textarea
+                rows={10}
+                value={
+                  jobContext.jobDescription
+                }
+                placeholder={
+                  'Paste the full job '
+                  + 'description here.'
+                }
                 onChange={
                   (event) =>
                     updateJobContext(
-                      'applicationFocus',
+                      'jobDescription',
                       event.target.value,
                     )
                 }
               />
+
+              <small>
+                GradNavi uses the job description and information from your profile to tailor your cover letter.
+              </small>
             </label>
           </div>
 
-          <label
-            className="cover-letter-builder__job-description"
-          >
-            <span>
-              Job Description
-            </span>
-
-            <textarea
-              rows={10}
-              value={
-                jobContext.jobDescription
-              }
-              placeholder={
-                'Paste the job description here. '
-                + 'Include responsibilities, '
-                + 'required skills, and role context.'
-              }
-              onChange={
-                (event) =>
-                  updateJobContext(
-                    'jobDescription',
-                    event.target.value,
-                  )
-              }
-            />
-          </label>
+          {
+            careerOptionsError
+              ? (
+                <div
+                  className="cover-letter-builder__state-inline cover-letter-builder__state-inline--error"
+                  role="alert"
+                >
+                  {careerOptionsError}
+                </div>
+              )
+              : null
+          }
 
           <p
             className="cover-letter-builder__field-note"
           >
-            Job title, company, and
-            application focus stay in
-            your browser for review.
-            The API receives only the
-            job description.
+            GradNavi uses these details to tailor your cover letter. Your version name helps you organise saved drafts.
+
+            <HelpTip
+                  label="How GradNavi uses your information"
+                  title="Privacy"
+                  text="GradNavi uses the information needed to prepare your document. Personal contact details are kept out of the writing request and are added only to the final document."
+                />
           </p>
 
           <div
@@ -1247,6 +2276,7 @@ function CoverLetterBuilderPage() {
               disabled={
                 generationState
                 === 'generating'
+                || !isGenerationReady
               }
               onClick={
                 handleGenerate
@@ -1258,6 +2288,19 @@ function CoverLetterBuilderPage() {
                   ? 'Generating Cover Letter...'
                   : 'Generate Cover Letter'
               }
+            </button>
+
+            <button
+              className="cover-letter-builder__secondary-button"
+              type="button"
+              disabled={
+                !selectedTargetCareer
+              }
+              onClick={
+                handleNewCoverLetterVersion
+              }
+            >
+              New Cover Letter Version
             </button>
 
             <button
@@ -1280,8 +2323,16 @@ function CoverLetterBuilderPage() {
             className="cover-letter-builder__section-heading"
           >
             <div>
-              <h2>
+              <h2
+                className="document-help-heading"
+              >
                 Profile Evidence
+
+                <HelpTip
+                  label="Help with Profile Evidence"
+                  title="Profile Evidence"
+                  text="These details come from your Student Profile, including skills, projects, experience, education, and career goals. Review them before generating your document."
+                />
               </h2>
 
               <p>
@@ -1413,10 +2464,10 @@ function CoverLetterBuilderPage() {
                 </h2>
 
                 <p>
-                  Add a job description
-                  first, then generate
-                  when the role context
-                  is ready.
+                  Complete the application
+                  target details, then
+                  generate when the vacancy
+                  context is ready.
                 </p>
               </section>
             )
@@ -1433,7 +2484,7 @@ function CoverLetterBuilderPage() {
                 role="alert"
               >
                 <h2>
-                  Add a job description
+                  Complete application details
                   before generating
                 </h2>
 
