@@ -468,7 +468,7 @@ function JobMatchingPage() {
 
                 <article className="job-matching-step">
                   <strong>
-                    2. Analyse requirements
+                    2. Analyze requirements
                   </strong>
 
                   <p>
@@ -504,7 +504,7 @@ function JobMatchingPage() {
                       GradNavi compares recognised
                       requirements with your saved
                       Student Profile. This request is
-                      analysed for matching and is not
+                      analyzed for matching and is not
                       saved by Job Matching.
                     </p>
                   </div>
@@ -630,7 +630,7 @@ function JobMatchingPage() {
 
                         <div>
                           <strong>
-                            Analysing recognised requirements
+                            Analyzing recognised requirements
                           </strong>
 
                           <span>
@@ -657,8 +657,8 @@ function JobMatchingPage() {
                       {
                         requestState
                         === 'loading'
-                          ? 'Analysing…'
-                          : 'Analyse Job'
+                          ? 'Analyzing…'
+                          : 'Analyze Job'
                       }
                     </button>
 
@@ -730,7 +730,7 @@ function JobMatchingPage() {
                   type="button"
                   onClick={handleAnalyzeAnother}
                 >
-                  Analyse Another Job
+                  Analyze Another Job
                 </button>
               </section>
 
