@@ -79,6 +79,11 @@ function App() {
           />
 
           <Route
+            path="/job-matching"
+            element={<JobMatchingPage />}
+          />
+
+          <Route
             path="/resume-builder"
             element={<ResumeBuilderPage />}
           />
