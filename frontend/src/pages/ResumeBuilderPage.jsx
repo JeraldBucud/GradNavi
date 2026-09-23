@@ -4,6 +4,7 @@ import {
 } from 'react'
 
 import {
+  useLocation,
   useNavigate,
 } from 'react-router'
 
@@ -338,6 +339,15 @@ function getCareerOptionLabel(
 
 function ResumeBuilderPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const incomingJobDescription =
+    typeof location.state?.jobDescription
+    === 'string'
+      ? location.state.jobDescription
+        .trim()
+        .slice(0, 20_000)
+      : ''
 
   const [
     storedUser,
@@ -427,12 +437,17 @@ function ResumeBuilderPage() {
     actionMessage,
     setActionMessage,
   ] = useState(
-    storedDraft?.draft
+    incomingJobDescription
       ? (
-        'Saved draft restored '
-        + 'from this browser.'
+        'Job description carried over '
+        + 'from Job Matching.'
       )
-      : '',
+      : storedDraft?.draft
+        ? (
+          'Saved draft restored '
+          + 'from this browser.'
+        )
+        : '',
   )
 
   const [
@@ -472,7 +487,9 @@ function ResumeBuilderPage() {
   const [
     jobDescription,
     setJobDescription,
-  ] = useState('')
+  ] = useState(
+    incomingJobDescription,
+  )
 
   const [
     versionName,
@@ -798,7 +815,8 @@ function ResumeBuilderPage() {
           )
 
           setJobDescription(
-            activeVersion
+            incomingJobDescription
+            || activeVersion
               .job_description
             || '',
           )
