@@ -945,6 +945,7 @@ function CoverLetterBuilderPage() {
     }
   }, [
     currentUser,
+    incomingJobDescription,
     storedUser,
   ])
 
@@ -1868,72 +1869,81 @@ function CoverLetterBuilderPage() {
         </header>
 
 
-        <section
-          className="cover-letter-builder__intro-grid"
+        <details
+          className="cover-letter-builder__guide"
         >
-          <article>
-            <h2>
-              Start with the role
-            </h2>
+          <summary>
+            How Cover Letter Builder works
+          </summary>
 
-            <ul>
-              <li>
-                Add the job title
-                for your review
-              </li>
+          <div
+            className="cover-letter-builder__intro-grid"
+          >
+            <article>
+              <h2>
+                Start with the role
+              </h2>
 
-              <li>
-                Add the company
-                for your review
-              </li>
+              <ul>
+                <li>
+                  Add the job title
+                  for your review
+                </li>
 
-              <li>
-                Paste the job description to tailor your letter
-              </li>
-            </ul>
-          </article>
+                <li>
+                  Add the company
+                  for your review
+                </li>
 
-          <article>
-            <h2>
-              GradNavi matches evidence
-            </h2>
+                <li>
+                  Paste the job description
+                  to tailor your letter
+                </li>
+              </ul>
+            </article>
 
-            <ul>
-              <li>
-                Skills and projects
-                from your profile
-              </li>
+            <article>
+              <h2>
+                GradNavi matches evidence
+              </h2>
 
-              <li>
-                Career goal context
-              </li>
+              <ul>
+                <li>
+                  Skills and projects
+                  from your profile
+                </li>
 
-              <li>
-                Missing facts stay visible
-              </li>
-            </ul>
-          </article>
+                <li>
+                  Career goal context
+                </li>
 
-          <article>
-            <h2>
-              Review before use
-            </h2>
+                <li>
+                  Missing facts stay visible
+                </li>
+              </ul>
+            </article>
 
-            <ul>
-              <li>
-                Check company names
-              </li>
+            <article>
+              <h2>
+                Review before use
+              </h2>
 
-              <li>
-                Edit tone and details
-              </li>
+              <ul>
+                <li>
+                  Check company names
+                </li>
 
-              <li>
-                Confirm every claim is true
-              </li>
-            </ul>
-          </article>
-        </section>
+                <li>
+                  Edit tone and details
+                </li>
+
+                <li>
+                  Confirm every claim is true
+                </li>
+              </ul>
+            </article>
+          </div>
+        </details>
 
 
         <section

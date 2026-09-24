@@ -150,8 +150,8 @@ function RequirementCard({
         >
           {
             matched
-              ? 'Matched'
-              : 'Missing'
+              ? 'In profile'
+              : 'Not in profile'
           }
         </span>
       </div>
@@ -314,7 +314,7 @@ function JobMatchingPage() {
 
     if (!normalizedJobDescription) {
       setRequestError(
-        'Paste a job description before analysing it.',
+        'Paste a job description before analyzing it.',
       )
 
       inputRef.current?.focus()
@@ -367,7 +367,7 @@ function JobMatchingPage() {
         getRequestErrorMessage(
           error,
           (
-            'GradNavi could not analyse '
+            'GradNavi could not analyze '
             + 'this job description. '
             + 'Please try again.'
           ),
@@ -429,14 +429,16 @@ function JobMatchingPage() {
             {
               result
                 ? (
-                  'Review how your profile compares '
-                  + 'with the recognised requirements '
-                  + 'in this job description.'
+                  'See which recognised requirements '
+                  + 'are already in your profile and '
+                  + 'which ones need attention before '
+                  + 'you apply.'
                 )
                 : (
-                  'Compare a real vacancy with the '
-                  + 'skills already saved in your '
-                  + 'GradNavi profile.'
+                  'Paste a job description to compare '
+                  + 'its recognised requirements with '
+                  + 'skills saved in your Student '
+                  + 'Profile.'
                 )
             }
           </p>
@@ -467,46 +469,8 @@ function JobMatchingPage() {
         !result
           ? (
             <>
-              <section
-                className="job-matching-steps"
-                aria-label="How Job Matching works"
-              >
-                <article className="job-matching-step">
-                  <strong>
-                    1. Paste the vacancy
-                  </strong>
-
-                  <p>
-                    Add the full job description
-                    from the role you are considering.
-                  </p>
-                </article>
-
-                <article className="job-matching-step">
-                  <strong>
-                    2. Analyze requirements
-                  </strong>
-
-                  <p>
-                    GradNavi checks recognised
-                    requirements against your profile.
-                  </p>
-                </article>
-
-                <article className="job-matching-step">
-                  <strong>
-                    3. Review your gaps
-                  </strong>
-
-                  <p>
-                    See what already matches and what
-                    you may need to develop.
-                  </p>
-                </article>
-              </section>
-
               <form
-                className="job-matching-input-card"
+                className="job-matching-input-card job-matching-input-card--primary"
                 onSubmit={handleAnalyze}
                 noValidate
               >
@@ -517,17 +481,41 @@ function JobMatchingPage() {
                     </h2>
 
                     <p>
+                      Paste the role description below.
                       GradNavi compares recognised
-                      requirements with your saved
-                      Student Profile. This request is
-                      analyzed for matching and is not
-                      saved by Job Matching.
+                      requirements with skills saved
+                      in your Student Profile.
                     </p>
                   </div>
+                </div>
 
-                  <span className="gn-badge gn-badge--current">
-                    FR-07
-                  </span>
+                <div className="job-matching-profile-context">
+                  <div>
+                    <strong>
+                      Results use your current Student Profile
+                    </strong>
+
+                    <span>
+                      Keep your skills up to date for
+                      a more accurate comparison.
+                    </span>
+                  </div>
+
+                  {
+                    !jobDescription
+                      ? (
+                        <button
+                          className="gn-button gn-button--secondary job-matching-bordered-button"
+                          type="button"
+                          onClick={() =>
+                            navigate('/profile')
+                          }
+                        >
+                          Review Profile
+                        </button>
+                      )
+                      : null
+                  }
                 </div>
 
                 <label
@@ -543,7 +531,7 @@ function JobMatchingPage() {
                     id="job-matching-description"
                     value={jobDescription}
                     placeholder="Paste the full job description here..."
-                    rows={14}
+                    rows={10}
                     aria-describedby="job-matching-character-count job-matching-guidance"
                     aria-invalid={
                       Boolean(
@@ -584,13 +572,9 @@ function JobMatchingPage() {
                     .join(' ')}
                 >
                   <span>
-                    {
-                      characterCount
-                    }
+                    {characterCount}
                     {' / '}
-                    {
-                      JOB_DESCRIPTION_MAX_LENGTH
-                    }
+                    {JOB_DESCRIPTION_MAX_LENGTH}
                     {' characters'}
                   </span>
 
@@ -650,8 +634,8 @@ function JobMatchingPage() {
                           </strong>
 
                           <span>
-                            Comparing canonical skills and
-                            aliases with your Student Profile.
+                            Comparing recognised skills
+                            with your Student Profile.
                           </span>
                         </div>
                       </div>
@@ -695,36 +679,48 @@ function JobMatchingPage() {
                     id="job-matching-guidance"
                     className="job-matching-tip"
                   >
-                    Include responsibilities and
-                    requirements • Max 20,000 characters
+                    Include responsibilities,
+                    requirements, and preferred skills
+                    {' • '}Max 20,000 characters
                   </p>
                 </div>
               </form>
 
-              <section className="job-matching-trust-grid">
-                <article>
-                  <h2>
-                    Your profile stays in control
-                  </h2>
+              <details className="job-matching-how">
+                <summary>
+                  How Job Matching works
+                </summary>
+
+                <div className="job-matching-how__content">
+                  <p>
+                    <strong>
+                      Recognised requirements only.
+                    </strong>
+                    {' '}
+                    GradNavi matches canonical skills
+                    and approved aliases.
+                  </p>
 
                   <p>
-                    Matches come from skills already
-                    saved in your Student Profile.
+                    <strong>
+                      No guessing.
+                    </strong>
+                    {' '}
+                    Ambiguous or unsupported terms
+                    are excluded.
                   </p>
-                </article>
-
-                <article>
-                  <h2>
-                    Unrecognised terms are not guessed
-                  </h2>
 
                   <p>
-                    GradNavi skips terms it cannot
-                    confidently map to a canonical skill
-                    or alias.
+                    <strong>
+                      No suitability score.
+                    </strong>
+                    {' '}
+                    Results compare recognised job
+                    requirements with evidence saved
+                    in your profile.
                   </p>
-                </article>
-              </section>
+                </div>
+              </details>
             </>
           )
           : (
@@ -732,12 +728,13 @@ function JobMatchingPage() {
               <section className="job-matching-result-header">
                 <div>
                   <h2>
-                    Job description analysis
+                    Your job match
                   </h2>
 
                   <p>
-                    Results from the submitted job
-                    description.
+                    Based on recognised requirements
+                    from the job description and skills
+                    saved in your Student Profile.
                   </p>
                 </div>
 
@@ -756,7 +753,7 @@ function JobMatchingPage() {
               >
                 <article>
                   <span>
-                    Recognised requirements matched
+                    In your profile
                   </span>
 
                   <strong>
@@ -766,28 +763,14 @@ function JobMatchingPage() {
                   </strong>
 
                   <small>
-                    recognised requirements already
+                    recognised requirements found
                     in your profile
                   </small>
                 </article>
 
                 <article>
                   <span>
-                    Matched
-                  </span>
-
-                  <strong>
-                    {matchedCount}
-                  </strong>
-
-                  <small>
-                    profile requirements recognised
-                  </small>
-                </article>
-
-                <article>
-                  <span>
-                    Missing
+                    To review
                   </span>
 
                   <strong>
@@ -795,7 +778,8 @@ function JobMatchingPage() {
                   </strong>
 
                   <small>
-                    recognised requirements not listed
+                    recognised requirements not
+                    listed in your profile
                   </small>
                 </article>
               </section>
@@ -805,11 +789,10 @@ function JobMatchingPage() {
                   {
                     totalCount > 0
                       ? (
-                        'Your profile includes '
-                        + matchedCount
-                        + ' of the '
+                        'GradNavi recognised '
                         + totalCount
-                        + ' recognised requirements.'
+                        + ' requirements in this '
+                        + 'job description.'
                       )
                       : (
                         'No supported requirements '
@@ -819,10 +802,11 @@ function JobMatchingPage() {
                 </strong>
 
                 <p className="gn-notice__body">
-                  Unrecognised or ambiguous terms are
-                  excluded from these counts. Review
-                  the original vacancy before making
-                  application decisions.
+                  These results compare recognised
+                  requirements with your current
+                  profile. They are not an employment
+                  suitability score. Unrecognised or
+                  ambiguous terms are excluded.
                 </p>
               </div>
 
@@ -830,7 +814,7 @@ function JobMatchingPage() {
                 <div className="job-matching-requirement-section">
                   <div className="job-matching-requirement-section__heading">
                     <h2>
-                      Matched requirements
+                      Already in your profile
                     </h2>
 
                     <span className="gn-badge gn-badge--matched">
@@ -857,7 +841,7 @@ function JobMatchingPage() {
                         : (
                           <p className="job-matching-empty-list">
                             No recognised requirements
-                            currently match your profile.
+                            were found in your profile.
                           </p>
                         )
                     }
@@ -867,7 +851,7 @@ function JobMatchingPage() {
                 <div className="job-matching-requirement-section">
                   <div className="job-matching-requirement-section__heading">
                     <h2>
-                      Missing requirements
+                      Not listed in your profile
                     </h2>
 
                     <span className="gn-badge gn-badge--missing">
@@ -893,8 +877,8 @@ function JobMatchingPage() {
                         )
                         : (
                           <p className="job-matching-empty-list">
-                            No recognised requirements
-                            are missing from your profile.
+                            Every recognised requirement
+                            is already listed in your profile.
                           </p>
                         )
                     }
@@ -905,17 +889,48 @@ function JobMatchingPage() {
               <section className="job-matching-next-actions">
                 <div>
                   <h2>
-                    Use this match to decide what to do next
+                    Choose your next step
                   </h2>
 
                   <p>
-                    Update your evidence, review broader
-                    career gaps, or carry this job
-                    description into an application builder.
+                    Review skill gaps if requirements
+                    are missing, update incomplete
+                    profile evidence, or start tailoring
+                    your application.
                   </p>
                 </div>
 
                 <div className="job-matching-actions">
+                  {
+                    missingCount > 0
+                      ? (
+                        <button
+                          className="gn-button gn-button--primary"
+                          type="button"
+                          onClick={() =>
+                            navigate(
+                              '/skill-gap-analysis',
+                            )
+                          }
+                        >
+                          Review Skill Gaps
+                        </button>
+                      )
+                      : (
+                        <button
+                          className="gn-button gn-button--primary"
+                          type="button"
+                          onClick={() =>
+                            openApplicationBuilder(
+                              '/resume-builder',
+                            )
+                          }
+                        >
+                          Tailor Resume
+                        </button>
+                      )
+                  }
+
                   <button
                     className="gn-button gn-button--secondary job-matching-bordered-button"
                     type="button"
@@ -923,32 +938,26 @@ function JobMatchingPage() {
                       navigate('/profile')
                     }
                   >
-                    Update My Profile
+                    Update Profile
                   </button>
 
-                  <button
-                    className="gn-button gn-button--secondary job-matching-bordered-button"
-                    type="button"
-                    onClick={() =>
-                      navigate(
-                        '/skill-gap-analysis',
+                  {
+                    missingCount > 0
+                      ? (
+                        <button
+                          className="gn-button gn-button--secondary job-matching-bordered-button"
+                          type="button"
+                          onClick={() =>
+                            openApplicationBuilder(
+                              '/resume-builder',
+                            )
+                          }
+                        >
+                          Tailor Resume
+                        </button>
                       )
-                    }
-                  >
-                    View Skill Gaps
-                  </button>
-
-                  <button
-                    className="gn-button gn-button--primary"
-                    type="button"
-                    onClick={() =>
-                      openApplicationBuilder(
-                        '/resume-builder',
-                      )
-                    }
-                  >
-                    Use in Resume Builder
-                  </button>
+                      : null
+                  }
 
                   <button
                     className="gn-button gn-button--secondary job-matching-bordered-button"
@@ -959,7 +968,7 @@ function JobMatchingPage() {
                       )
                     }
                   >
-                    Use in Cover Letter Builder
+                    Draft Cover Letter
                   </button>
                 </div>
               </section>

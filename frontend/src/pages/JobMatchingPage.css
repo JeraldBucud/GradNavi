@@ -424,3 +424,147 @@
     width: 100%;
   }
 }
+
+/* WBS 7.5 USER-FIRST JOB MATCHING */
+
+.job-matching-page {
+  max-width: 1180px;
+}
+
+
+.job-matching-input-card {
+  margin-bottom: var(--space-4);
+}
+
+
+.job-matching-input-card--primary {
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+}
+
+
+.job-matching-profile-context {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-subtle);
+}
+
+
+.job-matching-profile-context > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+
+.job-matching-profile-context strong {
+  color: var(--color-heading);
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-semibold);
+}
+
+
+.job-matching-profile-context span {
+  color: var(--color-muted);
+  font-size: var(--font-size-body-small);
+  line-height: 1.45;
+}
+
+
+.job-matching-field textarea {
+  min-height: 240px;
+}
+
+
+.job-matching-tip {
+  max-width: 460px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+
+.job-matching-how {
+  margin-bottom: var(--space-6);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+}
+
+
+.job-matching-how summary {
+  padding: 14px var(--space-4);
+  color: var(--color-heading);
+  cursor: pointer;
+  font-size: var(--font-size-body-medium);
+  font-weight: var(--font-weight-semibold);
+}
+
+
+.job-matching-how summary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-medium);
+}
+
+
+.job-matching-how__content {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+
+.job-matching-how__content p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--font-size-body-small);
+  line-height: 1.5;
+}
+
+
+.job-matching-how__content strong {
+  color: var(--color-heading);
+}
+
+
+.job-matching-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: var(--space-5);
+}
+
+
+@media (max-width: 1040px) {
+
+  .job-matching-tip {
+    text-align: left;
+  }
+
+}
+
+
+@media (max-width: 720px) {
+
+  .job-matching-profile-context {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .job-matching-profile-context .gn-button {
+    width: 100%;
+  }
+
+  .job-matching-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .job-matching-field textarea {
+    min-height: 220px;
+  }
+
+}
