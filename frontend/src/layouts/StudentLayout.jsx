@@ -15,6 +15,7 @@ import {
   Menu,
   MessageSquare,
   Route,
+  Search,
   User,
   X,
 } from 'lucide-react'
