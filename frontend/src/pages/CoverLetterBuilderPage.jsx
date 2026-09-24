@@ -3,6 +3,10 @@ import {
   useState,
 } from 'react'
 
+import {
+  useLocation,
+} from 'react-router'
+
 
 import {
   COVER_LETTER_FOCUS_OPTIONS,
@@ -415,6 +419,15 @@ function getDocumentCareerOptionLabel(
 
 
 function CoverLetterBuilderPage() {
+  const location = useLocation()
+
+  const incomingJobDescription =
+    typeof location.state?.jobDescription
+    === 'string'
+      ? location.state.jobDescription
+        .trim()
+        .slice(0, 20_000)
+      : ''
 
   const [
     storedUser,
@@ -455,8 +468,21 @@ function CoverLetterBuilderPage() {
     jobContext,
     setJobContext,
   ] = useState(
-    storedDraft?.jobContext
-    || EMPTY_JOB_CONTEXT,
+    () => ({
+      ...EMPTY_JOB_CONTEXT,
+      ...(
+        storedDraft?.jobContext
+        || {}
+      ),
+      ...(
+        incomingJobDescription
+          ? {
+            jobDescription:
+              incomingJobDescription,
+          }
+          : {}
+      ),
+    }),
   )
 
   const [
@@ -490,12 +516,18 @@ function CoverLetterBuilderPage() {
     actionMessage,
     setActionMessage,
   ] = useState(
-    storedDraft?.draft
+    incomingJobDescription
       ? (
-        'Saved draft restored '
-        + 'from this browser.'
+        'Job description carried over '
+        + 'from Job Matching. Add the '
+        + 'job title and company to continue.'
       )
-      : '',
+      : storedDraft?.draft
+        ? (
+          'Saved draft restored '
+          + 'from this browser.'
+        )
+        : '',
   )
 
   const [
@@ -786,67 +818,101 @@ function CoverLetterBuilderPage() {
         }
 
         if (activeVersion) {
-          setActiveVersionId(
-            activeVersion.id,
-          )
+          if (incomingJobDescription) {
+            setActiveVersionId(null)
 
-          setTone(
-            activeVersion.tone
-            || 'professional',
-          )
+            setTone('professional')
 
-          setCoverLetterFocus(
-            activeVersion
-              .cover_letter_focus
-            || 'balanced',
-          )
-
-          setVersionName(
-            activeVersion
-              .version_name
-            || '',
-          )
-
-          setVersionNameEdited(
-            true,
-          )
-
-          setJobContext({
-            jobTitle:
-              activeVersion
-                .job_title
-              || '',
-            company:
-              activeVersion
-                .company
-              || '',
-            jobDescription:
-              activeVersion
-                .job_description
-              || '',
-          })
-
-          setDraft(
-            activeVersion.draft
-            || null,
-          )
-
-          setSavedAt(
-            activeVersion.saved_at
-            || null,
-          )
-
-          setGenerationState(
-            activeVersion.draft
-              ? 'success'
-              : 'empty',
-          )
-
-          if (activeVersion.draft) {
-            setActionMessage(
-              'Saved cover letter version '
-              + 'restored from this browser.',
+            setCoverLetterFocus(
+              'balanced',
             )
+
+            setVersionName('')
+            setVersionNameEdited(false)
+
+            setJobContext({
+              jobTitle: '',
+              company: '',
+              jobDescription:
+                incomingJobDescription,
+            })
+
+            setDraft(null)
+            setSavedAt(null)
+
+            setGenerationState(
+              'empty',
+            )
+
+            setActionMessage(
+              'Job description carried over '
+              + 'from Job Matching. Add the '
+              + 'job title and company to continue.',
+            )
+          }
+          else {
+            setActiveVersionId(
+              activeVersion.id,
+            )
+
+            setTone(
+              activeVersion.tone
+              || 'professional',
+            )
+
+            setCoverLetterFocus(
+              activeVersion
+                .cover_letter_focus
+              || 'balanced',
+            )
+
+            setVersionName(
+              activeVersion
+                .version_name
+              || '',
+            )
+
+            setVersionNameEdited(
+              true,
+            )
+
+            setJobContext({
+              jobTitle:
+                activeVersion
+                  .job_title
+                || '',
+              company:
+                activeVersion
+                  .company
+                || '',
+              jobDescription:
+                activeVersion
+                  .job_description
+                || '',
+            })
+
+            setDraft(
+              activeVersion.draft
+              || null,
+            )
+
+            setSavedAt(
+              activeVersion.saved_at
+              || null,
+            )
+
+            setGenerationState(
+              activeVersion.draft
+                ? 'success'
+                : 'empty',
+            )
+
+            if (activeVersion.draft) {
+              setActionMessage(
+                'Saved cover letter version '
+                + 'restored from this browser.',
+              )
+            }
           }
         }
       }
@@ -879,6 +945,7 @@ function CoverLetterBuilderPage() {
     }
   }, [
     currentUser,
+    incomingJobDescription,
     storedUser,
   ])
 
@@ -1802,72 +1869,81 @@ function CoverLetterBuilderPage() {
         </header>
 
 
-        <section
-          className="cover-letter-builder__intro-grid"
+        <details
+          className="cover-letter-builder__guide"
         >
-          <article>
-            <h2>
-              Start with the role
-            </h2>
+          <summary>
+            How Cover Letter Builder works
+          </summary>
 
-            <ul>
-              <li>
-                Add the job title
-                for your review
-              </li>
+          <div
+            className="cover-letter-builder__intro-grid"
+          >
+            <article>
+              <h2>
+                Start with the role
+              </h2>
 
-              <li>
-                Add the company
-                for your review
-              </li>
+              <ul>
+                <li>
+                  Add the job title
+                  for your review
+                </li>
 
-              <li>
-                Paste the job description to tailor your letter
-              </li>
-            </ul>
-          </article>
+                <li>
+                  Add the company
+                  for your review
+                </li>
 
-          <article>
-            <h2>
-              GradNavi matches evidence
-            </h2>
+                <li>
+                  Paste the job description
+                  to tailor your letter
+                </li>
+              </ul>
+            </article>
 
-            <ul>
-              <li>
-                Skills and projects
-                from your profile
-              </li>
+            <article>
+              <h2>
+                GradNavi matches evidence
+              </h2>
 
-              <li>
-                Career goal context
-              </li>
+              <ul>
+                <li>
+                  Skills and projects
+                  from your profile
+                </li>
 
-              <li>
-                Missing facts stay visible
-              </li>
-            </ul>
-          </article>
+                <li>
+                  Career goal context
+                </li>
 
-          <article>
-            <h2>
-              Review before use
-            </h2>
+                <li>
+                  Missing facts stay visible
+                </li>
+              </ul>
+            </article>
 
-            <ul>
-              <li>
-                Check company names
-              </li>
+            <article>
+              <h2>
+                Review before use
+              </h2>
 
-              <li>
-                Edit tone and details
-              </li>
+              <ul>
+                <li>
+                  Check company names
+                </li>
 
-              <li>
-                Confirm every claim is true
-              </li>
-            </ul>
-          </article>
-        </section>
+                <li>
+                  Edit tone and details
+                </li>
+
+                <li>
+                  Confirm every claim is true
+                </li>
+              </ul>
+            </article>
+          </div>
+        </details>
 
 
         <section

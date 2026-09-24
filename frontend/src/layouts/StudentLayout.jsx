@@ -15,6 +15,7 @@ import {
   Menu,
   MessageSquare,
   Route,
+  Search,
   User,
   X,
 } from 'lucide-react'
@@ -74,6 +75,12 @@ const studentNavigation = [
     label: 'Learning Resources',
     icon: BookOpen,
     path: '/learning-resources',
+    implemented: true,
+  },
+  {
+    label: 'Job Matching',
+    icon: Search,
+    path: '/job-matching',
     implemented: true,
   },
   {

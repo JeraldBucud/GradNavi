@@ -672,3 +672,45 @@
   box-shadow: none;
   transform: none;
 }
+/* USER-FIRST COVER LETTER DISCLOSURES */
+
+.cover-letter-builder__guide {
+  margin-top: 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+
+.cover-letter-builder__guide summary {
+  padding: 15px 18px;
+  color: #0f172a;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+
+.cover-letter-builder__guide summary:focus-visible {
+  outline: 3px solid rgba(29, 78, 216, 0.25);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+
+.cover-letter-builder__guide
+.cover-letter-builder__intro-grid {
+  margin-top: 0;
+  padding: 0 18px 18px;
+}
+
+
+@media (max-width: 760px) {
+
+  .cover-letter-builder__guide
+  .cover-letter-builder__intro-grid {
+    grid-template-columns: 1fr;
+  }
+
+}

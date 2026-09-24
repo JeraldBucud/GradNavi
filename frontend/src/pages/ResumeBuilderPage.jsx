@@ -4,6 +4,7 @@ import {
 } from 'react'
 
 import {
+  useLocation,
   useNavigate,
 } from 'react-router'
 
@@ -338,6 +339,15 @@ function getCareerOptionLabel(
 
 function ResumeBuilderPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const incomingJobDescription =
+    typeof location.state?.jobDescription
+    === 'string'
+      ? location.state.jobDescription
+        .trim()
+        .slice(0, 20_000)
+      : ''
 
   const [
     storedUser,
@@ -427,12 +437,17 @@ function ResumeBuilderPage() {
     actionMessage,
     setActionMessage,
   ] = useState(
-    storedDraft?.draft
+    incomingJobDescription
       ? (
-        'Saved draft restored '
-        + 'from this browser.'
+        'Job description carried over '
+        + 'from Job Matching.'
       )
-      : '',
+      : storedDraft?.draft
+        ? (
+          'Saved draft restored '
+          + 'from this browser.'
+        )
+        : '',
   )
 
   const [
@@ -472,7 +487,9 @@ function ResumeBuilderPage() {
   const [
     jobDescription,
     setJobDescription,
-  ] = useState('')
+  ] = useState(
+    incomingJobDescription,
+  )
 
   const [
     versionName,
@@ -781,60 +798,99 @@ function ResumeBuilderPage() {
         }
 
         if (activeVersion) {
-          setActiveVersionId(
-            activeVersion.id,
-          )
+          if (incomingJobDescription) {
+            setActiveVersionId(null)
 
-          setVersionName(
-            activeVersion
-              .version_name
-            || 'General Resume',
-          )
-
-          setResumeFocus(
-            activeVersion
-              .resume_focus
-            || 'balanced',
-          )
-
-          setJobDescription(
-            activeVersion
-              .job_description
-            || '',
-          )
-
-          setContact(
-            (current) => ({
-              ...current,
-              ...(
-                activeVersion
-                  .contact
-                || {}
-              ),
-            }),
-          )
-
-          setDraft(
-            activeVersion.draft
-            || null,
-          )
-
-          setSavedAt(
-            activeVersion.saved_at
-            || null,
-          )
-
-          setGenerationState(
-            activeVersion.draft
-              ? 'success'
-              : 'empty',
-          )
-
-          if (activeVersion.draft) {
-            setActionMessage(
-              'Saved resume version '
-              + 'restored from this browser.',
+            setVersionName(
+              'Job-tailored Resume',
             )
+
+            setResumeFocus('balanced')
+
+            setJobDescription(
+              incomingJobDescription,
+            )
+
+            setContact(
+              (current) => ({
+                ...current,
+                ...(
+                  activeVersion
+                    .contact
+                  || {}
+                ),
+              }),
+            )
+
+            setDraft(null)
+            setSavedAt(null)
+
+            setGenerationState(
+              'empty',
+            )
+
+            setActionMessage(
+              'Job description carried over '
+              + 'from Job Matching. Generate '
+              + 'a new draft before saving.',
+            )
+          }
+          else {
+            setActiveVersionId(
+              activeVersion.id,
+            )
+
+            setVersionName(
+              activeVersion
+                .version_name
+              || 'General Resume',
+            )
+
+            setResumeFocus(
+              activeVersion
+                .resume_focus
+              || 'balanced',
+            )
+
+            setJobDescription(
+              activeVersion
+                .job_description
+              || '',
+            )
+
+            setContact(
+              (current) => ({
+                ...current,
+                ...(
+                  activeVersion
+                    .contact
+                  || {}
+                ),
+              }),
+            )
+
+            setDraft(
+              activeVersion.draft
+              || null,
+            )
+
+            setSavedAt(
+              activeVersion.saved_at
+              || null,
+            )
+
+            setGenerationState(
+              activeVersion.draft
+                ? 'success'
+                : 'empty',
+            )
+
+            if (activeVersion.draft) {
+              setActionMessage(
+                'Saved resume version '
+                + 'restored from this browser.',
+              )
+            }
           }
         }
       }
@@ -867,6 +923,7 @@ function ResumeBuilderPage() {
     }
   }, [
     currentUser,
+    incomingJobDescription,
     storedUser,
   ])
 
@@ -1761,84 +1818,91 @@ function ResumeBuilderPage() {
         </header>
 
 
-        <section
-          className="resume-builder__intro-grid"
-          aria-label="Resume Builder overview"
+        <details
+          className="resume-builder__guide"
         >
-          <article>
-            <h2>
-              Start with your target
-            </h2>
+          <summary>
+            How Resume Builder works
+          </summary>
 
-            <ul>
-              <li>
-                Selected career:
-                {' '}
-                {
-                  selectedTargetCareer
-                    ?.career_name
-                  || targetCareer
-                }
-              </li>
+          <div
+            className="resume-builder__intro-grid"
+          >
+            <article>
+              <h2>
+                Start with your target
+              </h2>
 
-              <li>
-                Resume focus:
-                {' '}
-                {
-                  selectedResumeFocusLabel
-                }
-              </li>
+              <ul>
+                <li>
+                  Selected career:
+                  {' '}
+                  {
+                    selectedTargetCareer
+                      ?.career_name
+                    || targetCareer
+                  }
+                </li>
 
-              <li>
-                Profile evidence
-                supplies the facts
-              </li>
-            </ul>
-          </article>
+                <li>
+                  Resume focus:
+                  {' '}
+                  {
+                    selectedResumeFocusLabel
+                  }
+                </li>
 
-          <article>
-            <h2>
-              GradNavi creates the first draft
-            </h2>
+                <li>
+                  Profile evidence
+                  supplies the facts
+                </li>
+              </ul>
+            </article>
 
-            <ul>
-              <li>
-                Professional summary
-              </li>
+            <article>
+              <h2>
+                GradNavi creates the first draft
+              </h2>
 
-              <li>
-                Skills, education,
-                experience, projects
-              </li>
+              <ul>
+                <li>
+                  Professional summary
+                </li>
 
-              <li>
-                Missing information
-                and limitations
-              </li>
-            </ul>
-          </article>
+                <li>
+                  Skills, education,
+                  experience, projects
+                </li>
 
-          <article>
-            <h2>
-              You stay in control
-            </h2>
+                <li>
+                  Missing information
+                  and limitations
+                </li>
+              </ul>
+            </article>
 
-            <ul>
-              <li>
-                Review every section
-              </li>
+            <article>
+              <h2>
+                You stay in control
+              </h2>
 
-              <li>
-                Edit wording before use
-              </li>
+              <ul>
+                <li>
+                  Review every section
+                </li>
 
-              <li>
-                Save or continue to
-                a cover letter
-              </li>
-            </ul>
-          </article>
-        </section>
+                <li>
+                  Edit wording before use
+                </li>
+
+                <li>
+                  Save or continue to
+                  a cover letter
+                </li>
+              </ul>
+            </article>
+          </div>
+        </details>
 
 
         <section
@@ -2494,22 +2558,19 @@ function ResumeBuilderPage() {
         </section>
 
 
-        <section
-          className="resume-builder__section"
+        <details
+          className="resume-builder__review-details"
         >
-          <div
-            className="resume-builder__section-heading"
-          >
-            <div>
-              <h2>
-                Review Inputs
-              </h2>
+          <summary>
+            <span>
+              Review before generating
+            </span>
 
-              <p>
-                Check these details before generating your resume.
-              </p>
-            </div>
-          </div>
+            <small>
+              Ready items, unsupported claims,
+              and final checks
+            </small>
+          </summary>
 
           <div
             className="resume-builder__review-grid"
@@ -2589,7 +2650,7 @@ function ResumeBuilderPage() {
               </ul>
             </article>
           </div>
-        </section>
+        </details>
 
 
         {

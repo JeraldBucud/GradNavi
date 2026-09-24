@@ -9,6 +9,7 @@ import ExploreCareersPage from './pages/ExploreCareersPage'
 import CareerRoadmapPage from './pages/CareerRoadmapPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import HomePage from './pages/HomePage'
+import JobMatchingPage from './pages/JobMatchingPage'
 import LoginPage from './pages/LoginPage'
 import LearningResourcesPage from './pages/LearningResourcesPage'
 import NotFoundPage from './pages/NotFoundPage'
@@ -76,6 +77,11 @@ function App() {
           <Route
             path="/learning-resources"
             element={<LearningResourcesPage />}
+          />
+
+          <Route
+            path="/job-matching"
+            element={<JobMatchingPage />}
           />
 
           <Route
