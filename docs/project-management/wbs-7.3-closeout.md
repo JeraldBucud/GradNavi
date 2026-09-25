@@ -475,20 +475,16 @@ The evidence file does not contain:
 
 ## 14. Remaining Closeout Actions
 
-Technical implementation and focused testing are complete.
+Technical implementation, focused testing, live OpenAI verification, commit, push, and Pull Request creation are complete.
+
+Pull Request: PR #65
 
 The following actions stay open before formal WBS 7.3 closure:
 
-1. Review the final seven-file diff.
-2. Run `git diff --check`.
-3. Stage only the five implementation files and two closeout files.
-4. Commit WBS 7.3.
-5. Push `jerald/wbs-7.3-openai-service-integration`.
-6. Open a Pull Request into `feature/sprint-4`.
-7. Request team review.
-8. Address valid review findings.
-9. Merge after review.
-10. Mark WBS 7.3 formally complete after merge.
+1. Request team review of PR #65.
+2. Address valid review findings.
+3. Merge PR #65 into `feature/sprint-4` after review.
+4. Mark WBS 7.3 formally complete after merge.
 
 ## 15. Closeout Decision
 

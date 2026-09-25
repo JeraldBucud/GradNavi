@@ -3,7 +3,9 @@ OpenAI text-generation provider for GradNavi.
 
 Uses the Responses API.
 
-This provider is initially used for the short Career Match explanation.
+This shared provider supports approved GradNavi structured text-generation
+flows, including career guidance, application documents, and interview
+preparation.
 """
 
 import os
