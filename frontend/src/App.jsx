@@ -3,6 +3,8 @@ import { Route, Routes } from "react-router";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import StudentLayout from "./layouts/StudentLayout";
 import CareerRecommendationsPage from "./pages/CareerRecommendationsPage";
+import CoverLetterBuilderPage from "./pages/CoverLetterBuilderPage";
+import ResumeBuilderPage from "./pages/ResumeBuilderPage";
 import ExploreCareersPage from "./pages/ExploreCareersPage";
 import CareerRoadmapPage from "./pages/CareerRoadmapPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -51,14 +53,23 @@ function App() {
             path="/learning-resources"
             element={<LearningResourcesPage />}
           />
-        </Route>
-      </Route>
 
-      <Route path="*" element={<NotFoundPage />} />
-      <Route
+          <Route path="/resume-builder" element={<ResumeBuilderPage />} />
+
+          <Route
+            path="/cover-letter-builder"
+            element={<CoverLetterBuilderPage />}
+          />
+          <Route
         path="/interview-preparation"
         element={<InterviewPreparationPage />}
       />
+        </Route>
+        
+      </Route>
+
+      <Route path="*" element={<NotFoundPage />} />
+    
     </Routes>
   );
 }
