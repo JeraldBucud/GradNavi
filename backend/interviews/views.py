@@ -8,8 +8,8 @@ WBS 6.6 exposes:
 
 Both endpoints require authentication.
 
-External AI provider execution remains outside WBS 6.6.
-WBS 7.3 will provide the concrete provider implementation.
+WBS 7.3 connects these endpoints to the shared OpenAI text provider
+through the existing provider-independent AI service boundary.
 """
 
 from rest_framework import status
