@@ -1,0 +1,105 @@
+.interview-prep__section {
+  background: var(--surface-default, #ffffff);
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.interview-prep__section-heading {
+  margin: 0 0 4px;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.interview-prep__muted {
+  margin: 0 0 20px;
+  color: var(--text-muted, #64748b);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.interview-prep__setup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.interview-prep__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.interview-prep__field--wide {
+  grid-column: 1 / -1;
+}
+
+.interview-prep__field input,
+.interview-prep__field select,
+.interview-prep__field textarea {
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: 10px;
+  padding: 12px;
+  font: inherit;
+  color: inherit;
+  background: var(--surface-default, #ffffff);
+}
+
+.interview-prep__field textarea {
+  resize: vertical;
+}
+
+.interview-prep__button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.interview-prep__button {
+  border: 1px solid var(--border-default, #e2e8f0);
+  background: var(--surface-default, #ffffff);
+  border-radius: 10px;
+  padding: 10px 18px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.interview-prep__button--primary {
+  background: var(--primary-default, #2440d9);
+  border-color: var(--primary-default, #2440d9);
+  color: #ffffff;
+}
+
+.interview-prep__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.interview-prep__error {
+  margin-top: 16px;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.interview-prep__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.interview-prep__table th,
+.interview-prep__table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-default, #e2e8f0);
+  vertical-align: top;
+}
+
+@media (max-width: 720px) {
+  .interview-prep__setup-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
