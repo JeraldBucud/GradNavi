@@ -8,7 +8,7 @@ Coverage includes:
 - Strict request-field boundaries
 - Provider-independent service delegation
 - WBS 6.2 prompt trust boundaries
-- Provider fail-closed behaviour
+- WBS 7.3 OpenAI provider wiring
 - JWT authentication
 - Interview Question API
 - Interview Feedback API
@@ -613,14 +613,28 @@ class InterviewFeedbackServiceTests(SimpleTestCase):
 
 class InterviewProviderSeamTests(SimpleTestCase):
     """
-    Confirms WBS 6.6 fails closed before WBS 7.3.
+    Confirms WBS 7.3 resolves Interview AI through OpenAI.
     """
 
-    def test_provider_fails_closed_by_default(self):
-        with self.assertRaises(
-            AIProviderUnavailableError
-        ):
-            get_interview_provider()
+    @patch(
+        "interviews.providers.OpenAITextProvider"
+    )
+    def test_provider_uses_openai_text_provider(
+        self,
+        provider_class,
+    ):
+        provider = object()
+
+        provider_class.return_value = provider
+
+        result = get_interview_provider()
+
+        self.assertIs(
+            result,
+            provider,
+        )
+
+        provider_class.assert_called_once_with()
 
 
 class InterviewQuestionAPITests(APITestCase):
@@ -841,10 +855,16 @@ class InterviewQuestionAPITests(APITestCase):
             ai_provider=provider,
         )
 
-    def test_default_provider_returns_503(self):
-        response = self.authenticated_post(
-            self.valid_payload()
-        )
+    def test_provider_unavailable_returns_503(self):
+        with patch(
+            "interviews.views.get_interview_provider",
+            side_effect=AIProviderUnavailableError(
+                "OPENAI_API_KEY is not configured."
+            ),
+        ):
+            response = self.authenticated_post(
+                self.valid_payload()
+            )
 
         self.assertEqual(
             response.status_code,
@@ -1110,10 +1130,16 @@ class InterviewFeedbackAPITests(APITestCase):
             ai_provider=provider,
         )
 
-    def test_default_provider_returns_503(self):
-        response = self.authenticated_post(
-            self.valid_payload()
-        )
+    def test_provider_unavailable_returns_503(self):
+        with patch(
+            "interviews.views.get_interview_provider",
+            side_effect=AIProviderUnavailableError(
+                "OPENAI_API_KEY is not configured."
+            ),
+        ):
+            response = self.authenticated_post(
+                self.valid_payload()
+            )
 
         self.assertEqual(
             response.status_code,

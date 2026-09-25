@@ -379,9 +379,27 @@ class ResumeGenerationServiceTests(TestCase):
 
 
 class ResumeGenerationProviderSeamTests(TestCase):
-    def test_resume_generation_provider_fails_closed_by_default(self):
-        with self.assertRaises(AIProviderUnavailableError):
+    @patch(
+        "documents.providers.OpenAITextProvider"
+    )
+    def test_resume_generation_provider_uses_openai_text_provider(
+        self,
+        provider_class,
+    ):
+        provider = object()
+
+        provider_class.return_value = provider
+
+        result = (
             get_resume_generation_provider()
+        )
+
+        self.assertIs(
+            result,
+            provider,
+        )
+
+        provider_class.assert_called_once_with()
 
 
 class ResumeGenerationAPITests(APITestCase):
@@ -928,16 +946,31 @@ class ResumeGenerationAPITests(APITestCase):
             str(response.data),
         )
 
-    def test_provider_resolution_uses_no_real_provider_by_default(self):
-        with patch(
-            "documents.views.generate_resume_draft",
-        ) as service:
+    def test_provider_unavailable_returns_503(self):
+        with (
+            patch(
+                "documents.views.get_resume_generation_provider",
+                side_effect=AIProviderUnavailableError(
+                    "OPENAI_API_KEY is not configured."
+                ),
+            ),
+            patch(
+                "documents.views.generate_resume_draft",
+            ) as service,
+        ):
             response = self.authenticated_post()
 
         self.assertEqual(
             response.status_code,
             status.HTTP_503_SERVICE_UNAVAILABLE,
         )
+
+        assert_error_envelope(
+            self,
+            response,
+            "external_service_unavailable",
+        )
+
         service.assert_not_called()
 
 
@@ -1292,9 +1325,27 @@ class CoverLetterGenerationServiceTests(TestCase):
 
 
 class CoverLetterGenerationProviderSeamTests(TestCase):
-    def test_cover_letter_generation_provider_fails_closed_by_default(self):
-        with self.assertRaises(AIProviderUnavailableError):
+    @patch(
+        "documents.providers.OpenAITextProvider"
+    )
+    def test_cover_letter_generation_provider_uses_openai_text_provider(
+        self,
+        provider_class,
+    ):
+        provider = object()
+
+        provider_class.return_value = provider
+
+        result = (
             get_cover_letter_generation_provider()
+        )
+
+        self.assertIs(
+            result,
+            provider,
+        )
+
+        provider_class.assert_called_once_with()
 
 
 class CoverLetterGenerationAPITests(APITestCase):
@@ -2119,14 +2170,29 @@ class CoverLetterGenerationAPITests(APITestCase):
             },
         )
 
-    def test_provider_resolution_uses_no_real_provider_by_default(self):
-        with patch(
-            "documents.views.generate_cover_letter_draft",
-        ) as service:
+    def test_provider_unavailable_returns_503(self):
+        with (
+            patch(
+                "documents.views.get_cover_letter_generation_provider",
+                side_effect=AIProviderUnavailableError(
+                    "OPENAI_API_KEY is not configured."
+                ),
+            ),
+            patch(
+                "documents.views.generate_cover_letter_draft",
+            ) as service,
+        ):
             response = self.authenticated_post()
 
         self.assertEqual(
             response.status_code,
             status.HTTP_503_SERVICE_UNAVAILABLE,
         )
+
+        assert_error_envelope(
+            self,
+            response,
+            "external_service_unavailable",
+        )
+
         service.assert_not_called()
