@@ -18,6 +18,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 import SkillGapAnalysisPage from './pages/SkillGapAnalysisPage'
 import StudentProfilePage from './pages/StudentProfilePage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
+import AdminLayout from './layouts/AdminLayout'
 
 
 function App() {
@@ -95,10 +96,12 @@ function App() {
             element={<CoverLetterBuilderPage />}
           />
         </Route>
-                   <Route
-             path="/admin"
-             element={<AdminDashboardPage />}
-           />
+                              <Route element={<AdminLayout />}>
+             <Route
+               path="/admin"
+               element={<AdminDashboardPage />}
+             />
+           </Route>
       </Route>
 
       <Route
