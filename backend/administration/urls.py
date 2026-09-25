@@ -5,6 +5,8 @@ from .views import (
     AdminCareerListCreateView,
     AdminLearningResourceDetailView,
     AdminLearningResourceListCreateView,
+    AdminLearningResourceReportDetailView,
+    AdminLearningResourceReportListView,
     AdminSkillDetailView,
     AdminSkillListCreateView,
     AdminUserDetailView,
@@ -52,5 +54,15 @@ urlpatterns = [
         "learning-resources/<int:pk>/",
         AdminLearningResourceDetailView.as_view(),
         name="admin-learning-resource-detail",
+    ),
+    path(
+        "learning-resource-reports/",
+        AdminLearningResourceReportListView.as_view(),
+        name="admin-learning-resource-report-list",
+    ),
+    path(
+        "learning-resource-reports/<int:pk>/",
+        AdminLearningResourceReportDetailView.as_view(),
+        name="admin-learning-resource-report-detail",
     ),
 ]

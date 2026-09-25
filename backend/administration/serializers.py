@@ -1,7 +1,11 @@
 from rest_framework import serializers
 
 from accounts.models import User
-from careers.models import Career, LearningResource
+from careers.models import (
+    Career,
+    LearningResource,
+    LearningResourceReport,
+)
 from profiles.models import Skill
 
 
@@ -27,6 +31,8 @@ class AdminUserSerializer(serializers.ModelSerializer):
         read_only_fields = (
             "id",
             "email",
+            "role",
+            "is_active",
             "date_joined",
             "last_login",
         )
@@ -102,6 +108,39 @@ class AdminLearningResourceSerializer(
         )
         read_only_fields = (
             "id",
+            "created_at",
+            "updated_at",
+        )
+
+
+class AdminLearningResourceReportSerializer(
+    serializers.ModelSerializer
+):
+    """
+    Administrative review representation of a student-submitted
+    learning-resource report.
+
+    Only the review status may be changed by an administrator.
+    """
+
+    class Meta:
+        model = LearningResourceReport
+        fields = (
+            "id",
+            "student_profile",
+            "learning_resource",
+            "reason",
+            "comment",
+            "status",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = (
+            "id",
+            "student_profile",
+            "learning_resource",
+            "reason",
+            "comment",
             "created_at",
             "updated_at",
         )

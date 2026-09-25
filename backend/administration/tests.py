@@ -4,8 +4,12 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import AccessToken
 
-from careers.models import Career, LearningResource
-from profiles.models import Skill
+from careers.models import (
+    Career,
+    LearningResource,
+    LearningResourceReport,
+)
+from profiles.models import Skill, StudentProfile
 
 
 User = get_user_model()
@@ -60,6 +64,7 @@ class AdministrationPermissionTests(
         "/api/v1/administration/careers/",
         "/api/v1/administration/skills/",
         "/api/v1/administration/learning-resources/",
+        "/api/v1/administration/learning-resource-reports/",
     )
     def test_non_admins_cannot_access_admin_detail_endpoints(
         self,
@@ -274,6 +279,39 @@ class AdminUserManagementTests(
             "Updated",
         )
 
+    def test_admin_cannot_change_role_or_active_status(self):
+        self.authenticate_admin()
+
+        response = self.client.patch(
+            (
+                "/api/v1/administration/users/"
+                f"{self.admin.id}/"
+            ),
+            {
+                "role": User.Role.STUDENT,
+                "is_active": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.admin.refresh_from_db()
+
+        self.assertEqual(
+            self.admin.role,
+            User.Role.ADMIN,
+        )
+        self.assertTrue(self.admin.is_active)
+
+        self.assertEqual(
+            response.data["role"],
+            User.Role.ADMIN,
+        )
+        self.assertTrue(response.data["is_active"])
 
 class AdminCareerManagementTests(
     AdministrationAPITestCase
@@ -558,6 +596,354 @@ class AdminLearningResourceManagementTests(
         )
 
 
+class AdminLearningResourceReportReviewTests(
+    AdministrationAPITestCase
+):
+    def setUp(self):
+        super().setUp()
+
+        self.student_profile = (
+            StudentProfile.objects.create(
+                user=self.student,
+            )
+        )
+
+        self.learning_resource = (
+            LearningResource.objects.create(
+                title="Reported Resource",
+                resource_key="reported-resource",
+                provider="GradNavi Test",
+                url="https://example.com/reported-resource",
+                resource_type="tutorial",
+                description="Resource under report review.",
+                is_active=True,
+                access_type="free",
+                source_type="curated",
+                health_status="active",
+            )
+        )
+
+        self.report = (
+            LearningResourceReport.objects.create(
+                student_profile=self.student_profile,
+                learning_resource=self.learning_resource,
+                reason=(
+                    LearningResourceReport
+                    .Reason
+                    .BROKEN_LINK
+                ),
+                comment="The resource link is broken.",
+            )
+        )
+
+    def test_admin_can_list_learning_resource_reports(self):
+        self.authenticate_admin()
+
+        response = self.client.get(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            response.data[0]["id"],
+            self.report.id,
+        )
+        self.assertEqual(
+            response.data[0]["student_profile"],
+            self.student_profile.id,
+        )
+        self.assertNotIn(
+            self.student.email,
+            str(response.data),
+        )
+
+    def test_admin_can_retrieve_learning_resource_report(self):
+        self.authenticate_admin()
+
+        response = self.client.get(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+                f"{self.report.id}/"
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            response.data["id"],
+            self.report.id,
+        )
+        self.assertEqual(
+            response.data["reason"],
+            LearningResourceReport.Reason.BROKEN_LINK,
+        )
+
+    def test_admin_can_change_report_status_to_resolved(self):
+        self.authenticate_admin()
+
+        response = self.client.patch(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+                f"{self.report.id}/"
+            ),
+            {
+                "status": (
+                    LearningResourceReport
+                    .Status
+                    .RESOLVED
+                ),
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.report.refresh_from_db()
+
+        self.assertEqual(
+            self.report.status,
+            LearningResourceReport.Status.RESOLVED,
+        )
+
+    def test_admin_can_change_report_status_to_dismissed(self):
+        self.authenticate_admin()
+
+        response = self.client.patch(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+                f"{self.report.id}/"
+            ),
+            {
+                "status": (
+                    LearningResourceReport
+                    .Status
+                    .DISMISSED
+                ),
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.report.refresh_from_db()
+
+        self.assertEqual(
+            self.report.status,
+            LearningResourceReport.Status.DISMISSED,
+        )
+
+    def test_invalid_report_status_is_rejected(self):
+        self.authenticate_admin()
+
+        response = self.client.patch(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+                f"{self.report.id}/"
+            ),
+            {
+                "status": "archived",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        self.report.refresh_from_db()
+
+        self.assertEqual(
+            self.report.status,
+            LearningResourceReport.Status.OPEN,
+        )
+
+    def test_patch_cannot_alter_report_context_fields(self):
+        other_user = User.objects.create_user(
+            email="other-student@gradnavi.test",
+            password=self.password,
+        )
+        other_profile = StudentProfile.objects.create(
+            user=other_user,
+        )
+        other_resource = LearningResource.objects.create(
+            title="Other Reported Resource",
+            resource_key="other-reported-resource",
+            provider="GradNavi Test",
+            url="https://example.com/other-reported-resource",
+            resource_type="tutorial",
+            description="Other resource.",
+            is_active=True,
+            access_type="free",
+            source_type="curated",
+            health_status="active",
+        )
+
+        self.authenticate_admin()
+
+        response = self.client.patch(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+                f"{self.report.id}/"
+            ),
+            {
+                "student_profile": other_profile.id,
+                "learning_resource": other_resource.id,
+                "reason": LearningResourceReport.Reason.OUTDATED,
+                "comment": "Changed by admin.",
+                "status": (
+                    LearningResourceReport
+                    .Status
+                    .RESOLVED
+                ),
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.report.refresh_from_db()
+
+        self.assertEqual(
+            self.report.student_profile,
+            self.student_profile,
+        )
+        self.assertEqual(
+            self.report.learning_resource,
+            self.learning_resource,
+        )
+        self.assertEqual(
+            self.report.reason,
+            LearningResourceReport.Reason.BROKEN_LINK,
+        )
+        self.assertEqual(
+            self.report.comment,
+            "The resource link is broken.",
+        )
+        self.assertEqual(
+            self.report.status,
+            LearningResourceReport.Status.RESOLVED,
+        )
+
+    def test_student_cannot_access_report_list(self):
+        self.authenticate_student()
+
+        response = self.client.get(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+    def test_student_cannot_access_report_detail_or_update(self):
+        self.authenticate_student()
+
+        detail_url = (
+            "/api/v1/administration/"
+            "learning-resource-reports/"
+            f"{self.report.id}/"
+        )
+
+        retrieve_response = self.client.get(detail_url)
+
+        self.assertEqual(
+            retrieve_response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        update_response = self.client.patch(
+            detail_url,
+            {
+                "status": (
+                    LearningResourceReport
+                    .Status
+                    .RESOLVED
+                ),
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            update_response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+    def test_unauthenticated_user_cannot_access_report_list(
+        self,
+    ):
+        response = self.client.get(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+    def test_unauthenticated_user_cannot_access_report_detail_or_update(
+        self,
+    ):
+        detail_url = (
+            "/api/v1/administration/"
+            "learning-resource-reports/"
+            f"{self.report.id}/"
+        )
+
+        retrieve_response = self.client.get(detail_url)
+
+        self.assertEqual(
+            retrieve_response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+        update_response = self.client.patch(
+            detail_url,
+            {
+                "status": (
+                    LearningResourceReport
+                    .Status
+                    .RESOLVED
+                ),
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            update_response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+
 class AdministrationURLRoutingTests(APITestCase):
     def test_administration_routes_are_registered(self):
         expected_routes = {
@@ -569,6 +955,8 @@ class AdministrationURLRoutingTests(APITestCase):
                 "admin-skill-list",
             "/api/v1/administration/learning-resources/":
                 "admin-learning-resource-list",
+            "/api/v1/administration/learning-resource-reports/":
+                "admin-learning-resource-report-list",
         }
 
         for path, expected_name in expected_routes.items():

@@ -1,12 +1,17 @@
 from rest_framework import generics
 
 from accounts.models import User
-from careers.models import Career, LearningResource
+from careers.models import (
+    Career,
+    LearningResource,
+    LearningResourceReport,
+)
 from profiles.models import Skill
 
 from .permissions import IsAdminUser
 from .serializers import (
     AdminCareerSerializer,
+    AdminLearningResourceReportSerializer,
     AdminLearningResourceSerializer,
     AdminSkillSerializer,
     AdminUserSerializer,
@@ -104,4 +109,39 @@ class AdminLearningResourceDetailView(
 
     queryset = LearningResource.objects.all()
     serializer_class = AdminLearningResourceSerializer
+    permission_classes = (IsAdminUser,)
+
+
+class AdminLearningResourceReportListView(
+    generics.ListAPIView
+):
+    """
+    List student-submitted learning resource reports for review.
+    """
+
+    queryset = (
+        LearningResourceReport
+        .objects
+        .all()
+        .order_by("-created_at", "-id")
+    )
+    serializer_class = AdminLearningResourceReportSerializer
+    permission_classes = (IsAdminUser,)
+
+
+class AdminLearningResourceReportDetailView(
+    generics.RetrieveUpdateAPIView
+):
+    """
+    Retrieve or update the review status of one report.
+    """
+
+    http_method_names = (
+        "get",
+        "patch",
+        "head",
+        "options",
+    )
+    queryset = LearningResourceReport.objects.all()
+    serializer_class = AdminLearningResourceReportSerializer
     permission_classes = (IsAdminUser,)
