@@ -1,7 +1,6 @@
 # GradNavi Sprint 1 Test Plan
 
-Status: Active Sprint 1 test plan. Frontend authentication integration, Student Profile backend and frontend integration, ownership verification, Student Profile validation, security verification, PostgreSQL connectivity, direct profile relationship verification, migration verification, and Student Profile regression testing have been completed. The remaining Not Run cases are the detailed authentication and Student Profile API cases assigned to MD in the Sprint 1 Test Case Tracker.
-
+Status: Sprint 1 testing complete. Frontend authentication integration, Student Profile backend and frontend integration, ownership verification, Student Profile validation, security verification, PostgreSQL connectivity, direct profile relationship verification, migration verification, Student Profile regression testing, and the detailed Authentication and Student Profile API test cases have been completed. All 61 Sprint 1 test cases passed, with 0 Fail, 0 Blocked, and 0 Not Run.
 ## 1. Purpose
 
 This document defines the testing plan for GradNavi Sprint 1.
@@ -198,16 +197,16 @@ Real student passwords or sensitive personal information should not be used as t
 
 ### 7.1 Current Sprint 1 Test Execution Status
 
-Sprint 1 testing is in progress.
+Sprint 1 testing has been completed.
 
 The current Sprint 1 Test Case Tracker contains 61 test cases.
 
 At the current testing checkpoint:
 
-- Pass: 42
+- Pass: 61
 - Fail: 0
 - Blocked: 0
-- Not Run: 19
+- Not Run: 0
 
 Completed testing areas include:
 
@@ -245,7 +244,7 @@ Completed testing areas include:
 - Student Profile regression testing.
 - Core end-to-end Sprint 1 happy-path regression.
 
-The remaining 19 Not Run cases are assigned to MD:
+The final 19 Authentication and Student Profile API cases assigned to MD have been completed and passed:
 
 - AUTH-REG-01
 - AUTH-REG-02
@@ -371,7 +370,7 @@ The Student Profile backend has been implemented and integrated with the React S
 
 Completed Student Profile testing now includes authenticated retrieval, valid updates, frontend-to-backend communication, persistence, ownership isolation, Skill and Interest validation, Education date validation, current Experience handling, Project URL validation, Career Goal persistence, Personality Response persistence, frontend validation feedback, direct PostgreSQL relationship verification, and Student Profile regression testing.
 
-The remaining Student Profile API cases are PROF-GET-02, PROF-PAT-02, PROF-PAT-03, and PROF-PAT-04. These remain assigned to MD in the Sprint 1 Test Case Tracker.
+The remaining Student Profile API cases PROF-GET-02, PROF-PAT-02, PROF-PAT-03, and PROF-PAT-04 have now been completed and passed by MD.
 
 ## 10. Student Profile Retrieval Tests
 
@@ -415,7 +414,7 @@ Expected result:
 
 Status:
 
-Not Run. The endpoint is implemented, but the unauthenticated profile request test has not yet been executed as a dedicated test case.
+Pass. Unauthenticated profile access was rejected with 401 Unauthorized and no profile data was returned. Evidence: EV-066.
 
 ### PROF-GET-03: Profile Response Contains Approved Collections
 
@@ -475,7 +474,7 @@ Expected result:
 
 Status:
 
-Not Run.
+Pass. Invalid profile data was rejected with 400 Bad Request, and follow-up retrieval confirmed that the invalid data was not persisted. Evidence: EV-067 and EV-068.
 
 ### PROF-PAT-03: Empty Partial Request
 
@@ -490,7 +489,7 @@ Expected result:
 
 Status:
 
-Not Run.
+Pass. An empty PATCH request returned 200 OK and left all profile collections unchanged. Evidence: EV-069.
 
 ### PROF-PAT-04: Attempt Ownership-Field Change
 
@@ -508,7 +507,7 @@ Expected result:
 
 Status:
 
-Not Run.
+Pass. A client-supplied user_id ownership field was rejected with 400 Bad Request as an unsupported field. Evidence: EV-070.
 
 ### PROF-PAT-05: Profile Update Persists
 
@@ -1038,7 +1037,7 @@ Sprint 1 test evidence is stored under:
 
 The current Evidence Index contains:
 
-    EV-001 through EV-047
+    EV-001 through EV-070
 
 WBS 4.8 Student Profile integration evidence includes:
 
@@ -1104,7 +1103,7 @@ Sprint 1 testing should be considered complete when:
 
 WBS 4.9 testing has completed the remaining Jerald-owned, Joyee-owned, and Shared Student Profile testing included in the current Sprint 1 tracker.
 
-The remaining 19 Not Run test cases are assigned to MD:
+The final 19 test cases assigned to MD have now been completed and passed:
 
 1. AUTH-REG-01: Valid student registration.
 2. AUTH-REG-02: Missing required registration field.
@@ -1126,7 +1125,7 @@ The remaining 19 Not Run test cases are assigned to MD:
 18. PROF-PAT-03: Empty partial request.
 19. PROF-PAT-04: Attempt ownership-field change.
 
-These cases remain Not Run rather than Blocked because the required authentication and Student Profile implementations are available for execution.
+All 19 cases passed. No failed or blocked cases remain from MD's assigned Sprint 1 testing. Supporting evidence is recorded as EV-048 through EV-070 in the Sprint 1 Test Case Tracker and evidence directory.
 
 ## 31. Test Plan Maintenance
 
@@ -1149,23 +1148,23 @@ The authentication backend, Student Profile backend, frontend authentication int
 
 The current Sprint 1 Test Case Tracker records 61 test cases:
 
-- Pass: 42
+- Pass: 61
 - Fail: 0
 - Blocked: 0
-- Not Run: 19
+- Not Run: 0
 
 Test ownership progress is:
 
 - Jerald: 23 assigned, 23 passed.
 - Joyee: 10 assigned, 10 passed.
 - Shared: 6 assigned, 6 passed.
-- MD: 22 assigned, 3 passed, 19 Not Run.
+- MD: 22 assigned, 22 passed.
 
 WBS 4.8 verified the core authenticated Student Profile integration flow.
 
 WBS 4.9 added dedicated evidence for ownership isolation, negative Skill and Interest validation, shared-reference protection, Education validation, current Experience handling, Project URL validation, Career Goal persistence, Personality Response persistence, frontend validation, direct PostgreSQL relationship verification, and Student Profile regression testing.
 
-The remaining Sprint 1 execution work consists of the 19 MD-owned cases listed in Section 30.
+All 19 MD-owned Sprint 1 cases listed in Section 30 have now been completed and passed. Sprint 1 testing is complete with 61 of 61 test cases passed, with no failed, blocked, or Not Run cases remaining.
 
 Test results, evidence mappings, ownership, and execution status are maintained in:
 
