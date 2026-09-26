@@ -23,8 +23,8 @@ Execution status should reflect actual team progress. Planned dates alone do not
 
 | ID | Backlog Item | User Outcome | Priority | Planned Sprint | Implementation Leads | Main WBS Tasks | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| FR-01 | Account registration and authentication | Students create accounts, sign in, sign out, and recover access | Must | Sprint 1 | Jerald, Joyee | 4.4, 4.5, 4.8, 4.9 | Testing |
-| FR-02 | Student profile | Students create and update skills, interests, education, experience, projects, goals, and personality responses | Must | Sprint 1 | MD, Joyee, Jerald | 4.6, 4.7, 4.8, 4.9 | Review |
+| FR-01 | Account registration and authentication | Students create accounts, sign in, sign out, and recover access | Must | Sprint 1 | Jerald, Joyee | 4.4, 4.5, 4.8, 4.9 | Done |
+| FR-02 | Student profile | Students create and update skills, interests, education, experience, projects, goals, and personality responses | Must | Sprint 1 | MD, Joyee, Jerald | 4.6, 4.7, 4.8, 4.9 | Done |
 | FR-03 | Career recommendations | Students receive ranked career recommendations from profile data | Must | Sprint 2 | MD, Jerald, Joyee | 5.2, 5.3, 5.4, 5.6, 5.9 | Review |
 | FR-04 | Recommendation explanation | Students see recommendation scores and understandable reasons for each result | Must | Sprint 2 | Jerald, MD, Joyee | 5.3, 5.4, 5.6, 5.9 | Review |
 | FR-05 | Skill-gap analysis | Students compare current skills with selected career requirements | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Review |
@@ -44,18 +44,33 @@ Execution status should reflect actual team progress. Planned dates alone do not
 
 ## Sprint 1 Backlog
 
-Sprint 1 focuses on the foundation, authentication, Student Profile, and initial integration.
+Sprint 1 focused on the foundation, authentication, Student Profile, and initial integration.
 
 Related requirements:
 
 - FR-01 Account registration and authentication.
 - FR-02 Student profile.
 
-Current planning status:
+Final Sprint 1 closeout status:
 
-- Authentication frontend and integration testing has progressed through Sprint 1.
-- Student Profile backend support is implemented, and the redesigned Student Profile interface is present on the current WBS 5.6 working branch.
-- Student Profile implementation is under final review through the current WBS 5.6 integration work; formal completion still depends on review and merge.
+- WBS 4.2 Django and PostgreSQL project setup is complete.
+- WBS 4.3 React frontend setup and routing is complete.
+- WBS 4.4 Authentication backend and JWT is complete.
+- WBS 4.5 Login and Registration Interface is complete.
+- WBS 4.6 Student Profile models and API is complete.
+- WBS 4.7 Student Profile interface is complete.
+- WBS 4.8 Authentication and Profile Integration is complete.
+- WBS 4.9 Sprint 1 unit and API testing is complete.
+- WBS 4.10 Sprint 1 review and retrospective is complete.
+- WBS 4.11 Sprint 1 complete is reached.
+- The Sprint 1 tracker records 61 Pass, 0 Fail, 0 Blocked, and 0 Not Run.
+- The Sprint 1 Evidence Index records EV-001 through EV-070.
+- FR-01 is Done for Sprint 1 scope.
+- FR-02 is Done for Sprint 1 scope.
+
+Formal closeout is recorded in:
+
+`docs/project-management/sprint-1-closeout.md`
 
 ## Sprint 2 Backlog
 
