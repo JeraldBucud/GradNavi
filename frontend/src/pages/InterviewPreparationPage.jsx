@@ -106,9 +106,14 @@ function InterviewPreparationPage() {
                 )
               }}
             >
-              {[3, 5, 8, 10].map((count) => (
+                            {Array.from(
+                { length: 10 },
+                (_, index) => index + 1,
+              ).map((count) => (
                 <option key={count} value={count}>
-                  {count} questions
+                  {count === 1
+                    ? '1 question'
+                    : `${count} questions`}
                 </option>
               ))}
             </select>
