@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    AdminAnalyticsView,
     AdminCareerDetailView,
     AdminCareerListCreateView,
     AdminLearningResourceDetailView,
@@ -15,6 +16,11 @@ from .views import (
 
 
 urlpatterns = [
+    path(
+        "analytics/",
+        AdminAnalyticsView.as_view(),
+        name="admin-analytics",
+    ),
     path(
         "users/",
         AdminUserListView.as_view(),

@@ -1,3 +1,6 @@
+from datetime import date
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.urls import resolve
 from rest_framework import status
@@ -6,10 +9,20 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from careers.models import (
     Career,
+    CareerSkill,
+    CareerSkillEvidence,
     LearningResource,
     LearningResourceReport,
+    ReferenceDataset,
+    ReferenceSource,
+    ReviewStatus,
 )
-from profiles.models import Skill, StudentProfile
+from profiles.models import (
+    CareerGoal,
+    Skill,
+    StudentProfile,
+    StudentSkill,
+)
 
 
 User = get_user_model()
@@ -60,6 +73,7 @@ class AdministrationPermissionTests(
     AdministrationAPITestCase
 ):
     admin_urls = (
+        "/api/v1/administration/analytics/",
         "/api/v1/administration/users/",
         "/api/v1/administration/careers/",
         "/api/v1/administration/skills/",
@@ -944,9 +958,455 @@ class AdminLearningResourceReportReviewTests(
         )
 
 
+class AdminAnalyticsTests(
+    AdministrationAPITestCase
+):
+    analytics_url = (
+        "/api/v1/administration/analytics/"
+    )
+
+    def create_student_profile(self, email):
+        user = User.objects.create_user(
+            email=email,
+            password=self.password,
+            first_name="Analytics",
+            last_name="Student",
+        )
+
+        return StudentProfile.objects.create(
+            user=user,
+        )
+
+    def create_career_goal(self, profile, career):
+        return CareerGoal.objects.create(
+            student_profile=profile,
+            career=career,
+            target_role=career.name,
+        )
+
+    def create_reference_dataset(self):
+        source = ReferenceSource.objects.create(
+            name="O*NET Database",
+        )
+
+        return ReferenceDataset.objects.create(
+            source=source,
+            version="31.0",
+            retrieved_at=date(2026, 1, 1),
+            status=ReferenceDataset.Status.ACTIVE,
+        )
+
+    def create_requirement(
+        self,
+        *,
+        career,
+        skill,
+        dataset,
+        required_level=Decimal("75.00"),
+        importance=Decimal("80.00"),
+    ):
+        career_skill = CareerSkill.objects.create(
+            career=career,
+            skill=skill,
+            importance_score=importance,
+            required_level_score=required_level,
+            review_status=ReviewStatus.APPROVED,
+        )
+
+        return CareerSkillEvidence.objects.create(
+            career_skill=career_skill,
+            dataset=dataset,
+            external_occupation_id=(
+                f"career-{career.id}"
+            ),
+            external_skill_id=(
+                f"skill-{skill.id}"
+            ),
+            source_domain="onet_essential_skills",
+            source_relation="essential",
+            normalized_importance=importance,
+            normalized_level=required_level,
+        )
+
+    def create_skill_gap_fixture(self):
+        dataset = self.create_reference_dataset()
+
+        career = Career.objects.create(
+            name="Analytics Software Engineer",
+            description="Analytics test career.",
+            category="Technology",
+            active=True,
+        )
+
+        missing_skill = Skill.objects.create(
+            name="Analytics Missing Skill",
+            concept_type=Skill.ConceptType.SKILL,
+        )
+        below_skill = Skill.objects.create(
+            name="Analytics Below Skill",
+            concept_type=Skill.ConceptType.SKILL,
+        )
+        meets_skill = Skill.objects.create(
+            name="Analytics Meets Skill",
+            concept_type=Skill.ConceptType.SKILL,
+        )
+
+        self.create_requirement(
+            career=career,
+            skill=missing_skill,
+            dataset=dataset,
+        )
+        self.create_requirement(
+            career=career,
+            skill=below_skill,
+            dataset=dataset,
+        )
+        self.create_requirement(
+            career=career,
+            skill=meets_skill,
+            dataset=dataset,
+        )
+
+        first_profile = self.create_student_profile(
+            "analytics-gap-a@gradnavi.test"
+        )
+        second_profile = self.create_student_profile(
+            "analytics-gap-b@gradnavi.test"
+        )
+
+        self.create_career_goal(
+            first_profile,
+            career,
+        )
+        self.create_career_goal(
+            second_profile,
+            career,
+        )
+
+        for profile in (
+            first_profile,
+            second_profile,
+        ):
+            StudentSkill.objects.create(
+                student_profile=profile,
+                skill=below_skill,
+                proficiency_level=(
+                    StudentSkill
+                    .ProficiencyLevel
+                    .DEVELOPING
+                ),
+            )
+            StudentSkill.objects.create(
+                student_profile=profile,
+                skill=meets_skill,
+                proficiency_level=(
+                    StudentSkill
+                    .ProficiencyLevel
+                    .ADVANCED
+                ),
+            )
+
+        return (
+            missing_skill,
+            below_skill,
+            meets_skill,
+        )
+
+    def get_analytics(self):
+        self.authenticate_admin()
+
+        return self.client.get(
+            self.analytics_url
+        )
+
+    def test_admin_can_get_analytics_endpoint(self):
+        response = self.get_analytics()
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            set(response.data),
+            {
+                "popular_careers",
+                "common_skill_gaps",
+            },
+        )
+
+    def test_unauthenticated_request_receives_401(self):
+        response = self.client.get(
+            self.analytics_url
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+    def test_student_request_receives_403(self):
+        self.authenticate_student()
+
+        response = self.client.get(
+            self.analytics_url
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+    def test_analytics_endpoint_is_read_only(self):
+        self.authenticate_admin()
+
+        for method in (
+            self.client.post,
+            self.client.put,
+            self.client.patch,
+            self.client.delete,
+        ):
+            with self.subTest(method=method.__name__):
+                response = method(
+                    self.analytics_url,
+                    {},
+                    format="json",
+                )
+
+                self.assertEqual(
+                    response.status_code,
+                    status.HTTP_405_METHOD_NOT_ALLOWED,
+                )
+
+    def test_empty_state_returns_empty_aggregate_lists(self):
+        response = self.get_analytics()
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            response.data,
+            {
+                "popular_careers": [],
+                "common_skill_gaps": [],
+            },
+        )
+
+    def test_popular_careers_aggregate_career_goal_counts(
+        self,
+    ):
+        career = Career.objects.create(
+            name="Analytics Data Analyst",
+            active=True,
+        )
+        first_profile = self.create_student_profile(
+            "analytics-popular-a@gradnavi.test"
+        )
+        second_profile = self.create_student_profile(
+            "analytics-popular-b@gradnavi.test"
+        )
+
+        self.create_career_goal(
+            first_profile,
+            career,
+        )
+        self.create_career_goal(
+            second_profile,
+            career,
+        )
+
+        response = self.get_analytics()
+
+        self.assertEqual(
+            response.data["popular_careers"],
+            [
+                {
+                    "career_id": career.id,
+                    "career_name": career.name,
+                    "selection_count": 2,
+                }
+            ],
+        )
+
+    def test_different_careers_produce_separate_aggregates(
+        self,
+    ):
+        first_career = Career.objects.create(
+            name="Analytics Career A",
+            active=True,
+        )
+        second_career = Career.objects.create(
+            name="Analytics Career B",
+            active=True,
+        )
+        first_profile = self.create_student_profile(
+            "analytics-career-a@gradnavi.test"
+        )
+        second_profile = self.create_student_profile(
+            "analytics-career-b@gradnavi.test"
+        )
+
+        self.create_career_goal(
+            first_profile,
+            first_career,
+        )
+        self.create_career_goal(
+            second_profile,
+            second_career,
+        )
+
+        response = self.get_analytics()
+
+        self.assertEqual(
+            response.data["popular_careers"],
+            [
+                {
+                    "career_id": first_career.id,
+                    "career_name": first_career.name,
+                    "selection_count": 1,
+                },
+                {
+                    "career_id": second_career.id,
+                    "career_name": second_career.name,
+                    "selection_count": 1,
+                },
+            ],
+        )
+
+    def test_popular_career_ordering_is_deterministic(
+        self,
+    ):
+        alpha = Career.objects.create(
+            name="Analytics Alpha Career",
+            active=True,
+        )
+        beta = Career.objects.create(
+            name="Analytics Beta Career",
+            active=True,
+        )
+        gamma = Career.objects.create(
+            name="Analytics Gamma Career",
+            active=True,
+        )
+
+        for index, career in enumerate(
+            (gamma, gamma, alpha, beta),
+        ):
+            profile = self.create_student_profile(
+                (
+                    "analytics-order-"
+                    f"{index}@gradnavi.test"
+                )
+            )
+            self.create_career_goal(
+                profile,
+                career,
+            )
+
+        response = self.get_analytics()
+
+        self.assertEqual(
+            [
+                item["career_name"]
+                for item
+                in response.data["popular_careers"]
+            ],
+            [
+                gamma.name,
+                alpha.name,
+                beta.name,
+            ],
+        )
+
+    def test_common_skill_gaps_count_missing_and_below(
+        self,
+    ):
+        (
+            missing_skill,
+            below_skill,
+            meets_skill,
+        ) = self.create_skill_gap_fixture()
+
+        response = self.get_analytics()
+
+        gaps = {
+            row["skill_id"]: row
+            for row
+            in response.data["common_skill_gaps"]
+        }
+
+        self.assertEqual(
+            gaps[missing_skill.id][
+                "affected_student_count"
+            ],
+            2,
+        )
+        self.assertEqual(
+            gaps[below_skill.id][
+                "affected_student_count"
+            ],
+            2,
+        )
+        self.assertNotIn(
+            meets_skill.id,
+            gaps,
+        )
+
+    def test_common_skill_gap_ordering_is_deterministic(
+        self,
+    ):
+        self.create_skill_gap_fixture()
+
+        response = self.get_analytics()
+
+        self.assertEqual(
+            [
+                item["skill_name"]
+                for item
+                in response.data["common_skill_gaps"]
+            ],
+            [
+                "Analytics Below Skill",
+                "Analytics Missing Skill",
+            ],
+        )
+
+    def test_analytics_response_exposes_no_student_data(
+        self,
+    ):
+        self.create_skill_gap_fixture()
+
+        response = self.get_analytics()
+
+        response_text = str(response.data)
+
+        self.assertNotIn(
+            "student_profile",
+            response_text,
+        )
+        self.assertNotIn(
+            "user",
+            response_text,
+        )
+        self.assertNotIn(
+            "email",
+            response_text,
+        )
+        self.assertNotIn(
+            "analytics-gap-a@gradnavi.test",
+            response_text,
+        )
+        self.assertNotIn(
+            "analytics-gap-b@gradnavi.test",
+            response_text,
+        )
+
+
 class AdministrationURLRoutingTests(APITestCase):
     def test_administration_routes_are_registered(self):
         expected_routes = {
+            "/api/v1/administration/analytics/":
+                "admin-analytics",
             "/api/v1/administration/users/":
                 "admin-user-list",
             "/api/v1/administration/careers/":

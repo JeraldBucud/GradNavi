@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework.response import Response
 
 from accounts.models import User
 from careers.models import (
@@ -8,6 +9,7 @@ from careers.models import (
 )
 from profiles.models import Skill
 
+from .analytics import get_admin_analytics
 from .permissions import IsAdminUser
 from .serializers import (
     AdminCareerSerializer,
@@ -145,3 +147,16 @@ class AdminLearningResourceReportDetailView(
     queryset = LearningResourceReport.objects.all()
     serializer_class = AdminLearningResourceReportSerializer
     permission_classes = (IsAdminUser,)
+
+
+class AdminAnalyticsView(generics.GenericAPIView):
+    """
+    Return aggregated FR-15 administration analytics.
+    """
+
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request):
+        return Response(
+            get_admin_analytics()
+        )
