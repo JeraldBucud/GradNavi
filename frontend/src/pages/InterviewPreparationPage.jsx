@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { generateInterviewQuestions } from '../services/interviewService'
+import InterviewPractice from '../components/interview/InterviewPractice'
 
 import './CareerGuidancePage.css'
 import './InterviewPreparationPage.css'
@@ -159,37 +160,18 @@ function InterviewPreparationPage() {
           </p>
         )}
       </section>
-
-      {questionSet && (
-        <section className="interview-prep__section">
-          <h2 className="interview-prep__section-heading">
-            Generated Questions
-          </h2>
-          <p className="interview-prep__muted">
-            These are AI-generated practice questions, not
-            questions from a real employer.
-          </p>
-
-          <table className="interview-prep__table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Question</th>
-                <th>Focus area</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questionSet.questions.map((item, index) => (
-                <tr key={item.question}>
-                  <td>{index + 1}</td>
-                  <td>{item.question}</td>
-                  <td>{item.focus_area}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      )}
+        {questionSet && (
+           <section className="interview-prep__section">
+             <InterviewPractice
+               key={questionSet.questions
+                 .map((item) => item.question)
+                 .join('|')}
+               targetRole={targetRole.trim()}
+               questions={questionSet.questions}
+               onEndPractice={() => setQuestionSet(null)}
+             />
+           </section>
+         )}
     </div>
   )
 }
