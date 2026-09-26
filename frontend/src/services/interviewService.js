@@ -15,11 +15,13 @@ async function generateInterviewQuestions({
     body.job_description = jobDescription
   }
 
-  return apiRequest('/interviews/questions/', {
+  const response = await apiRequest('/interviews/questions/', {
     method: 'POST',
     body,
     requiresAuth: true,
   })
+
+  return response.data
 }
 
 
@@ -28,7 +30,7 @@ async function generateInterviewFeedback({
   question,
   studentAnswer,
 }) {
-  return apiRequest('/interviews/feedback/', {
+  const response = await apiRequest('/interviews/feedback/', {
     method: 'POST',
     body: {
       target_role: targetRole,
@@ -37,6 +39,8 @@ async function generateInterviewFeedback({
     },
     requiresAuth: true,
   })
+
+  return response.data
 }
 
 
