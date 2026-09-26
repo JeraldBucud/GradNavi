@@ -1,0 +1,74 @@
+from django.urls import path
+
+from .views import (
+    AdminAnalyticsView,
+    AdminCareerDetailView,
+    AdminCareerListCreateView,
+    AdminLearningResourceDetailView,
+    AdminLearningResourceListCreateView,
+    AdminLearningResourceReportDetailView,
+    AdminLearningResourceReportListView,
+    AdminSkillDetailView,
+    AdminSkillListCreateView,
+    AdminUserDetailView,
+    AdminUserListView,
+)
+
+
+urlpatterns = [
+    path(
+        "analytics/",
+        AdminAnalyticsView.as_view(),
+        name="admin-analytics",
+    ),
+    path(
+        "users/",
+        AdminUserListView.as_view(),
+        name="admin-user-list",
+    ),
+    path(
+        "users/<int:pk>/",
+        AdminUserDetailView.as_view(),
+        name="admin-user-detail",
+    ),
+    path(
+        "careers/",
+        AdminCareerListCreateView.as_view(),
+        name="admin-career-list",
+    ),
+    path(
+        "careers/<int:pk>/",
+        AdminCareerDetailView.as_view(),
+        name="admin-career-detail",
+    ),
+    path(
+        "skills/",
+        AdminSkillListCreateView.as_view(),
+        name="admin-skill-list",
+    ),
+    path(
+        "skills/<int:pk>/",
+        AdminSkillDetailView.as_view(),
+        name="admin-skill-detail",
+    ),
+    path(
+        "learning-resources/",
+        AdminLearningResourceListCreateView.as_view(),
+        name="admin-learning-resource-list",
+    ),
+    path(
+        "learning-resources/<int:pk>/",
+        AdminLearningResourceDetailView.as_view(),
+        name="admin-learning-resource-detail",
+    ),
+    path(
+        "learning-resource-reports/",
+        AdminLearningResourceReportListView.as_view(),
+        name="admin-learning-resource-report-list",
+    ),
+    path(
+        "learning-resource-reports/<int:pk>/",
+        AdminLearningResourceReportDetailView.as_view(),
+        name="admin-learning-resource-report-detail",
+    ),
+]

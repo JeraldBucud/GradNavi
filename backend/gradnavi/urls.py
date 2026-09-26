@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/v1/', include('documents.urls')),
     path('api/v1/', include('interviews.urls')),
     path('api/v1/', include('profiles.urls')),
+    path('api/v1/administration/', include('administration.urls')),
 ]
