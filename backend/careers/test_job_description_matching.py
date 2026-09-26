@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework import status
@@ -719,3 +721,78 @@ class JobDescriptionMatchAPITests(
             ],
             [],
         )
+    def test_job_matching_output_is_independent_of_text_ai_provider(
+        self,
+    ):
+        payload = {
+            "job_description": (
+                "Python and Django required."
+            ),
+        }
+
+        baseline_response = (
+            self.post(
+                payload
+            )
+        )
+
+        self.assertEqual(
+            baseline_response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        baseline_data = (
+            baseline_response.data[
+                "data"
+            ]
+        )
+
+        with patch(
+            (
+                "careers.views."
+                "OpenAITextProvider"
+            )
+        ) as ai_provider:
+            ai_provider.side_effect = (
+                RuntimeError(
+                    "Text AI provider must not be used."
+                )
+            )
+
+            protected_response = (
+                self.post(
+                    payload
+                )
+            )
+
+        self.assertEqual(
+            protected_response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            protected_response.data[
+                "data"
+            ],
+            baseline_data,
+        )
+
+        self.assertEqual(
+            protected_response.data[
+                "data"
+            ][
+                "matched_requirement_count"
+            ],
+            1,
+        )
+
+        self.assertEqual(
+            protected_response.data[
+                "data"
+            ][
+                "missing_requirement_count"
+            ],
+            1,
+        )
+
+        ai_provider.assert_not_called()

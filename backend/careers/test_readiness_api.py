@@ -470,3 +470,83 @@ class SelectedCareerReadinessAPITests(
             response.status_code,
             status.HTTP_404_NOT_FOUND,
         )
+    def test_readiness_output_is_independent_of_text_ai_provider(
+        self,
+    ):
+        deterministic_result = (
+            self.make_result()
+        )
+
+        with patch(
+            (
+                "careers.views."
+                "calculate_selected_career_readiness"
+            ),
+            return_value=(
+                deterministic_result
+            ),
+        ):
+            baseline_response = (
+                self.authenticated_get()
+            )
+
+        self.assertEqual(
+            baseline_response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        baseline_data = (
+            baseline_response.data[
+                "data"
+            ]
+        )
+
+        with (
+            patch(
+                (
+                    "careers.views."
+                    "calculate_selected_career_readiness"
+                ),
+                return_value=(
+                    deterministic_result
+                ),
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "OpenAITextProvider"
+                )
+            ) as ai_provider,
+        ):
+            ai_provider.side_effect = (
+                RuntimeError(
+                    "Text AI provider must not be used."
+                )
+            )
+
+            protected_response = (
+                self.authenticated_get()
+            )
+
+        self.assertEqual(
+            protected_response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            protected_response.data[
+                "data"
+            ],
+            baseline_data,
+        )
+
+        self.assertEqual(
+            protected_response.data[
+                "data"
+            ][
+                "readiness_score"
+            ],
+            "68.00",
+        )
+
+        ai_provider.assert_not_called()
