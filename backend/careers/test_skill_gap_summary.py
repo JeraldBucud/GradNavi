@@ -9,6 +9,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from ai_services.exceptions import (
+    AIResponseValidationError,
+)
 from ai_services.schemas.outputs import (
     SkillGapSummaryExplanation,
 )
@@ -631,4 +634,190 @@ class SkillGapSummaryAPITests(
         self.assertNotEqual(
             first_key,
             changed_key,
+        )
+    def test_ai_validation_failure_returns_sanitized_503_without_snapshot(
+        self,
+    ):
+        plan = self.plan()
+
+        provider = Mock()
+
+        provider.model = "gpt-test"
+
+        sensitive_provider_detail = (
+            "SENSITIVE_SKILL_GAP_PROVIDER_DETAIL"
+        )
+
+        provider.generate.side_effect = (
+            AIResponseValidationError(
+                sensitive_provider_detail
+            )
+        )
+
+        with (
+            patch(
+                (
+                    "careers.views."
+                    "generate_learning_plan"
+                ),
+                return_value=plan,
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "resolve_text_model"
+                ),
+                return_value="gpt-test",
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "OpenAITextProvider"
+                ),
+                return_value=provider,
+            ),
+        ):
+            response = (
+                self.get_summary()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+        response_text = str(
+            response.data
+        )
+
+        self.assertNotIn(
+            sensitive_provider_detail,
+            response_text,
+        )
+
+        self.assertNotIn(
+            "OpenAI",
+            response_text,
+        )
+
+        self.assertFalse(
+            SkillGapSummarySnapshot
+            .objects
+            .filter(
+                student_profile=(
+                    self.profile
+                ),
+                career=(
+                    self.career
+                ),
+            )
+            .exists()
+        )
+    def test_ai_failure_does_not_change_skill_gap_or_readiness_results(
+        self,
+    ):
+        plan = self.plan()
+
+        baseline_readiness_score = (
+            plan
+            .readiness_result
+            .readiness_score
+        )
+
+        baseline_score_status = (
+            plan
+            .readiness_result
+            .score_status
+        )
+
+        baseline_skill_gaps = (
+            plan
+            .readiness_result
+            .skill_gaps
+        )
+
+        baseline_suggestions = (
+            plan.suggestions
+        )
+
+        provider = Mock()
+
+        provider.model = "gpt-test"
+
+        provider.generate.side_effect = (
+            AIResponseValidationError(
+                "AI Skill Gap Summary failed."
+            )
+        )
+
+        with (
+            patch(
+                (
+                    "careers.views."
+                    "generate_learning_plan"
+                ),
+                return_value=plan,
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "resolve_text_model"
+                ),
+                return_value="gpt-test",
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "OpenAITextProvider"
+                ),
+                return_value=provider,
+            ),
+        ):
+            response = (
+                self.get_summary()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+        self.assertEqual(
+            plan
+            .readiness_result
+            .readiness_score,
+            baseline_readiness_score,
+        )
+
+        self.assertEqual(
+            plan
+            .readiness_result
+            .score_status,
+            baseline_score_status,
+        )
+
+        self.assertEqual(
+            plan
+            .readiness_result
+            .skill_gaps,
+            baseline_skill_gaps,
+        )
+
+        self.assertEqual(
+            plan.suggestions,
+            baseline_suggestions,
+        )
+
+        self.assertFalse(
+            SkillGapSummarySnapshot
+            .objects
+            .filter(
+                student_profile=(
+                    self.profile
+                ),
+                career=(
+                    self.career
+                ),
+            )
+            .exists()
         )

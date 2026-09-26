@@ -1,0 +1,126 @@
+GradNavi WBS 7.4 AI Response Validation and Error Handling
+Sprint 4 Evidence Summary
+
+Branch:
+jerald/wbs-7.4-ai-response-validation
+
+Baseline:
+feature/sprint-4
+d87bbc353707e3532308bf5807ec41787a69c3f7
+
+OpenAI response-state validation:
+PASS
+
+Accepted provider state:
+completed
+
+Rejected provider states:
+incomplete
+failed
+cancelled
+queued
+in_progress
+missing status
+
+Empty structured output rejection:
+PASS
+
+Malformed JSON rejection:
+PASS
+
+Provider error-detail sanitization:
+PASS
+
+Interview semantic validation:
+PASS
+
+API error sanitization:
+PASS
+
+Deterministic protection:
+PASS
+
+Career Recommendation score protection:
+PASS
+
+Career Recommendation rank protection:
+PASS
+
+Skill Gap calculation protection:
+PASS
+
+Career Readiness score protection:
+PASS
+
+Career Readiness text-AI independence:
+PASS
+
+Job Matching text-AI independence:
+PASS
+
+Job Matching deterministic output protection:
+PASS
+
+Focused OpenAI text provider tests:
+12 / 12 PASS
+
+Combined provider and Interview focused tests:
+59 / 59 PASS
+
+Document provider failure tests:
+4 / 4 PASS
+
+Affected WBS 7.4 test modules:
+162 / 162 PASS
+
+Regression maintenance:
+Two obsolete pre-WBS-7.3 unconfigured-provider tests were removed.
+Current provider-unavailable tests were preserved.
+ResumeGenerationInput test fixture was updated with required target_career_name.
+Recommendation Cache fixtures were updated with required StudentSkill context.
+
+Six previously failing regression tests:
+6 / 6 PASS
+
+Schema and Recommendation Cache modules:
+42 / 42 PASS
+
+Django system check:
+PASS
+
+Migration drift check:
+PASS
+
+Migration result:
+No changes detected
+
+Full backend regression:
+936 / 936 PASS
+
+Full backend failures:
+0
+
+Full backend errors:
+0
+
+Security and privacy verification:
+Provider exception details are not returned to frontend clients.
+Synthetic sensitive markers are not returned to frontend clients.
+Student job-description content is not returned through controlled AI error responses.
+No OpenAI API key was added to this evidence.
+No password was added to this evidence.
+No JWT was added to this evidence.
+No database credential was added to this evidence.
+No personal Student information was added to this evidence.
+
+Live OpenAI verification under WBS 7.4:
+Not intentionally performed.
+
+WBS 7.4 technical result:
+PASS
+
+Full backend regression result:
+PASS
+
+Formal WBS 7.4 status:
+TECHNICALLY COMPLETE, PENDING COMMIT, PR REVIEW, AND MERGE

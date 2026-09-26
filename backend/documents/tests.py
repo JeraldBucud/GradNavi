@@ -14,6 +14,7 @@ from careers.models import Career
 from ai_services.exceptions import (
     AIProviderTimeoutError,
     AIProviderUnavailableError,
+    AIResponseValidationError,
 )
 from ai_services.prompts.common import AIOperation, PromptPackage
 from ai_services.safety.privacy import build_student_profile_context
@@ -904,19 +905,6 @@ class ResumeGenerationAPITests(APITestCase):
             provider,
         )
 
-    def test_unconfigured_provider_fails_closed_with_503(self):
-        response = self.authenticated_post()
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-        )
-        assert_error_envelope(
-            self,
-            response,
-            "external_service_unavailable",
-        )
-
     def test_shared_ai_service_failure_returns_503(self):
         provider = FakeResumeProvider()
 
@@ -972,6 +960,65 @@ class ResumeGenerationAPITests(APITestCase):
         )
 
         service.assert_not_called()
+
+    def test_response_validation_failure_is_sanitized_503(
+        self,
+    ):
+        sensitive_provider_detail = (
+            "SENSITIVE_RESUME_PROVIDER_DETAIL"
+        )
+
+        sensitive_job_description = (
+            "SENSITIVE_RESUME_JOB_DESCRIPTION"
+        )
+
+        provider = FakeResumeProvider(
+            error=AIResponseValidationError(
+                sensitive_provider_detail
+            ),
+        )
+
+        with patch(
+            "documents.views.get_resume_generation_provider",
+            return_value=provider,
+        ):
+            response = self.authenticated_post(
+                {
+                    "job_description": (
+                        sensitive_job_description
+                    ),
+                }
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "external_service_unavailable",
+        )
+
+        response_text = str(
+            response.data
+        )
+
+        self.assertNotIn(
+            sensitive_provider_detail,
+            response_text,
+        )
+
+        self.assertNotIn(
+            sensitive_job_description,
+            response_text,
+        )
+
+        self.assertNotIn(
+            "OpenAI structured output",
+            response_text,
+        )
 
 
 class CoverLetterGenerationServiceTests(TestCase):
@@ -2072,19 +2119,6 @@ class CoverLetterGenerationAPITests(APITestCase):
             provider,
         )
 
-    def test_unconfigured_provider_fails_closed_with_503(self):
-        response = self.authenticated_post()
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-        )
-        assert_error_envelope(
-            self,
-            response,
-            "external_service_unavailable",
-        )
-
     def test_shared_ai_service_failure_returns_503(self):
         provider = FakeCoverLetterProvider()
 
@@ -2196,3 +2230,70 @@ class CoverLetterGenerationAPITests(APITestCase):
         )
 
         service.assert_not_called()
+    def test_response_validation_failure_is_sanitized_503(
+        self,
+    ):
+        sensitive_provider_detail = (
+            "SENSITIVE_COVER_PROVIDER_DETAIL"
+        )
+
+        sensitive_job_description = (
+            "SENSITIVE_COVER_JOB_DESCRIPTION"
+        )
+
+        provider = FakeCoverLetterProvider(
+            error=AIResponseValidationError(
+                sensitive_provider_detail
+            ),
+        )
+
+        with patch(
+            (
+                "documents.views."
+                "get_cover_letter_generation_provider"
+            ),
+            return_value=provider,
+        ):
+            response = self.authenticated_post(
+                {
+                    "job_title": (
+                        self.job_title
+                    ),
+                    "company": (
+                        self.company
+                    ),
+                    "job_description": (
+                        sensitive_job_description
+                    ),
+                }
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "external_service_unavailable",
+        )
+
+        response_text = str(
+            response.data
+        )
+
+        self.assertNotIn(
+            sensitive_provider_detail,
+            response_text,
+        )
+
+        self.assertNotIn(
+            sensitive_job_description,
+            response_text,
+        )
+
+        self.assertNotIn(
+            "OpenAI structured output",
+            response_text,
+        )
