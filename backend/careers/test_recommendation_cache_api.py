@@ -38,6 +38,25 @@ class RecommendationCacheAPITests(APITestCase):
             )
         )
 
+        self.skill = (
+            Skill.objects.create(
+                name="Cache API Python",
+                concept_type=(
+                    Skill.ConceptType.TECHNOLOGY
+                ),
+            )
+        )
+
+        StudentSkill.objects.create(
+            student_profile=self.profile,
+            skill=self.skill,
+            proficiency_level=(
+                StudentSkill
+                .ProficiencyLevel
+                .PROFICIENT
+            ),
+        )
+
         access_token = str(
             RefreshToken
             .for_user(self.user)
@@ -479,6 +498,16 @@ class RecommendationCacheAPITests(APITestCase):
             StudentProfile.objects.create(
                 user=other_user,
             )
+        )
+
+        StudentSkill.objects.create(
+            student_profile=other_profile,
+            skill=self.skill,
+            proficiency_level=(
+                StudentSkill
+                .ProficiencyLevel
+                .PROFICIENT
+            ),
         )
 
         other_token = str(

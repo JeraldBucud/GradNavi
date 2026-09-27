@@ -19,6 +19,9 @@ from rest_framework_simplejwt.tokens import (
     RefreshToken,
 )
 
+from ai_services.exceptions import (
+    AIResponseValidationError,
+)
 from ai_services.schemas.outputs import (
     CareerMatchExplanation,
 )
@@ -304,5 +307,256 @@ class TopMatchExplanationAPITests(
         )
 
         provider_class.assert_not_called()
+
+        snapshot.save.assert_not_called()
+    def test_ai_validation_failure_returns_sanitized_503_without_cache_mutation(
+        self,
+    ):
+        snapshot = self.snapshot()
+
+        provider = Mock()
+
+        provider.model = "gpt-test"
+
+        sensitive_provider_detail = (
+            "SENSITIVE_RECOMMENDATION_PROVIDER_DETAIL"
+        )
+
+        provider.generate.side_effect = (
+            AIResponseValidationError(
+                sensitive_provider_detail
+            )
+        )
+
+        with (
+            patch(
+                (
+                    "careers.views."
+                    "build_recommendation_cache_key"
+                ),
+                return_value=object(),
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "get_valid_recommendation_snapshot"
+                ),
+                return_value=snapshot,
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "resolve_text_model"
+                ),
+                return_value="gpt-test",
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "OpenAITextProvider"
+                ),
+                return_value=provider,
+            ),
+        ):
+            response = (
+                self.request_explanation()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+        response_text = str(
+            response.data
+        )
+
+        self.assertNotIn(
+            sensitive_provider_detail,
+            response_text,
+        )
+
+        self.assertNotIn(
+            "OpenAI",
+            response_text,
+        )
+
+        self.assertNotIn(
+            "top_match_explanation",
+            snapshot.payload,
+        )
+
+        snapshot.save.assert_not_called()
+    def test_ai_failure_does_not_change_recommendation_score_payload(
+        self,
+    ):
+        snapshot = self.snapshot()
+
+        recommendation = (
+            snapshot.payload[
+                "recommendations"
+            ][0]
+        )
+
+        baseline_payload = {
+            "career_id": (
+                recommendation[
+                    "career_id"
+                ]
+            ),
+            "career_name": (
+                recommendation[
+                    "career_name"
+                ]
+            ),
+            "recommendation_score": (
+                recommendation[
+                    "recommendation_score"
+                ]
+            ),
+            "rank": (
+                recommendation[
+                    "rank"
+                ]
+            ),
+            "matched_competencies": list(
+                recommendation[
+                    "matched_competencies"
+                ]
+            ),
+            "matched_technologies": list(
+                recommendation[
+                    "matched_technologies"
+                ]
+            ),
+            "missing_competencies": list(
+                recommendation[
+                    "missing_competencies"
+                ]
+            ),
+        }
+
+        provider = Mock()
+
+        provider.model = "gpt-test"
+
+        provider.generate.side_effect = (
+            AIResponseValidationError(
+                "AI explanation failed."
+            )
+        )
+
+        with (
+            patch(
+                (
+                    "careers.views."
+                    "build_recommendation_cache_key"
+                ),
+                return_value=object(),
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "get_valid_recommendation_snapshot"
+                ),
+                return_value=snapshot,
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "resolve_text_model"
+                ),
+                return_value="gpt-test",
+            ),
+            patch(
+                (
+                    "careers.views."
+                    "OpenAITextProvider"
+                ),
+                return_value=provider,
+            ),
+        ):
+            response = (
+                self.request_explanation()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+        protected = (
+            snapshot.payload[
+                "recommendations"
+            ][0]
+        )
+
+        self.assertEqual(
+            protected[
+                "career_id"
+            ],
+            baseline_payload[
+                "career_id"
+            ],
+        )
+
+        self.assertEqual(
+            protected[
+                "career_name"
+            ],
+            baseline_payload[
+                "career_name"
+            ],
+        )
+
+        self.assertEqual(
+            protected[
+                "recommendation_score"
+            ],
+            baseline_payload[
+                "recommendation_score"
+            ],
+        )
+
+        self.assertEqual(
+            protected[
+                "rank"
+            ],
+            baseline_payload[
+                "rank"
+            ],
+        )
+
+        self.assertEqual(
+            protected[
+                "matched_competencies"
+            ],
+            baseline_payload[
+                "matched_competencies"
+            ],
+        )
+
+        self.assertEqual(
+            protected[
+                "matched_technologies"
+            ],
+            baseline_payload[
+                "matched_technologies"
+            ],
+        )
+
+        self.assertEqual(
+            protected[
+                "missing_competencies"
+            ],
+            baseline_payload[
+                "missing_competencies"
+            ],
+        )
+
+        self.assertNotIn(
+            "top_match_explanation",
+            snapshot.payload,
+        )
 
         snapshot.save.assert_not_called()

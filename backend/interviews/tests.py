@@ -27,6 +27,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ai_services.exceptions import (
     AIProviderTimeoutError,
     AIProviderUnavailableError,
+    AIResponseValidationError,
 )
 from ai_services.prompts.common import (
     AIOperation,
@@ -357,6 +358,45 @@ class InterviewRequestSerializerTests(SimpleTestCase):
         )
 
 
+def build_question_set(
+    *,
+    question_focus_areas,
+    focus_areas=None,
+):
+    """
+    Build one structurally valid InterviewQuestionSet for tests.
+    """
+
+    questions = [
+        InterviewQuestion(
+            question=(
+                f"Example interview question {index}?"
+            ),
+            focus_area=focus_area,
+        )
+        for index, focus_area
+        in enumerate(
+            question_focus_areas,
+            start=1,
+        )
+    ]
+
+    if focus_areas is None:
+        focus_areas = list(
+            dict.fromkeys(
+                question_focus_areas
+            )
+        )
+
+    return InterviewQuestionSet(
+        questions=questions,
+        focus_areas=focus_areas,
+        limitations=[],
+        is_ai_generated=True,
+        requires_user_review=True,
+    )
+
+
 class InterviewQuestionServiceTests(SimpleTestCase):
     """
     Tests question generation through the WBS 6.2 AI boundary.
@@ -395,7 +435,17 @@ class InterviewQuestionServiceTests(SimpleTestCase):
         )
 
     def test_question_context_preserves_trust_boundary(self):
-        provider = FakeInterviewProvider()
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                        "Communication",
+                        "Technical depth",
+                    ],
+                )
+            ),
+        )
 
         generate_interview_questions(
             target_role="Software Developer",
@@ -482,6 +532,295 @@ class InterviewQuestionServiceTests(SimpleTestCase):
                 ai_provider=provider,
             )
 
+
+    def test_question_count_must_match_requested_count(self):
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                    ],
+                )
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ) as error:
+            generate_interview_questions(
+                target_role="Software Developer",
+                question_count=2,
+                ai_provider=provider,
+            )
+
+        self.assertEqual(
+            str(error.exception),
+            (
+                "Interview AI response question count "
+                "does not match the requested count."
+            ),
+        )
+
+
+    def test_extra_question_is_rejected(self):
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                        "Communication",
+                    ],
+                )
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_questions(
+                target_role="Software Developer",
+                question_count=1,
+                ai_provider=provider,
+            )
+
+
+    def test_extra_declared_focus_area_is_rejected(self):
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                        "Communication",
+                    ],
+                    focus_areas=[
+                        "Problem solving",
+                        "Communication",
+                        "Leadership",
+                    ],
+                )
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ) as error:
+            generate_interview_questions(
+                target_role="Software Developer",
+                question_count=2,
+                ai_provider=provider,
+            )
+
+        self.assertEqual(
+            str(error.exception),
+            (
+                "Interview AI response focus areas "
+                "do not match generated questions."
+            ),
+        )
+
+
+    def test_missing_declared_focus_area_is_rejected(self):
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                        "Communication",
+                    ],
+                    focus_areas=[
+                        "Problem solving",
+                    ],
+                )
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_questions(
+                target_role="Software Developer",
+                question_count=2,
+                ai_provider=provider,
+            )
+
+
+    def test_duplicate_declared_focus_area_is_rejected(self):
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                        "Communication",
+                    ],
+                    focus_areas=[
+                        "Problem solving",
+                        "Communication",
+                        "problem solving",
+                    ],
+                )
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ) as error:
+            generate_interview_questions(
+                target_role="Software Developer",
+                question_count=2,
+                ai_provider=provider,
+            )
+
+        self.assertEqual(
+            str(error.exception),
+            (
+                "Interview AI response contains "
+                "duplicate declared focus areas."
+            ),
+        )
+
+
+    def test_blank_declared_focus_area_is_rejected(self):
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                    ],
+                    focus_areas=[
+                        "Problem solving",
+                        "",
+                    ],
+                )
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ) as error:
+            generate_interview_questions(
+                target_role="Software Developer",
+                question_count=1,
+                ai_provider=provider,
+            )
+
+        self.assertEqual(
+            str(error.exception),
+            (
+                "Interview AI response contains a "
+                "blank declared focus area."
+            ),
+        )
+
+
+    def test_focus_area_comparison_is_case_insensitive(self):
+        expected = build_question_set(
+            question_focus_areas=[
+                "Problem Solving",
+                "Communication",
+            ],
+            focus_areas=[
+                "problem solving",
+                "COMMUNICATION",
+            ],
+        )
+
+        provider = FakeInterviewProvider(
+            question_response=expected,
+        )
+
+        result = generate_interview_questions(
+            target_role="Software Developer",
+            question_count=2,
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+        self.assertEqual(
+            result.focus_areas,
+            [
+                "problem solving",
+                "COMMUNICATION",
+            ],
+        )
+
+
+    def test_valid_multi_question_result_is_not_rewritten(self):
+        expected = build_question_set(
+            question_focus_areas=[
+                "Problem solving",
+                "Communication",
+            ],
+            focus_areas=[
+                "Problem solving",
+                "Communication",
+            ],
+        )
+
+        provider = FakeInterviewProvider(
+            question_response=expected,
+        )
+
+        original_question_focus_areas = [
+            item.focus_area
+            for item in expected.questions
+        ]
+
+        original_declared_focus_areas = list(
+            expected.focus_areas
+        )
+
+        result = generate_interview_questions(
+            target_role="Software Developer",
+            question_count=2,
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+        self.assertEqual(
+            [
+                item.focus_area
+                for item in result.questions
+            ],
+            original_question_focus_areas,
+        )
+
+        self.assertEqual(
+            result.focus_areas,
+            original_declared_focus_areas,
+        )
+
+
+def build_feedback_result(
+    *,
+    suggested_response,
+):
+    """
+    Build one structurally valid InterviewFeedback result for tests.
+    """
+
+    return InterviewFeedback(
+        strengths=[
+            "Uses a clear explanation.",
+        ],
+        improvements=[
+            "Add relevant detail where available.",
+        ],
+        suggested_response=suggested_response,
+        feedback_summary=(
+            "The answer has a useful foundation."
+        ),
+        limitations=[],
+        is_ai_generated=True,
+        requires_user_review=True,
+    )
 
 class InterviewFeedbackServiceTests(SimpleTestCase):
     """
@@ -610,6 +949,263 @@ class InterviewFeedbackServiceTests(SimpleTestCase):
                 ai_provider=provider,
             )
 
+
+    def test_feedback_rejects_x_users_placeholder(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I improved the process for X users."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about an improvement "
+                    "you delivered."
+                ),
+                student_answer=(
+                    "I reviewed the process and "
+                    "improved the workflow."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_rejects_y_percent_placeholder(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I improved performance by Y%."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about an improvement "
+                    "you delivered."
+                ),
+                student_answer=(
+                    "I improved application performance."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_rejects_bracketed_number_placeholder(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I supported [number] customers."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about your customer impact."
+                ),
+                student_answer=(
+                    "I supported customers with "
+                    "technical issues."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_rejects_tbd_placeholder(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "The final result was TBD."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "What result did your work achieve?"
+                ),
+                student_answer=(
+                    "The issue was resolved successfully."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_rejects_unsupported_numeric_claim(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I reduced processing time by 25%."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about a process improvement."
+                ),
+                student_answer=(
+                    "I reduced processing time by "
+                    "improving the workflow."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_allows_numeric_claim_from_student_answer(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "I reduced processing time by 25% "
+                "after improving the workflow."
+            ),
+        )
+
+        provider = FakeInterviewProvider(
+            feedback_response=expected,
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a process improvement."
+            ),
+            student_answer=(
+                "I improved the workflow and reduced "
+                "processing time by 25%."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+
+    def test_feedback_allows_supplied_percentage_before_punctuation(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "I reduced processing time by 25% "
+                "after improving the workflow."
+            ),
+        )
+
+        provider = FakeInterviewProvider(
+            feedback_response=expected,
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a process improvement."
+            ),
+            student_answer=(
+                "I improved the workflow and reduced "
+                "processing time by 25%."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+
+    def test_feedback_allows_normal_grounded_response(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "I reviewed the logs, identified the "
+                "cause, fixed the issue, and verified "
+                "the application worked correctly."
+            ),
+        )
+
+        provider = FakeInterviewProvider(
+            feedback_response=expected,
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a difficult bug."
+            ),
+            student_answer=(
+                "I reviewed the logs, found the cause, "
+                "fixed the issue, and verified the app."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+
+    def test_feedback_prompt_handles_unrelated_answers(self):
+        provider = FakeInterviewProvider()
+
+        generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a difficult bug."
+            ),
+            student_answer=(
+                "My favourite food is pizza."
+            ),
+            ai_provider=provider,
+        )
+
+        prompt_package = (
+            provider.calls[0]["prompt_package"]
+        )
+
+        system_text = " ".join(
+            prompt_package.system_instructions
+        )
+
+        output_text = " ".join(
+            prompt_package.output_requirements
+        )
+
+        self.assertIn(
+            "weak, incomplete, or unrelated",
+            system_text,
+        )
+
+        self.assertIn(
+            "Never insert placeholder metrics",
+            system_text,
+        )
+
+        self.assertIn(
+            "Keep suggested_response grounded",
+            output_text,
+        )
 
 class InterviewProviderSeamTests(SimpleTestCase):
     """
@@ -904,6 +1500,63 @@ class InterviewQuestionAPITests(APITestCase):
         )
 
 
+    def test_semantic_validation_failure_returns_controlled_502(self):
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                    ],
+                    focus_areas=[
+                        "Problem solving",
+                        "SENSITIVE_INTERNAL_MARKER",
+                    ],
+                )
+            ),
+        )
+
+        with patch(
+            "interviews.views.get_interview_provider",
+            return_value=provider,
+        ):
+            response = self.authenticated_post(
+                self.valid_payload()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_502_BAD_GATEWAY,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "ai_response_invalid",
+        )
+
+        response_text = str(
+            response.data
+        )
+
+        self.assertNotIn(
+            "SENSITIVE_INTERNAL_MARKER",
+            response_text,
+        )
+
+        self.assertNotIn(
+            "Build and maintain web applications.",
+            response_text,
+        )
+
+        self.assertNotIn(
+            (
+                "Interview AI response focus areas "
+                "do not match generated questions."
+            ),
+            response_text,
+        )
+
+
 class InterviewFeedbackAPITests(APITestCase):
     """
     Tests POST /api/v1/interviews/feedback/.
@@ -1176,4 +1829,49 @@ class InterviewFeedbackAPITests(APITestCase):
             self,
             response,
             "external_service_unavailable",
+        )
+
+    def test_feedback_grounding_failure_returns_controlled_502(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I improved the product for X users."
+                ),
+            ),
+        )
+
+        with patch(
+            "interviews.views.get_interview_provider",
+            return_value=provider,
+        ):
+            response = self.authenticated_post(
+                self.valid_payload()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_502_BAD_GATEWAY,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "ai_response_invalid",
+        )
+
+        response_text = str(
+            response.data
+        )
+
+        self.assertNotIn(
+            "X users",
+            response_text,
+        )
+
+        self.assertNotIn(
+            (
+                "Interview AI feedback contains an "
+                "unsupported placeholder value."
+            ),
+            response_text,
         )

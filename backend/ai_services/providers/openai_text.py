@@ -329,6 +329,23 @@ class OpenAITextProvider:
                 "Unexpected OpenAI text-generation provider failure."
             ) from error
 
+        response_status = getattr(
+            response,
+            "status",
+            None,
+        )
+
+        if response_status != "completed":
+
+            if response_status == "incomplete":
+                raise AIResponseValidationError(
+                    "OpenAI response was incomplete."
+                )
+
+            raise AIResponseValidationError(
+                "OpenAI response did not complete successfully."
+            )
+
         usage = getattr(
             response,
             "usage",

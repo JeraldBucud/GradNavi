@@ -174,11 +174,17 @@ class InputSchemaTests(SimpleTestCase):
     def test_resume_generation_input_accepts_profile(self):
         request = ResumeGenerationInput(
             profile=self.profile,
+            target_career_name="Software Developer",
         )
 
         self.assertEqual(
             request.profile,
             self.profile,
+        )
+
+        self.assertEqual(
+            request.target_career_name,
+            "Software Developer",
         )
 
     def test_cover_letter_rejects_blank_job_description(self):
