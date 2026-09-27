@@ -14,7 +14,7 @@ const attentionItems = [
     badge: 'Review',
     tone: 'warning',
     title: 'Pending resource reports',
-    text: 'Available once audit records (WBS 7.8) are connected.',
+    text: 'Student resource reports will appear here once the admin review workflow is connected',
   },
   {
     badge: 'Info',
@@ -26,7 +26,7 @@ const attentionItems = [
     badge: 'Healthy',
     tone: 'success',
     title: 'Data health',
-    text: 'No blocking data issues detected.',
+    text: 'ata health checks are not available yet.',
   },
 ]
 
