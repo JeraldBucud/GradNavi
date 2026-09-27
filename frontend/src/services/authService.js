@@ -5,9 +5,7 @@ import {
   getRefreshToken,
   getStoredUser,
   hasStoredAccessToken,
-  storeAccessToken,
   storeAuthSession,
-  storeRefreshToken,
 } from './authStorage'
 
 
@@ -59,35 +57,6 @@ async function getCurrentUser() {
 }
 
 
-async function refreshAccessToken() {
-  const refreshToken = getRefreshToken()
-
-  if (!refreshToken) {
-    throw new Error(
-      'No refresh token is available.',
-    )
-  }
-
-  const tokenData = await apiRequest(
-    '/auth/token/refresh/',
-    {
-      method: 'POST',
-      body: {
-        refresh: refreshToken,
-      },
-    },
-  )
-
-  storeAccessToken(tokenData.access)
-
-  if (tokenData.refresh) {
-    storeRefreshToken(tokenData.refresh)
-  }
-
-  return tokenData
-}
-
-
 async function logoutAccount() {
   const refreshToken = getRefreshToken()
 
@@ -96,9 +65,9 @@ async function logoutAccount() {
       await apiRequest('/auth/logout/', {
         method: 'POST',
         requiresAuth: true,
-        body: {
-          refresh: refreshToken,
-        },
+        body: () => ({
+          refresh: getRefreshToken(),
+        }),
       })
     }
   } finally {
@@ -120,7 +89,6 @@ export {
   confirmPasswordReset,
   logoutAccount,
   getCurrentUser,
-  refreshAccessToken,
   getStoredUser,
   hasStoredAccessToken,
   clearAuthSession,

@@ -13,7 +13,6 @@ import {
   clearAuthSession,
   getCurrentUser,
   hasStoredAccessToken,
-  refreshAccessToken,
 } from '../../services/authService'
 
 
@@ -43,50 +42,36 @@ function ProtectedRoute() {
 
 
       try {
+        /*
+         * getCurrentUser() now uses the shared apiClient
+         * authentication flow.
+         *
+         * If the access token has expired, apiClient
+         * refreshes the session and retries /auth/me/
+         * once before this call fails.
+         */
         await getCurrentUser()
 
         if (isMounted) {
           setIsAuthenticated(true)
         }
-      } catch (requestError) {
-        if (requestError.status === 401) {
-          try {
-            /*
-             * Access tokens are short-lived.
-             *
-             * A 401 from /auth/me/ first attempts the
-             * approved refresh-token flow before the
-             * session is considered invalid.
-             */
-            await refreshAccessToken()
-            await getCurrentUser()
+      }
+      catch {
+        /*
+         * Preserve the existing protected-route behaviour.
+         *
+         * apiClient already handles expired access tokens.
+         * Any authentication verification failure that
+         * reaches this point denies protected access and
+         * clears the local session.
+         */
+        clearAuthSession()
 
-            if (isMounted) {
-              setIsAuthenticated(true)
-            }
-
-            return
-          } catch {
-            clearAuthSession()
-
-            if (isMounted) {
-              setIsAuthenticated(false)
-            }
-          }
-        } else {
-          /*
-           * Preserve the existing Sprint 1 behaviour.
-           *
-           * Authentication verification failures outside
-           * the refresh flow do not grant protected access.
-           */
-          clearAuthSession()
-
-          if (isMounted) {
-            setIsAuthenticated(false)
-          }
+        if (isMounted) {
+          setIsAuthenticated(false)
         }
-      } finally {
+      }
+      finally {
         if (isMounted) {
           setIsCheckingAuth(false)
         }
