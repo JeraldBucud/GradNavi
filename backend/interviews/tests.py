@@ -798,6 +798,30 @@ class InterviewQuestionServiceTests(SimpleTestCase):
         )
 
 
+def build_feedback_result(
+    *,
+    suggested_response,
+):
+    """
+    Build one structurally valid InterviewFeedback result for tests.
+    """
+
+    return InterviewFeedback(
+        strengths=[
+            "Uses a clear explanation.",
+        ],
+        improvements=[
+            "Add relevant detail where available.",
+        ],
+        suggested_response=suggested_response,
+        feedback_summary=(
+            "The answer has a useful foundation."
+        ),
+        limitations=[],
+        is_ai_generated=True,
+        requires_user_review=True,
+    )
+
 class InterviewFeedbackServiceTests(SimpleTestCase):
     """
     Tests feedback generation through the WBS 6.2 AI boundary.
@@ -925,6 +949,263 @@ class InterviewFeedbackServiceTests(SimpleTestCase):
                 ai_provider=provider,
             )
 
+
+    def test_feedback_rejects_x_users_placeholder(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I improved the process for X users."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about an improvement "
+                    "you delivered."
+                ),
+                student_answer=(
+                    "I reviewed the process and "
+                    "improved the workflow."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_rejects_y_percent_placeholder(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I improved performance by Y%."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about an improvement "
+                    "you delivered."
+                ),
+                student_answer=(
+                    "I improved application performance."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_rejects_bracketed_number_placeholder(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I supported [number] customers."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about your customer impact."
+                ),
+                student_answer=(
+                    "I supported customers with "
+                    "technical issues."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_rejects_tbd_placeholder(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "The final result was TBD."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "What result did your work achieve?"
+                ),
+                student_answer=(
+                    "The issue was resolved successfully."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_rejects_unsupported_numeric_claim(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I reduced processing time by 25%."
+                ),
+            ),
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about a process improvement."
+                ),
+                student_answer=(
+                    "I reduced processing time by "
+                    "improving the workflow."
+                ),
+                ai_provider=provider,
+            )
+
+
+    def test_feedback_allows_numeric_claim_from_student_answer(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "I reduced processing time by 25% "
+                "after improving the workflow."
+            ),
+        )
+
+        provider = FakeInterviewProvider(
+            feedback_response=expected,
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a process improvement."
+            ),
+            student_answer=(
+                "I improved the workflow and reduced "
+                "processing time by 25%."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+
+    def test_feedback_allows_supplied_percentage_before_punctuation(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "I reduced processing time by 25% "
+                "after improving the workflow."
+            ),
+        )
+
+        provider = FakeInterviewProvider(
+            feedback_response=expected,
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a process improvement."
+            ),
+            student_answer=(
+                "I improved the workflow and reduced "
+                "processing time by 25%."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+
+    def test_feedback_allows_normal_grounded_response(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "I reviewed the logs, identified the "
+                "cause, fixed the issue, and verified "
+                "the application worked correctly."
+            ),
+        )
+
+        provider = FakeInterviewProvider(
+            feedback_response=expected,
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a difficult bug."
+            ),
+            student_answer=(
+                "I reviewed the logs, found the cause, "
+                "fixed the issue, and verified the app."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+
+    def test_feedback_prompt_handles_unrelated_answers(self):
+        provider = FakeInterviewProvider()
+
+        generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a difficult bug."
+            ),
+            student_answer=(
+                "My favourite food is pizza."
+            ),
+            ai_provider=provider,
+        )
+
+        prompt_package = (
+            provider.calls[0]["prompt_package"]
+        )
+
+        system_text = " ".join(
+            prompt_package.system_instructions
+        )
+
+        output_text = " ".join(
+            prompt_package.output_requirements
+        )
+
+        self.assertIn(
+            "weak, incomplete, or unrelated",
+            system_text,
+        )
+
+        self.assertIn(
+            "Never insert placeholder metrics",
+            system_text,
+        )
+
+        self.assertIn(
+            "Keep suggested_response grounded",
+            output_text,
+        )
 
 class InterviewProviderSeamTests(SimpleTestCase):
     """
@@ -1219,7 +1500,7 @@ class InterviewQuestionAPITests(APITestCase):
         )
 
 
-    def test_semantic_validation_failure_returns_sanitized_503(self):
+    def test_semantic_validation_failure_returns_controlled_502(self):
         provider = FakeInterviewProvider(
             question_response=(
                 build_question_set(
@@ -1244,13 +1525,13 @@ class InterviewQuestionAPITests(APITestCase):
 
         self.assertEqual(
             response.status_code,
-            status.HTTP_503_SERVICE_UNAVAILABLE,
+            status.HTTP_502_BAD_GATEWAY,
         )
 
         assert_error_envelope(
             self,
             response,
-            "external_service_unavailable",
+            "ai_response_invalid",
         )
 
         response_text = str(
@@ -1548,4 +1829,49 @@ class InterviewFeedbackAPITests(APITestCase):
             self,
             response,
             "external_service_unavailable",
+        )
+
+    def test_feedback_grounding_failure_returns_controlled_502(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I improved the product for X users."
+                ),
+            ),
+        )
+
+        with patch(
+            "interviews.views.get_interview_provider",
+            return_value=provider,
+        ):
+            response = self.authenticated_post(
+                self.valid_payload()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_502_BAD_GATEWAY,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "ai_response_invalid",
+        )
+
+        response_text = str(
+            response.data
+        )
+
+        self.assertNotIn(
+            "X users",
+            response_text,
+        )
+
+        self.assertNotIn(
+            (
+                "Interview AI feedback contains an "
+                "unsupported placeholder value."
+            ),
+            response_text,
         )

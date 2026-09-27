@@ -15,6 +15,8 @@ WBS 7.4 adds semantic response validation before generated Interview
 Question results leave this service layer.
 """
 
+import re
+
 from ai_services.exceptions import (
     AIResponseValidationError,
 )
@@ -35,6 +37,115 @@ from ai_services.schemas.outputs import (
     InterviewQuestionSet,
 )
 
+
+INTERVIEW_FEEDBACK_PLACEHOLDER_PATTERNS = (
+    re.compile(
+        r"\b[XYN]\s*%",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        (
+            r"\b[XYN]\s+"
+            r"(?:users?|customers?|clients?|people|"
+            r"percent(?:age)?|hours?|days?|weeks?|"
+            r"months?|years?)\b"
+        ),
+        re.IGNORECASE,
+    ),
+    re.compile(
+        (
+            r"\[(?:number|percentage|percent|metric|"
+            r"result|value)\]"
+        ),
+        re.IGNORECASE,
+    ),
+    re.compile(
+        (
+            r"<(?:number|percentage|percent|metric|"
+            r"result|value)>"
+        ),
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bTBD\b",
+        re.IGNORECASE,
+    ),
+)
+
+
+INTERVIEW_NUMERIC_CLAIM_PATTERN = re.compile(
+    r"(?<![\w.])\d+(?:\.\d+)?%?(?!\w)"
+)
+
+
+def _extract_numeric_claims(
+    value: str,
+) -> set[str]:
+    """
+    Extract explicit numeric claims for grounding comparison.
+    """
+
+    return {
+        match.group(0)
+        .strip()
+        .casefold()
+        for match
+        in INTERVIEW_NUMERIC_CLAIM_PATTERN.finditer(
+            value
+        )
+    }
+
+
+def _validate_interview_feedback(
+    *,
+    result: InterviewFeedback,
+    student_answer: str,
+) -> None:
+    """
+    Enforce WBS 7.4 Interview Feedback grounding rules.
+
+    Suggested responses must not contain obvious placeholder
+    metrics or introduce explicit numeric claims which were not
+    supplied by the Student answer.
+    """
+
+    suggested_response = (
+        result.suggested_response
+    )
+
+    for pattern in (
+        INTERVIEW_FEEDBACK_PLACEHOLDER_PATTERNS
+    ):
+        if pattern.search(
+            suggested_response
+        ):
+            raise AIResponseValidationError(
+                "Interview AI feedback contains an "
+                "unsupported placeholder value."
+            )
+
+    supplied_numeric_claims = (
+        _extract_numeric_claims(
+            student_answer
+        )
+    )
+
+    generated_numeric_claims = (
+        _extract_numeric_claims(
+            suggested_response
+        )
+    )
+
+    unsupported_numeric_claims = (
+        generated_numeric_claims
+        - supplied_numeric_claims
+    )
+
+    if unsupported_numeric_claims:
+        raise AIResponseValidationError(
+            "Interview AI feedback contains an "
+            "unsupported numeric claim."
+        )
 
 def _normalize_focus_area(
     value: str,
@@ -221,7 +332,14 @@ def generate_interview_feedback(
         request
     )
 
-    return ai_provider.generate(
+    result = ai_provider.generate(
         prompt_package=prompt_package,
         output_model=InterviewFeedback,
     )
+
+    _validate_interview_feedback(
+        result=result,
+        student_answer=request.student_answer,
+    )
+
+    return result

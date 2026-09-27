@@ -15,7 +15,7 @@ Baseline: `feature/sprint-4`
 Baseline commit:
 
 ```text
-d87bbc353707e3532308bf5807ec41787a69c3f7
+0082fafe2e588f244a91bc32196e4c858e35958d
 ```
 
 Target integration branch: `feature/sprint-4`
@@ -34,6 +34,8 @@ WBS 7.4 strengthens:
 - provider failure translation
 - API error sanitization
 - Interview Question semantic validation
+- Interview Feedback grounding validation
+- controlled distinction between invalid AI output and provider outages
 - deterministic-result protection during AI failure
 - regression coverage for affected Sprint 3 and Sprint 4 contracts
 
@@ -114,6 +116,60 @@ Invalid semantic output raises:
 AIResponseValidationError
 ```
 
+## 5A. Interview Feedback Grounding Validation
+
+WBS 7.4 now applies semantic grounding checks to generated Interview Feedback.
+
+The validator rejects:
+
+- placeholder metrics such as `X users`
+- placeholder percentages such as `Y%`
+- bracketed placeholder values such as `[number]`
+- angle-bracket placeholder values such as `<percentage>`
+- `TBD` placeholder content
+- explicit numeric claims not present in the supplied Student answer
+
+Numeric claims already supplied by the Student are preserved.
+
+Regression coverage also verifies percentages followed by punctuation, including:
+
+```text
+25%.
+```
+
+The feedback prompt now explicitly instructs the AI to:
+
+- avoid invented achievements and measurable outcomes
+- avoid placeholder metrics
+- keep suggested responses grounded in supplied Student facts
+- handle weak, incomplete, or unrelated answers without inventing facts
+- describe missing detail without inserting fake values
+
+Invalid grounded output raises:
+
+```text
+AIResponseValidationError
+```
+
+## 5B. Interview API Error Classification
+
+Interview API failures now distinguish invalid generated output from provider availability failures.
+
+Invalid generated AI response:
+
+```text
+HTTP 502
+code: ai_response_invalid
+```
+
+Provider timeout or unavailable service:
+
+```text
+HTTP 503
+code: external_service_unavailable
+```
+
+The controlled 502 response does not expose internal semantic-validation details or rejected generated content.
 ## 6. API Error Sanitization
 
 Controlled AI failure responses were verified for:
@@ -121,6 +177,7 @@ Controlled AI failure responses were verified for:
 - Resume generation
 - Cover Letter generation
 - Interview Question generation
+- Interview Feedback generation
 - Career Match explanation
 - Skill Gap Summary
 
@@ -182,8 +239,10 @@ backend/careers/test_recommendation_cache_api.py
 backend/careers/test_recommendation_explanation.py
 backend/careers/test_skill_gap_summary.py
 backend/documents/tests.py
+backend/ai_services/prompts/interview_feedback.py
 backend/interviews/services.py
 backend/interviews/tests.py
+backend/interviews/views.py
 ```
 
 Closeout files:
@@ -201,10 +260,18 @@ OpenAI Text Provider:
 12 / 12 PASS
 ```
 
-Provider and Interview focused tests:
+Initial Provider and Interview focused tests:
 
 ```text
 59 / 59 PASS
+```
+
+Post-review Interview focused regression:
+
+```text
+57 / 57 PASS
+0 failures
+0 errors
 ```
 
 Document failure tests:
@@ -258,7 +325,7 @@ python manage.py test --verbosity 1
 Result:
 
 ```text
-936 / 936 PASS
+946 / 946 PASS
 0 failures
 0 errors
 ```
@@ -287,17 +354,16 @@ docs/testing/evidence/sprint-4/S4-EV-002-wbs-7.4-ai-response-validation-summary.
 
 ## 15. Remaining Closeout Actions
 
-1. Review the final WBS 7.4 source diff.
-2. Review the closeout and evidence files.
-3. Stage the approved files.
-4. Commit the branch.
-5. Push the branch.
-6. Create a Pull Request targeting `feature/sprint-4`.
-7. Request team review.
+1. Review the final WBS 7.4 remediation diff.
+2. Review the updated closeout and evidence files.
+3. Stage the approved source and documentation files.
+4. Commit the WBS 7.4 remediation changes.
+5. Push the updated branch.
+6. Update existing Pull Request #66.
+7. Request or complete team review.
 8. Address valid review findings.
-9. Merge after review.
+9. Merge PR #66 after review.
 10. Mark WBS 7.4 complete after merge.
-
 ## 16. Closeout Decision
 
 Technical implementation:
@@ -313,6 +379,18 @@ PASS
 ```
 
 Interview semantic validation:
+
+```text
+PASS
+```
+
+Interview Feedback grounding validation:
+
+```text
+PASS
+```
+
+Interview API error classification:
 
 ```text
 PASS
@@ -345,7 +423,7 @@ Schema and Recommendation Cache regression modules:
 Full backend regression:
 
 ```text
-936 / 936 PASS
+946 / 946 PASS
 ```
 
 Formal WBS 7.4 status:
