@@ -8,6 +8,8 @@ from careers.models import (
 )
 from profiles.models import Skill
 
+from .models import AuditRecord
+
 
 class AdminUserSerializer(serializers.ModelSerializer):
     """
@@ -36,6 +38,56 @@ class AdminUserSerializer(serializers.ModelSerializer):
             "date_joined",
             "last_login",
         )
+
+
+class AdminUserRoleSerializer(serializers.ModelSerializer):
+    """
+    Dedicated audited role-management serializer.
+    """
+
+    role = serializers.ChoiceField(
+        choices=User.Role.choices,
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "role",
+        )
+        read_only_fields = (
+            "id",
+            "email",
+        )
+
+    def update(self, instance, validated_data):
+        instance.role = validated_data["role"]
+        instance.save(update_fields=("role",))
+        return instance
+
+
+class AdminUserStatusSerializer(serializers.ModelSerializer):
+    """
+    Dedicated audited account-status serializer.
+    """
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "is_active",
+        )
+        read_only_fields = (
+            "id",
+            "email",
+        )
+
+    def update(self, instance, validated_data):
+        instance.is_active = validated_data["is_active"]
+        instance.save(update_fields=("is_active",))
+        return instance
 
 
 class AdminCareerSerializer(serializers.ModelSerializer):
@@ -144,3 +196,23 @@ class AdminLearningResourceReportSerializer(
             "created_at",
             "updated_at",
         )
+
+
+class AdminAuditRecordSerializer(serializers.ModelSerializer):
+    actor = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+    )
+
+    class Meta:
+        model = AuditRecord
+        fields = (
+            "id",
+            "actor",
+            "action",
+            "area",
+            "target_type",
+            "target_id",
+            "metadata",
+            "created_at",
+        )
+        read_only_fields = fields

@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from administration.models import AuditRecord
 from careers.models import Career
 
 from ai_services.exceptions import (
@@ -1018,6 +1019,116 @@ class ResumeGenerationAPITests(APITestCase):
         self.assertNotIn(
             "OpenAI structured output",
             response_text,
+        )
+
+    def test_external_service_failure_creates_safe_system_audit_record(
+        self,
+    ):
+        sensitive_provider_detail = (
+            "SENSITIVE_RESUME_PROVIDER_AUDIT_DETAIL"
+        )
+        sensitive_job_description = (
+            "SENSITIVE_RESUME_AUDIT_JOB_DESCRIPTION"
+        )
+
+        provider = FakeResumeProvider(
+            error=AIResponseValidationError(
+                sensitive_provider_detail
+            ),
+        )
+
+        with patch(
+            "documents.views.get_resume_generation_provider",
+            return_value=provider,
+        ):
+            response = self.authenticated_post(
+                {
+                    "job_description": (
+                        sensitive_job_description
+                    ),
+                }
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+        assert_error_envelope(
+            self,
+            response,
+            "external_service_unavailable",
+        )
+
+        self.assertEqual(
+            AuditRecord.objects.count(),
+            1,
+        )
+
+        record = AuditRecord.objects.get()
+
+        self.assertIsNone(record.actor)
+        self.assertEqual(
+            record.action,
+            "external_service.failure",
+        )
+        self.assertEqual(
+            record.area,
+            "external_services",
+        )
+        self.assertEqual(
+            record.target_type,
+            "ExternalService",
+        )
+        self.assertEqual(
+            record.target_id,
+            "ai_provider",
+        )
+        self.assertEqual(
+            record.metadata["result"],
+            "failure",
+        )
+        self.assertEqual(
+            record.metadata["status_code"],
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+        self.assertEqual(
+            record.metadata["error_code"],
+            "external_service_unavailable",
+        )
+        self.assertEqual(
+            record.metadata["view"],
+            "ResumeGenerationView",
+        )
+
+        audit_text = str(
+            {
+                "action": record.action,
+                "area": record.area,
+                "target_type": record.target_type,
+                "target_id": record.target_id,
+                "metadata": record.metadata,
+            }
+        )
+
+        self.assertNotIn(
+            sensitive_provider_detail,
+            audit_text,
+        )
+        self.assertNotIn(
+            sensitive_job_description,
+            audit_text,
+        )
+        self.assertNotIn(
+            "Authorization",
+            audit_text,
+        )
+        self.assertNotIn(
+            "token",
+            audit_text,
+        )
+        self.assertNotIn(
+            "api_key",
+            audit_text,
         )
 
 

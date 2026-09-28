@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import AccessToken
 
+from administration.models import AuditRecord
 from careers.models import (
     Career,
     CareerSkill,
@@ -74,6 +75,7 @@ class AdministrationPermissionTests(
 ):
     admin_urls = (
         "/api/v1/administration/analytics/",
+        "/api/v1/administration/audit-records/",
         "/api/v1/administration/users/",
         "/api/v1/administration/careers/",
         "/api/v1/administration/skills/",
@@ -109,8 +111,20 @@ class AdministrationPermissionTests(
             source_type="curated",
             health_status="active",
         )
+        audit_record = AuditRecord.objects.create(
+            actor=self.admin,
+            action="admin.permission.test",
+            area="careers",
+            target_type="Career",
+            target_id=str(career.id),
+            metadata={},
+        )
 
         detail_urls = (
+            (
+                "/api/v1/administration/audit-records/"
+                f"{audit_record.id}/"
+            ),
             (
                 "/api/v1/administration/users/"
                 f"{self.student.id}/"
@@ -326,6 +340,180 @@ class AdminUserManagementTests(
             User.Role.ADMIN,
         )
         self.assertTrue(response.data["is_active"])
+
+
+class AdminUserRoleStatusAuditTests(
+    AdministrationAPITestCase
+):
+    def test_admin_can_change_user_role_through_dedicated_endpoint(
+        self,
+    ):
+        self.authenticate_admin()
+
+        response = self.client.patch(
+            (
+                "/api/v1/administration/users/"
+                f"{self.student.id}/role/"
+            ),
+            {
+                "role": User.Role.ADMIN,
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.student.refresh_from_db()
+
+        self.assertEqual(
+            self.student.role,
+            User.Role.ADMIN,
+        )
+        self.assertTrue(
+            AuditRecord.objects.filter(
+                action="admin.user.role_changed",
+                area="users",
+                target_type="User",
+                target_id=str(self.student.id),
+                actor=self.admin,
+                metadata={
+                    "previous_role": User.Role.STUDENT,
+                    "new_role": User.Role.ADMIN,
+                },
+            ).exists()
+        )
+
+    def test_admin_can_change_user_active_status_through_dedicated_endpoint(
+        self,
+    ):
+        self.authenticate_admin()
+
+        response = self.client.patch(
+            (
+                "/api/v1/administration/users/"
+                f"{self.student.id}/status/"
+            ),
+            {
+                "is_active": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.student.refresh_from_db()
+
+        self.assertFalse(self.student.is_active)
+        self.assertTrue(
+            AuditRecord.objects.filter(
+                action="admin.user.status_changed",
+                area="users",
+                target_type="User",
+                target_id=str(self.student.id),
+                actor=self.admin,
+                metadata={
+                    "previous_is_active": True,
+                    "new_is_active": False,
+                },
+            ).exists()
+        )
+
+    def test_invalid_role_change_is_rejected(self):
+        self.authenticate_admin()
+
+        response = self.client.patch(
+            (
+                "/api/v1/administration/users/"
+                f"{self.student.id}/role/"
+            ),
+            {
+                "role": "owner",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+        self.assertFalse(
+            AuditRecord.objects.filter(
+                action="admin.user.role_changed",
+            ).exists()
+        )
+
+    def test_student_cannot_change_role_or_status(self):
+        self.authenticate_student()
+
+        role_response = self.client.patch(
+            (
+                "/api/v1/administration/users/"
+                f"{self.student.id}/role/"
+            ),
+            {
+                "role": User.Role.ADMIN,
+            },
+            format="json",
+        )
+        status_response = self.client.patch(
+            (
+                "/api/v1/administration/users/"
+                f"{self.student.id}/status/"
+            ),
+            {
+                "is_active": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            role_response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+        self.assertEqual(
+            status_response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+    def test_unauthenticated_user_cannot_change_role_or_status(
+        self,
+    ):
+        role_response = self.client.patch(
+            (
+                "/api/v1/administration/users/"
+                f"{self.student.id}/role/"
+            ),
+            {
+                "role": User.Role.ADMIN,
+            },
+            format="json",
+        )
+        status_response = self.client.patch(
+            (
+                "/api/v1/administration/users/"
+                f"{self.student.id}/status/"
+            ),
+            {
+                "is_active": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            role_response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+        self.assertEqual(
+            status_response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
 
 class AdminCareerManagementTests(
     AdministrationAPITestCase
@@ -958,6 +1146,382 @@ class AdminLearningResourceReportReviewTests(
         )
 
 
+class AdminAuditRecordTests(
+    AdministrationAPITestCase
+):
+    def create_search_record(
+        self,
+        *,
+        action,
+        area,
+        target_type,
+        target_id,
+        actor=None,
+    ):
+        return AuditRecord.objects.create(
+            actor=actor or self.admin,
+            action=action,
+            area=area,
+            target_type=target_type,
+            target_id=str(target_id),
+            metadata={},
+        )
+
+    def audit_search_results(self, term):
+        self.authenticate_admin()
+
+        response = self.client.get(
+            (
+                "/api/v1/administration/"
+                f"audit-records/?search={term}"
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        return response.data
+
+    def test_admin_can_list_and_retrieve_audit_records(self):
+        record = AuditRecord.objects.create(
+            actor=self.admin,
+            action="admin.test.action",
+            area="users",
+            target_type="User",
+            target_id=str(self.student.id),
+            metadata={
+                "changed_fields": ["first_name"],
+            },
+        )
+
+        self.authenticate_admin()
+
+        list_response = self.client.get(
+            "/api/v1/administration/audit-records/"
+        )
+        detail_response = self.client.get(
+            (
+                "/api/v1/administration/audit-records/"
+                f"{record.id}/"
+            )
+        )
+
+        self.assertEqual(
+            list_response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            detail_response.status_code,
+            status.HTTP_200_OK,
+        )
+        self.assertEqual(
+            detail_response.data["id"],
+            record.id,
+        )
+        self.assertEqual(
+            detail_response.data["actor"],
+            self.admin.id,
+        )
+
+    def test_audit_record_search_matches_action(self):
+        matching = self.create_search_record(
+            action="admin.career.search_action",
+            area="careers",
+            target_type="Career",
+            target_id=1001,
+        )
+        self.create_search_record(
+            action="admin.skill.other_action",
+            area="skills",
+            target_type="Skill",
+            target_id=1002,
+        )
+
+        results = self.audit_search_results(
+            "search_action"
+        )
+
+        self.assertEqual(
+            [record["id"] for record in results],
+            [matching.id],
+        )
+
+    def test_audit_record_search_matches_administrator(self):
+        actor = User.objects.create_superuser(
+            email="audit-search-admin@gradnavi.test",
+            password=self.password,
+            first_name="AuditSearchAdmin",
+            last_name="Reviewer",
+        )
+        matching = self.create_search_record(
+            action="admin.user.updated",
+            area="users",
+            target_type="User",
+            target_id=self.student.id,
+            actor=actor,
+        )
+        self.create_search_record(
+            action="admin.user.status_changed",
+            area="users",
+            target_type="User",
+            target_id=self.admin.id,
+            actor=self.admin,
+        )
+
+        results = self.audit_search_results(
+            "AuditSearchAdmin"
+        )
+
+        self.assertEqual(
+            [record["id"] for record in results],
+            [matching.id],
+        )
+
+    def test_audit_record_search_matches_target(self):
+        matching = self.create_search_record(
+            action="admin.learning_resource.updated",
+            area="learning_resources",
+            target_type="LearningResource",
+            target_id="target-search-123",
+        )
+        self.create_search_record(
+            action="admin.career.updated",
+            area="careers",
+            target_type="Career",
+            target_id="other-target",
+        )
+
+        results = self.audit_search_results(
+            "target-search-123"
+        )
+
+        self.assertEqual(
+            [record["id"] for record in results],
+            [matching.id],
+        )
+
+    def test_audit_record_search_matches_area(self):
+        matching = self.create_search_record(
+            action="admin.learning_resource_report.status_changed",
+            area="learning_resource_reports",
+            target_type="LearningResourceReport",
+            target_id=1003,
+        )
+        self.create_search_record(
+            action="admin.learning_resource.updated",
+            area="learning_resources",
+            target_type="LearningResource",
+            target_id=1004,
+        )
+
+        results = self.audit_search_results(
+            "learning_resource_reports"
+        )
+
+        self.assertEqual(
+            [record["id"] for record in results],
+            [matching.id],
+        )
+
+    def test_audit_record_search_returns_empty_for_nonmatch(self):
+        self.create_search_record(
+            action="admin.career.updated",
+            area="careers",
+            target_type="Career",
+            target_id=1005,
+        )
+
+        results = self.audit_search_results(
+            "not-present-in-audit-records"
+        )
+
+        self.assertEqual(results, [])
+
+    def test_audit_records_endpoint_is_read_only(self):
+        self.authenticate_admin()
+
+        response = self.client.post(
+            "/api/v1/administration/audit-records/",
+            {
+                "action": "admin.test.injected",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
+
+    def test_audit_response_does_not_expose_user_email(self):
+        AuditRecord.objects.create(
+            actor=self.admin,
+            action="admin.user.updated",
+            area="users",
+            target_type="User",
+            target_id=str(self.student.id),
+            metadata={
+                "changed_fields": ["first_name"],
+            },
+        )
+
+        self.authenticate_admin()
+
+        response = self.client.get(
+            "/api/v1/administration/audit-records/"
+        )
+
+        response_text = str(response.data)
+
+        self.assertNotIn(
+            self.admin.email,
+            response_text,
+        )
+        self.assertNotIn(
+            self.student.email,
+            response_text,
+        )
+        self.assertNotIn(
+            "password",
+            response_text,
+        )
+        self.assertNotIn(
+            "token",
+            response_text,
+        )
+
+    def test_career_create_update_and_delete_create_audit_records(
+        self,
+    ):
+        self.authenticate_admin()
+
+        create_response = self.client.post(
+            "/api/v1/administration/careers/",
+            {
+                "name": "Audited Career",
+                "description": "Audited test career.",
+                "category": "Testing",
+                "active": True,
+            },
+            format="json",
+        )
+        career_id = create_response.data["id"]
+
+        self.client.patch(
+            (
+                "/api/v1/administration/careers/"
+                f"{career_id}/"
+            ),
+            {
+                "category": "Audited",
+            },
+            format="json",
+        )
+        self.client.delete(
+            (
+                "/api/v1/administration/careers/"
+                f"{career_id}/"
+            )
+        )
+
+        self.assertTrue(
+            AuditRecord.objects.filter(
+                action="admin.career.created",
+                area="careers",
+                target_type="Career",
+                target_id=str(career_id),
+                actor=self.admin,
+            ).exists()
+        )
+        self.assertTrue(
+            AuditRecord.objects.filter(
+                action="admin.career.updated",
+                area="careers",
+                target_type="Career",
+                target_id=str(career_id),
+                actor=self.admin,
+                metadata={
+                    "changed_fields": ["category"],
+                },
+            ).exists()
+        )
+        self.assertTrue(
+            AuditRecord.objects.filter(
+                action="admin.career.deleted",
+                area="careers",
+                target_type="Career",
+                target_id=str(career_id),
+                actor=self.admin,
+            ).exists()
+        )
+
+    def test_learning_resource_report_status_change_creates_audit_record(
+        self,
+    ):
+        profile = StudentProfile.objects.create(
+            user=self.student,
+        )
+        resource = LearningResource.objects.create(
+            title="Audited Report Resource",
+            resource_key="audited-report-resource",
+            provider="GradNavi Test",
+            url="https://example.com/audited-report-resource",
+            resource_type="tutorial",
+            description="Reported resource.",
+            is_active=True,
+            access_type="free",
+            source_type="curated",
+            health_status="active",
+        )
+        report = LearningResourceReport.objects.create(
+            student_profile=profile,
+            learning_resource=resource,
+            reason=LearningResourceReport.Reason.BROKEN_LINK,
+            comment="Broken.",
+        )
+
+        self.authenticate_admin()
+
+        self.client.patch(
+            (
+                "/api/v1/administration/"
+                "learning-resource-reports/"
+                f"{report.id}/"
+            ),
+            {
+                "status": (
+                    LearningResourceReport
+                    .Status
+                    .RESOLVED
+                ),
+            },
+            format="json",
+        )
+
+        self.assertTrue(
+            AuditRecord.objects.filter(
+                action=(
+                    "admin.learning_resource_report."
+                    "status_changed"
+                ),
+                area="learning_resource_reports",
+                target_type="LearningResourceReport",
+                target_id=str(report.id),
+                actor=self.admin,
+                metadata={
+                    "previous_status": (
+                        LearningResourceReport.Status.OPEN
+                    ),
+                    "new_status": (
+                        LearningResourceReport.Status.RESOLVED
+                    ),
+                },
+            ).exists()
+        )
+
+
 class AdminAnalyticsTests(
     AdministrationAPITestCase
 ):
@@ -1407,8 +1971,14 @@ class AdministrationURLRoutingTests(APITestCase):
         expected_routes = {
             "/api/v1/administration/analytics/":
                 "admin-analytics",
+            "/api/v1/administration/audit-records/":
+                "admin-audit-record-list",
             "/api/v1/administration/users/":
                 "admin-user-list",
+            "/api/v1/administration/users/1/role/":
+                "admin-user-role",
+            "/api/v1/administration/users/1/status/":
+                "admin-user-status",
             "/api/v1/administration/careers/":
                 "admin-career-list",
             "/api/v1/administration/skills/":
