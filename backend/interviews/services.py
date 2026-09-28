@@ -9,9 +9,17 @@ WBS 6.6 provides two AI-assisted operations:
 This service layer uses the provider-independent AIProvider contract
 defined in WBS 6.2.
 
-Direct external AI provider integration belongs to WBS 7.3.
+WBS 7.3 provides external AI provider integration.
+
+WBS 7.4 adds semantic response validation before generated Interview
+Question results leave this service layer.
 """
 
+import re
+
+from ai_services.exceptions import (
+    AIResponseValidationError,
+)
 from ai_services.prompts.interview_feedback import (
     build_interview_feedback_prompt,
 )
@@ -28,6 +36,227 @@ from ai_services.schemas.outputs import (
     InterviewFeedback,
     InterviewQuestionSet,
 )
+
+
+INTERVIEW_FEEDBACK_PLACEHOLDER_PATTERNS = (
+    re.compile(
+        r"\b[XYN]\s*%",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        (
+            r"\b[XYN]\s+"
+            r"(?:users?|customers?|clients?|people|"
+            r"percent(?:age)?|hours?|days?|weeks?|"
+            r"months?|years?)\b"
+        ),
+        re.IGNORECASE,
+    ),
+    re.compile(
+        (
+            r"\[(?:number|percentage|percent|metric|"
+            r"result|value)\]"
+        ),
+        re.IGNORECASE,
+    ),
+    re.compile(
+        (
+            r"<(?:number|percentage|percent|metric|"
+            r"result|value)>"
+        ),
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bTBD\b",
+        re.IGNORECASE,
+    ),
+)
+
+
+INTERVIEW_NUMERIC_CLAIM_PATTERN = re.compile(
+    r"(?<![\w.])\d+(?:\.\d+)?%?(?!\w)"
+)
+
+
+def _extract_numeric_claims(
+    value: str,
+) -> set[str]:
+    """
+    Extract explicit numeric claims for grounding comparison.
+    """
+
+    return {
+        match.group(0)
+        .strip()
+        .casefold()
+        for match
+        in INTERVIEW_NUMERIC_CLAIM_PATTERN.finditer(
+            value
+        )
+    }
+
+
+def _validate_interview_feedback(
+    *,
+    result: InterviewFeedback,
+    student_answer: str,
+) -> None:
+    """
+    Enforce WBS 7.4 Interview Feedback grounding rules.
+
+    Suggested responses must not contain obvious placeholder
+    metrics or introduce explicit numeric claims which were not
+    supplied by the Student answer.
+    """
+
+    suggested_response = (
+        result.suggested_response
+    )
+
+    for pattern in (
+        INTERVIEW_FEEDBACK_PLACEHOLDER_PATTERNS
+    ):
+        if pattern.search(
+            suggested_response
+        ):
+            raise AIResponseValidationError(
+                "Interview AI feedback contains an "
+                "unsupported placeholder value."
+            )
+
+    supplied_numeric_claims = (
+        _extract_numeric_claims(
+            student_answer
+        )
+    )
+
+    generated_numeric_claims = (
+        _extract_numeric_claims(
+            suggested_response
+        )
+    )
+
+    unsupported_numeric_claims = (
+        generated_numeric_claims
+        - supplied_numeric_claims
+    )
+
+    if unsupported_numeric_claims:
+        raise AIResponseValidationError(
+            "Interview AI feedback contains an "
+            "unsupported numeric claim."
+        )
+
+def _normalize_focus_area(
+    value: str,
+) -> str:
+    """
+    Normalize one focus-area value for semantic comparison only.
+
+    The original provider output is never rewritten.
+    """
+
+    return (
+        value
+        .strip()
+        .casefold()
+    )
+
+
+def _validate_interview_question_set(
+    *,
+    result: InterviewQuestionSet,
+    requested_question_count: int,
+) -> None:
+    """
+    Enforce WBS 7.4 Interview Question response semantics.
+
+    Structural validation is already performed by InterviewQuestionSet.
+
+    This layer verifies that the external AI result agrees with the
+    application request and with its own focus-area summary.
+
+    Invalid provider output is rejected rather than silently corrected.
+    """
+
+    if (
+        len(
+            result.questions
+        )
+        != requested_question_count
+    ):
+        raise AIResponseValidationError(
+            "Interview AI response question count does not "
+            "match the requested count."
+        )
+
+    question_focus_areas = []
+
+    for question in result.questions:
+
+        normalized = (
+            _normalize_focus_area(
+                question.focus_area
+            )
+        )
+
+        if not normalized:
+            raise AIResponseValidationError(
+                "Interview AI response contains a blank "
+                "question focus area."
+            )
+
+        question_focus_areas.append(
+            normalized
+        )
+
+    declared_focus_areas = []
+    declared_seen = set()
+
+    for focus_area in result.focus_areas:
+
+        normalized = (
+            _normalize_focus_area(
+                focus_area
+            )
+        )
+
+        if not normalized:
+            raise AIResponseValidationError(
+                "Interview AI response contains a blank "
+                "declared focus area."
+            )
+
+        if normalized in declared_seen:
+            raise AIResponseValidationError(
+                "Interview AI response contains duplicate "
+                "declared focus areas."
+            )
+
+        declared_seen.add(
+            normalized
+        )
+
+        declared_focus_areas.append(
+            normalized
+        )
+
+    expected_focus_areas = set(
+        question_focus_areas
+    )
+
+    actual_focus_areas = set(
+        declared_focus_areas
+    )
+
+    if (
+        actual_focus_areas
+        != expected_focus_areas
+    ):
+        raise AIResponseValidationError(
+            "Interview AI response focus areas do not "
+            "match generated questions."
+        )
 
 
 def generate_interview_questions(
@@ -59,10 +288,19 @@ def generate_interview_questions(
         request
     )
 
-    return ai_provider.generate(
+    result = ai_provider.generate(
         prompt_package=prompt_package,
         output_model=InterviewQuestionSet,
     )
+
+    _validate_interview_question_set(
+        result=result,
+        requested_question_count=(
+            request.question_count
+        ),
+    )
+
+    return result
 
 
 def generate_interview_feedback(
@@ -94,7 +332,14 @@ def generate_interview_feedback(
         request
     )
 
-    return ai_provider.generate(
+    result = ai_provider.generate(
         prompt_package=prompt_package,
         output_model=InterviewFeedback,
     )
+
+    _validate_interview_feedback(
+        result=result,
+        student_answer=request.student_answer,
+    )
+
+    return result

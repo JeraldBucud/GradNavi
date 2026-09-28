@@ -3,7 +3,9 @@ OpenAI text-generation provider for GradNavi.
 
 Uses the Responses API.
 
-This provider is initially used for the short Career Match explanation.
+This shared provider supports approved GradNavi structured text-generation
+flows, including career guidance, application documents, and interview
+preparation.
 """
 
 import os
@@ -326,6 +328,23 @@ class OpenAITextProvider:
             raise AIProviderError(
                 "Unexpected OpenAI text-generation provider failure."
             ) from error
+
+        response_status = getattr(
+            response,
+            "status",
+            None,
+        )
+
+        if response_status != "completed":
+
+            if response_status == "incomplete":
+                raise AIResponseValidationError(
+                    "OpenAI response was incomplete."
+                )
+
+            raise AIResponseValidationError(
+                "OpenAI response did not complete successfully."
+            )
 
         usage = getattr(
             response,

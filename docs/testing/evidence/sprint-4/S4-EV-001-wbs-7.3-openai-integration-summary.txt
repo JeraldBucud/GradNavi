@@ -1,0 +1,135 @@
+GradNavi WBS 7.3 OpenAI Service Integration
+Sprint 4 Evidence Summary
+
+Branch:
+jerald/wbs-7.3-openai-service-integration
+
+Baseline:
+feature/sprint-4
+26b1c5abdcffe50d6c0717cef9cf2be24c5a6776
+
+Purpose:
+Connect the existing GradNavi Sprint 3 AI provider boundary to the approved OpenAI backend provider for Resume generation, Cover Letter generation, Interview Question generation, and Interview Feedback.
+
+Source files changed:
+backend/.env.example
+backend/documents/providers.py
+backend/documents/tests.py
+backend/interviews/providers.py
+backend/interviews/tests.py
+
+Provider:
+OpenAITextProvider
+
+Configured live smoke-test model:
+gpt-5-nano
+
+Focused automated verification:
+
+OpenAI text provider tests:
+2 / 2 PASS
+
+Documents tests:
+64 / 64 PASS
+
+Interviews tests:
+38 / 38 PASS
+
+Django system check:
+PASS
+
+Live OpenAI smoke verification:
+
+Resume generation:
+PASS
+Input tokens: 1391
+Output tokens: 307
+Total tokens: 1698
+Structured ResumeDraft validation: PASS
+requires_user_review: true
+
+Cover Letter generation:
+PASS
+Input tokens: 1442
+Output tokens: 459
+Total tokens: 1901
+Structured CoverLetterDraft validation: PASS
+requires_user_review: true
+
+Interview Question generation:
+PASS
+Input tokens: 582
+Output tokens: 255
+Total tokens: 837
+Structured InterviewQuestionSet validation: PASS
+Generated questions: 2
+requires_user_review: true
+
+Interview Feedback generation:
+PASS
+Input tokens: 627
+Output tokens: 409
+Total tokens: 1036
+Structured InterviewFeedback validation: PASS
+requires_user_review: true
+
+Combined live smoke-test token usage:
+5472 total tokens
+
+Security and privacy verification:
+
+OPENAI_API_KEY stayed in backend/.env.
+The API key value was not printed.
+No API key was added to source-controlled files.
+No React-to-OpenAI request was introduced.
+All four operations route through the Django backend provider boundary.
+Synthetic smoke-test data was used.
+No personal Student data was included in this evidence file.
+
+Full backend regression:
+
+Command:
+python manage.py test --verbosity 1
+
+Result:
+911 tests executed
+5 failures
+1 error
+
+The six failures are outside the WBS 7.3 changed-file scope.
+
+Observed regression issues:
+
+1. ai_services.tests.test_schemas.InputSchemaTests.test_resume_generation_input_accepts_profile
+
+The current ResumeGenerationInput contract requires target_career_name.
+The older test still constructs ResumeGenerationInput using profile only.
+
+2. careers.test_recommendation_cache_api.RecommendationCacheAPITests.test_first_request_generates_and_stores_snapshot
+
+3. careers.test_recommendation_cache_api.RecommendationCacheAPITests.test_second_identical_request_uses_snapshot_without_ai
+
+4. careers.test_recommendation_cache_api.RecommendationCacheAPITests.test_reference_change_forces_new_recommendation_run
+
+5. careers.test_recommendation_cache_api.RecommendationCacheAPITests.test_cache_hit_keeps_public_response_contract_unchanged
+
+6. careers.test_recommendation_cache_api.RecommendationCacheAPITests.test_snapshot_is_private_to_authenticated_profile
+
+The current Recommendation API rejects profiles with no StudentSkill using HTTP 400.
+The older cache tests create profiles without StudentSkill and still expect HTTP 200.
+
+These regression-test maintenance items are not changed under WBS 7.3.
+They are recorded for the planned Sprint 1 to Sprint 3 repository closeout audit.
+
+WBS 7.3 focused integration result:
+PASS
+
+WBS 7.3 live OpenAI integration result:
+PASS
+
+Full backend regression result:
+BLOCKED BY REGRESSION TEST DRIFT OUTSIDE WBS 7.3 SCOPE
+
+No staging performed.
+No commit performed.
+No push performed.
