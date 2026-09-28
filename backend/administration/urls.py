@@ -2,6 +2,8 @@ from django.urls import path
 
 from .views import (
     AdminAnalyticsView,
+    AdminAuditRecordDetailView,
+    AdminAuditRecordListView,
     AdminCareerDetailView,
     AdminCareerListCreateView,
     AdminLearningResourceDetailView,
@@ -12,6 +14,8 @@ from .views import (
     AdminSkillListCreateView,
     AdminUserDetailView,
     AdminUserListView,
+    AdminUserRoleUpdateView,
+    AdminUserStatusUpdateView,
 )
 
 
@@ -22,6 +26,16 @@ urlpatterns = [
         name="admin-analytics",
     ),
     path(
+        "audit-records/",
+        AdminAuditRecordListView.as_view(),
+        name="admin-audit-record-list",
+    ),
+    path(
+        "audit-records/<int:pk>/",
+        AdminAuditRecordDetailView.as_view(),
+        name="admin-audit-record-detail",
+    ),
+    path(
         "users/",
         AdminUserListView.as_view(),
         name="admin-user-list",
@@ -30,6 +44,16 @@ urlpatterns = [
         "users/<int:pk>/",
         AdminUserDetailView.as_view(),
         name="admin-user-detail",
+    ),
+    path(
+        "users/<int:pk>/role/",
+        AdminUserRoleUpdateView.as_view(),
+        name="admin-user-role",
+    ),
+    path(
+        "users/<int:pk>/status/",
+        AdminUserStatusUpdateView.as_view(),
+        name="admin-user-status",
     ),
     path(
         "careers/",
