@@ -46,6 +46,10 @@
   background: var(--color-success-bg, #dcfce7);
   border-color: var(--color-success, #16a34a);
 }
+.admin-dashboard__card--neutral {
+  background: var(--color-surface-muted, #f1f5f9);
+  border-color: var(--color-border, #cbd5e1);
+}
 
 .admin-dashboard__badge {
   display: inline-block;

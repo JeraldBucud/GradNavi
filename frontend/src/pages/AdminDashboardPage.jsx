@@ -22,11 +22,11 @@ const attentionItems = [
     title: 'Recent admin changes',
     text: 'Available once audit records (WBS 7.8) are connected.',
   },
-  {
-    badge: 'Healthy',
-    tone: 'success',
+      {
+    badge: 'Unavailable',
+    tone: 'neutral',
     title: 'Data health',
-    text: 'ata health checks are not available yet.',
+    text: 'Data health checks are not available yet.',
   },
 ]
 
