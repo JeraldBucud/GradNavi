@@ -1,10 +1,16 @@
 # GradNavi Sprint 4 Test Plan
 
-Status: Prepared for WBS 7.9 Sprint 4 Integration and Testing. Test definitions are ready for controlled execution. Final execution stays blocked where a required Sprint 4 dependency is not yet integrated.
+Status: Active WBS 7.9 Sprint 4 Integration and Testing plan. Controlled execution is ready for test cases whose required dependencies are integrated. Tests depending on unfinished WBS 7.7 remain Blocked.
 
 WBS: 7.9 Sprint 4 Integration and Testing
 
-Owner: All Members
+Shared WBS Owner: All Members
+
+Individual Test Ownership:
+
+- Jerald, Full Stack: 46 test cases.
+- MD, Backend Lead: 38 test cases.
+- Joyee, Frontend Lead: 45 test cases.
 
 Test tracker:
 
@@ -26,21 +32,29 @@ This plan does not replace focused automated tests inside backend or frontend mo
 
 ## 2. WBS Alignment
 
-WBS 7.9 is owned by All Members.
+WBS 7.9 is shared by All Members.
+
+Individual test cases are assigned in the tracker according to WBS responsibility, actual implementation work, technical role, and relevant regression responsibility.
 
 WBS 7.9 depends on:
 
-- WBS 7.4 AI Response Validation and Error Handling
-- WBS 7.5 Job Matching Interface
-- WBS 7.6 Admin Models and API
-- WBS 7.7 Admin Dashboard Interface
-- WBS 7.8 Role Permissions and Audit Records
+- WBS 7.4 AI Response Validation and Error Handling.
+- WBS 7.5 Job Matching Interface.
+- WBS 7.6 Admin Models and API.
+- WBS 7.7 Admin Dashboard Interface.
+- WBS 7.8 Role Permissions and Audit Records.
 
-Test planning proceeds before all dependencies are merged.
+Current dependency state:
 
-A test is marked Blocked only when a specific required dependency or environment is unavailable.
+- WBS 7.4 is integrated.
+- WBS 7.5 is integrated.
+- WBS 7.6 is integrated.
+- WBS 7.8 is integrated.
+- WBS 7.7 remains in progress.
 
-A defined test which is ready but has not been executed is marked Not Run.
+A test is marked Blocked only when a specific required dependency or required environment prevents execution.
+
+A defined test whose dependencies are available but which has not been executed is marked Not Run.
 
 ## 3. Sprint 4 Testing Goal
 
@@ -88,7 +102,13 @@ Sprint 4 testing should provide evidence that:
 | NFR-13 | Frontend, backend, database, and AI service separation |
 | NFR-14 | Ethical AI and review limitations |
 
-FR-15 Admin Analytics stays outside mandatory WBS 7.9 acceptance unless the team confirms its Sprint 4 scope.
+FR-15 Admin Analytics is confirmed within Sprint 4 scope.
+
+WBS 7.6 provides the backend analytics and aggregated administration data.
+
+WBS 7.7 provides the Administrator-facing analytics presentation.
+
+WBS 7.9 verifies the related API, frontend, permission, privacy, and integration behaviour.
 
 FR-13 and FR-17 remain schedule-alignment items unless separately approved.
 
@@ -240,7 +260,7 @@ Verify Sprint 1, Sprint 2, and Sprint 3 core behaviour remains stable after Spri
 | AI Provider | OpenAI through the GradNavi backend |
 | API Testing | Django tests and controlled manual API checks |
 | Browser Testing | Current Chrome, Edge, and Firefox |
-| Integration Branch | `feature/sprint-4` |
+| Shared WBS 7.9 Branch | `wbs-7.9-sprint-4-integration-testing` |
 | Evidence Folder | `docs/testing/evidence/sprint-4/` |
 
 ## 9. Test Data Principles
@@ -269,18 +289,32 @@ Do not store real passwords, API keys, access tokens, private employment data, o
 
 ## 10. Current Dependency Status
 
-At this planning checkpoint:
+Current Sprint 4 testing dependency state:
 
+- WBS 7.4 is integrated.
 - WBS 7.5 is integrated.
-- WBS 7.4 is technically complete but awaiting merge.
-- WBS 7.6 is awaiting merge.
-- WBS 7.7 is in progress.
-- WBS 7.8 is required before final integration.
+- WBS 7.6 is integrated.
+- WBS 7.8 is integrated through PR #70.
+- WBS 7.7 remains in progress under PR #64.
 
-The tracker should therefore use:
+Controlled execution may proceed for test cases whose required dependencies are integrated.
 
-- Not Run for defined tests which are ready for later execution.
-- Blocked only where a named dependency prevents execution.
+The tracker uses:
+
+- Not Run for defined tests whose dependencies are available but execution has not started.
+- Blocked only where a named dependency or required environment prevents execution.
+
+Current approved tracker baseline:
+
+- Total: 129.
+- Jerald: 46.
+- MD: 38.
+- Joyee: 45.
+- Pass: 0.
+- Fail: 0.
+- Blocked: 61.
+- Not Run: 68.
+- Retest: 0.
 
 ## 11. Entry Criteria
 
@@ -443,7 +477,7 @@ Verify:
 
 ## 21. Admin API Tests
 
-After WBS 7.6 is integrated, verify approved administrator APIs for:
+WBS 7.6 is integrated. Verify approved administrator APIs for:
 
 - Users.
 - Careers.
@@ -478,11 +512,11 @@ After WBS 7.7 is integrated, verify:
 - Responsive layout.
 - Keyboard operation.
 
-Any Admin Analytics check is included only if the team confirms FR-15 Sprint 4 scope.
+FR-15 Admin Analytics is confirmed inside Sprint 4 scope and should be verified through the approved WBS 7.6 backend and WBS 7.7 frontend integration.
 
 ## 23. Role Permission Tests
 
-After WBS 7.8 is integrated, verify:
+WBS 7.8 is integrated. Verify:
 
 - Administrator access to approved admin operations.
 - Student rejection from admin APIs.
@@ -494,7 +528,7 @@ After WBS 7.8 is integrated, verify:
 
 ## 24. Audit Record Tests
 
-After WBS 7.8 is integrated, verify:
+WBS 7.8 is integrated. Verify:
 
 - Approved critical actions create audit records.
 - Required action information is stored.
@@ -662,12 +696,34 @@ WBS 7.9 testing is ready for completion when:
 
 Planning:
 
-READY
+COMPLETE
 
-Final WBS 7.9 execution:
+Controlled WBS 7.9 execution:
 
-DEPENDENCY BLOCKED
+READY FOR INTEGRATED FEATURES
 
-The initial Sprint 4 tracker should contain only Not Run and Blocked cases.
+Current dependency state:
 
-No Pass or Fail result should be recorded until the related test is executed.
+- WBS 7.4 integrated.
+- WBS 7.5 integrated.
+- WBS 7.6 integrated.
+- WBS 7.8 integrated.
+- WBS 7.7 remains in progress.
+
+Tests which depend on unfinished WBS 7.7 remain Blocked.
+
+Other tests may proceed when their required environment and test data are available.
+
+Current tracker baseline:
+
+- Total: 129.
+- Jerald: 46.
+- MD: 38.
+- Joyee: 45.
+- Pass: 0.
+- Fail: 0.
+- Blocked: 61.
+- Not Run: 68.
+- Retest: 0.
+
+No Pass or Fail result should be recorded until the related test is executed and verified.
