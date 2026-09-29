@@ -1,14 +1,16 @@
 # GradNavi Sprint 4 Integration Plan
 
-Status: Prepared for WBS 7.9 Sprint 4 Integration and Testing. Planning is ready. Final WBS 7.9 execution stays blocked until required Sprint 4 predecessors are integrated.
+Status: Active WBS 7.9 Sprint 4 Integration and Testing baseline. Controlled execution may proceed for integrated Sprint 4 features. Test cases which depend on unfinished WBS 7.7 remain Blocked until that dependency is integrated.
 
 WBS: 7.9 Sprint 4 Integration and Testing
 
-Owner: All Members
+Shared WBS Owner: All Members
 
-Integration branch: `feature/sprint-4`
+Shared testing branch: `wbs-7.9-sprint-4-integration-testing`
 
-Planning branch: `jerald/wbs-7.9-sprint-4-integration-testing`
+Jerald test branch: `jerald/wbs-7.9-sprint-4-test-execution`
+
+Sprint implementation branch: `feature/sprint-4`
 
 Planned Sprint 4 dates: 21 September to 2 October 2026
 
@@ -28,33 +30,49 @@ Detailed execution status will be maintained in:
 
 ## 2. WBS Alignment
 
-WBS 7.9 is owned by All Members.
+WBS 7.9 is shared by All Members.
+
+Individual test execution is assigned in the Sprint 4 tracker by WBS responsibility, actual implementation work, technical role, and relevant regression responsibility.
+
+Current approved allocation:
+
+- Jerald, Full Stack: 46 test cases.
+- MD, Backend Lead: 38 test cases.
+- Joyee, Frontend Lead: 45 test cases.
 
 The approved WBS lists these predecessors:
 
-- WBS 7.4 AI Response Validation and Error Handling
-- WBS 7.5 Job Matching Interface
-- WBS 7.6 Admin Models and API
-- WBS 7.7 Admin Dashboard Interface
-- WBS 7.8 Role Permissions and Audit Records
+- WBS 7.4 AI Response Validation and Error Handling.
+- WBS 7.5 Job Matching Interface.
+- WBS 7.6 Admin Models and API.
+- WBS 7.7 Admin Dashboard Interface.
+- WBS 7.8 Role Permissions and Audit Records.
 
-Full WBS 7.9 execution starts only after the required predecessor work is integrated into `feature/sprint-4`.
+WBS 7.4, WBS 7.5, WBS 7.6, and WBS 7.8 are integrated.
 
-Planning, test definition, fixture preparation, and evidence preparation are allowed before the final integration gate opens.
+WBS 7.7 remains in progress.
+
+Controlled WBS 7.9 execution may proceed for test cases whose required dependencies are integrated.
+
+Only tests which directly depend on unfinished WBS 7.7 remain Blocked for that dependency.
 
 ## 3. Current Dependency Snapshot
 
-Current Sprint 4 integration state at this planning checkpoint:
+Current Sprint 4 integration state:
 
-- WBS 7.2 Job Description Extraction and Matching is merged.
-- WBS 7.3 OpenAI Service Integration is merged.
-- WBS 7.4 AI Response Validation and Error Handling is technically complete in PR #66 and awaiting review and merge.
-- WBS 7.5 Job Matching Interface is merged through PR #61.
-- WBS 7.6 Admin Models and API is open in PR #62.
-- WBS 7.7 Admin Dashboard Interface is open as draft PR #64 and remains in progress.
-- WBS 7.8 Role Permissions and Audit Records is still required before final WBS 7.9 execution.
+- WBS 7.2 Job Description Extraction and Matching is integrated.
+- WBS 7.3 OpenAI Service Integration is integrated.
+- WBS 7.4 AI Response Validation and Error Handling is integrated.
+- WBS 7.5 Job Matching Interface is integrated.
+- WBS 7.6 Admin Models and API is integrated.
+- WBS 7.7 Admin Dashboard Interface remains in progress under PR #64.
+- WBS 7.8 Role Permissions and Audit Records is integrated through PR #70.
 
-The current repository planning records still require alignment with the latest team decision for WBS 7.8 ownership.
+WBS 7.8 implementation was completed by MD while the approved planning baseline continues to record Jerald as the official WBS owner.
+
+The detailed implementation and testing ownership record is maintained in `docs/project-management/sprint-4-plan.md`.
+
+The detailed individual test assignment is maintained in `docs/testing/sprint-4-test-cases.xlsx`.
 
 ## 4. Integration Goal
 
@@ -93,23 +111,35 @@ Secrets, passwords, JWT values, database credentials, and real private Student i
 
 ## 6. Integration Entry Criteria
 
-Before final WBS 7.9 execution:
+Controlled WBS 7.9 execution may begin when the dependency required by the specific test case is integrated.
 
-- WBS 7.4 must be merged.
-- WBS 7.5 must be merged.
-- WBS 7.6 must be merged.
-- WBS 7.7 must be merged.
-- WBS 7.8 must be merged.
-- Local `feature/sprint-4` must match `origin/feature/sprint-4`.
-- PostgreSQL must be available.
+Current entry state:
+
+- WBS 7.4 is integrated.
+- WBS 7.5 is integrated.
+- WBS 7.6 is integrated.
+- WBS 7.8 is integrated.
+- WBS 7.7 remains in progress.
+- The shared WBS 7.9 testing branch contains the latest integrated Sprint 4 backend baseline.
+- The Sprint 4 tracker is ready with 129 defined test cases and individual test ownership.
+
+Before executing an individual test:
+
+- Its required implementation dependency must be present.
+- PostgreSQL must be available where database access is required.
+- Required backend or frontend services must be running.
+- Required safe test accounts and synthetic test data must be available.
+- No unresolved Critical defect may prevent the tested flow.
+
+Before final WBS 7.9 completion:
+
+- WBS 7.7 must be integrated.
 - Django system check must pass.
 - Migration drift check must pass.
 - Backend automated tests must pass.
 - Frontend lint must pass.
 - Frontend production build must pass.
-- The Sprint 4 test tracker must be ready.
-- Required test accounts and safe synthetic test data must be available.
-- No unresolved Critical dependency defect may prevent the main Sprint 4 flows.
+- Required test evidence must be recorded.
 
 ## 7. Integration Sequence
 
@@ -296,7 +326,7 @@ Verify:
 
 ## 14. Audit Integration
 
-After WBS 7.8 is integrated, verify approved critical actions create the required audit evidence.
+WBS 7.8 is integrated. Verify approved critical actions create the required audit evidence.
 
 Audit verification should confirm:
 
@@ -460,20 +490,21 @@ For every fixed defect:
 
 ## 22. Branch and Merge Rule
 
-WBS 7.9 planning work stays on:
+The shared WBS 7.9 integration and testing branch is:
 
-`jerald/wbs-7.9-sprint-4-integration-testing`
+`wbs-7.9-sprint-4-integration-testing`
 
-Final integration execution must use the latest integrated Sprint 4 code.
+Individual members perform assigned execution on personal WBS 7.9 testing branches based on the shared branch.
 
-Before final execution:
+Jerald's current execution branch is:
 
-1. Fetch `origin/feature/sprint-4`.
-2. Update the local integration baseline.
-3. Confirm all required predecessor PRs are merged.
-4. Rebase or recreate the execution branch if required.
-5. Run the planned integration suite.
-6. Record results without overwriting historical evidence.
+`jerald/wbs-7.9-sprint-4-test-execution`
+
+Completed testing updates should return to the shared WBS 7.9 branch before final WBS 7.9 integration into `feature/sprint-4`.
+
+Testing branches should use the latest shared baseline before execution.
+
+Execution results must preserve existing evidence and must not overwrite another member's completed test records.
 
 ## 23. Exit Criteria
 
@@ -503,19 +534,37 @@ WBS 7.9 is ready for completion when:
 
 Planning status:
 
-READY
+COMPLETE
 
-Final integration execution status:
+Controlled WBS 7.9 execution status:
 
-DEPENDENCY BLOCKED
+READY FOR INTEGRATED FEATURES
 
-Current blocking predecessor work:
+Current dependency state:
 
-- WBS 7.4 awaiting merge.
-- WBS 7.6 awaiting merge.
-- WBS 7.7 in progress.
-- WBS 7.8 required before final integration.
+- WBS 7.4 integrated.
+- WBS 7.5 integrated.
+- WBS 7.6 integrated.
+- WBS 7.8 integrated.
+- WBS 7.7 remains in progress.
 
-WBS 7.5 is already integrated.
+Tests whose dependencies are integrated may proceed.
 
-No WBS 7.9 test result is recorded as Pass or Fail by this planning document.
+Tests which directly depend on unfinished WBS 7.7 remain Blocked until that work is integrated.
+
+Current approved Sprint 4 tracker allocation:
+
+- Jerald: 46 test cases.
+- MD: 38 test cases.
+- Joyee: 45 test cases.
+- Total: 129 test cases.
+
+At this alignment checkpoint, the tracker baseline remains:
+
+- Pass: 0.
+- Fail: 0.
+- Blocked: 61.
+- Not Run: 68.
+- Retest: 0.
+
+No test should be marked Pass until its planned execution and required verification are complete.
