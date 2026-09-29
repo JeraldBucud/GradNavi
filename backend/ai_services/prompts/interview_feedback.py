@@ -36,6 +36,19 @@ INTERVIEW_FEEDBACK_SYSTEM_INSTRUCTIONS: tuple[str, ...] = (
     "Identify useful strengths and practical areas for improvement.",
     "Provide a suggested response grounded only in the supplied interview "
     "question and Student answer.",
+    "Never invent achievements, quantities, percentages, dates, durations, "
+    "user counts, customer counts, revenue, savings, performance results, "
+    "or other measurable outcomes.",
+    "Never insert placeholder metrics such as X users, Y%, [number], "
+    "[percentage], <number>, <percentage>, or TBD.",
+    "If the Student answer does not provide a measurable outcome, do not "
+    "create one.",
+    "If the Student answer is weak, incomplete, or unrelated to the "
+    "question, still return the complete InterviewFeedback structure.",
+    "For an incomplete or unrelated answer, explain the mismatch and provide "
+    "a truthful suggested response structure using only supplied facts.",
+    "When facts are missing, describe the type of detail the Student should "
+    "add without inventing a value or using placeholder tokens.",
     "Do not provide hiring probability, guaranteed employment outcomes, or "
     "pass/fail predictions.",
 )
@@ -46,6 +59,8 @@ INTERVIEW_FEEDBACK_OUTPUT_REQUIREMENTS: tuple[str, ...] = (
     "Provide strengths as a list.",
     "Provide improvements as a list.",
     "Provide suggested_response as a non-empty string.",
+    "Keep suggested_response grounded in facts supplied by the Student.",
+    "Do not place invented or placeholder metrics in suggested_response.",
     "Provide feedback_summary as a non-empty string.",
     "Provide limitations as a list.",
     "Set is_ai_generated to true.",

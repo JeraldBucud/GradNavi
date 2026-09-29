@@ -8,8 +8,8 @@ WBS 6.6 exposes:
 
 Both endpoints require authentication.
 
-External AI provider execution remains outside WBS 6.6.
-WBS 7.3 will provide the concrete provider implementation.
+WBS 7.3 connects these endpoints to the shared OpenAI text provider
+through the existing provider-independent AI service boundary.
 """
 
 from rest_framework import status
@@ -18,7 +18,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ai_services.exceptions import AIProviderError
+from ai_services.exceptions import (
+    AIProviderError,
+    AIResponseValidationError,
+)
 from interviews.providers import get_interview_provider
 from interviews.serializers import (
     InterviewFeedbackRequestSerializer,
@@ -43,6 +46,19 @@ class InterviewServiceUnavailable(APIException):
         "Please try again later."
     )
     default_code = "external_service_unavailable"
+
+
+class InterviewResponseInvalid(APIException):
+    """
+    Controlled API response for invalid generated interview output.
+    """
+
+    status_code = status.HTTP_502_BAD_GATEWAY
+    default_detail = (
+        "The generated interview response could not be validated. "
+        "Please try again."
+    )
+    default_code = "ai_response_invalid"
 
 
 class InterviewQuestionGenerationView(APIView):
@@ -81,6 +97,9 @@ class InterviewQuestionGenerationView(APIView):
                 ],
                 ai_provider=ai_provider,
             )
+
+        except AIResponseValidationError as exc:
+            raise InterviewResponseInvalid() from exc
 
         except AIProviderError as exc:
             raise InterviewServiceUnavailable() from exc
@@ -135,6 +154,9 @@ class InterviewFeedbackGenerationView(APIView):
                 ],
                 ai_provider=ai_provider,
             )
+
+        except AIResponseValidationError as exc:
+            raise InterviewResponseInvalid() from exc
 
         except AIProviderError as exc:
             raise InterviewServiceUnavailable() from exc
