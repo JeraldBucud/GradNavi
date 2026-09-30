@@ -91,7 +91,8 @@ const studentNavigation = [
   {
     label: 'Interview Preparation',
     icon: MessageSquare,
-    implemented: false,
+    path: '/interview-preparation',
+    implemented: true,
   },
 ]
 
