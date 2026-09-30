@@ -5,6 +5,20 @@ import { generateInterviewFeedback } from '../../services/interviewService'
 import './InterviewPractice.css'
 
 
+const SUMMARY_ITEM_LIMIT = 5
+
+
+function collectUniqueItems(feedbackList, key) {
+  const items = new Set()
+
+  feedbackList.forEach((feedback) => {
+    (feedback[key] || []).forEach((item) => items.add(item))
+  })
+
+  return Array.from(items).slice(0, SUMMARY_ITEM_LIMIT)
+}
+
+
 function InterviewPractice({
   targetRole,
   questions,
@@ -15,6 +29,7 @@ function InterviewPractice({
   const [feedbackByQuestion, setFeedbackByQuestion] = useState({})
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false)
   const [feedbackError, setFeedbackError] = useState('')
+  const [isSummaryVisible, setIsSummaryVisible] = useState(false)
 
   const currentQuestion = questions[currentIndex]
   const currentAnswer = answers[currentIndex] || ''
@@ -50,6 +65,17 @@ function InterviewPractice({
   }
 
 
+  function showSummary() {
+    setFeedbackError('')
+    setIsSummaryVisible(true)
+  }
+
+
+  function returnToPractice() {
+    setIsSummaryVisible(false)
+  }
+
+
   async function handleGetFeedback() {
     if (!currentAnswer.trim()) {
       setFeedbackError('Write an answer before requesting feedback.')
@@ -81,6 +107,117 @@ function InterviewPractice({
     finally {
       setIsFeedbackLoading(false)
     }
+  }
+
+
+  if (isSummaryVisible) {
+    const reviewedQuestions = questions
+      .map((item, index) => ({
+        index,
+        question: item.question,
+        feedback: feedbackByQuestion[index],
+      }))
+      .filter((item) => item.feedback)
+
+    const feedbackList = reviewedQuestions.map((item) => item.feedback)
+    const strengths = collectUniqueItems(feedbackList, 'strengths')
+    const improvements = collectUniqueItems(feedbackList, 'improvements')
+
+    return (
+      <div className="interview-practice">
+        <section className="interview-practice__feedback">
+          <div className="interview-practice__feedback-summary">
+            <span className="interview-practice__badge">
+              Session summary
+            </span>
+            <h3>
+              {completedCount === 0
+                ? 'Practice ended without feedback.'
+                : `You received feedback on ${completedCount} of ${questions.length} questions.`}
+            </h3>
+            <p className="interview-prep__muted">
+              Target role: {targetRole}. Use this summary to plan
+              your next practice session. GradNavi does not make
+              hiring decisions or assign pass/fail outcomes.
+            </p>
+          </div>
+
+          {completedCount > 0 && (
+            <>
+              <h2 className="interview-prep__section-heading">
+                Feedback Overview
+              </h2>
+              <p className="interview-prep__muted">
+                Common points across the questions you answered.
+              </p>
+
+              <div className="interview-practice__feedback-grid">
+                <div className="interview-practice__feedback-card interview-practice__feedback-card--good">
+                  <h4>What you did well</h4>
+                  <ul>
+                    {strengths.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="interview-practice__feedback-card interview-practice__feedback-card--improve">
+                  <h4>What to improve</h4>
+                  <ul>
+                    {improvements.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="interview-practice__feedback-card interview-practice__feedback-card--grounded">
+                  <h4>Keep grounded</h4>
+                  <ul>
+                    <li>Use only real experience</li>
+                    <li>Do not invent achievements</li>
+                    <li>Review AI wording before using</li>
+                  </ul>
+                </div>
+              </div>
+
+              <h2 className="interview-prep__section-heading">
+                Question Feedback
+              </h2>
+
+              {reviewedQuestions.map((item) => (
+                <div
+                  key={item.index}
+                  className="interview-practice__example"
+                >
+                  <h4>
+                    Question {item.index + 1}: {item.question}
+                  </h4>
+                  <p>{item.feedback.feedback_summary}</p>
+                </div>
+              ))}
+            </>
+          )}
+
+          <div className="interview-prep__button-row">
+            <button
+              type="button"
+              className="interview-prep__button"
+              onClick={returnToPractice}
+            >
+              Back to Questions
+            </button>
+
+            <button
+              type="button"
+              className="interview-prep__button interview-prep__button--primary"
+              onClick={onEndPractice}
+            >
+              Finish Session
+            </button>
+          </div>
+        </section>
+      </div>
+    )
   }
 
 
@@ -211,7 +348,7 @@ function InterviewPractice({
             <button
               type="button"
               className="interview-prep__button"
-              onClick={onEndPractice}
+              onClick={showSummary}
               disabled={isFeedbackLoading}
             >
               End Practice
