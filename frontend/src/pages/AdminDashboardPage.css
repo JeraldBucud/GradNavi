@@ -46,6 +46,7 @@
   background: var(--color-success-bg, #dcfce7);
   border-color: var(--color-success, #16a34a);
 }
+
 .admin-dashboard__card--neutral {
   background: var(--color-surface-muted, #f1f5f9);
   border-color: var(--color-border, #cbd5e1);
@@ -60,6 +61,28 @@
   font-weight: 600;
   background: var(--color-surface, #ffffff);
   color: var(--color-body, #334155);
+}
+
+.admin-dashboard__list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-dashboard__list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-heading, #0f172a);
+}
+
+.admin-dashboard__list-value {
+  color: var(--color-muted, #64748b);
+  white-space: nowrap;
 }
 
 .admin-dashboard__empty {

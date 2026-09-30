@@ -3,10 +3,16 @@ import {
   useState,
 } from 'react'
 
-import { getAdminDashboardSummary } from '../services/adminService'
+import {
+  getAdminAnalytics,
+  getAdminDashboardSummary,
+} from '../services/adminService'
 
 import './CareerGuidancePage.css'
 import './AdminDashboardPage.css'
+
+
+const ANALYTICS_LIMIT = 5
 
 
 const attentionItems = [
@@ -25,30 +31,14 @@ const attentionItems = [
 ]
 
 
-const analyticsItems = [
-  {
-    badge: 'Trend',
-    tone: 'warning',
-    title: 'Popular careers',
-    text: 'Top selected and recommended careers.',
-  },
-  {
-    badge: 'Gap',
-    tone: 'info',
-    title: 'Common skill gaps',
-    text: 'Most frequent missing skills across student profiles.',
-  },
-  {
-    badge: 'Info',
-    tone: 'success',
-    title: 'Analytics scope',
-    text: 'Aggregated data only. No individual student details.',
-  },
-]
+function formatStudentCount(count) {
+  return count === 1 ? '1 student' : `${count} students`
+}
 
 
 function AdminDashboardPage() {
   const [summary, setSummary] = useState(null)
+  const [analytics, setAnalytics] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [isPermissionDenied, setIsPermissionDenied] = useState(false)
@@ -57,12 +47,16 @@ function AdminDashboardPage() {
   useEffect(() => {
     let isCancelled = false
 
-    async function loadSummary() {
+    async function loadDashboard() {
       try {
-        const result = await getAdminDashboardSummary()
+        const [summaryResult, analyticsResult] = await Promise.all([
+          getAdminDashboardSummary(),
+          getAdminAnalytics(),
+        ])
 
         if (!isCancelled) {
-          setSummary(result)
+          setSummary(summaryResult)
+          setAnalytics(analyticsResult)
         }
       }
       catch (error) {
@@ -87,7 +81,7 @@ function AdminDashboardPage() {
       }
     }
 
-    loadSummary()
+    loadDashboard()
 
     return () => {
       isCancelled = true
@@ -142,6 +136,72 @@ function AdminDashboardPage() {
     },
     ...attentionItems,
   ]
+
+
+  const popularCareers = (analytics?.popular_careers ?? [])
+    .slice(0, ANALYTICS_LIMIT)
+
+  const commonSkillGaps = (analytics?.common_skill_gaps ?? [])
+    .slice(0, ANALYTICS_LIMIT)
+
+  const analyticsCards = [
+    {
+      badge: 'Trend',
+      tone: 'warning',
+      title: 'Popular careers',
+      emptyText: 'No career selections yet.',
+      rows: popularCareers.map((career) => ({
+        key: career.career_id,
+        label: career.career_name,
+        value: formatStudentCount(career.selection_count),
+      })),
+    },
+    {
+      badge: 'Gap',
+      tone: 'info',
+      title: 'Common skill gaps',
+      emptyText: 'No skill gaps recorded yet.',
+      rows: commonSkillGaps.map((skill) => ({
+        key: skill.skill_id,
+        label: skill.skill_name,
+        value: formatStudentCount(skill.affected_student_count),
+      })),
+    },
+    {
+      badge: 'Info',
+      tone: 'success',
+      title: 'Analytics scope',
+      text: 'Aggregated data only. No individual student details.',
+    },
+  ]
+
+
+  function renderAnalyticsBody(item) {
+    if (!item.rows) {
+      return <p>{item.text}</p>
+    }
+
+    if (isLoading) {
+      return <p>Loading…</p>
+    }
+
+    if (item.rows.length === 0) {
+      return <p>{item.emptyText}</p>
+    }
+
+    return (
+      <ol className="admin-dashboard__list">
+        {item.rows.map((row) => (
+          <li key={row.key}>
+            <span>{row.label}</span>
+            <span className="admin-dashboard__list-value">
+              {row.value}
+            </span>
+          </li>
+        ))}
+      </ol>
+    )
+  }
 
 
   return (
@@ -228,13 +288,12 @@ function AdminDashboardPage() {
               <h2>Admin analytics</h2>
               <p>
                 Aggregated product signals required by FR-15.
-                Values remain placeholders until the admin API
-                supplies them.
+                Top {ANALYTICS_LIMIT} shown.
               </p>
             </div>
 
             <div className="admin-dashboard__card-grid">
-              {analyticsItems.map((item) => (
+              {analyticsCards.map((item) => (
                 <article
                   key={item.title}
                   className={`admin-dashboard__card admin-dashboard__card--${item.tone}`}
@@ -243,7 +302,7 @@ function AdminDashboardPage() {
                     {item.badge}
                   </span>
                   <h3>{item.title}</h3>
-                  <p>{item.text}</p>
+                  {renderAnalyticsBody(item)}
                 </article>
               ))}
             </div>
