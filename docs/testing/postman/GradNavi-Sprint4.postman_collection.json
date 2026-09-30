@@ -1,0 +1,125 @@
+{
+  "info": {
+    "_postman_id": "f7a3126c-61b7-45b1-9da4-56828f042cd9",
+    "name": "GradNavi",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56433797"
+  },
+  "item": [
+    {
+      "name": "Sprint4",
+      "item": [
+        {
+          "name": "S4-AUTH-04 - JWT-protected API without token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/v1/profile/",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "v1",
+                "profile",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "S4-AUTH-05 - Current-user retrieval after login",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "login endpoint",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "S4-REC-03",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "S4-REC-04 - Recommendation repeatability",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "S4-GAP-03 - Skill Gap and readiness repeatability",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "S4-INT-02 GENERATE VALID INTERVIEW QUESTIONS",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "S4-INT-03 REJECT QUESTION COUNT BELOW RANGE",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "S4-INT-04 REJECT QUESTION COUNT ABOVE RANGE",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "S4-INT-07 GENERATE STRUCTURED INTERVIEW FEEDBACK",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "s4_rec_04_baseline",
+      "value": ""
+    },
+    {
+      "key": "s4_gap_03_baseline",
+      "value": ""
+    }
+  ]
+}
