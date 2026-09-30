@@ -128,6 +128,37 @@ This early preparation follows these rules:
 | 7.10 | Sprint 4 Review and Retrospective                           | 02 Oct | 02 Oct |    1 | All Members    | 7.9                     |
 | 7.11 | Feature Complete                                            | 02 Oct | 02 Oct |    0 | All Members    | 7.10                    |
 
+### 5.1 Implementation and WBS 7.9 Testing Ownership
+
+The Official Owner column above preserves the approved Microsoft Project planning baseline.
+
+Sprint 4 delivery changed during implementation as team members supported reassigned, blocked, or delayed work. Actual implementation responsibility and WBS 7.9 test ownership are therefore recorded separately.
+
+| WBS | Task | Official Owner | Actual Implementer | WBS 7.9 Primary Test Owner |
+| --- | --- | --- | --- | --- |
+| 7.2 | Job Description Extraction and Matching | Jerald | Jerald | Jerald |
+| 7.3 | OpenAI Service Integration | MD | Jerald | Jerald |
+| 7.4 | AI Response Validation and Error Handling | Jerald | Jerald | Jerald |
+| 7.5 | Job Matching Interface | Joyee | Jerald | Joyee |
+| 7.6 | Admin Models and API | MD | MD | MD |
+| 7.7 | Admin Dashboard Interface | Joyee | Joyee | Joyee |
+| 7.8 | Role Permissions and Audit Records | Jerald | MD | MD |
+| 7.9 | Sprint 4 Integration and Testing | All Members | All Members | Assigned by feature and technical role |
+
+These records do not replace the approved WBS planning baseline.
+
+Official Owner identifies the owner recorded in the approved WBS and Microsoft Project schedule.
+
+Actual Implementer identifies the team member who completed the implementation work.
+
+WBS 7.9 Primary Test Owner identifies the team member responsible for the related Sprint 4 integration and regression verification.
+
+For WBS 7.3, MD remains the official owner. Jerald completed the implementation and owns the related OpenAI integration testing.
+
+For WBS 7.5, Joyee remains the official owner. Jerald completed the implementation. Joyee owns the related Job Matching interface and frontend testing.
+
+For WBS 7.8, Jerald remains the official owner in the planning baseline. The implementation was reassigned to MD, who also owns the related permission and audit testing.
+
 ## 6. Sprint 4 Functional Requirements
 
 Sprint 4 directly supports the following functional requirements.
@@ -165,21 +196,17 @@ The React frontend must not act as the security boundary.
 
 ### FR-15 Admin Analytics
 
-The current Product Backlog provisionally maps Admin Analytics to:
+Admin Analytics is confirmed inside Sprint 4 scope.
 
-* WBS 7.6 Admin Models and API.
-* WBS 7.7 Admin Dashboard Interface.
+The approved responsibility split is:
 
-The team must confirm whether Sprint 4 includes aggregated analytics before implementation begins.
+* WBS 7.6 Admin Models and API: backend analytics and aggregated administration data.
+* WBS 7.7 Admin Dashboard Interface: administrator-facing analytics presentation.
+* WBS 7.9 Sprint 4 Integration and Testing: API, frontend, permission, privacy, and integration verification.
 
-If approved, the team must define:
+The analytics implementation uses aggregated GradNavi data and avoids unnecessary individual Student information.
 
-* Required statistics.
-* Backend aggregation behaviour.
-* Frontend presentation.
-* Ownership.
-* Testing requirements.
-* Acceptance evidence.
+Required verification includes backend aggregation, Administrator-only access, frontend presentation, loading and error states, privacy controls, and integration evidence.
 
 ### FR-18 Audit and Error Handling
 
@@ -197,7 +224,11 @@ Critical permission-sensitive operations should create appropriate audit evidenc
 
 ## 7. WBS 7.2 Job Description Extraction and Matching
 
-Owner: Jerald
+Official Owner: Jerald
+
+Actual Implementer: Jerald
+
+WBS 7.9 Primary Test Owner: Jerald
 
 WBS 7.2 implements the backend logic required for FR-07 Job Description Matching.
 
@@ -224,7 +255,11 @@ Automated tests and evidence should be completed before WBS 7.2 is treated as re
 
 ## 8. WBS 7.3 OpenAI Service Integration
 
-Owner: MD
+Official Owner: MD
+
+Actual Implementer: Jerald
+
+WBS 7.9 Primary Test Owner: Jerald
 
 WBS 7.3 connects the existing Sprint 3 AI service boundary to the approved external OpenAI service.
 
@@ -282,7 +317,11 @@ Structured Application Result
 
 ## 9. WBS 7.4 AI Response Validation and Error Handling
 
-Owner: Jerald
+Official Owner: Jerald
+
+Actual Implementer: Jerald
+
+WBS 7.9 Primary Test Owner: Jerald
 
 WBS 7.4 validates external AI responses before GradNavi returns generated content to the user interface.
 
@@ -311,7 +350,11 @@ Tests should cover valid responses and controlled failure paths.
 
 ## 10. WBS 7.5 Job Matching Interface
 
-Owner: Joyee
+Official Owner: Joyee
+
+Actual Implementer: Jerald
+
+WBS 7.9 Primary Test Owner: Joyee
 
 WBS 7.5 provides the Student-facing interface for FR-07 Job Description Matching.
 
@@ -334,7 +377,11 @@ The interface should clearly distinguish information supported by the Student Pr
 
 ## 11. WBS 7.6 Admin Models and API
 
-Owner: MD
+Official Owner: MD
+
+Actual Implementer: MD
+
+WBS 7.9 Primary Test Owner: MD
 
 WBS 7.6 provides the backend foundation for Basic Administration.
 
@@ -350,11 +397,15 @@ Expected responsibilities include:
 
 WBS 7.6 provides the backend dependency required by WBS 7.8 Role Permissions and Audit Records.
 
-The team must confirm whether FR-15 Admin Analytics belongs inside WBS 7.6 before implementation begins.
+FR-15 Admin Analytics backend aggregation is included in WBS 7.6.
 
 ## 12. WBS 7.7 Admin Dashboard Interface
 
-Owner: Joyee
+Official Owner: Joyee
+
+Actual Implementer: Joyee
+
+WBS 7.9 Primary Test Owner: Joyee
 
 WBS 7.7 provides the administrator-facing interface.
 
@@ -371,11 +422,15 @@ Expected interface states include:
 
 The Admin Dashboard should follow the existing GradNavi responsive and accessibility standards.
 
-The team must confirm whether FR-15 Admin Analytics displays belong inside WBS 7.7 before implementation begins.
+FR-15 Admin Analytics presentation is included in WBS 7.7.
 
 ## 13. WBS 7.8 Role Permissions and Audit Records
 
-Owner: Jerald
+Official Owner: Jerald
+
+Current Assigned Implementer: MD
+
+WBS 7.9 Primary Test Owner: MD
 
 WBS 7.8 completes the main Sprint 4 role and audit controls.
 
@@ -398,9 +453,32 @@ Security-sensitive decisions must be enforced by Django rather than React.
 
 ## 14. WBS 7.9 Sprint 4 Integration and Testing
 
-Owner: All Members
+Shared WBS Owner: All Members
 
 WBS 7.9 verifies that Sprint 4 components operate together with the existing GradNavi system.
+
+Shared ownership does not mean every test case is assigned to every team member.
+
+Individual execution ownership follows the feature being verified, actual implementation responsibility, team technical role, and relevant regression responsibility.
+
+The approved 129-case Sprint 4 tracker assigns:
+
+| Member | Technical Role | Assigned Test Cases |
+| --- | --- | ---: |
+| Jerald | Full Stack | 46 |
+| MD | Backend Lead | 38 |
+| Joyee | Frontend Lead | 45 |
+| Total | | 129 |
+
+The allocation is role-based. No numerical equality target is used.
+
+Jerald primarily owns full-stack integration, Job Matching backend verification, OpenAI integration, AI response validation, Interview API verification, and cross-feature integration.
+
+MD primarily owns backend environment and database verification, Admin API, role permissions, audit records, backend security, and backend regression associated with his implementation areas.
+
+Joyee primarily owns Job Matching interface verification, Admin Dashboard verification, frontend behaviour, responsive layouts, form behaviour, accessibility-oriented frontend checks, browser compatibility, and frontend regression.
+
+The detailed assignment in `docs/testing/sprint-4-test-cases.xlsx` is the WBS 7.9 execution source of truth.
 
 Minimum integrated flows should include:
 
@@ -531,9 +609,13 @@ The team should decide whether FR-13:
 
 ### FR-15 Admin Analytics
 
-FR-15 currently has a provisional mapping to WBS 7.6 and WBS 7.7.
+FR-15 is confirmed within Sprint 4.
 
-The team should confirm the expected analytics scope before implementation.
+Backend analytics belong to WBS 7.6.
+
+Administrator-facing analytics presentation belongs to WBS 7.7.
+
+Related verification belongs to WBS 7.9.
 
 ### FR-16 AI Content Review
 
