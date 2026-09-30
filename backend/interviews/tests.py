@@ -822,6 +822,49 @@ def build_feedback_result(
         requires_user_review=True,
     )
 
+class SequencedFeedbackProvider:
+    def __init__(
+        self,
+        *,
+        responses=None,
+        error=None,
+    ):
+        self.responses = list(
+            responses or []
+        )
+        self.error = error
+        self.calls = []
+
+    def generate(
+        self,
+        *,
+        prompt_package,
+        output_model,
+    ):
+        self.calls.append(
+            {
+                "prompt_package": prompt_package,
+                "output_model": output_model,
+            }
+        )
+
+        if self.error is not None:
+            raise self.error
+
+        if output_model is not InterviewFeedback:
+            raise AssertionError(
+                "Unexpected output model supplied."
+            )
+
+        if not self.responses:
+            raise AssertionError(
+                "No sequenced feedback response remains."
+            )
+
+        return self.responses.pop(0)
+
+
+
 class InterviewFeedbackServiceTests(SimpleTestCase):
     """
     Tests feedback generation through the WBS 6.2 AI boundary.
@@ -1075,6 +1118,66 @@ class InterviewFeedbackServiceTests(SimpleTestCase):
             )
 
 
+    def test_feedback_allows_numeric_claim_from_question(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "In 5 years, I want to grow into a "
+                "senior developer role."
+            ),
+        )
+
+        provider = FakeInterviewProvider(
+            feedback_response=expected,
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Where do you see yourself in 5 years?"
+            ),
+            student_answer=(
+                "I want to grow into a senior "
+                "developer role."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+
+    def test_feedback_allows_numeric_claim_from_target_role(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "In a Level 2 Support Engineer role, "
+                "I troubleshoot incidents and help users."
+            ),
+        )
+
+        provider = FakeInterviewProvider(
+            feedback_response=expected,
+        )
+
+        result = generate_interview_feedback(
+            target_role="Level 2 Support Engineer",
+            question=(
+                "Tell me about your support experience."
+            ),
+            student_answer=(
+                "I troubleshoot incidents and help users."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+
+
     def test_feedback_allows_numeric_claim_from_student_answer(self):
         expected = build_feedback_result(
             suggested_response=(
@@ -1206,6 +1309,149 @@ class InterviewFeedbackServiceTests(SimpleTestCase):
             "Keep suggested_response grounded",
             output_text,
         )
+
+    def test_feedback_valid_first_attempt_does_not_retry(self):
+        expected = build_feedback_result(
+            suggested_response=(
+                "I reviewed the logs, found the issue, "
+                "fixed it, and verified the result."
+            ),
+        )
+
+        provider = SequencedFeedbackProvider(
+            responses=[
+                expected,
+            ],
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question="Tell me about a difficult bug.",
+            student_answer=(
+                "I reviewed the logs, found the issue, "
+                "fixed it, and verified the result."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+        self.assertEqual(
+            len(provider.calls),
+            1,
+        )
+
+
+    def test_feedback_retries_once_after_validation_failure(self):
+        invalid = build_feedback_result(
+            suggested_response=(
+                "I improved the product for X users."
+            ),
+        )
+
+        expected = build_feedback_result(
+            suggested_response=(
+                "I reviewed the workflow, improved the "
+                "process, and verified the result."
+            ),
+        )
+
+        provider = SequencedFeedbackProvider(
+            responses=[
+                invalid,
+                expected,
+            ],
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a process improvement."
+            ),
+            student_answer=(
+                "I reviewed the workflow and improved "
+                "the process."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+        self.assertEqual(
+            len(provider.calls),
+            2,
+        )
+
+
+    def test_feedback_second_validation_failure_is_raised(self):
+        first_invalid = build_feedback_result(
+            suggested_response=(
+                "I improved the product for X users."
+            ),
+        )
+
+        second_invalid = build_feedback_result(
+            suggested_response=(
+                "I improved performance by 40%."
+            ),
+        )
+
+        provider = SequencedFeedbackProvider(
+            responses=[
+                first_invalid,
+                second_invalid,
+            ],
+        )
+
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question=(
+                    "Tell me about a process improvement."
+                ),
+                student_answer=(
+                    "I improved the workflow."
+                ),
+                ai_provider=provider,
+            )
+
+        self.assertEqual(
+            len(provider.calls),
+            2,
+        )
+
+
+    def test_feedback_provider_error_is_not_retried(self):
+        provider = SequencedFeedbackProvider(
+            error=AIProviderTimeoutError(
+                "Provider timeout."
+            ),
+        )
+
+        with self.assertRaises(
+            AIProviderTimeoutError
+        ):
+            generate_interview_feedback(
+                target_role="Software Developer",
+                question="Tell me about yourself.",
+                student_answer="Example answer.",
+                ai_provider=provider,
+            )
+
+        self.assertEqual(
+            len(provider.calls),
+            1,
+        )
+
+
 
 class InterviewProviderSeamTests(SimpleTestCase):
     """
@@ -1557,6 +1803,59 @@ class InterviewQuestionAPITests(APITestCase):
         )
 
 
+    def test_semantic_validation_failure_logs_safe_category(self):
+        provider = FakeInterviewProvider(
+            question_response=(
+                build_question_set(
+                    question_focus_areas=[
+                        "Problem solving",
+                    ],
+                    focus_areas=[
+                        "Problem solving",
+                        "SENSITIVE_INTERNAL_MARKER",
+                    ],
+                )
+            ),
+        )
+
+        with self.assertLogs(
+            "interviews.views",
+            level="WARNING",
+        ) as captured:
+            with patch(
+                "interviews.views.get_interview_provider",
+                return_value=provider,
+            ):
+                response = self.authenticated_post(
+                    self.valid_payload()
+                )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_502_BAD_GATEWAY,
+        )
+
+        log_text = " ".join(
+            captured.output
+        )
+
+        self.assertIn(
+            "focus_area_mismatch",
+            log_text,
+        )
+
+        self.assertNotIn(
+            "SENSITIVE_INTERNAL_MARKER",
+            log_text,
+        )
+
+        self.assertNotIn(
+            "Build and maintain web applications.",
+            log_text,
+        )
+
+
+
 class InterviewFeedbackAPITests(APITestCase):
     """
     Tests POST /api/v1/interviews/feedback/.
@@ -1874,4 +2173,50 @@ class InterviewFeedbackAPITests(APITestCase):
                 "unsupported placeholder value."
             ),
             response_text,
+        )
+
+
+    def test_feedback_validation_failure_logs_safe_category(self):
+        provider = FakeInterviewProvider(
+            feedback_response=build_feedback_result(
+                suggested_response=(
+                    "I improved the product for X users."
+                ),
+            ),
+        )
+
+        with self.assertLogs(
+            "interviews.views",
+            level="WARNING",
+        ) as captured:
+            with patch(
+                "interviews.views.get_interview_provider",
+                return_value=provider,
+            ):
+                response = self.authenticated_post(
+                    self.valid_payload()
+                )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_502_BAD_GATEWAY,
+        )
+
+        log_text = " ".join(
+            captured.output
+        )
+
+        self.assertIn(
+            "feedback_placeholder",
+            log_text,
+        )
+
+        self.assertNotIn(
+            "X users",
+            log_text,
+        )
+
+        self.assertNotIn(
+            "I reviewed the logs, identified the issue, and fixed it.",
+            log_text,
         )
