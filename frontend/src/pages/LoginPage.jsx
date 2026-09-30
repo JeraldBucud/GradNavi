@@ -6,7 +6,10 @@ import {
   useNavigate,
 } from 'react-router'
 
-import { loginAccount } from '../services/authService'
+import {
+  getStoredUser,
+  loginAccount,
+} from '../services/authService'
 import './AuthPage.css'
 
 
@@ -19,8 +22,10 @@ function LoginPage() {
    *
    * When a user is redirected to Login from a protected page,
    * return them to the original destination after authentication.
+   * Otherwise, administrators go to the Admin Dashboard and
+   * students go to their profile.
    */
-  const destination = location.state?.from || '/profile'
+  const requestedDestination = location.state?.from
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -43,7 +48,15 @@ function LoginPage() {
     try {
       await loginAccount(email, password)
 
-      navigate(destination, { replace: true })
+      const user = getStoredUser()
+      const defaultDestination = user?.role === 'admin'
+        ? '/admin'
+        : '/profile'
+
+      navigate(
+        requestedDestination || defaultDestination,
+        { replace: true },
+      )
     } catch (requestError) {
       /*
        * Credential failures use the approved Figma wording.
