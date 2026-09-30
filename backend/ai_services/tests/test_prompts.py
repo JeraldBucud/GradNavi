@@ -849,6 +849,34 @@ class InterviewQuestionPromptTests(SimpleTestCase):
         )
 
 
+    def test_interview_question_output_matches_semantic_validator(
+        self,
+    ):
+        requirements = " ".join(
+            INTERVIEW_QUESTION_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        required = (
+            "exactly the number of questions",
+            "exactly one meaningful",
+            "non-blank focus_area",
+            "distinct focus_area",
+            "exactly once",
+            "do not include a top-level focus_area",
+            "do not omit a focus_area",
+        )
+
+        for phrase in required:
+            with self.subTest(
+                phrase=phrase,
+            ):
+                self.assertIn(
+                    phrase,
+                    requirements,
+                )
+
+
+
 class InterviewFeedbackPromptTests(SimpleTestCase):
     """
     Tests for Interview Feedback prompt construction.
@@ -973,6 +1001,57 @@ class InterviewFeedbackPromptTests(SimpleTestCase):
                 phrase,
                 instructions,
             )
+
+
+    def test_interview_feedback_prompt_enforces_grounded_numeric_output(
+        self,
+    ):
+        instructions = " ".join(
+            INTERVIEW_FEEDBACK_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        requirements = " ".join(
+            INTERVIEW_FEEDBACK_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        combined = instructions + " " + requirements
+
+        required = (
+            "do not introduce a numeric value",
+            "same numeric value appears",
+            "must contain no numeric values",
+            "placeholder metrics or template markers",
+            "natural prose rather than a numbered list",
+            "hypothetical, illustrative, sample, benchmark",
+        )
+
+        for phrase in required:
+            with self.subTest(
+                phrase=phrase,
+            ):
+                self.assertIn(
+                    phrase,
+                    combined,
+                )
+
+        forbidden = (
+            "x users",
+            "y%",
+            "[number]",
+            "[percentage]",
+            "<number>",
+            "<percentage>",
+        )
+
+        for phrase in forbidden:
+            with self.subTest(
+                phrase=phrase,
+            ):
+                self.assertNotIn(
+                    phrase,
+                    combined,
+                )
+
 
 
 class LearningResourceDiscoveryPromptTests(

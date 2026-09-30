@@ -99,6 +99,8 @@ def _extract_numeric_claims(
 def _validate_interview_feedback(
     *,
     result: InterviewFeedback,
+    target_role: str,
+    question: str,
     student_answer: str,
 ) -> None:
     """
@@ -106,7 +108,8 @@ def _validate_interview_feedback(
 
     Suggested responses must not contain obvious placeholder
     metrics or introduce explicit numeric claims which were not
-    supplied by the Student answer.
+    supplied through the target role, interview question, or
+    Student answer.
     """
 
     suggested_response = (
@@ -124,11 +127,18 @@ def _validate_interview_feedback(
                 "unsupported placeholder value."
             )
 
-    supplied_numeric_claims = (
-        _extract_numeric_claims(
-            student_answer
+    supplied_numeric_claims = set()
+
+    for value in (
+        target_role,
+        question,
+        student_answer,
+    ):
+        supplied_numeric_claims.update(
+            _extract_numeric_claims(
+                value
+            )
         )
-    )
 
     generated_numeric_claims = (
         _extract_numeric_claims(
@@ -303,6 +313,9 @@ def generate_interview_questions(
     return result
 
 
+INTERVIEW_FEEDBACK_MAX_ATTEMPTS = 2
+
+
 def generate_interview_feedback(
     *,
     target_role: str,
@@ -332,14 +345,33 @@ def generate_interview_feedback(
         request
     )
 
-    result = ai_provider.generate(
-        prompt_package=prompt_package,
-        output_model=InterviewFeedback,
-    )
+    for attempt in range(
+        INTERVIEW_FEEDBACK_MAX_ATTEMPTS
+    ):
+        result = ai_provider.generate(
+            prompt_package=prompt_package,
+            output_model=InterviewFeedback,
+        )
 
-    _validate_interview_feedback(
-        result=result,
-        student_answer=request.student_answer,
-    )
+        try:
+            _validate_interview_feedback(
+                result=result,
+                target_role=request.target_role,
+                question=request.question,
+                student_answer=request.student_answer,
+            )
 
-    return result
+        except AIResponseValidationError:
+            if (
+                attempt + 1
+                < INTERVIEW_FEEDBACK_MAX_ATTEMPTS
+            ):
+                continue
+
+            raise
+
+        return result
+
+    raise AssertionError(
+        "Interview Feedback retry loop ended unexpectedly."
+    )

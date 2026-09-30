@@ -12,6 +12,8 @@ WBS 7.3 connects these endpoints to the shared OpenAI text provider
 through the existing provider-independent AI service boundary.
 """
 
+import logging
+
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import IsAuthenticated
@@ -33,6 +35,68 @@ from interviews.services import (
     generate_interview_feedback,
     generate_interview_questions,
 )
+
+
+logger = logging.getLogger(__name__)
+
+
+INTERVIEW_VALIDATION_LOG_CATEGORIES = {
+    (
+        "OpenAI response was incomplete."
+    ): "output_incomplete",
+    (
+        "OpenAI response did not complete successfully."
+    ): "output_not_completed",
+    (
+        "OpenAI response did not contain structured output text."
+    ): "structured_output_missing",
+    (
+        "OpenAI structured output failed GradNavi validation."
+    ): "structured_output_invalid",
+    (
+        "Interview AI response question count does not "
+        "match the requested count."
+    ): "question_count_mismatch",
+    (
+        "Interview AI response contains a blank "
+        "question focus area."
+    ): "question_focus_area_blank",
+    (
+        "Interview AI response contains a blank "
+        "declared focus area."
+    ): "declared_focus_area_blank",
+    (
+        "Interview AI response contains duplicate "
+        "declared focus areas."
+    ): "duplicate_focus_area",
+    (
+        "Interview AI response focus areas do not "
+        "match generated questions."
+    ): "focus_area_mismatch",
+    (
+        "Interview AI feedback contains an "
+        "unsupported placeholder value."
+    ): "feedback_placeholder",
+    (
+        "Interview AI feedback contains an "
+        "unsupported numeric claim."
+    ): "feedback_unsupported_numeric_claim",
+}
+
+
+def _validation_failure_category(
+    error: AIResponseValidationError,
+) -> str:
+    """
+    Return a safe internal validation category.
+
+    No generated or Student-supplied content is returned.
+    """
+
+    return INTERVIEW_VALIDATION_LOG_CATEGORIES.get(
+        str(error),
+        "interview_validation_failed",
+    )
 
 
 class InterviewServiceUnavailable(APIException):
@@ -99,6 +163,12 @@ class InterviewQuestionGenerationView(APIView):
             )
 
         except AIResponseValidationError as exc:
+            logger.warning(
+                "Interview question AI validation failed: %s",
+                _validation_failure_category(
+                    exc
+                ),
+            )
             raise InterviewResponseInvalid() from exc
 
         except AIProviderError as exc:
@@ -156,6 +226,12 @@ class InterviewFeedbackGenerationView(APIView):
             )
 
         except AIResponseValidationError as exc:
+            logger.warning(
+                "Interview feedback AI validation failed: %s",
+                _validation_failure_category(
+                    exc
+                ),
+            )
             raise InterviewResponseInvalid() from exc
 
         except AIProviderError as exc:
