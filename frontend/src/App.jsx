@@ -16,6 +16,7 @@ import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import SkillGapAnalysisPage from './pages/SkillGapAnalysisPage'
 import StudentProfilePage from './pages/StudentProfilePage'
+import InterviewPreparationPage from './pages/InterviewPreparationPage'
 
 
 function App() {
@@ -86,6 +87,11 @@ function App() {
           <Route
             path="/cover-letter-builder"
             element={<CoverLetterBuilderPage />}
+          />
+          
+          <Route
+            path="/interview-preparation"
+            element={<InterviewPreparationPage />}
           />
         </Route>
       </Route>
