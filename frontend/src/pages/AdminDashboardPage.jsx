@@ -11,18 +11,12 @@ import './AdminDashboardPage.css'
 
 const attentionItems = [
   {
-    badge: 'Review',
-    tone: 'warning',
-    title: 'Pending resource reports',
-    text: 'Student resource reports will appear here once the admin review workflow is connected',
-  },
-  {
     badge: 'Info',
     tone: 'info',
     title: 'Recent admin changes',
     text: 'Available once audit records (WBS 7.8) are connected.',
   },
-      {
+  {
     badge: 'Unavailable',
     tone: 'neutral',
     title: 'Data health',
@@ -125,6 +119,31 @@ function AdminDashboardPage() {
   ]
 
 
+  const pendingReportCount = summary?.pendingReportCount ?? 0
+
+  let pendingReportText = 'No open resource reports.'
+
+  if (isLoading) {
+    pendingReportText = 'Checking for open reports…'
+  }
+  else if (pendingReportCount === 1) {
+    pendingReportText = '1 open report is waiting for review.'
+  }
+  else if (pendingReportCount > 1) {
+    pendingReportText = `${pendingReportCount} open reports are waiting for review.`
+  }
+
+  const attentionCards = [
+    {
+      badge: pendingReportCount > 0 ? 'Review' : 'Clear',
+      tone: pendingReportCount > 0 ? 'warning' : 'success',
+      title: 'Pending resource reports',
+      text: pendingReportText,
+    },
+    ...attentionItems,
+  ]
+
+
   return (
     <div className="career-guidance-page">
       <header className="career-guidance-heading">
@@ -177,7 +196,7 @@ function AdminDashboardPage() {
             </div>
 
             <div className="admin-dashboard__card-grid">
-              {attentionItems.map((item) => (
+              {attentionCards.map((item) => (
                 <article
                   key={item.title}
                   className={`admin-dashboard__card admin-dashboard__card--${item.tone}`}

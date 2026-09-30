@@ -36,19 +36,35 @@ function listAdminLearningResources() {
 }
 
 
+function listAdminResourceReports() {
+  return apiRequest(
+    `${ADMIN_BASE_PATH}/learning-resource-reports/`,
+    { requiresAuth: true },
+  )
+}
+
+
+function getAdminAnalytics() {
+  return apiRequest(
+    `${ADMIN_BASE_PATH}/analytics/`,
+    { requiresAuth: true },
+  )
+}
+
 async function getAdminDashboardSummary() {
-  const [
+    const [
     users,
     careers,
     skills,
     learningResources,
+    resourceReports,
   ] = await Promise.all([
     listAdminUsers(),
     listAdminCareers(),
     listAdminSkills(),
     listAdminLearningResources(),
+    listAdminResourceReports(),
   ])
-
   return {
     studentCount: users.filter(
       (user) => user.role === 'student',
@@ -60,14 +76,19 @@ async function getAdminDashboardSummary() {
     activeResourceCount: learningResources.filter(
       (resource) => resource.is_active,
     ).length,
+    pendingReportCount: resourceReports.filter(
+      (report) => report.status === 'open',
+    ).length,
   }
 }
 
 
 export {
+  getAdminAnalytics,
   getAdminDashboardSummary,
   listAdminCareers,
   listAdminLearningResources,
+  listAdminResourceReports,
   listAdminSkills,
   listAdminUsers,
 }
