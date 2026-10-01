@@ -12,6 +12,18 @@ function listAdminUsers() {
 }
 
 
+function updateAdminUserRole(userId, role) {
+  return apiRequest(
+    `${ADMIN_BASE_PATH}/users/${userId}/role/`,
+    {
+      method: 'PATCH',
+      body: { role },
+      requiresAuth: true,
+    },
+  )
+}
+
+
 function listAdminCareers() {
   return apiRequest(
     `${ADMIN_BASE_PATH}/careers/`,
@@ -52,7 +64,7 @@ function getAdminAnalytics() {
 }
 
 async function getAdminDashboardSummary() {
-    const [
+  const [
     users,
     careers,
     skills,
@@ -91,4 +103,5 @@ export {
   listAdminResourceReports,
   listAdminSkills,
   listAdminUsers,
+  updateAdminUserRole,
 }

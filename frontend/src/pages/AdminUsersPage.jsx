@@ -2,9 +2,14 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { useNavigate } from 'react-router'
 
-import { listAdminUsers } from '../services/adminService'
-
+import {
+  listAdminUsers,
+  updateAdminUserRole,
+} from '../services/adminService'
+import { getStoredUser } from '../services/authService'
+import { clearAuthSession } from '../services/authStorage'
 import './CareerGuidancePage.css'
 import './AdminDashboardPage.css'
 import './AdminUsersPage.css'
@@ -37,12 +42,25 @@ function getFullName(user) {
 }
 
 
+function getRoleLabel(role) {
+  return role === 'admin' ? 'Admin' : 'Student'
+}
+
+
 function AdminUsersPage() {
+  const navigate = useNavigate()
+  const currentUser = getStoredUser()
+
   const [users, setUsers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [searchText, setSearchText] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
+
+  const [pendingChange, setPendingChange] = useState(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [dialogError, setDialogError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
 
   useEffect(() => {
@@ -79,6 +97,97 @@ function AdminUsersPage() {
   }, [])
 
 
+  useEffect(() => {
+    if (!pendingChange) {
+      return undefined
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape' && !isSaving) {
+        setPendingChange(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [pendingChange, isSaving])
+
+
+  function isOwnAccount(user) {
+    return (
+      currentUser
+      && String(currentUser.id) === String(user.id)
+    )
+  }
+
+
+  function openRoleDialog(user) {
+    setSuccessMessage('')
+    setDialogError('')
+    setPendingChange({
+      user,
+      newRole: user.role === 'admin' ? 'student' : 'admin',
+    })
+  }
+
+
+  function closeRoleDialog() {
+    if (isSaving) {
+      return
+    }
+
+    setPendingChange(null)
+    setDialogError('')
+  }
+
+
+  async function handleConfirmRoleChange() {
+    const { user, newRole } = pendingChange
+
+    setIsSaving(true)
+    setDialogError('')
+
+    try {
+      const updated = await updateAdminUserRole(user.id, newRole)
+
+      if (isOwnAccount(user)) {
+        clearAuthSession()
+        navigate('/login', {
+          replace: true,
+          state: {
+            message: 'Your role was changed. Please sign in again.',
+          },
+        })
+        return
+      }
+
+      setUsers((previous) => previous.map((item) => (
+        item.id === updated.id
+          ? { ...item, role: updated.role }
+          : item
+      )))
+
+      setSuccessMessage(
+        `${getFullName(user)} is now ${getRoleLabel(updated.role)}. `
+        + 'This change was recorded in the audit log.',
+      )
+      setPendingChange(null)
+    }
+    catch (error) {
+      setDialogError(
+        error.message
+        || 'Could not change the role. Please try again.',
+      )
+    }
+    finally {
+      setIsSaving(false)
+    }
+  }
+
+
   const normalisedSearch = searchText.trim().toLowerCase()
 
   const visibleUsers = users.filter((user) => {
@@ -110,6 +219,19 @@ function AdminUsersPage() {
           <h2>Something went wrong</h2>
           <p>{errorMessage}</p>
         </section>
+      )}
+
+      {successMessage && (
+        <div className="admin-users__success" role="status">
+          <span>{successMessage}</span>
+          <button
+            type="button"
+            className="admin-users__link-button"
+            onClick={() => setSuccessMessage('')}
+          >
+            Dismiss
+          </button>
+        </div>
       )}
 
       {!errorMessage && (
@@ -161,19 +283,25 @@ function AdminUsersPage() {
                     <th scope="col">Status</th>
                     <th scope="col">Joined</th>
                     <th scope="col">Last login</th>
+                    <th scope="col">Actions</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {visibleUsers.map((user) => (
                     <tr key={user.id}>
-                      <td>{getFullName(user)}</td>
+                      <td>
+                        {getFullName(user)}
+                        {isOwnAccount(user) && (
+                          <span className="admin-users__you"> (you)</span>
+                        )}
+                      </td>
                       <td>{user.email}</td>
                       <td>
                         <span
                           className={`admin-users__pill admin-users__pill--${user.role}`}
                         >
-                          {user.role === 'admin' ? 'Admin' : 'Student'}
+                          {getRoleLabel(user.role)}
                         </span>
                       </td>
                       <td>
@@ -185,6 +313,15 @@ function AdminUsersPage() {
                       </td>
                       <td>{formatDate(user.date_joined)}</td>
                       <td>{formatDate(user.last_login)}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="admin-users__action-button"
+                          onClick={() => openRoleDialog(user)}
+                        >
+                          {user.role === 'admin' ? 'Make student' : 'Make admin'}
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -198,6 +335,73 @@ function AdminUsersPage() {
             </p>
           )}
         </section>
+      )}
+
+      {pendingChange && (
+        <div
+          className="admin-users__backdrop"
+          onClick={closeRoleDialog}
+        >
+          <div
+            className="admin-users__dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="role-dialog-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 id="role-dialog-title">Change user role?</h2>
+
+            <p>
+              Change <strong>{getFullName(pendingChange.user)}</strong>
+              {' '}({pendingChange.user.email}) from
+              {' '}<strong>{getRoleLabel(pendingChange.user.role)}</strong> to
+              {' '}<strong>{getRoleLabel(pendingChange.newRole)}</strong>?
+            </p>
+
+            {pendingChange.newRole === 'admin' && (
+              <p className="admin-users__warning">
+                Admins can manage users, careers, skills and learning
+                resources. Only give this role to trusted staff.
+              </p>
+            )}
+
+            {isOwnAccount(pendingChange.user) && (
+              <p className="admin-users__warning">
+                This is your own account. You will be signed out and
+                may lose access to the admin area.
+              </p>
+            )}
+
+            <p className="admin-users__dialog-note">
+              This change will be recorded in the audit log.
+            </p>
+
+            {dialogError && (
+              <p className="admin-users__dialog-error" role="alert">
+                {dialogError}
+              </p>
+            )}
+
+            <div className="admin-users__dialog-actions">
+              <button
+                type="button"
+                className="admin-users__secondary-button"
+                onClick={closeRoleDialog}
+                disabled={isSaving}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="admin-users__primary-button"
+                onClick={handleConfirmRoleChange}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Saving…' : 'Confirm change'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
