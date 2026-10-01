@@ -40,7 +40,8 @@ const adminNavigation = [
   {
     label: 'Users',
     icon: Users,
-    implemented: false,
+    path: '/admin/users',
+    implemented: true,
   },
   {
     label: 'Careers',
