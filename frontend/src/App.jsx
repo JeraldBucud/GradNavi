@@ -17,6 +17,11 @@ import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import SkillGapAnalysisPage from './pages/SkillGapAnalysisPage'
 import StudentProfilePage from './pages/StudentProfilePage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
+import AdminUsersPage from './pages/AdminUsersPage'
+import AdminLayout from './layouts/AdminLayout'
+import AdminRoute from './components/auth/AdminRoute'
+import AdminCareersPage from './pages/AdminCareersPage'
 
 
 function App() {
@@ -93,6 +98,24 @@ function App() {
             path="/cover-letter-builder"
             element={<CoverLetterBuilderPage />}
           />
+        </Route>
+
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route
+              path="/admin"
+              element={<AdminDashboardPage />}
+            />
+
+            <Route
+              path="/admin/users"
+              element={<AdminUsersPage />}
+            />
+            <Route
+              path="/admin/careers"
+              element={<AdminCareersPage />}
+            />
+          </Route>
         </Route>
       </Route>
 
