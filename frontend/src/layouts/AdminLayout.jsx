@@ -46,7 +46,8 @@ const adminNavigation = [
   {
     label: 'Careers',
     icon: Briefcase,
-    implemented: false,
+    path: '/admin/careers',
+    implemented: true,
   },
   {
     label: 'Skills',

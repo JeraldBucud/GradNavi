@@ -21,6 +21,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage'
 import AdminUsersPage from './pages/AdminUsersPage'
 import AdminLayout from './layouts/AdminLayout'
 import AdminRoute from './components/auth/AdminRoute'
+import AdminCareersPage from './pages/AdminCareersPage'
 
 
 function App() {
@@ -109,6 +110,10 @@ function App() {
             <Route
               path="/admin/users"
               element={<AdminUsersPage />}
+            />
+            <Route
+              path="/admin/careers"
+              element={<AdminCareersPage />}
             />
           </Route>
         </Route>
