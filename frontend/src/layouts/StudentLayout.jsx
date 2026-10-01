@@ -39,7 +39,8 @@ const studentNavigation = [
   {
     label: 'Dashboard',
     icon: LayoutDashboard,
-    implemented: false,
+    path: '/dashboard',
+    implemented: true,
   },
   {
     label: 'Student Profile',

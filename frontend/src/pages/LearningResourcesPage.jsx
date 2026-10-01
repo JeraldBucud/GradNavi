@@ -1210,7 +1210,7 @@ function LearningResourcesPage() {
           </h2>
 
           <p>
-            Your top career match loads by
+            Your primary career goal loads by
             default. Learning Focus starts with
             your highest-priority unresolved gap.
           </p>
@@ -1234,8 +1234,8 @@ function LearningResourcesPage() {
               }
               helperText={
                 (
-                  'Top match by default. '
-                  + 'Change anytime.'
+                  'Primary career by default. '
+                  + 'Change this view temporarily.'
                 )
               }
               onChange={

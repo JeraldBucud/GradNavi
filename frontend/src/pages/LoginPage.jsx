@@ -20,7 +20,9 @@ function LoginPage() {
    * When a user is redirected to Login from a protected page,
    * return them to the original destination after authentication.
    */
-  const destination = location.state?.from || '/profile'
+  const requestedDestination =
+    location.state?.from
+    || null
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -41,9 +43,27 @@ function LoginPage() {
     setIsLoading(true)
 
     try {
-      await loginAccount(email, password)
+      const authData =
+        await loginAccount(
+          email,
+          password,
+        )
 
-      navigate(destination, { replace: true })
+      const defaultDestination =
+        authData
+          ?.user
+          ?.role
+        === 'admin'
+          ? '/admin'
+          : '/dashboard'
+
+      navigate(
+        requestedDestination
+        || defaultDestination,
+        {
+          replace: true,
+        },
+      )
     } catch (requestError) {
       /*
        * Credential failures use the approved Figma wording.

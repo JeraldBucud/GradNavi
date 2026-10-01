@@ -17,10 +17,6 @@ import {
   getExploreCareers,
 } from '../services/careerService'
 
-import {
-  saveCareerSelection,
-} from '../services/careerSelectionService'
-
 import './CareerGuidancePage.css'
 
 
@@ -414,44 +410,12 @@ function ExploreCareersPage() {
   }
 
 
-  function rememberSelectedCareer() {
-    const careerId =
-      selectedCareer
-        ?.career_id
-
-    const careerName =
-      selectedCareer
-        ?.career_name
-
-    if (
-      !careerId
-      || !careerName
-    ) {
-      return false
-    }
-
-    saveCareerSelection(
-      {
-        career_id:
-          careerId,
-        career_name:
-          careerName,
-      },
-    )
-
-    return true
-  }
-
-
   function openSelectedSkillGaps() {
     const careerId =
       selectedCareer
         ?.career_id
 
-    if (
-      !careerId
-      || !rememberSelectedCareer()
-    ) {
+    if (!careerId) {
       return
     }
 
@@ -466,10 +430,7 @@ function ExploreCareersPage() {
       selectedCareer
         ?.career_id
 
-    if (
-      !careerId
-      || !rememberSelectedCareer()
-    ) {
+    if (!careerId) {
       return
     }
 

@@ -38,6 +38,7 @@ from ai_services.schemas.outputs import (
     InterviewQuestion,
     InterviewQuestionSet,
 )
+from interviews.models import InterviewSession
 from interviews.providers import get_interview_provider
 from interviews.serializers import (
     InterviewFeedbackRequestSerializer,
@@ -2219,4 +2220,381 @@ class InterviewFeedbackAPITests(APITestCase):
         self.assertNotIn(
             "I reviewed the logs, identified the issue, and fixed it.",
             log_text,
+        )
+
+class InterviewHistoryAPITests(APITestCase):
+    """
+    FR-13 Interview History API tests.
+
+    Only completed-session metadata is stored.
+
+    Typed answers, generated feedback text, and job descriptions
+    are outside the persistence contract.
+    """
+
+    def setUp(self):
+        self.url = (
+            "/api/v1/interviews/history/"
+        )
+
+        User = get_user_model()
+
+        self.user = User.objects.create_user(
+            email=(
+                "interview-history@gradnavi.test"
+            ),
+            password="StrongPassword123!",
+        )
+
+        self.other_user = User.objects.create_user(
+            email=(
+                "other-interview-history@gradnavi.test"
+            ),
+            password="StrongPassword123!",
+        )
+
+        self.access_token = str(
+            RefreshToken
+            .for_user(self.user)
+            .access_token
+        )
+
+    def authenticated_get(self):
+        return self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION=(
+                f"Bearer {self.access_token}"
+            ),
+        )
+
+    def authenticated_post(
+        self,
+        payload,
+    ):
+        return self.client.post(
+            self.url,
+            payload,
+            format="json",
+            HTTP_AUTHORIZATION=(
+                f"Bearer {self.access_token}"
+            ),
+        )
+
+    def valid_payload(self):
+        return {
+            "target_role": (
+                "Software Developer"
+            ),
+            "total_questions": 5,
+            "questions_with_feedback": 3,
+        }
+
+    def test_route_resolves(self):
+        self.assertEqual(
+            resolve(self.url).url_name,
+            "history",
+        )
+
+    def test_get_authentication_is_required(self):
+        response = self.client.get(
+            self.url
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "not_authenticated",
+        )
+
+    def test_post_authentication_is_required(self):
+        response = self.client.post(
+            self.url,
+            self.valid_payload(),
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "not_authenticated",
+        )
+
+    def test_post_creates_owned_session_metadata(self):
+        response = self.authenticated_post(
+            self.valid_payload()
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+        )
+
+        self.assertEqual(
+            InterviewSession.objects.count(),
+            1,
+        )
+
+        session = (
+            InterviewSession.objects.get()
+        )
+
+        self.assertEqual(
+            session.user,
+            self.user,
+        )
+
+        self.assertEqual(
+            session.target_role,
+            "Software Developer",
+        )
+
+        self.assertEqual(
+            session.total_questions,
+            5,
+        )
+
+        self.assertEqual(
+            session.questions_with_feedback,
+            3,
+        )
+
+        result = (
+            response.data[
+                "data"
+            ][
+                "session"
+            ]
+        )
+
+        self.assertEqual(
+            set(result),
+            {
+                "id",
+                "target_role",
+                "total_questions",
+                "questions_with_feedback",
+                "completed_at",
+            },
+        )
+
+    def test_sensitive_interview_content_is_rejected(self):
+        sensitive_fields = {
+            "student_answer": (
+                "Private interview answer."
+            ),
+            "feedback_summary": (
+                "Generated feedback."
+            ),
+            "job_description": (
+                "Private job description."
+            ),
+        }
+
+        for field, value in (
+            sensitive_fields.items()
+        ):
+            with self.subTest(
+                field=field
+            ):
+                payload = (
+                    self.valid_payload()
+                )
+
+                payload[field] = value
+
+                response = (
+                    self.authenticated_post(
+                        payload
+                    )
+                )
+
+                self.assertEqual(
+                    response.status_code,
+                    status.HTTP_400_BAD_REQUEST,
+                )
+
+                assert_error_envelope(
+                    self,
+                    response,
+                    "validation_error",
+                    field,
+                )
+
+        self.assertEqual(
+            InterviewSession.objects.count(),
+            0,
+        )
+
+    def test_user_id_is_rejected(self):
+        payload = self.valid_payload()
+
+        payload["user_id"] = (
+            self.other_user.id
+        )
+
+        response = (
+            self.authenticated_post(
+                payload
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "user_id",
+        )
+
+    def test_feedback_count_must_not_exceed_total(self):
+        payload = self.valid_payload()
+
+        payload[
+            "questions_with_feedback"
+        ] = 6
+
+        response = (
+            self.authenticated_post(
+                payload
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "questions_with_feedback",
+        )
+
+    def test_total_questions_must_be_within_contract(self):
+        payload = self.valid_payload()
+
+        payload[
+            "total_questions"
+        ] = 11
+
+        response = (
+            self.authenticated_post(
+                payload
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "total_questions",
+        )
+
+    def test_get_returns_only_authenticated_user_history(self):
+        InterviewSession.objects.create(
+            user=self.user,
+            target_role=(
+                "Software Developer"
+            ),
+            total_questions=5,
+            questions_with_feedback=3,
+        )
+
+        InterviewSession.objects.create(
+            user=self.user,
+            target_role=(
+                "Data Analyst"
+            ),
+            total_questions=4,
+            questions_with_feedback=4,
+        )
+
+        InterviewSession.objects.create(
+            user=self.other_user,
+            target_role=(
+                "Private Other User Role"
+            ),
+            total_questions=5,
+            questions_with_feedback=5,
+        )
+
+        response = (
+            self.authenticated_get()
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        history = (
+            response.data[
+                "data"
+            ][
+                "history"
+            ]
+        )
+
+        self.assertEqual(
+            len(history),
+            2,
+        )
+
+        target_roles = {
+            item[
+                "target_role"
+            ]
+            for item in history
+        }
+
+        self.assertEqual(
+            target_roles,
+            {
+                "Software Developer",
+                "Data Analyst",
+            },
+        )
+
+        self.assertNotIn(
+            "Private Other User Role",
+            target_roles,
+        )
+
+    def test_empty_history_returns_empty_list(self):
+        response = (
+            self.authenticated_get()
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            response.data[
+                "data"
+            ][
+                "history"
+            ],
+            [],
         )

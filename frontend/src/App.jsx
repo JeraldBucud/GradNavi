@@ -17,6 +17,7 @@ import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import SkillGapAnalysisPage from './pages/SkillGapAnalysisPage'
 import StudentProfilePage from './pages/StudentProfilePage'
+import StudentDashboardPage from './pages/StudentDashboardPage'
 
 
 function App() {
@@ -49,6 +50,11 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<StudentLayout />}>
+          <Route
+            path="/dashboard"
+            element={<StudentDashboardPage />}
+          />
+
           <Route
             path="/profile"
             element={<StudentProfilePage />}
