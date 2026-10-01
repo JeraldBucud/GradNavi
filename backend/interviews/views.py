@@ -24,12 +24,15 @@ from ai_services.exceptions import (
     AIProviderError,
     AIResponseValidationError,
 )
+from interviews.models import InterviewSession
 from interviews.providers import get_interview_provider
 from interviews.serializers import (
     InterviewFeedbackRequestSerializer,
     InterviewFeedbackSerializer,
+    InterviewHistoryCreateSerializer,
     InterviewQuestionRequestSerializer,
     InterviewQuestionSetSerializer,
+    InterviewSessionSerializer,
 )
 from interviews.services import (
     generate_interview_feedback,
@@ -248,4 +251,84 @@ class InterviewFeedbackGenerationView(APIView):
                 "data": response_serializer.data,
             },
             status=status.HTTP_200_OK,
+        )
+
+class InterviewHistoryView(APIView):
+    """
+    Create and list completed Interview Preparation history.
+
+    GET /api/v1/interviews/history/
+    POST /api/v1/interviews/history/
+
+    Only metadata belonging to the authenticated user is returned.
+
+    Typed answers, generated feedback, and job descriptions
+    are never stored by this model.
+    """
+
+    permission_classes = (
+        IsAuthenticated,
+    )
+
+    def get(self, request):
+        sessions = (
+            InterviewSession.objects
+            .filter(
+                user=request.user,
+            )
+            .order_by(
+                "-completed_at",
+                "-id",
+            )
+        )
+
+        response_serializer = (
+            InterviewSessionSerializer(
+                sessions,
+                many=True,
+            )
+        )
+
+        return Response(
+            {
+                "data": {
+                    "history": (
+                        response_serializer.data
+                    ),
+                }
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request):
+        request_serializer = (
+            InterviewHistoryCreateSerializer(
+                data=request.data,
+            )
+        )
+
+        request_serializer.is_valid(
+            raise_exception=True,
+        )
+
+        session = InterviewSession.objects.create(
+            user=request.user,
+            **request_serializer.validated_data,
+        )
+
+        response_serializer = (
+            InterviewSessionSerializer(
+                session
+            )
+        )
+
+        return Response(
+            {
+                "data": {
+                    "session": (
+                        response_serializer.data
+                    ),
+                }
+            },
+            status=status.HTTP_201_CREATED,
         )

@@ -864,9 +864,9 @@ function SkillGapAnalysisPage() {
             </h2>
 
             <p>
-              Your top recommendation is used by
-              default. Your career choice stays
-              consistent across guidance pages.
+              Your primary career goal is used by
+              default. Choose another career here
+              for a temporary comparison.
             </p>
           </div>
         </div>
@@ -884,8 +884,8 @@ function SkillGapAnalysisPage() {
           }
           helperText={
             (
-              'Changing your career refreshes '
-              + 'this Skill Gap Analysis.'
+              'This changes the current view only. '
+              + 'Update your primary career in Student Profile.'
             )
           }
           onChange={

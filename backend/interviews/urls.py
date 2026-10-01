@@ -9,6 +9,7 @@ from django.urls import path
 
 from interviews.views import (
     InterviewFeedbackGenerationView,
+    InterviewHistoryView,
     InterviewQuestionGenerationView,
 )
 
@@ -16,6 +17,11 @@ from interviews.views import (
 app_name = "interviews"
 
 urlpatterns = [
+    path(
+        "interviews/history/",
+        InterviewHistoryView.as_view(),
+        name="history",
+    ),
     path(
         "interviews/questions/",
         InterviewQuestionGenerationView.as_view(),

@@ -808,10 +808,9 @@ function CareerRoadmapPage() {
           </h2>
 
           <p>
-            Your top recommendation loads by
-            default. Your last career choice
-            carries across Skill Gaps,
-            Career Roadmap, and Learning Resources.
+            Your primary career goal loads by
+            default. Choose another career here
+            for a temporary roadmap comparison.
           </p>
         </div>
 
@@ -833,8 +832,8 @@ function CareerRoadmapPage() {
               }
               helperText={
                 (
-                  'Top match by default. '
-                  + 'Change anytime.'
+                  'Primary career by default. '
+                  + 'Change this view temporarily.'
                 )
               }
               onChange={
