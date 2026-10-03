@@ -15,6 +15,7 @@ import LearningResourcesPage from './pages/LearningResourcesPage'
 import NotFoundPage from './pages/NotFoundPage'
 import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import SettingsPage from './pages/SettingsPage'
 import SkillGapAnalysisPage from './pages/SkillGapAnalysisPage'
 import StudentProfilePage from './pages/StudentProfilePage'
 import StudentDashboardPage from './pages/StudentDashboardPage'
@@ -98,6 +99,11 @@ function App() {
           <Route
             path="/cover-letter-builder"
             element={<CoverLetterBuilderPage />}
+          />
+
+          <Route
+            path="/settings"
+            element={<SettingsPage />}
           />
         </Route>
       </Route>

@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -11,6 +12,10 @@ import {
 import {
   getStoredUser,
 } from '../services/authService'
+
+import {
+  getStudentProfile,
+} from '../services/profileService'
 
 import {
   JOB_DESCRIPTION_MAX_LENGTH,
@@ -230,6 +235,71 @@ function JobMatchingPage() {
     setRequestError,
   ] = useState('')
 
+  const [
+    profileSetupRequired,
+    setProfileSetupRequired,
+  ] = useState(false)
+
+  const [
+    profileContextLoading,
+    setProfileContextLoading,
+  ] = useState(true)
+
+
+  useEffect(() => {
+    let active = true
+
+    async function loadProfileContext() {
+      setProfileContextLoading(true)
+
+      try {
+        const response =
+          await getStudentProfile()
+
+        if (!active) {
+          return
+        }
+
+        const profile =
+          response
+            ?.data
+            ?.profile
+
+        const skills =
+          Array.isArray(
+            profile?.skills,
+          )
+            ? profile.skills
+            : []
+
+        setProfileSetupRequired(
+          skills.length === 0,
+        )
+      }
+      catch {
+        if (active) {
+          setProfileSetupRequired(
+            false,
+          )
+        }
+      }
+      finally {
+        if (active) {
+          setProfileContextLoading(
+            false,
+          )
+        }
+      }
+    }
+
+    loadProfileContext()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+
   const characterCount =
     jobDescription.length
 
@@ -247,6 +317,8 @@ function JobMatchingPage() {
     Boolean(
       normalizedJobDescription
       && !isOverLimit
+      && !profileSetupRequired
+      && !profileContextLoading
       && requestState !== 'loading'
     )
 
@@ -414,7 +486,17 @@ function JobMatchingPage() {
 
 
   return (
-    <main className="career-guidance-page job-matching-page">
+    <main
+      className={[
+        'career-guidance-page',
+        'job-matching-page',
+        profileSetupRequired
+          ? 'job-matching-page--profile-required'
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <header className="career-guidance-heading">
         <div className="career-guidance-heading__copy">
           <h1>
@@ -492,17 +574,38 @@ function JobMatchingPage() {
                 <div className="job-matching-profile-context">
                   <div>
                     <strong>
-                      Results use your current Student Profile
+                      {
+                        profileSetupRequired
+                          ? (
+                            'Set up your Student Profile '
+                            + 'before matching a job'
+                          )
+                          : (
+                            'Results use your current '
+                            + 'Student Profile'
+                          )
+                      }
                     </strong>
 
                     <span>
-                      Keep your skills up to date for
-                      a more accurate comparison.
+                      {
+                        profileSetupRequired
+                          ? (
+                            'Add your skills first so '
+                            + 'GradNavi has evidence to '
+                            + 'compare with job requirements.'
+                          )
+                          : (
+                            'Keep your skills up to date '
+                            + 'for a more accurate comparison.'
+                          )
+                      }
                     </span>
                   </div>
 
                   {
-                    !jobDescription
+                    profileSetupRequired
+                    || !jobDescription
                       ? (
                         <button
                           className="gn-button gn-button--secondary job-matching-bordered-button"
@@ -511,7 +614,11 @@ function JobMatchingPage() {
                             navigate('/profile')
                           }
                         >
-                          Review Profile
+                          {
+                            profileSetupRequired
+                              ? 'Set Up My Profile'
+                              : 'Review Profile'
+                          }
                         </button>
                       )
                       : null

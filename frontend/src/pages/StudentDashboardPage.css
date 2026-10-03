@@ -941,3 +941,19 @@
   margin-top: auto;
   padding-top: 24px;
 }
+
+
+/* NEW STUDENT PROFILE ONBOARDING */
+
+.student-dashboard-v2__notice--onboarding {
+  border-color: #93c5fd;
+
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+
+
+.student-dashboard-v2__notice--onboarding
+.student-dashboard-v2__button {
+  margin-top: 12px;
+}

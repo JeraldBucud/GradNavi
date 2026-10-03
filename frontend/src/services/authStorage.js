@@ -2,6 +2,30 @@ const ACCESS_TOKEN_KEY = 'gradnavi_access_token'
 const REFRESH_TOKEN_KEY = 'gradnavi_refresh_token'
 const USER_KEY = 'gradnavi_user'
 
+const USER_UPDATED_EVENT =
+  'gradnavi:user-updated'
+
+
+function storeStoredUser(userData) {
+  localStorage.setItem(
+    USER_KEY,
+    JSON.stringify(userData),
+  )
+
+  if (
+    typeof window !== 'undefined'
+  ) {
+    window.dispatchEvent(
+      new CustomEvent(
+        USER_UPDATED_EVENT,
+        {
+          detail: userData,
+        },
+      ),
+    )
+  }
+}
+
 
 function storeAuthSession(authData) {
   localStorage.setItem(
@@ -14,9 +38,8 @@ function storeAuthSession(authData) {
     authData.refresh,
   )
 
-  localStorage.setItem(
-    USER_KEY,
-    JSON.stringify(authData.user),
+  storeStoredUser(
+    authData.user,
   )
 }
 
@@ -25,6 +48,19 @@ function clearAuthSession() {
   localStorage.removeItem(ACCESS_TOKEN_KEY)
   localStorage.removeItem(REFRESH_TOKEN_KEY)
   localStorage.removeItem(USER_KEY)
+
+  if (
+    typeof window !== 'undefined'
+  ) {
+    window.dispatchEvent(
+      new CustomEvent(
+        USER_UPDATED_EVENT,
+        {
+          detail: null,
+        },
+      ),
+    )
+  }
 }
 
 
@@ -85,7 +121,9 @@ function hasStoredAccessToken() {
 
 
 export {
+  USER_UPDATED_EVENT,
   storeAuthSession,
+  storeStoredUser,
   clearAuthSession,
   getAccessToken,
   getRefreshToken,

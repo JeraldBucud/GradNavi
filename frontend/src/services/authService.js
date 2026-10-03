@@ -1,11 +1,13 @@
 import apiRequest from './apiClient'
 
 import {
+  USER_UPDATED_EVENT,
   clearAuthSession,
   getRefreshToken,
   getStoredUser,
   hasStoredAccessToken,
   storeAuthSession,
+  storeStoredUser,
 } from './authStorage'
 
 
@@ -57,6 +59,106 @@ async function getCurrentUser() {
 }
 
 
+
+
+async function getAccountSettings() {
+  const accountData = await apiRequest(
+    '/auth/settings/',
+    {
+      requiresAuth: true,
+    },
+  )
+
+  storeStoredUser(
+    accountData,
+  )
+
+  return accountData
+}
+
+
+async function updateAccountSettings(
+  accountData,
+) {
+  const updatedAccount =
+    await apiRequest(
+      '/auth/settings/',
+      {
+        method: 'PATCH',
+        requiresAuth: true,
+        body: accountData,
+      },
+    )
+
+  storeStoredUser(
+    updatedAccount,
+  )
+
+  return updatedAccount
+}
+
+
+async function uploadProfilePhoto(
+  profilePhoto,
+) {
+  const formData =
+    new FormData()
+
+  formData.append(
+    'profile_photo',
+    profilePhoto,
+  )
+
+  const updatedAccount =
+    await apiRequest(
+      '/auth/settings/',
+      {
+        method: 'PATCH',
+        requiresAuth: true,
+        body: formData,
+      },
+    )
+
+  storeStoredUser(
+    updatedAccount,
+  )
+
+  return updatedAccount
+}
+
+
+async function removeProfilePhoto() {
+  const updatedAccount =
+    await apiRequest(
+      '/auth/settings/profile-photo/',
+      {
+        method: 'DELETE',
+        requiresAuth: true,
+      },
+    )
+
+  storeStoredUser(
+    updatedAccount,
+  )
+
+  return updatedAccount
+}
+
+
+async function changePassword(
+  passwordData,
+) {
+  return apiRequest(
+    '/auth/password/change/',
+    {
+      method: 'POST',
+      requiresAuth: true,
+      body: passwordData,
+    },
+  )
+}
+
+
 async function logoutAccount() {
   const refreshToken = getRefreshToken()
 
@@ -83,10 +185,16 @@ async function logoutAccount() {
 
 
 export {
+  USER_UPDATED_EVENT,
   registerAccount,
   loginAccount,
   requestPasswordReset,
   confirmPasswordReset,
+  getAccountSettings,
+  updateAccountSettings,
+  uploadProfilePhoto,
+  removeProfilePhoto,
+  changePassword,
   logoutAccount,
   getCurrentUser,
   getStoredUser,
