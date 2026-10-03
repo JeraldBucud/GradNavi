@@ -1,18 +1,15 @@
 import { useState } from 'react'
 import {
-  ArrowLeft,
   CircleCheck,
   CircleX,
-  Eye,
-  EyeOff,
 } from 'lucide-react'
 import {
   Link,
   useSearchParams,
 } from 'react-router'
 
+import AuthLayout from '../components/auth/AuthLayout'
 import { confirmPasswordReset } from '../services/authService'
-import './ResetPasswordPage.css'
 
 
 const EMPTY_ERRORS = {
@@ -57,7 +54,8 @@ function ResetPasswordPage() {
     }
 
     if (!password) {
-      nextErrors.password = 'New password is required.'
+      nextErrors.password =
+        'New password is required.'
     }
 
     if (!passwordConfirm) {
@@ -74,7 +72,10 @@ function ResetPasswordPage() {
         'Passwords do not match.'
     }
 
-    const hasErrors = Object.values(nextErrors).some(Boolean)
+    const hasErrors =
+      Object
+        .values(nextErrors)
+        .some(Boolean)
 
     if (hasErrors) {
       setErrors(nextErrors)
@@ -110,37 +111,44 @@ function ResetPasswordPage() {
 
       setIsSuccessful(true)
     } catch (requestError) {
-      /*
-       * Django AuthenticationFailed represents an invalid
-       * or expired reset token. Do not expose token details.
-       */
       if (requestError.status === 401) {
         setIsInvalidLink(true)
         return
       }
 
-      const errorDetails = requestError.data?.error?.details
+      const errorDetails =
+        requestError.data?.error?.details
 
       if (errorDetails?.password?.length) {
         setErrors({
           ...EMPTY_ERRORS,
-          password: errorDetails.password.join(' '),
+          password:
+            errorDetails.password.join(' '),
         })
+
         return
       }
 
-      if (errorDetails?.password_confirm?.length) {
+      if (
+        errorDetails
+          ?.password_confirm
+          ?.length
+      ) {
         setErrors({
           ...EMPTY_ERRORS,
           passwordConfirm:
-            errorDetails.password_confirm.join(' '),
+            errorDetails
+              .password_confirm
+              .join(' '),
         })
+
         return
       }
 
       setErrors({
         ...EMPTY_ERRORS,
-        form: 'Password reset failed. Please try again.',
+        form:
+          'Password reset failed. Please try again.',
       })
     } finally {
       setIsLoading(false)
@@ -150,333 +158,278 @@ function ResetPasswordPage() {
 
   if (isSuccessful) {
     return (
-      <main className="reset-page">
-        <header className="reset-page__header">
-          <Link
-            className="reset-page__brand"
-            to="/"
-            aria-label="GradNavi home"
-          >
-            GradNavi
-          </Link>
+      <AuthLayout>
+        <div className="auth-state-card auth-state-card--success">
+          <div className="auth-state-card__status">
+            <CircleCheck
+              aria-hidden="true"
+              size={20}
+              strokeWidth={2}
+            />
 
-          <div className="reset-page__divider" />
-        </header>
+            <span>
+              Password updated
+            </span>
+          </div>
 
+          <h1>
+            Password updated
+          </h1>
 
-        <section className="reset-layout">
-          <div className="reset-state-card reset-state-card--success">
-            <div className="reset-state-card__status reset-state-card__status--success">
-              <span>
-                Reset Password - Success State
-              </span>
+          <p>
+            Your password has been reset successfully.
+          </p>
 
-              <CircleCheck
-                aria-hidden="true"
-                size={20}
-                strokeWidth={2}
-              />
-            </div>
-
-            <h1>
-              Password Updated
-            </h1>
-
-            <p>
-              Your password has been reset successfully.
-            </p>
-
+          <div className="auth-state-card__actions">
             <Link
-              className="reset-return-button"
+              className="auth-primary-button"
               to="/login"
             >
-              <ArrowLeft
-                aria-hidden="true"
-                size={18}
-                strokeWidth={2}
-              />
-
-              <span>
-                Return to Log In
-              </span>
+              Return to Log In
             </Link>
           </div>
-        </section>
-      </main>
+        </div>
+      </AuthLayout>
     )
   }
 
 
   if (isInvalidLink) {
     return (
-      <main className="reset-page">
-        <header className="reset-page__header">
-          <Link
-            className="reset-page__brand"
-            to="/"
-            aria-label="GradNavi home"
-          >
-            GradNavi
-          </Link>
+      <AuthLayout>
+        <div className="auth-state-card auth-state-card--error">
+          <div className="auth-state-card__status">
+            <CircleX
+              aria-hidden="true"
+              size={20}
+              strokeWidth={2}
+            />
 
-          <div className="reset-page__divider" />
-        </header>
-
-
-        <section className="reset-layout">
-          <div className="reset-state-card reset-state-card--invalid">
-            <div className="reset-state-card__status reset-state-card__status--invalid">
-              <span>
-                Reset Password - Invalid Link State
-              </span>
-
-              <CircleX
-                aria-hidden="true"
-                size={20}
-                strokeWidth={2}
-              />
-            </div>
-
-            <h1>
-              Reset Link Expired
-            </h1>
-
-            <p>
-              This password reset link is invalid or has expired.
-            </p>
-
-            <div className="reset-invalid-actions">
-              <Link
-                className="gn-button gn-button--primary reset-request-button"
-                to="/forgot-password"
-              >
-                Request New Reset Link
-              </Link>
-
-              <Link
-                className="reset-back-button"
-                to="/login"
-              >
-                Back to Log In
-              </Link>
-            </div>
+            <span>
+              Invalid reset link
+            </span>
           </div>
-        </section>
-      </main>
+
+          <h1>
+            Reset link expired
+          </h1>
+
+          <p>
+            This password reset link is invalid or
+            has expired.
+          </p>
+
+          <div className="auth-state-card__actions">
+            <Link
+              className="auth-primary-button"
+              to="/forgot-password"
+            >
+              Request New Reset Link
+            </Link>
+
+            <Link
+              className="auth-secondary-button"
+              to="/login"
+            >
+              Back to Log In
+            </Link>
+          </div>
+        </div>
+      </AuthLayout>
     )
   }
 
 
   return (
-    <main className="reset-page">
-      <header className="reset-page__header">
-        <Link
-          className="reset-page__brand"
-          to="/"
-          aria-label="GradNavi home"
-        >
-          GradNavi
-        </Link>
+    <AuthLayout>
+      <div className="auth-page-heading">
+        <h1>
+          Choose a new password
+        </h1>
 
-        <div className="reset-page__divider" />
-      </header>
+        <p>
+          Create a new password for your
+          GradNavi account.
+        </p>
+      </div>
 
+      <div className="auth-form-divider" />
 
-      <section className="reset-layout">
-        <div className="reset-card">
-          <h1>
-            Set a New Password
-          </h1>
+      <form
+        className="auth-form"
+        onSubmit={handleSubmit}
+      >
+        <div className="auth-field">
+          <label htmlFor="reset-password">
+            New password
+          </label>
 
-          <p className="reset-card__description">
-            Enter and confirm your new password.
-          </p>
-
-
-          <form
-            className="reset-form"
-            onSubmit={handleSubmit}
-          >
-            <div className="reset-field">
-              <label htmlFor="reset-password">
-                New Password
-              </label>
-
-              <div className="reset-password-control">
-                <input
-                  id="reset-password"
-                  className="reset-input"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  placeholder="New password"
-                  value={password}
-                  aria-invalid={Boolean(errors.password)}
-                  aria-describedby={
-                    errors.password
-                      ? 'reset-password-error'
-                      : 'reset-password-help'
-                  }
-                  onChange={(event) => {
-                    setPassword(event.target.value)
-                    clearFieldError('password')
-                  }}
-                />
-
-                <button
-                  className="reset-password-toggle"
-                  type="button"
-                  aria-label={
-                    showPassword
-                      ? 'Hide new password'
-                      : 'Show new password'
-                  }
-                  aria-pressed={showPassword}
-                  onClick={() => {
-                    setShowPassword(
-                      (currentValue) => !currentValue,
-                    )
-                  }}
-                >
-                  {showPassword ? (
-                    <EyeOff
-                      aria-hidden="true"
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-                  ) : (
-                    <Eye
-                      aria-hidden="true"
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-                  )}
-                </button>
-              </div>
-
-              {errors.password && (
-                <p
-                  className="reset-field-error"
-                  id="reset-password-error"
-                  role="alert"
-                >
-                  {errors.password}
-                </p>
-              )}
-            </div>
-
-
-            <div className="reset-field">
-              <label htmlFor="reset-password-confirm">
-                Confirm New Password
-              </label>
-
-              <div className="reset-password-control">
-                <input
-                  id="reset-password-confirm"
-                  className="reset-input"
-                  type={
-                    showPasswordConfirm
-                      ? 'text'
-                      : 'password'
-                  }
-                  autoComplete="new-password"
-                  placeholder="Confirm new password"
-                  value={passwordConfirm}
-                  aria-invalid={Boolean(errors.passwordConfirm)}
-                  aria-describedby={
-                    errors.passwordConfirm
-                      ? 'reset-password-confirm-error'
-                      : undefined
-                  }
-                  onChange={(event) => {
-                    setPasswordConfirm(event.target.value)
-                    clearFieldError('passwordConfirm')
-                  }}
-                />
-
-                <button
-                  className="reset-password-toggle"
-                  type="button"
-                  aria-label={
-                    showPasswordConfirm
-                      ? 'Hide confirm password'
-                      : 'Show confirm password'
-                  }
-                  aria-pressed={showPasswordConfirm}
-                  onClick={() => {
-                    setShowPasswordConfirm(
-                      (currentValue) => !currentValue,
-                    )
-                  }}
-                >
-                  {showPasswordConfirm ? (
-                    <EyeOff
-                      aria-hidden="true"
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-                  ) : (
-                    <Eye
-                      aria-hidden="true"
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-                  )}
-                </button>
-              </div>
-
-              {errors.passwordConfirm && (
-                <p
-                  className="reset-field-error"
-                  id="reset-password-confirm-error"
-                  role="alert"
-                >
-                  {errors.passwordConfirm}
-                </p>
-              )}
-            </div>
-
-
-            <div
-              className="reset-password-requirements"
-              id="reset-password-help"
-            >
-              <h2>
-                Password requirements based on system validation
-              </h2>
-
-              <p>
-                Use the current Django password validation rules.
-              </p>
-            </div>
-
-
-            {errors.form && (
-              <p
-                className="reset-form-error"
-                role="alert"
-              >
-                {errors.form}
-              </p>
-            )}
-
+          <div className="auth-password-control">
+            <input
+              id="reset-password"
+              className="auth-input"
+              type={
+                showPassword
+                  ? 'text'
+                  : 'password'
+              }
+              autoComplete="new-password"
+              placeholder="Create a new password"
+              value={password}
+              aria-invalid={Boolean(errors.password)}
+              aria-describedby={
+                errors.password
+                  ? 'reset-password-error'
+                  : 'reset-password-help'
+              }
+              onChange={(event) => {
+                setPassword(event.target.value)
+                clearFieldError('password')
+              }}
+            />
 
             <button
-              className="gn-button gn-button--primary reset-submit"
-              type="submit"
-              disabled={isLoading}
-              aria-busy={isLoading}
+              className="auth-password-toggle"
+              type="button"
+              aria-label={
+                showPassword
+                  ? 'Hide new password'
+                  : 'Show new password'
+              }
+              aria-pressed={showPassword}
+              onClick={() => {
+                setShowPassword(
+                  (currentValue) => !currentValue,
+                )
+              }}
             >
               {
-                isLoading
-                  ? 'Resetting Password...'
-                  : 'Reset Password'
+                showPassword
+                  ? 'Hide'
+                  : 'Show'
               }
             </button>
-          </form>
+          </div>
+
+          {errors.password && (
+            <p
+              className="auth-field-error"
+              id="reset-password-error"
+              role="alert"
+            >
+              {errors.password}
+            </p>
+          )}
         </div>
-      </section>
-    </main>
+
+        <div className="auth-field">
+          <label htmlFor="reset-password-confirm">
+            Confirm new password
+          </label>
+
+          <div className="auth-password-control">
+            <input
+              id="reset-password-confirm"
+              className="auth-input"
+              type={
+                showPasswordConfirm
+                  ? 'text'
+                  : 'password'
+              }
+              autoComplete="new-password"
+              placeholder="Re-enter your new password"
+              value={passwordConfirm}
+              aria-invalid={
+                Boolean(errors.passwordConfirm)
+              }
+              aria-describedby={
+                errors.passwordConfirm
+                  ? 'reset-password-confirm-error'
+                  : undefined
+              }
+              onChange={(event) => {
+                setPasswordConfirm(event.target.value)
+                clearFieldError('passwordConfirm')
+              }}
+            />
+
+            <button
+              className="auth-password-toggle"
+              type="button"
+              aria-label={
+                showPasswordConfirm
+                  ? 'Hide confirm password'
+                  : 'Show confirm password'
+              }
+              aria-pressed={showPasswordConfirm}
+              onClick={() => {
+                setShowPasswordConfirm(
+                  (currentValue) => !currentValue,
+                )
+              }}
+            >
+              {
+                showPasswordConfirm
+                  ? 'Hide'
+                  : 'Show'
+              }
+            </button>
+          </div>
+
+          {errors.passwordConfirm && (
+            <p
+              className="auth-field-error"
+              id="reset-password-confirm-error"
+              role="alert"
+            >
+              {errors.passwordConfirm}
+            </p>
+          )}
+        </div>
+
+        <div
+          className="auth-password-requirements"
+          id="reset-password-help"
+        >
+          <strong>
+            Password requirements
+          </strong>
+
+          At least 8 characters. Django validation
+          also rejects passwords that are too common,
+          entirely numeric, or too similar to personal
+          details.
+        </div>
+
+        {errors.form && (
+          <p
+            className="auth-form-error"
+            role="alert"
+          >
+            {errors.form}
+          </p>
+        )}
+
+        <button
+          className="auth-primary-button"
+          type="submit"
+          disabled={isLoading}
+          aria-busy={isLoading}
+        >
+          {
+            isLoading
+              ? 'Updating Password...'
+              : 'Update Password'
+          }
+        </button>
+      </form>
+
+      <p className="auth-form-footer">
+        <Link to="/login">
+          ← Back to Log In
+        </Link>
+      </p>
+    </AuthLayout>
   )
 }
 

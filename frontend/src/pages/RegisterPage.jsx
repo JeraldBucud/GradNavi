@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
 import {
   Link,
   useNavigate,
 } from 'react-router'
 
+import AuthLayout from '../components/auth/AuthLayout'
 import { registerAccount } from '../services/authService'
-import './AuthPage.css'
 
 
 const EMPTY_ERRORS = {
@@ -66,7 +65,8 @@ function RegisterPage() {
     }
 
     if (!passwordConfirm) {
-      nextErrors.passwordConfirm = 'Confirm password is required.'
+      nextErrors.passwordConfirm =
+        'Confirm password is required.'
     }
 
     if (
@@ -74,10 +74,14 @@ function RegisterPage() {
       && passwordConfirm
       && password !== passwordConfirm
     ) {
-      nextErrors.passwordConfirm = 'Passwords do not match.'
+      nextErrors.passwordConfirm =
+        'Passwords do not match.'
     }
 
-    const hasErrors = Object.values(nextErrors).some(Boolean)
+    const hasErrors =
+      Object
+        .values(nextErrors)
+        .some(Boolean)
 
     if (hasErrors) {
       setErrors(nextErrors)
@@ -89,23 +93,34 @@ function RegisterPage() {
 
 
   function applyApiErrors(requestError) {
-    const errorDetails = requestError.data?.error?.details
+    const errorDetails =
+      requestError.data?.error?.details
 
     if (!errorDetails) {
       setErrors({
         ...EMPTY_ERRORS,
         form: requestError.message,
       })
+
       return
     }
 
     setErrors({
-      firstName: errorDetails.first_name?.join(' ') || '',
-      lastName: errorDetails.last_name?.join(' ') || '',
-      email: errorDetails.email?.join(' ') || '',
-      password: errorDetails.password?.join(' ') || '',
+      firstName:
+        errorDetails.first_name?.join(' ')
+        || '',
+      lastName:
+        errorDetails.last_name?.join(' ')
+        || '',
+      email:
+        errorDetails.email?.join(' ')
+        || '',
+      password:
+        errorDetails.password?.join(' ')
+        || '',
       passwordConfirm:
-        errorDetails.password_confirm?.join(' ') || '',
+        errorDetails.password_confirm?.join(' ')
+        || '',
       form: '',
     })
   }
@@ -140,335 +155,308 @@ function RegisterPage() {
 
 
   return (
-    <main className="register-page">
-      <header className="register-page__header">
-        <Link
-          className="register-page__brand"
-          to="/"
-          aria-label="GradNavi home"
-        >
-          GradNavi
-        </Link>
+    <AuthLayout>
+      <div className="auth-page-heading">
+        <h1>
+          Create your account
+        </h1>
 
-        <div className="register-page__divider" />
-      </header>
+        <p>
+          Start building your GradNavi career profile.
+        </p>
+      </div>
 
+      <div className="auth-form-divider" />
 
-      <section className="register-layout">
-        <div className="register-heading">
-          <h1>
-            Create Your GradNavi Account
-          </h1>
+      <form
+        className="auth-form"
+        onSubmit={handleSubmit}
+      >
+        <div className="auth-name-grid">
+          <div className="auth-field">
+            <label htmlFor="register-first-name">
+              First name
+            </label>
 
-          <p>
-            Create your student account to build your profile and begin
-            career analysis.
-          </p>
-        </div>
+            <input
+              id="register-first-name"
+              className="auth-input"
+              type="text"
+              autoComplete="given-name"
+              placeholder="Alex"
+              value={firstName}
+              aria-invalid={Boolean(errors.firstName)}
+              aria-describedby={
+                errors.firstName
+                  ? 'register-first-name-error'
+                  : undefined
+              }
+              onChange={(event) => {
+                setFirstName(event.target.value)
+                clearFieldError('firstName')
+              }}
+            />
 
-
-        <div className="register-card">
-          <form
-            className="register-form"
-            onSubmit={handleSubmit}
-          >
-            <div className="register-name-grid">
-              <div className="register-field">
-                <label htmlFor="register-first-name">
-                  First Name
-                </label>
-
-                <input
-                  id="register-first-name"
-                  className="register-input"
-                  type="text"
-                  autoComplete="given-name"
-                  placeholder="First name placeholder"
-                  value={firstName}
-                  aria-invalid={Boolean(errors.firstName)}
-                  aria-describedby={
-                    errors.firstName
-                      ? 'register-first-name-error'
-                      : undefined
-                  }
-                  onChange={(event) => {
-                    setFirstName(event.target.value)
-                    clearFieldError('firstName')
-                  }}
-                />
-
-                {errors.firstName && (
-                  <p
-                    className="register-field-error"
-                    id="register-first-name-error"
-                    role="alert"
-                  >
-                    {errors.firstName}
-                  </p>
-                )}
-              </div>
-
-
-              <div className="register-field">
-                <label htmlFor="register-last-name">
-                  Last Name
-                </label>
-
-                <input
-                  id="register-last-name"
-                  className="register-input"
-                  type="text"
-                  autoComplete="family-name"
-                  placeholder="Last name placeholder"
-                  value={lastName}
-                  aria-invalid={Boolean(errors.lastName)}
-                  aria-describedby={
-                    errors.lastName
-                      ? 'register-last-name-error'
-                      : undefined
-                  }
-                  onChange={(event) => {
-                    setLastName(event.target.value)
-                    clearFieldError('lastName')
-                  }}
-                />
-
-                {errors.lastName && (
-                  <p
-                    className="register-field-error"
-                    id="register-last-name-error"
-                    role="alert"
-                  >
-                    {errors.lastName}
-                  </p>
-                )}
-              </div>
-            </div>
-
-
-            <div className="register-field">
-              <label htmlFor="register-email">
-                Email Address
-              </label>
-
-              <input
-                id="register-email"
-                className="register-input"
-                type="email"
-                autoComplete="email"
-                placeholder="student@example.com"
-                value={email}
-                aria-invalid={Boolean(errors.email)}
-                aria-describedby={
-                  errors.email
-                    ? 'register-email-error'
-                    : undefined
-                }
-                onChange={(event) => {
-                  setEmail(event.target.value)
-                  clearFieldError('email')
-                }}
-              />
-
-              {errors.email && (
-                <p
-                  className="register-field-error"
-                  id="register-email-error"
-                  role="alert"
-                >
-                  {errors.email}
-                </p>
-              )}
-            </div>
-
-
-            <div className="register-field">
-              <label htmlFor="register-password">
-                Password
-              </label>
-
-              <div className="register-password-control">
-                <input
-                  id="register-password"
-                  className="register-input"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  placeholder="Password"
-                  value={password}
-                  aria-invalid={Boolean(errors.password)}
-                  aria-describedby={
-                    errors.password
-                      ? 'register-password-error'
-                      : 'register-password-help'
-                  }
-                  onChange={(event) => {
-                    setPassword(event.target.value)
-                    clearFieldError('password')
-                  }}
-                />
-
-                <button
-                  className="register-password-toggle"
-                  type="button"
-                  aria-label={
-                    showPassword
-                      ? 'Hide password'
-                      : 'Show password'
-                  }
-                  aria-pressed={showPassword}
-                  onClick={() => {
-                    setShowPassword((currentValue) => !currentValue)
-                  }}
-                >
-                  {showPassword ? (
-                    <EyeOff
-                      aria-hidden="true"
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-                  ) : (
-                    <Eye
-                      aria-hidden="true"
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-                  )}
-                </button>
-              </div>
-
-              {errors.password && (
-                <p
-                  className="register-field-error"
-                  id="register-password-error"
-                  role="alert"
-                >
-                  {errors.password}
-                </p>
-              )}
-            </div>
-
-
-            <div className="register-field">
-              <label htmlFor="register-password-confirm">
-                Confirm Password
-              </label>
-
-              <div className="register-password-control">
-                <input
-                  id="register-password-confirm"
-                  className="register-input"
-                  type={showPasswordConfirm ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  placeholder="Confirm password"
-                  value={passwordConfirm}
-                  aria-invalid={Boolean(errors.passwordConfirm)}
-                  aria-describedby={
-                    errors.passwordConfirm
-                      ? 'register-password-confirm-error'
-                      : undefined
-                  }
-                  onChange={(event) => {
-                    setPasswordConfirm(event.target.value)
-                    clearFieldError('passwordConfirm')
-                  }}
-                />
-
-                <button
-                  className="register-password-toggle"
-                  type="button"
-                  aria-label={
-                    showPasswordConfirm
-                      ? 'Hide confirm password'
-                      : 'Show confirm password'
-                  }
-                  aria-pressed={showPasswordConfirm}
-                  onClick={() => {
-                    setShowPasswordConfirm(
-                      (currentValue) => !currentValue,
-                    )
-                  }}
-                >
-                  {showPasswordConfirm ? (
-                    <EyeOff
-                      aria-hidden="true"
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-                  ) : (
-                    <Eye
-                      aria-hidden="true"
-                      size={20}
-                      strokeWidth={1.8}
-                    />
-                  )}
-                </button>
-              </div>
-
-              {errors.passwordConfirm && (
-                <p
-                  className="register-field-error"
-                  id="register-password-confirm-error"
-                  role="alert"
-                >
-                  {errors.passwordConfirm}
-                </p>
-              )}
-            </div>
-
-
-            <div
-              className="register-password-requirements"
-              id="register-password-help"
-            >
-              <h2>
-                Password requirements based on system validation
-              </h2>
-
-              <p>
-                At least 8 characters; not too common; not entirely
-                numeric; not too similar to personal details.
-              </p>
-            </div>
-
-
-            <div className="register-terms-placeholder">
-              Terms / Privacy acknowledgement placeholder, if required.
-            </div>
-
-
-            {errors.form && (
+            {errors.firstName && (
               <p
-                className="register-form-error"
+                className="auth-field-error"
+                id="register-first-name-error"
                 role="alert"
               >
-                {errors.form}
+                {errors.firstName}
               </p>
             )}
+          </div>
 
+          <div className="auth-field">
+            <label htmlFor="register-last-name">
+              Last name
+            </label>
+
+            <input
+              id="register-last-name"
+              className="auth-input"
+              type="text"
+              autoComplete="family-name"
+              placeholder="Morgan"
+              value={lastName}
+              aria-invalid={Boolean(errors.lastName)}
+              aria-describedby={
+                errors.lastName
+                  ? 'register-last-name-error'
+                  : undefined
+              }
+              onChange={(event) => {
+                setLastName(event.target.value)
+                clearFieldError('lastName')
+              }}
+            />
+
+            {errors.lastName && (
+              <p
+                className="auth-field-error"
+                id="register-last-name-error"
+                role="alert"
+              >
+                {errors.lastName}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="auth-field">
+          <label htmlFor="register-email">
+            Email
+          </label>
+
+          <input
+            id="register-email"
+            className="auth-input"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={email}
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={
+              errors.email
+                ? 'register-email-error'
+                : undefined
+            }
+            onChange={(event) => {
+              setEmail(event.target.value)
+              clearFieldError('email')
+            }}
+          />
+
+          {errors.email && (
+            <p
+              className="auth-field-error"
+              id="register-email-error"
+              role="alert"
+            >
+              {errors.email}
+            </p>
+          )}
+        </div>
+
+        <div className="auth-field">
+          <label htmlFor="register-password">
+            Password
+          </label>
+
+          <div className="auth-password-control">
+            <input
+              id="register-password"
+              className="auth-input"
+              type={
+                showPassword
+                  ? 'text'
+                  : 'password'
+              }
+              autoComplete="new-password"
+              placeholder="Create a password"
+              value={password}
+              aria-invalid={Boolean(errors.password)}
+              aria-describedby={
+                errors.password
+                  ? 'register-password-error'
+                  : 'register-password-help'
+              }
+              onChange={(event) => {
+                setPassword(event.target.value)
+                clearFieldError('password')
+              }}
+            />
 
             <button
-              className="gn-button gn-button--primary register-submit"
-              type="submit"
-              disabled={isLoading}
-              aria-busy={isLoading}
+              className="auth-password-toggle"
+              type="button"
+              aria-label={
+                showPassword
+                  ? 'Hide password'
+                  : 'Show password'
+              }
+              aria-pressed={showPassword}
+              onClick={() => {
+                setShowPassword(
+                  (currentValue) => !currentValue,
+                )
+              }}
             >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {
+                showPassword
+                  ? 'Hide'
+                  : 'Show'
+              }
             </button>
-          </form>
+          </div>
 
-
-          <p className="register-login">
-            <span>
-              Already have an account?
-            </span>
-
-            <Link to="/login">
-              Log In
-            </Link>
-          </p>
+          {errors.password && (
+            <p
+              className="auth-field-error"
+              id="register-password-error"
+              role="alert"
+            >
+              {errors.password}
+            </p>
+          )}
         </div>
-      </section>
-    </main>
+
+        <div className="auth-field">
+          <label htmlFor="register-password-confirm">
+            Confirm password
+          </label>
+
+          <div className="auth-password-control">
+            <input
+              id="register-password-confirm"
+              className="auth-input"
+              type={
+                showPasswordConfirm
+                  ? 'text'
+                  : 'password'
+              }
+              autoComplete="new-password"
+              placeholder="Re-enter your password"
+              value={passwordConfirm}
+              aria-invalid={
+                Boolean(errors.passwordConfirm)
+              }
+              aria-describedby={
+                errors.passwordConfirm
+                  ? 'register-password-confirm-error'
+                  : undefined
+              }
+              onChange={(event) => {
+                setPasswordConfirm(event.target.value)
+                clearFieldError('passwordConfirm')
+              }}
+            />
+
+            <button
+              className="auth-password-toggle"
+              type="button"
+              aria-label={
+                showPasswordConfirm
+                  ? 'Hide confirm password'
+                  : 'Show confirm password'
+              }
+              aria-pressed={showPasswordConfirm}
+              onClick={() => {
+                setShowPasswordConfirm(
+                  (currentValue) => !currentValue,
+                )
+              }}
+            >
+              {
+                showPasswordConfirm
+                  ? 'Hide'
+                  : 'Show'
+              }
+            </button>
+          </div>
+
+          {errors.passwordConfirm && (
+            <p
+              className="auth-field-error"
+              id="register-password-confirm-error"
+              role="alert"
+            >
+              {errors.passwordConfirm}
+            </p>
+          )}
+        </div>
+
+        <div
+          className="auth-password-requirements"
+          id="register-password-help"
+        >
+          <strong>
+            Password requirements
+          </strong>
+
+          At least 8 characters. Django validation
+          also rejects passwords that are too common,
+          entirely numeric, or too similar to personal
+          details.
+        </div>
+
+        <p className="auth-legal-copy">
+          Create your account to use GradNavi&apos;s
+          student career guidance features.
+        </p>
+
+        {errors.form && (
+          <p
+            className="auth-form-error"
+            role="alert"
+          >
+            {errors.form}
+          </p>
+        )}
+
+        <button
+          className="auth-primary-button"
+          type="submit"
+          disabled={isLoading}
+          aria-busy={isLoading}
+        >
+          {
+            isLoading
+              ? 'Creating Account...'
+              : 'Create Account'
+          }
+        </button>
+      </form>
+
+      <p className="auth-form-footer">
+        Already have an account?
+
+        <Link to="/login">
+          Log in
+        </Link>
+      </p>
+    </AuthLayout>
   )
 }
 

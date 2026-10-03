@@ -32,6 +32,9 @@ import {
   logoutAccount,
 } from '../services/authService'
 
+import gradNaviLogoMark from '../assets/brand/gradnavi-logo-mark.png'
+import gradNaviLogoReversed from '../assets/brand/gradnavi-logo-reversed.png'
+
 import './StudentLayout.css'
 
 
@@ -183,43 +186,29 @@ function StudentLayout() {
           to="/"
           onClick={closeMobileNavigation}
         >
-          GradNavi
+          <img
+            className="student-mobile-header__logo"
+            src={gradNaviLogoMark}
+            alt="GradNavi"
+          />
         </Link>
 
-        <div className="student-mobile-header__actions">
-          <div
-            className="student-mobile-header__account"
-            aria-label={`Signed in as ${studentName}`}
-          >
-            <span
-              className="student-account-avatar"
-              aria-hidden="true"
-            >
-              {studentInitial}
-            </span>
-
-            <span className="student-mobile-header__name">
-              {studentName}
-            </span>
-          </div>
-
-          <button
-            className="student-mobile-header__menu"
-            type="button"
-            aria-label="Open navigation menu"
-            aria-controls="student-navigation-drawer"
-            aria-expanded={isMobileNavigationOpen}
-            onClick={() =>
-              setIsMobileNavigationOpen(true)
-            }
-          >
-            <Menu
-              size={24}
-              strokeWidth={1.8}
-              aria-hidden="true"
-            />
-          </button>
-        </div>
+        <button
+          className="student-mobile-header__menu"
+          type="button"
+          aria-label="Open navigation menu"
+          aria-controls="student-navigation-drawer"
+          aria-expanded={isMobileNavigationOpen}
+          onClick={() =>
+            setIsMobileNavigationOpen(true)
+          }
+        >
+          <Menu
+            size={22}
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
+        </button>
       </header>
 
       <button
@@ -271,7 +260,11 @@ function StudentLayout() {
             to="/"
             onClick={closeMobileNavigation}
           >
-            GradNavi
+            <img
+              className="student-sidebar__logo"
+              src={gradNaviLogoReversed}
+              alt="GradNavi"
+            />
           </Link>
 
           <nav
@@ -351,7 +344,7 @@ function StudentLayout() {
               </strong>
 
               <span>
-                Account
+                Student account
               </span>
             </div>
           </div>
