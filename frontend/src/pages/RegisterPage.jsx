@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import {
+  CheckCircle2,
+} from 'lucide-react'
+import {
   Link,
   useNavigate,
 } from 'react-router'
@@ -155,8 +158,12 @@ function RegisterPage() {
 
 
   return (
-    <AuthLayout>
+    <AuthLayout variant="register">
       <div className="auth-page-heading">
+        <span className="auth-page-eyebrow">
+          GET STARTED WITH GRADNAVI
+        </span>
+
         <h1>
           Create your account
         </h1>
@@ -415,10 +422,55 @@ function RegisterPage() {
             Password requirements
           </strong>
 
-          At least 8 characters. Django validation
-          also rejects passwords that are too common,
-          entirely numeric, or too similar to personal
-          details.
+          <ul className="auth-password-requirements__list">
+            <li>
+              <CheckCircle2
+                size={15}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+
+              <span>
+                At least 8 characters
+              </span>
+            </li>
+
+            <li>
+              <CheckCircle2
+                size={15}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+
+              <span>
+                Avoid using your name or email
+              </span>
+            </li>
+
+            <li>
+              <CheckCircle2
+                size={15}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+
+              <span>
+                Avoid common passwords
+              </span>
+            </li>
+
+            <li>
+              <CheckCircle2
+                size={15}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+
+              <span>
+                Do not use numbers only
+              </span>
+            </li>
+          </ul>
         </div>
 
         <p className="auth-legal-copy">

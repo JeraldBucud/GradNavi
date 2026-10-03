@@ -8,9 +8,15 @@ import './AuthLayout.css'
 
 function AuthLayout({
   children,
+  variant = '',
 }) {
+  const shellClassName =
+    variant
+      ? `auth-shell auth-shell--${variant}`
+      : 'auth-shell'
+
   return (
-    <main className="auth-shell">
+    <main className={shellClassName}>
       <aside className="auth-shell__visual">
         <img
           className="auth-shell__visual-image"

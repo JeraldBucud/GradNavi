@@ -92,6 +92,19 @@ function getRequestErrorMessage(
 }
 
 
+function isProfileSetupRequiredError(
+  requestError,
+) {
+  return (
+    requestError
+      ?.data
+      ?.error
+      ?.code
+    === 'insufficient_profile_context'
+  )
+}
+
+
 function ExploreCareersPage() {
   const navigate =
     useNavigate()
@@ -190,6 +203,11 @@ function ExploreCareersPage() {
     evaluationError,
     setEvaluationError,
   ] = useState('')
+
+  const [
+    evaluationNeedsProfile,
+    setEvaluationNeedsProfile,
+  ] = useState(false)
 
   const [
     evaluationMessage,
@@ -300,6 +318,7 @@ function ExploreCareersPage() {
     setDetailLoading(false)
     setEvaluatingCareerId(null)
     setEvaluationError('')
+    setEvaluationNeedsProfile(false)
     setEvaluationMessage('')
   }
 
@@ -384,6 +403,7 @@ function ExploreCareersPage() {
     setDetailLoading(true)
     setDetailError('')
     setEvaluationError('')
+    setEvaluationNeedsProfile(false)
     setEvaluationMessage('')
 
     try {
@@ -454,6 +474,7 @@ function ExploreCareersPage() {
     )
 
     setEvaluationError('')
+    setEvaluationNeedsProfile(false)
     setEvaluationMessage('')
 
     try {
@@ -486,11 +507,26 @@ function ExploreCareersPage() {
           current + 1,
       )
     } catch (requestError) {
-      setEvaluationError(
-        getRequestErrorMessage(
+      const needsProfile =
+        isProfileSetupRequiredError(
           requestError,
-          'Career evaluation is unavailable.',
-        ),
+        )
+
+      setEvaluationNeedsProfile(
+        needsProfile,
+      )
+
+      setEvaluationError(
+        needsProfile
+          ? (
+            'Set up your Student Profile '
+            + 'to compare this career '
+            + 'with your skills.'
+          )
+          : getRequestErrorMessage(
+            requestError,
+            'Career evaluation is unavailable.',
+          ),
       )
     } finally {
       setEvaluatingCareerId(null)
@@ -516,10 +552,11 @@ function ExploreCareersPage() {
             </h1>
 
             <p>
-              Browse available career paths,
-              search the catalogue, and review
-              how each career relates to your
-              current GradNavi profile.
+              Browse available career paths
+              and open any career for details.
+              Set up your profile when you are
+              ready to compare a career with
+              your skills.
             </p>
           </div>
 
@@ -883,42 +920,58 @@ function ExploreCareersPage() {
 
 
                 {
-                  !selectedCareer
-                    .recommended
-                  && !selectedCareer
-                    .evaluated
+                  evaluationNeedsProfile
                   ? (
                       <button
                         className="gn-button gn-button--primary"
                         type="button"
-                        disabled={
-                          evaluatingCareerId
-                          === selectedCareer
-                            .career_id
-                        }
-                        onClick={
-                          evaluateSelectedCareer
+                        onClick={() =>
+                          navigate(
+                            '/profile',
+                          )
                         }
                       >
-                        {
-                          evaluatingCareerId
-                          === selectedCareer
-                            .career_id
-                            ? 'Evaluating...'
-                            : 'Evaluate Career'
-                        }
+                        Set Up My Profile
                       </button>
                     )
                   : (
-                      <span className="explore-careers-figma__evaluation-state">
-                        {
-                          selectedCareer
-                            .recommended
-                            ? 'Current recommendation'
-                            : 'Evaluation complete'
-                        }
-                      </span>
-                    )
+                    !selectedCareer
+                      .recommended
+                    && !selectedCareer
+                      .evaluated
+                    ? (
+                        <button
+                          className="gn-button gn-button--primary"
+                          type="button"
+                          disabled={
+                            evaluatingCareerId
+                            === selectedCareer
+                              .career_id
+                          }
+                          onClick={
+                            evaluateSelectedCareer
+                          }
+                        >
+                          {
+                            evaluatingCareerId
+                            === selectedCareer
+                              .career_id
+                              ? 'Evaluating...'
+                              : 'Evaluate Career'
+                          }
+                        </button>
+                      )
+                    : (
+                        <span className="explore-careers-figma__evaluation-state">
+                          {
+                            selectedCareer
+                              .recommended
+                              ? 'Current recommendation'
+                              : 'Evaluation complete'
+                          }
+                        </span>
+                      )
+                  )
                 }
               </div>
 

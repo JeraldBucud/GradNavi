@@ -13,7 +13,16 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ("email",)
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name")}),
+        (
+            "Personal info",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "profile_photo",
+                )
+            },
+        ),
         ("GradNavi", {"fields": ("role",)}),
         (
             "Permissions",
@@ -46,4 +55,3 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
-

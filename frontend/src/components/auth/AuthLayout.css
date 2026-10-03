@@ -140,16 +140,28 @@
  * ================================================= */
 
 .auth-shell__form-panel {
+  display: flex;
+
   min-width: 0;
+
+  align-items: stretch;
 
   background: #f8fafc;
 }
 
 .auth-shell__form-panel-inner {
+  display: flex;
+
   width: min(460px, calc(100% - 64px));
+  min-height: 100vh;
+
+  flex-direction: column;
+  justify-content: center;
+
+  box-sizing: border-box;
 
   margin: 0 auto;
-  padding: 54px 0 72px;
+  padding: 48px 0;
 }
 
 .auth-shell__back-link {
@@ -652,8 +664,15 @@
     display: none;
   }
 
+  .auth-shell__form-panel {
+    display: block;
+  }
+
   .auth-shell__form-panel-inner {
+    display: block;
+
     width: min(560px, calc(100% - 64px));
+    min-height: 0;
 
     padding: 56px 0 88px;
   }
@@ -700,7 +719,10 @@
   }
 
   .auth-shell__form-panel-inner {
+    display: block;
+
     width: auto;
+    min-height: 0;
 
     margin: 0;
     padding: 30px 24px 56px;
@@ -728,5 +750,285 @@
 
   .auth-state-card {
     padding: 22px;
+  }
+}
+
+
+/* =================================================
+ * REGISTER PAGE POLISH
+ * ================================================= */
+
+.auth-input,
+.auth-password-control {
+  box-sizing: border-box;
+}
+
+
+.auth-shell--register .auth-shell__form-panel-inner {
+  width: min(
+    520px,
+    calc(100% - 64px)
+  );
+}
+
+
+.auth-shell--register .auth-page-eyebrow {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #0786c8;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+
+.auth-shell--register .auth-name-grid {
+  gap: 16px;
+}
+
+
+.auth-shell--register .auth-password-requirements {
+  padding: 14px 16px;
+
+  background: #f8fbff;
+
+  border-color: #d7e5f4;
+}
+
+
+.auth-password-requirements__list {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px 14px;
+
+  margin: 10px 0 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+
+.auth-password-requirements__list li {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 7px;
+
+  min-width: 0;
+
+  color: #52637a;
+
+  font-size: 11px;
+  line-height: 16px;
+}
+
+
+.auth-password-requirements__list svg {
+  flex: 0 0 auto;
+
+  margin-top: 1px;
+
+  color: #0786c8;
+}
+
+
+@media (min-width: 1100px) {
+  .auth-shell--register .auth-shell__form-panel {
+    align-items: flex-start;
+
+    overflow-y: auto;
+  }
+
+
+  .auth-shell--register .auth-shell__form-panel-inner {
+    min-height: 100vh;
+
+    justify-content: flex-start;
+
+    padding: 40px 0 56px;
+  }
+
+
+  .auth-shell--register .auth-shell__back-link {
+    margin-bottom: 28px;
+  }
+
+
+  .auth-shell--register .auth-form-divider {
+    margin: 24px 0 20px;
+  }
+
+
+  .auth-shell--register .auth-form {
+    gap: 16px;
+  }
+}
+
+
+@media (
+  min-width: 640px
+) and (
+  max-width: 1099px
+) {
+  .auth-shell--register {
+    background: #f3f7fb;
+  }
+
+
+  .auth-shell--register .auth-shell__visual {
+    min-height: 220px;
+    height: 220px;
+  }
+
+
+  .auth-shell--register .auth-shell__visual-image {
+    object-position: 58% 42%;
+  }
+
+
+  .auth-shell--register .auth-shell__visual-content {
+    min-height: 220px;
+
+    padding: 26px 38px;
+  }
+
+
+  .auth-shell--register .auth-shell__desktop-brand img {
+    width: 160px;
+  }
+
+
+  .auth-shell--register .auth-shell__brand-message {
+    display: none;
+  }
+
+
+  .auth-shell--register .auth-shell__form-panel {
+    display: block;
+
+    background: #f3f7fb;
+  }
+
+
+  .auth-shell--register .auth-shell__form-panel-inner {
+    display: block;
+
+    width: min(
+      560px,
+      calc(100% - 40px)
+    );
+
+    min-height: 0;
+
+    box-sizing: border-box;
+
+    margin: 28px auto 56px;
+    padding: 30px 34px 36px;
+
+    background: #ffffff;
+
+    border: 1px solid #dbe5f0;
+    border-radius: 18px;
+
+    box-shadow:
+      0 16px 42px
+      rgb(15 23 42 / 8%);
+  }
+
+
+  .auth-shell--register .auth-shell__back-link {
+    margin-bottom: 26px;
+  }
+
+
+  .auth-shell--register .auth-form-divider {
+    margin: 22px 0 20px;
+  }
+
+
+  .auth-shell--register .auth-form {
+    gap: 16px;
+  }
+}
+
+
+@media (max-width: 639px) {
+  .auth-shell--register .auth-shell__form-panel {
+    background: #ffffff;
+  }
+
+
+  .auth-shell--register .auth-shell__mobile-header {
+    min-height: 92px;
+
+    padding: 0 20px;
+  }
+
+
+  .auth-shell--register .auth-shell__mobile-header img {
+    width: 145px;
+  }
+
+
+  .auth-shell--register .auth-shell__form-panel-inner {
+    width: auto;
+    min-height: 0;
+
+    margin: 0;
+    padding: 28px 20px 48px;
+
+    background: #ffffff;
+
+    border: 0;
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+
+  .auth-shell--register .auth-page-heading h1 {
+    font-size: 30px;
+  }
+
+
+  .auth-shell--register .auth-page-eyebrow {
+    margin-bottom: 8px;
+  }
+
+
+  .auth-shell--register .auth-form {
+    gap: 16px;
+  }
+
+
+  .auth-shell--register .auth-name-grid {
+    grid-template-columns: 1fr;
+
+    gap: 16px;
+  }
+
+
+  .auth-password-requirements__list {
+    grid-template-columns: 1fr;
+
+    gap: 7px;
+  }
+
+
+  .auth-shell--register .auth-primary-button {
+    min-height: 50px;
   }
 }

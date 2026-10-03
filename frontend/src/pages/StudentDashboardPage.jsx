@@ -282,6 +282,7 @@ function StudentDashboardPage() {
       careerContextError,
     isLoading:
       isCareerContextLoading,
+    profileSetupRequired,
     primaryCareer,
     selectedCareer,
     selectedCareerId,
@@ -802,7 +803,11 @@ function StudentDashboardPage() {
 
   const dashboardError =
     profileError
-    || careerContextError
+    || (
+      profileSetupRequired
+        ? ''
+        : careerContextError
+    )
     || currentCareerState.error
 
   const nextGapSkillId =
@@ -855,6 +860,36 @@ function StudentDashboardPage() {
             </strong>
           </div>
         </header>
+
+
+        {profileSetupRequired && (
+          <section
+            className="student-dashboard-v2__notice student-dashboard-v2__notice--onboarding"
+            role="status"
+          >
+            <strong>
+              Set up your profile to get personalised career recommendations.
+            </strong>
+
+            <p>
+              Add your skills, interests, education,
+              and career goals so GradNavi has enough
+              information to build guidance around you.
+            </p>
+
+            <button
+              className="student-dashboard-v2__button student-dashboard-v2__button--primary"
+              type="button"
+              onClick={() =>
+                navigate(
+                  '/profile',
+                )
+              }
+            >
+              Set Up My Profile
+            </button>
+          </section>
+        )}
 
 
         {dashboardError && (

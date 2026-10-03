@@ -31,6 +31,19 @@ function getRequestErrorMessage(
 }
 
 
+function getRequestErrorCode(
+  requestError,
+) {
+  return (
+    requestError
+      ?.data
+      ?.error
+      ?.code
+    || ''
+  )
+}
+
+
 function normalizeRecommendations(
   recommendations,
 ) {
@@ -169,6 +182,11 @@ function useCareerContext() {
   ] = useState('')
 
   const [
+    recommendationErrorCode,
+    setRecommendationErrorCode,
+  ] = useState('')
+
+  const [
     profileError,
     setProfileError,
   ] = useState('')
@@ -203,6 +221,27 @@ function useCareerContext() {
       [
         profile,
       ],
+    )
+
+
+  const profileSkills =
+    Array.isArray(
+      profile?.skills,
+    )
+      ? profile.skills
+      : []
+
+
+  const profileSetupRequired =
+    (
+      !isLoadingProfile
+      && !profileError
+      && Boolean(profile)
+      && profileSkills.length === 0
+    )
+    || (
+      recommendationErrorCode
+      === 'insufficient_profile_context'
     )
 
 
@@ -322,11 +361,45 @@ function useCareerContext() {
 
   useEffect(
     () => {
+      if (isLoadingProfile) {
+        return undefined
+      }
+
       let isActive = true
 
       async function loadRecommendations() {
+        if (profileError) {
+          setRecommendations([])
+          setRecommendationError('')
+          setRecommendationErrorCode('')
+          setIsLoadingRecommendations(
+            false,
+          )
+
+          return
+        }
+
+        const skills =
+          Array.isArray(
+            profile?.skills,
+          )
+            ? profile.skills
+            : []
+
+        if (skills.length === 0) {
+          setRecommendations([])
+          setRecommendationError('')
+          setRecommendationErrorCode('')
+          setIsLoadingRecommendations(
+            false,
+          )
+
+          return
+        }
+
         try {
           setRecommendationError('')
+          setRecommendationErrorCode('')
 
           const response =
             await getCareerRecommendations()
@@ -354,11 +427,30 @@ function useCareerContext() {
             return
           }
 
-          setRecommendationError(
-            getRequestErrorMessage(
+          const errorCode =
+            getRequestErrorCode(
               requestError,
-            ),
+            )
+
+          setRecommendationErrorCode(
+            errorCode,
           )
+
+          setRecommendations([])
+
+          if (
+            errorCode
+            === 'insufficient_profile_context'
+          ) {
+            setRecommendationError('')
+          }
+          else {
+            setRecommendationError(
+              getRequestErrorMessage(
+                requestError,
+              ),
+            )
+          }
         } finally {
           if (isActive) {
             setIsLoadingRecommendations(
@@ -374,7 +466,11 @@ function useCareerContext() {
         isActive = false
       }
     },
-    [],
+    [
+      isLoadingProfile,
+      profile,
+      profileError,
+    ],
   )
 
 
@@ -507,6 +603,7 @@ function useCareerContext() {
     error:
       recommendationError
       || profileError,
+    profileSetupRequired,
     isLoading:
       isResolvingCareer,
     isTemporarySelection,

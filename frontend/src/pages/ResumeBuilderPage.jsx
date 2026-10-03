@@ -541,6 +541,11 @@ function ResumeBuilderPage() {
     )?.label
     || 'Balanced'
 
+  const careerDirectionRequired =
+    !careerOptionsLoading
+    && !careerOptionsError
+    && careerOptions.length === 0
+
 
   useEffect(() => {
     let active = true
@@ -1780,7 +1785,14 @@ function ResumeBuilderPage() {
 
   return (
     <main
-      className="resume-builder"
+      className={[
+        'resume-builder',
+        careerDirectionRequired
+          ? 'resume-builder--profile-required'
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       <div
         className="resume-builder__content"
@@ -1816,6 +1828,37 @@ function ResumeBuilderPage() {
             </span>
           </div>
         </header>
+
+
+        {
+          careerDirectionRequired
+            ? (
+              <section
+                className="resume-builder__state-card resume-builder__profile-gate"
+              >
+                <h2>
+                  Set up your profile before building a resume
+                </h2>
+
+                <p>
+                  Add a Career Goal and profile evidence
+                  so GradNavi has a target career and
+                  verified information to build from.
+                </p>
+
+                <button
+                  className="resume-builder__primary-button"
+                  type="button"
+                  onClick={() =>
+                    navigate('/profile')
+                  }
+                >
+                  Set Up My Profile
+                </button>
+              </section>
+            )
+            : null
+        }
 
 
         <details

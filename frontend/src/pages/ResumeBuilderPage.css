@@ -968,3 +968,24 @@
   }
 
 }
+
+/* FRESH ACCOUNT PROFILE GATE */
+
+.resume-builder--profile-required
+.resume-builder__section,
+.resume-builder--profile-required
+.resume-builder__review-details,
+.resume-builder--profile-required
+.resume-builder__state-card:not(
+  .resume-builder__profile-gate
+),
+.resume-builder--profile-required
+.resume-builder__action-message {
+  display: none;
+}
+
+
+.resume-builder__profile-gate {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}

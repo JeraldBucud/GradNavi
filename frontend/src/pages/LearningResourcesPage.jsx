@@ -258,6 +258,7 @@ function LearningResourcesPage() {
       careerContextError,
     isLoading:
       isCareerContextLoading,
+    profileSetupRequired,
     selectedCareer,
     selectedCareerId,
     selectCareer,
@@ -1138,16 +1139,29 @@ function LearningResourcesPage() {
 
         <section className="career-guidance-state-card">
           <h2>
-            Career matches are needed first
+            {
+              profileSetupRequired
+                ? 'Set up your profile to get learning recommendations'
+                : 'Career matches are needed first'
+            }
           </h2>
 
-          <p role="alert">
+          <p>
             {
-              careerContextError
-              || (
-                'Complete your profile and '
-                + 'review Career Recommendations.'
-              )
+              profileSetupRequired
+                ? (
+                  'Add your skills, interests, and career '
+                  + 'goals so GradNavi has enough '
+                  + 'information to identify useful '
+                  + 'learning resources.'
+                )
+                : (
+                  careerContextError
+                  || (
+                    'Review Career Recommendations '
+                    + 'to choose a career first.'
+                  )
+                )
             }
           </p>
 
@@ -1156,11 +1170,17 @@ function LearningResourcesPage() {
             type="button"
             onClick={() =>
               navigate(
-                '/career-recommendations',
+                profileSetupRequired
+                  ? '/profile'
+                  : '/career-recommendations',
               )
             }
           >
-            Open Career Recommendations
+            {
+              profileSetupRequired
+                ? 'Set Up My Profile'
+                : 'Open Career Recommendations'
+            }
           </button>
         </section>
       </main>
