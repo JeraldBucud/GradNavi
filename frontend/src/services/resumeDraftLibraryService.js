@@ -4,7 +4,7 @@ const RESUME_LIBRARY_STORAGE_BASE_KEY =
 const LEGACY_RESUME_STORAGE_BASE_KEY =
   'gradnavi_resume_builder_draft_v1'
 
-const RESUME_LIBRARY_SCHEMA_VERSION = 2
+const RESUME_LIBRARY_SCHEMA_VERSION = 3
 
 
 function getStorageIdentity(
@@ -261,6 +261,7 @@ function normalizeVersion({
   id,
   targetCareerId,
   targetCareerName,
+  targetJobTitle = '',
   versionName,
   resumeFocus = 'balanced',
   jobDescription = '',
@@ -308,6 +309,10 @@ function normalizeVersion({
       careerId,
     target_career_name:
       careerName,
+    target_job_title:
+      normalizeText(
+        targetJobTitle,
+      ),
     version_name:
       normalizedVersionName,
     resume_focus:

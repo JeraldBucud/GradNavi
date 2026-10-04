@@ -85,6 +85,20 @@ INTERVIEW_FEEDBACK_OUTPUT_REQUIREMENTS: tuple[str, ...] = (
 )
 
 
+INTERVIEW_FEEDBACK_RETRY_INSTRUCTIONS: tuple[str, ...] = (
+    "The previous generated feedback was rejected by GradNavi grounding "
+    "validation.",
+    "Regenerate the complete InterviewFeedback response from the original "
+    "supplied interview content.",
+    "Do not repeat unsupported measurable claims, invented achievements, "
+    "or placeholder metrics.",
+    "If the Student did not supply a measurable outcome, describe the "
+    "result qualitatively instead of creating a number.",
+    "Keep strengths, improvements, suggested_response, feedback_summary, "
+    "and limitations grounded in the original supplied content.",
+)
+
+
 def _build_trusted_interview_feedback_context(
     request: InterviewFeedbackInput,
 ) -> str:
@@ -149,4 +163,33 @@ def build_interview_feedback_prompt(
             request
         ),
         output_requirements=INTERVIEW_FEEDBACK_OUTPUT_REQUIREMENTS,
+    )
+
+
+
+def build_interview_feedback_retry_prompt(
+    request: InterviewFeedbackInput,
+) -> PromptPackage:
+    """
+    Build a corrective Interview Feedback prompt after one
+    generated response fails GradNavi grounding validation.
+
+    The original untrusted Student content is preserved.
+    Only GradNavi-controlled corrective instructions are added.
+    """
+
+    package = build_interview_feedback_prompt(
+        request
+    )
+
+    return PromptPackage(
+        operation=package.operation,
+        system_instructions=(
+            package.system_instructions
+            + INTERVIEW_FEEDBACK_RETRY_INSTRUCTIONS
+        ),
+        safety_rules=package.safety_rules,
+        trusted_context=package.trusted_context,
+        untrusted_content=package.untrusted_content,
+        output_requirements=package.output_requirements,
     )

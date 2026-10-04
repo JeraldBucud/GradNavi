@@ -394,6 +394,41 @@ class ResumePromptTests(SimpleTestCase):
             package.untrusted_content,
         )
 
+    def test_resume_target_job_title_stays_untrusted(
+        self,
+    ):
+        target_job_title = (
+            "Senior Software Engineer"
+        )
+
+        package = build_resume_prompt(
+            ResumeGenerationInput(
+                profile=build_empty_profile(),
+                target_career_name=(
+                    "Software Engineer"
+                ),
+                target_job_title=(
+                    target_job_title
+                ),
+            )
+        )
+
+        self.assertNotIn(
+            target_job_title,
+            package.trusted_context,
+        )
+
+        self.assertIn(
+            "<UNTRUSTED_TARGET_JOB_TITLE>",
+            package.untrusted_content,
+        )
+
+        self.assertIn(
+            target_job_title,
+            package.untrusted_content,
+        )
+
+
     def test_resume_rejects_unknown_focus(self):
         with self.assertRaises(
             ValidationError
@@ -725,6 +760,128 @@ class CoverLetterPromptTests(SimpleTestCase):
                     "Software vacancy."
                 ),
             )
+
+
+class DocumentPresentationPromptTests(SimpleTestCase):
+    """
+    Regression tests for professional resume and
+    cover-letter generation requirements.
+    """
+
+    def test_resume_requires_targeted_categorised_skills(
+        self,
+    ):
+        instructions = " ".join(
+            RESUME_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        requirements = " ".join(
+            RESUME_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        combined = (
+            instructions
+            + " "
+            + requirements
+        )
+
+        required = (
+            "strongest role-relevant skills",
+            "3 to 7",
+            "natural category labels",
+            "programming languages: python | javascript | typescript",
+            "never output the literal prefix 'category:'",
+            "do not include every student profile skill",
+        )
+
+        for phrase in required:
+            with self.subTest(
+                phrase=phrase,
+            ):
+                self.assertIn(
+                    phrase,
+                    combined,
+                )
+
+    def test_resume_preserves_structured_record_order(
+        self,
+    ):
+        instructions = " ".join(
+            RESUME_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        required = (
+            "same order as the supplied experience",
+            "do not repeat the job title",
+            "same order as the supplied education",
+            "same order as the supplied project",
+            "do not repeat the project name",
+        )
+
+        for phrase in required:
+            with self.subTest(
+                phrase=phrase,
+            ):
+                self.assertIn(
+                    phrase,
+                    instructions,
+                )
+
+    def test_cover_letter_uses_professional_document_length(
+        self,
+    ):
+        instructions = " ".join(
+            COVER_LETTER_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        requirements = " ".join(
+            COVER_LETTER_OUTPUT_REQUIREMENTS
+        ).lower()
+
+        combined = (
+            instructions
+            + " "
+            + requirements
+        )
+
+        required = (
+            "300 to 500 words",
+            "2 to 3 focused body paragraphs",
+            "strongest 3 to 5",
+            "avoid long inventory-style sentences",
+            "do not include a greeting or sign-off",
+        )
+
+        for phrase in required:
+            with self.subTest(
+                phrase=phrase,
+            ):
+                self.assertIn(
+                    phrase,
+                    combined,
+                )
+
+    def test_cover_letter_does_not_invent_recipient_details(
+        self,
+    ):
+        instructions = " ".join(
+            COVER_LETTER_SYSTEM_INSTRUCTIONS
+        ).lower()
+
+        required = (
+            "do not invent a hiring manager name",
+            "company address",
+            "phone number",
+        )
+
+        for phrase in required:
+            with self.subTest(
+                phrase=phrase,
+            ):
+                self.assertIn(
+                    phrase,
+                    instructions,
+                )
 
 
 class InterviewQuestionPromptTests(SimpleTestCase):

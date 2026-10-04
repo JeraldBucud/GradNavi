@@ -45,6 +45,7 @@ from interviews.serializers import (
     InterviewQuestionRequestSerializer,
 )
 from interviews.services import (
+    _validate_interview_feedback,
     generate_interview_feedback,
     generate_interview_questions,
 )
@@ -396,6 +397,163 @@ def build_question_set(
         is_ai_generated=True,
         requires_user_review=True,
     )
+
+
+
+class InterviewFeedbackNumericGroundingTests(
+    SimpleTestCase
+):
+    """
+    Regression tests for Interview Feedback numeric grounding.
+
+    Only measurable claims require grounding.
+
+    Plain technical numbers such as framework versions, question
+    numbers, or architecture counts do not represent fabricated
+    achievement metrics.
+    """
+
+    def build_feedback(
+        self,
+        suggested_response,
+    ):
+        return InterviewFeedback(
+            strengths=[
+                "Uses a clear technical example.",
+            ],
+            improvements=[
+                "Keep the result grounded.",
+            ],
+            suggested_response=suggested_response,
+            feedback_summary=(
+                "Clear answer with grounded detail."
+            ),
+            limitations=[],
+            is_ai_generated=True,
+            requires_user_review=True,
+        )
+
+    def validate(
+        self,
+        *,
+        suggested_response,
+        student_answer=(
+            "I built the feature and tested the result."
+        ),
+    ):
+        _validate_interview_feedback(
+            result=self.build_feedback(
+                suggested_response
+            ),
+            target_role="Software Engineer",
+            question=(
+                "Describe a project you worked on."
+            ),
+            student_answer=student_answer,
+        )
+
+    def test_plain_technical_numbers_are_allowed(self):
+        self.validate(
+            suggested_response=(
+                "I used React 18, Python 3, and a "
+                "3-layer application structure."
+            ),
+        )
+
+    def test_question_style_numbers_are_allowed(self):
+        self.validate(
+            suggested_response=(
+                "I would explain the solution in 3 clear "
+                "parts and then describe the result."
+            ),
+        )
+
+    def test_unsupported_percentage_is_rejected(self):
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            self.validate(
+                suggested_response=(
+                    "I improved application performance "
+                    "by 40%."
+                ),
+            )
+
+    def test_supported_percentage_is_allowed(self):
+        self.validate(
+            student_answer=(
+                "I measured the change and improved "
+                "response time by 40%."
+            ),
+            suggested_response=(
+                "I improved response time by 40% "
+                "and verified the result."
+            ),
+        )
+
+    def test_unsupported_duration_is_rejected(self):
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            self.validate(
+                suggested_response=(
+                    "I reduced the delivery time "
+                    "by 2 weeks."
+                ),
+            )
+
+    def test_supported_duration_is_allowed(self):
+        self.validate(
+            student_answer=(
+                "The change reduced delivery time "
+                "by 2 weeks."
+            ),
+            suggested_response=(
+                "I reduced delivery time by 2 weeks "
+                "after improving the workflow."
+            ),
+        )
+
+    def test_unsupported_user_count_is_rejected(self):
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            self.validate(
+                suggested_response=(
+                    "The feature supported 500 users."
+                ),
+            )
+
+    def test_supported_user_count_is_allowed(self):
+        self.validate(
+            student_answer=(
+                "The feature supported 500 users."
+            ),
+            suggested_response=(
+                "I delivered a feature used by "
+                "500 users."
+            ),
+        )
+
+    def test_unsupported_currency_claim_is_rejected(self):
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            self.validate(
+                suggested_response=(
+                    "The change saved AUD 5000."
+                ),
+            )
+
+    def test_unsupported_multiplier_is_rejected(self):
+        with self.assertRaises(
+            AIResponseValidationError
+        ):
+            self.validate(
+                suggested_response=(
+                    "The change made processing 3x faster."
+                ),
+            )
 
 
 class InterviewQuestionServiceTests(SimpleTestCase):
@@ -1310,6 +1468,151 @@ class InterviewFeedbackServiceTests(SimpleTestCase):
             "Keep suggested_response grounded",
             output_text,
         )
+
+    def test_feedback_prompt_enforces_numeric_grounding(
+        self,
+    ):
+        provider = FakeInterviewProvider()
+
+        generate_interview_feedback(
+            target_role="Software Developer",
+            question=(
+                "Tell me about a project you completed."
+            ),
+            student_answer=(
+                "I designed the feature, implemented it, "
+                "and verified the result."
+            ),
+            ai_provider=provider,
+        )
+
+        prompt_package = (
+            provider.calls[0]["prompt_package"]
+        )
+
+        system_text = " ".join(
+            prompt_package.system_instructions
+        ).lower()
+
+        output_text = " ".join(
+            prompt_package.output_requirements
+        ).lower()
+
+        combined = (
+            system_text
+            + " "
+            + output_text
+        )
+
+        required = (
+            "do not introduce a numeric value",
+            "same numeric value appears",
+            "must contain no numeric values",
+        )
+
+        for phrase in required:
+            with self.subTest(
+                phrase=phrase,
+            ):
+                self.assertIn(
+                    phrase,
+                    combined,
+                )
+
+
+
+
+    def test_feedback_retry_uses_corrective_prompt(self):
+        invalid = build_feedback_result(
+            suggested_response=(
+                "I improved application performance "
+                "by 40%."
+            ),
+        )
+
+        expected = build_feedback_result(
+            suggested_response=(
+                "I improved application performance "
+                "and verified the result."
+            ),
+        )
+
+        provider = SequencedFeedbackProvider(
+            responses=[
+                invalid,
+                expected,
+            ],
+        )
+
+        result = generate_interview_feedback(
+            target_role="Software Engineer",
+            question=(
+                "Tell me about an improvement "
+                "you delivered."
+            ),
+            student_answer=(
+                "I improved application performance "
+                "and verified the result."
+            ),
+            ai_provider=provider,
+        )
+
+        self.assertIs(
+            result,
+            expected,
+        )
+
+        self.assertEqual(
+            len(provider.calls),
+            2,
+        )
+
+        first_prompt = (
+            provider.calls[0]["prompt_package"]
+        )
+
+        retry_prompt = (
+            provider.calls[1]["prompt_package"]
+        )
+
+        first_system = " ".join(
+            first_prompt.system_instructions
+        )
+
+        retry_system = " ".join(
+            retry_prompt.system_instructions
+        )
+
+        self.assertNotIn(
+            "previous generated feedback was rejected",
+            first_system.casefold(),
+        )
+
+        self.assertIn(
+            "previous generated feedback was rejected",
+            retry_system.casefold(),
+        )
+
+        self.assertIn(
+            "unsupported measurable claims",
+            retry_system.casefold(),
+        )
+
+        self.assertEqual(
+            first_prompt.untrusted_content,
+            retry_prompt.untrusted_content,
+        )
+
+        self.assertEqual(
+            first_prompt.trusted_context,
+            retry_prompt.trusted_context,
+        )
+
+        self.assertEqual(
+            first_prompt.operation,
+            retry_prompt.operation,
+        )
+
 
     def test_feedback_valid_first_attempt_does_not_retry(self):
         expected = build_feedback_result(

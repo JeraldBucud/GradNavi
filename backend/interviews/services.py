@@ -22,6 +22,7 @@ from ai_services.exceptions import (
 )
 from ai_services.prompts.interview_feedback import (
     build_interview_feedback_prompt,
+    build_interview_feedback_retry_prompt,
 )
 from ai_services.prompts.interview_questions import (
     build_interview_question_prompt,
@@ -73,27 +74,321 @@ INTERVIEW_FEEDBACK_PLACEHOLDER_PATTERNS = (
 )
 
 
-INTERVIEW_NUMERIC_CLAIM_PATTERN = re.compile(
-    r"(?<![\w.])\d+(?:\.\d+)?%?(?!\w)"
+INTERVIEW_PERCENT_CLAIM_PATTERN = re.compile(
+    (
+        r"(?<![\w.])"
+        r"(?P<number>\d+(?:\.\d+)?)"
+        r"\s*"
+        r"(?:%|percent(?:age)?(?:\s+points?)?)"
+        r"(?!\w)"
+    ),
+    re.IGNORECASE,
 )
 
 
-def _extract_numeric_claims(
+INTERVIEW_DURATION_CLAIM_PATTERN = re.compile(
+    (
+        r"(?<![\w.])"
+        r"(?P<number>\d+(?:\.\d+)?)"
+        r"\s*"
+        r"(?P<unit>"
+        r"milliseconds?|ms|"
+        r"seconds?|secs?|"
+        r"minutes?|mins?|"
+        r"hours?|hrs?|"
+        r"days?|weeks?|months?|years?"
+        r")"
+        r"(?!\w)"
+    ),
+    re.IGNORECASE,
+)
+
+
+INTERVIEW_COUNT_CLAIM_PATTERN = re.compile(
+    (
+        r"(?<![\w.])"
+        r"(?P<number>\d+(?:,\d{3})*(?:\.\d+)?)"
+        r"\s*"
+        r"(?P<unit>"
+        r"users?|customers?|clients?|people|"
+        r"requests?|records?|transactions?|orders?|"
+        r"tickets?|incidents?|bugs?|issues?|tests?"
+        r")"
+        r"(?!\w)"
+    ),
+    re.IGNORECASE,
+)
+
+
+INTERVIEW_DATA_SIZE_CLAIM_PATTERN = re.compile(
+    (
+        r"(?<![\w.])"
+        r"(?P<number>\d+(?:\.\d+)?)"
+        r"\s*"
+        r"(?P<unit>KB|MB|GB|TB)"
+        r"(?!\w)"
+    ),
+    re.IGNORECASE,
+)
+
+
+INTERVIEW_MULTIPLIER_CLAIM_PATTERN = re.compile(
+    (
+        r"(?<![\w.])"
+        r"(?P<number>\d+(?:\.\d+)?)"
+        r"\s*"
+        r"(?P<unit>x|times)"
+        r"(?!\w)"
+    ),
+    re.IGNORECASE,
+)
+
+
+INTERVIEW_CURRENCY_SYMBOL_CLAIM_PATTERN = re.compile(
+    (
+        r"(?P<unit>[$£€])"
+        r"\s*"
+        r"(?P<number>\d+(?:,\d{3})*(?:\.\d+)?)"
+    ),
+    re.IGNORECASE,
+)
+
+
+INTERVIEW_CURRENCY_PREFIX_CLAIM_PATTERN = re.compile(
+    (
+        r"\b"
+        r"(?P<unit>AUD|USD|GBP|EUR)"
+        r"\s*"
+        r"(?P<number>\d+(?:,\d{3})*(?:\.\d+)?)"
+        r"\b"
+    ),
+    re.IGNORECASE,
+)
+
+
+INTERVIEW_CURRENCY_SUFFIX_CLAIM_PATTERN = re.compile(
+    (
+        r"(?<![\w.])"
+        r"(?P<number>\d+(?:,\d{3})*(?:\.\d+)?)"
+        r"\s*"
+        r"(?P<unit>AUD|USD|GBP|EUR)"
+        r"\b"
+    ),
+    re.IGNORECASE,
+)
+
+
+INTERVIEW_DURATION_UNIT_ALIASES = {
+    "millisecond": "millisecond",
+    "milliseconds": "millisecond",
+    "ms": "millisecond",
+    "second": "second",
+    "seconds": "second",
+    "sec": "second",
+    "secs": "second",
+    "minute": "minute",
+    "minutes": "minute",
+    "min": "minute",
+    "mins": "minute",
+    "hour": "hour",
+    "hours": "hour",
+    "hr": "hour",
+    "hrs": "hour",
+    "day": "day",
+    "days": "day",
+    "week": "week",
+    "weeks": "week",
+    "month": "month",
+    "months": "month",
+    "year": "year",
+    "years": "year",
+}
+
+
+INTERVIEW_COUNT_UNIT_ALIASES = {
+    "user": "user",
+    "users": "user",
+    "customer": "customer",
+    "customers": "customer",
+    "client": "client",
+    "clients": "client",
+    "people": "people",
+    "request": "request",
+    "requests": "request",
+    "record": "record",
+    "records": "record",
+    "transaction": "transaction",
+    "transactions": "transaction",
+    "order": "order",
+    "orders": "order",
+    "ticket": "ticket",
+    "tickets": "ticket",
+    "incident": "incident",
+    "incidents": "incident",
+    "bug": "bug",
+    "bugs": "bug",
+    "issue": "issue",
+    "issues": "issue",
+    "test": "test",
+    "tests": "test",
+}
+
+
+def _normalize_claim_number(
+    value: str,
+) -> str:
+    """
+    Normalize one numeric value without changing its meaning.
+    """
+
+    normalized = value.replace(
+        ",",
+        "",
+    )
+
+    if "." in normalized:
+        normalized = (
+            normalized
+            .rstrip("0")
+            .rstrip(".")
+        )
+
+    return normalized
+
+
+def _extract_measurable_numeric_claims(
     value: str,
 ) -> set[str]:
     """
-    Extract explicit numeric claims for grounding comparison.
+    Extract measurable numeric claims which need grounding.
+
+    Plain numbers are intentionally ignored.
+
+    Examples such as React 18, Python 3, Question 2, or a
+    three-layer architecture do not represent achievement metrics.
+
+    Percentages, durations, counts, currency values, data sizes,
+    and multipliers are treated as measurable claims.
     """
 
-    return {
-        match.group(0)
-        .strip()
-        .casefold()
-        for match
-        in INTERVIEW_NUMERIC_CLAIM_PATTERN.finditer(
+    claims = set()
+
+    for match in (
+        INTERVIEW_PERCENT_CLAIM_PATTERN.finditer(
             value
         )
-    }
+    ):
+        number = _normalize_claim_number(
+            match.group("number")
+        )
+
+        claims.add(
+            f"percent:{number}"
+        )
+
+    for match in (
+        INTERVIEW_DURATION_CLAIM_PATTERN.finditer(
+            value
+        )
+    ):
+        number = _normalize_claim_number(
+            match.group("number")
+        )
+
+        raw_unit = (
+            match.group("unit")
+            .casefold()
+        )
+
+        unit = (
+            INTERVIEW_DURATION_UNIT_ALIASES[
+                raw_unit
+            ]
+        )
+
+        claims.add(
+            f"duration:{unit}:{number}"
+        )
+
+    for match in (
+        INTERVIEW_COUNT_CLAIM_PATTERN.finditer(
+            value
+        )
+    ):
+        number = _normalize_claim_number(
+            match.group("number")
+        )
+
+        raw_unit = (
+            match.group("unit")
+            .casefold()
+        )
+
+        unit = (
+            INTERVIEW_COUNT_UNIT_ALIASES[
+                raw_unit
+            ]
+        )
+
+        claims.add(
+            f"count:{unit}:{number}"
+        )
+
+    for match in (
+        INTERVIEW_DATA_SIZE_CLAIM_PATTERN.finditer(
+            value
+        )
+    ):
+        number = _normalize_claim_number(
+            match.group("number")
+        )
+
+        unit = (
+            match.group("unit")
+            .upper()
+        )
+
+        claims.add(
+            f"data_size:{unit}:{number}"
+        )
+
+    for match in (
+        INTERVIEW_MULTIPLIER_CLAIM_PATTERN.finditer(
+            value
+        )
+    ):
+        number = _normalize_claim_number(
+            match.group("number")
+        )
+
+        claims.add(
+            f"multiplier:{number}"
+        )
+
+    currency_patterns = (
+        INTERVIEW_CURRENCY_SYMBOL_CLAIM_PATTERN,
+        INTERVIEW_CURRENCY_PREFIX_CLAIM_PATTERN,
+        INTERVIEW_CURRENCY_SUFFIX_CLAIM_PATTERN,
+    )
+
+    for pattern in currency_patterns:
+        for match in pattern.finditer(
+            value
+        ):
+            number = _normalize_claim_number(
+                match.group("number")
+            )
+
+            unit = (
+                match.group("unit")
+                .upper()
+            )
+
+            claims.add(
+                f"currency:{unit}:{number}"
+            )
+
+    return claims
 
 
 def _validate_interview_feedback(
@@ -107,9 +402,12 @@ def _validate_interview_feedback(
     Enforce WBS 7.4 Interview Feedback grounding rules.
 
     Suggested responses must not contain obvious placeholder
-    metrics or introduce explicit numeric claims which were not
-    supplied through the target role, interview question, or
+    metrics or introduce measurable achievement claims which were
+    not supplied through the target role, interview question, or
     Student answer.
+
+    Plain numbers which do not represent measurable outcomes are
+    allowed.
     """
 
     suggested_response = (
@@ -127,31 +425,31 @@ def _validate_interview_feedback(
                 "unsupported placeholder value."
             )
 
-    supplied_numeric_claims = set()
+    supplied_measurable_claims = set()
 
     for value in (
         target_role,
         question,
         student_answer,
     ):
-        supplied_numeric_claims.update(
-            _extract_numeric_claims(
+        supplied_measurable_claims.update(
+            _extract_measurable_numeric_claims(
                 value
             )
         )
 
-    generated_numeric_claims = (
-        _extract_numeric_claims(
+    generated_measurable_claims = (
+        _extract_measurable_numeric_claims(
             suggested_response
         )
     )
 
-    unsupported_numeric_claims = (
-        generated_numeric_claims
-        - supplied_numeric_claims
+    unsupported_measurable_claims = (
+        generated_measurable_claims
+        - supplied_measurable_claims
     )
 
-    if unsupported_numeric_claims:
+    if unsupported_measurable_claims:
         raise AIResponseValidationError(
             "Interview AI feedback contains an "
             "unsupported numeric claim."
@@ -366,6 +664,12 @@ def generate_interview_feedback(
                 attempt + 1
                 < INTERVIEW_FEEDBACK_MAX_ATTEMPTS
             ):
+                prompt_package = (
+                    build_interview_feedback_retry_prompt(
+                        request
+                    )
+                )
+
                 continue
 
             raise

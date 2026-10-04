@@ -103,15 +103,16 @@ const studentNavigation = [
     implemented: true,
   },
   {
+    label: 'Interview Preparation',
+    icon: MessageSquare,
+    path: '/interview-preparation',
+    implemented: true,
+  },
+  {
     label: 'Settings',
     icon: Settings2,
     path: '/settings',
     implemented: true,
-  },
-  {
-    label: 'Interview Preparation',
-    icon: MessageSquare,
-    implemented: false,
   },
 ]
 
