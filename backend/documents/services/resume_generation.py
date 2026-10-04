@@ -19,6 +19,7 @@ def generate_resume_draft(
     target_career_name: str,
     ai_provider: AIProvider,
     resume_focus: str = "balanced",
+    target_job_title: str | None = None,
     job_description: str | None = None,
 ) -> ResumeDraft:
     """
@@ -32,6 +33,7 @@ def generate_resume_draft(
     request = ResumeGenerationInput(
         profile=profile_context,
         target_career_name=target_career_name,
+        target_job_title=target_job_title,
         resume_focus=resume_focus,
         job_description=job_description,
     )

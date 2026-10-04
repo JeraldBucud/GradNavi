@@ -52,6 +52,22 @@ COVER_LETTER_SYSTEM_INSTRUCTIONS: tuple[str, ...] = (
     "evidence that the Student already possesses a skill or qualification.",
     "Use concise professional business language and direct evidence-based "
     "statements.",
+    "Target approximately 300 to 500 words for the substantive letter and "
+    "avoid unnecessary repetition.",
+    "Prefer one professional page of substantive content while allowing a "
+    "second page when verified evidence genuinely requires additional "
+    "space.",
+    "Use the strongest 3 to 5 role-relevant evidence points rather than "
+    "listing every skill available in the Student Profile.",
+    "Avoid long inventory-style sentences containing large numbers of "
+    "technologies or skills.",
+    "Do not generate sender contact details, recipient addresses, a greeting, "
+    "or a sign-off. GradNavi renders those document elements separately.",
+    "Never write GradNavi schema field names such as opening, body_paragraphs, "
+    "closing, matched_profile_facts, missing_information, limitations, "
+    "is_draft, or requires_user_review inside the substantive letter text.",
+    "Do not invent a hiring manager name, recipient name, company address, "
+    "location, phone number, or other vacancy detail which was not supplied.",
     "Never use keyword stuffing or copy large passages from the supplied "
     "job description.",
     "Never invent qualifications, skills, experience, employers, "
@@ -76,6 +92,14 @@ COVER_LETTER_OUTPUT_REQUIREMENTS: tuple[str, ...] = (
     "Return content matching the GradNavi CoverLetterDraft structure.",
     "Keep the substantive letter concise, professional, ATS-readable, and "
     "plain-text oriented.",
+    "Target approximately 300 to 500 words across opening, body paragraphs, "
+    "and closing.",
+    "Keep opening to one concise paragraph.",
+    "Provide 2 to 3 focused body paragraphs using the strongest verified "
+    "evidence relevant to the vacancy.",
+    "Keep closing to one concise paragraph.",
+    "Do not include a greeting or sign-off inside opening, body_paragraphs, "
+    "or closing.",
     "Provide opening as a non-empty string.",
     "Provide body_paragraphs as a non-empty list of strings.",
     "Provide closing as a non-empty string.",

@@ -1,3 +1,8 @@
+import {
+  clearActiveInterviewSession,
+} from './interviewSessionStorage'
+
+
 const ACCESS_TOKEN_KEY = 'gradnavi_access_token'
 const REFRESH_TOKEN_KEY = 'gradnavi_refresh_token'
 const USER_KEY = 'gradnavi_user'
@@ -45,6 +50,8 @@ function storeAuthSession(authData) {
 
 
 function clearAuthSession() {
+  clearActiveInterviewSession()
+
   localStorage.removeItem(ACCESS_TOKEN_KEY)
   localStorage.removeItem(REFRESH_TOKEN_KEY)
   localStorage.removeItem(USER_KEY)

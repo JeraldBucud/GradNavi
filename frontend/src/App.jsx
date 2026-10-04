@@ -9,6 +9,7 @@ import ExploreCareersPage from './pages/ExploreCareersPage'
 import CareerRoadmapPage from './pages/CareerRoadmapPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import HomePage from './pages/HomePage'
+import InterviewPreparationPage from './pages/InterviewPreparationPage'
 import JobMatchingPage from './pages/JobMatchingPage'
 import LoginPage from './pages/LoginPage'
 import LearningResourcesPage from './pages/LearningResourcesPage'
@@ -99,6 +100,11 @@ function App() {
           <Route
             path="/cover-letter-builder"
             element={<CoverLetterBuilderPage />}
+          />
+
+          <Route
+            path="/interview-preparation"
+            element={<InterviewPreparationPage />}
           />
 
           <Route

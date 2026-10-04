@@ -10,6 +10,7 @@ import {
   FileText,
   GraduationCap,
   MessageSquare,
+  ShieldCheck,
 } from 'lucide-react'
 
 import {
@@ -1274,8 +1275,12 @@ function StudentDashboardPage() {
             <PreparationTool
               icon={MessageSquare}
               title="Interview Prep"
-              status="Pending integration"
-              disabled
+              status="Ready"
+              onClick={() =>
+                navigate(
+                  '/interview-preparation',
+                )
+              }
             />
 
             <PreparationTool
@@ -1300,13 +1305,19 @@ function StudentDashboardPage() {
               </h2>
 
               <p>
-                Completed Interview Preparation sessions.
-                Typed answers and AI feedback text are not stored.
+                Track your completed interview practice sessions.
+                Your typed answers and AI feedback are not saved
+                after the session.
               </p>
             </div>
 
             <span>
-              {interviewHistory.length} completed
+              {interviewHistory.length}{' '}
+              {
+                interviewHistory.length === 1
+                  ? 'session'
+                  : 'sessions'
+              }
             </span>
           </div>
 
@@ -1346,8 +1357,8 @@ function StudentDashboardPage() {
                 </strong>
 
                 <p>
-                  Completed Interview Preparation sessions
-                  will appear here.
+                  Your completed Interview Preparation
+                  sessions will appear here.
                 </p>
               </div>
             )
@@ -1363,11 +1374,11 @@ function StudentDashboardPage() {
                   <thead>
                     <tr>
                       <th scope="col">
-                        Role
+                        Target career
                       </th>
 
                       <th scope="col">
-                        Date
+                        Completed
                       </th>
 
                       <th scope="col">
@@ -1375,7 +1386,7 @@ function StudentDashboardPage() {
                       </th>
 
                       <th scope="col">
-                        With feedback
+                        Feedback received
                       </th>
                     </tr>
                   </thead>
@@ -1403,8 +1414,8 @@ function StudentDashboardPage() {
 
                             <td>
                               {
-                                session
-                                  .questions_with_feedback
+                                `${session.questions_with_feedback} `
+                                + `of ${session.total_questions}`
                               }
                             </td>
                           </tr>
@@ -1417,9 +1428,27 @@ function StudentDashboardPage() {
             )
           }
 
-          <p className="student-dashboard-v2__history-privacy">
-            Interview history stores metadata only.
-          </p>
+          <details className="student-dashboard-v2__history-privacy">
+            <summary>
+              <ShieldCheck
+                size={16}
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
+
+              <span>
+                Privacy details
+              </span>
+            </summary>
+
+            <p>
+              GradNavi keeps only session details such as
+              your target career, completion date, question
+              count, and feedback count. Your typed answers
+              and generated feedback are cleared when the
+              session ends.
+            </p>
+          </details>
         </section>
       </div>
     </main>

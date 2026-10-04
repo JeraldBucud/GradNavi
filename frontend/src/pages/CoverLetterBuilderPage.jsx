@@ -251,6 +251,61 @@ function normaliseList(value) {
 }
 
 
+function isCoverLetterInternalArtifact(
+  value,
+) {
+  const clean =
+    String(
+      value || '',
+    ).trim()
+
+  if (!clean) {
+    return false
+  }
+
+  return (
+    /^(?:opening|body_paragraphs|closing|matched_profile_facts|missing_information|limitations|is_draft|requires_user_review)\s*(?::|=|\[|\{|$)/i
+      .test(
+        clean,
+      )
+  )
+}
+
+
+function normaliseCoverLetterText(
+  value,
+) {
+  const clean =
+    String(
+      value || '',
+    ).trim()
+
+  if (
+    isCoverLetterInternalArtifact(
+      clean,
+    )
+  ) {
+    return ''
+  }
+
+  return clean
+}
+
+
+function normaliseCoverLetterParagraphs(
+  value,
+) {
+  return normaliseList(
+    value,
+  ).filter(
+    (item) =>
+      !isCoverLetterInternalArtifact(
+        item,
+      ),
+  )
+}
+
+
 function normaliseDraft(value) {
   if (
     !value
@@ -261,21 +316,19 @@ function normaliseDraft(value) {
 
   return {
     opening:
-      String(
-        value.opening
-        || '',
-      ).trim(),
+      normaliseCoverLetterText(
+        value.opening,
+      ),
 
     body_paragraphs:
-      normaliseList(
+      normaliseCoverLetterParagraphs(
         value.body_paragraphs,
       ),
 
     closing:
-      String(
-        value.closing
-        || '',
-      ).trim(),
+      normaliseCoverLetterText(
+        value.closing,
+      ),
 
     matched_profile_facts:
       normaliseList(
