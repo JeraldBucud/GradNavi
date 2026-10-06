@@ -1,0 +1,462 @@
+GradNavi WBS 8.3 Automated Security Regression
+
+Branch: jerald/wbs-8.3-security-permission-testing
+Purpose: Existing automated security and permission regression
+Targeted test classes: 29
+
+No real passwords, tokens, API keys, database credentials, or secret values are intentionally recorded in this evidence.
+
+Test classes:
+accounts.tests.RegistrationAPITests
+accounts.tests.LoginAPITests
+accounts.tests.TokenRefreshAPITests
+accounts.tests.CurrentUserAPITests
+accounts.tests.LogoutAPITests
+accounts.tests.PasswordResetAPITests
+accounts.tests.AccountSettingsAPITests
+accounts.tests.PasswordChangeAPITests
+administration.tests.AdministrationPermissionTests
+administration.tests.AdminUserManagementTests
+administration.tests.AdminUserRoleStatusAuditTests
+administration.tests.AdminLearningResourceReportReviewTests
+administration.tests.AdminAuditRecordTests
+administration.tests.AdminAnalyticsTests
+profiles.tests.StudentProfileReadAPITests
+profiles.tests.StudentProfilePatchAPITests
+careers.tests.RecommendationAPITests
+careers.tests.LearningRoadmapAPITests
+careers.test_job_description_matching.JobDescriptionMatchAPITests
+documents.tests.ResumeGenerationServiceTests
+documents.tests.ResumeGenerationAPITests
+documents.tests.CoverLetterGenerationServiceTests
+documents.tests.CoverLetterGenerationAPITests
+interviews.tests.InterviewRequestSerializerTests
+interviews.tests.InterviewQuestionServiceTests
+interviews.tests.InterviewFeedbackServiceTests
+interviews.tests.InterviewQuestionAPITests
+interviews.tests.InterviewFeedbackAPITests
+interviews.tests.InterviewHistoryAPITests
+
+============================================================
+TEST OUTPUT
+============================================================
+Creating test database for alias 'default' ('test_gradnavi_db')...
+
+Found 330 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: corsheaders, documents, messages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, administration, auth, careers, contenttypes, interviews, profiles, sessions, token_blacklist
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying accounts.0002_user_profile_photo... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying administration.0001_initial... OK
+  Applying profiles.0001_initial... OK
+  Applying profiles.0002_skill_concept_type_skill_valid_skill_concept_type... OK
+  Applying profiles.0003_classify_existing_technology_skills... OK
+  Applying careers.0001_initial... OK
+  Applying careers.0002_careerskillevidence_recommend_suppress... OK
+  Applying careers.0003_remove_careerskillevidence_valid_evidence_scale_range_and_more... OK
+  Applying careers.0004_learningresource_learningresourceskill_and_more... OK
+  Applying careers.0005_learningresource_resource_key... OK
+  Applying careers.0006_careerskillevidence_hot_technology_and_more... OK
+  Applying careers.0007_careerskillevidence_in_demand_percentage_and_more... OK
+  Applying careers.0008_careerinterest_careerriasecprofile... OK
+  Applying profiles.0004_careergoal_career_careergoal_is_primary_and_more... OK
+  Applying profiles.0005_backfill_career_goal_links... OK
+  Applying careers.0009_recommendationsnapshot... OK
+  Applying careers.0010_skillgapsummarysnapshot... OK
+  Applying careers.0011_learning_roadmap_enhancement_foundation... OK
+  Applying careers.0012_learning_resource_guidance_snapshot... OK
+  Applying careers.0013_studentcareerevaluation... OK
+  Applying careers.0014_learning_resource_discovery_attempt... OK
+  Applying interviews.0001_initial... OK
+  Applying sessions.0001_initial... OK
+  Applying token_blacklist.0001_initial... OK
+  Applying token_blacklist.0002_outstandingtoken_jti_hex... OK
+  Applying token_blacklist.0003_auto_20171017_2007... OK
+  Applying token_blacklist.0004_auto_20171017_2013... OK
+  Applying token_blacklist.0005_remove_outstandingtoken_jti... OK
+  Applying token_blacklist.0006_auto_20171017_2113... OK
+  Applying token_blacklist.0007_auto_20171017_2214... OK
+  Applying token_blacklist.0008_migrate_to_bigautofield... OK
+  Applying token_blacklist.0010_fix_migrate_to_bigautofield... OK
+  Applying token_blacklist.0011_linearizes_history... OK
+  Applying token_blacklist.0012_alter_outstandingtoken_user... OK
+test_default_role_is_student (accounts.tests.RegistrationAPITests.test_default_role_is_student) ... ok
+test_duplicate_email_is_rejected_case_insensitively (accounts.tests.RegistrationAPITests.test_duplicate_email_is_rejected_case_insensitively) ... ok
+test_newly_registered_student_can_get_empty_profile_then_patch_and_refetch (accounts.tests.RegistrationAPITests.test_newly_registered_student_can_get_empty_profile_then_patch_and_refetch) ... ok
+test_password_is_hashed_and_checkable (accounts.tests.RegistrationAPITests.test_password_is_hashed_and_checkable) ... ok
+test_password_mismatch_is_rejected (accounts.tests.RegistrationAPITests.test_password_mismatch_is_rejected) ... ok
+test_public_registration_cannot_create_privileged_user (accounts.tests.RegistrationAPITests.test_public_registration_cannot_create_privileged_user) ... ok
+test_registration_response_remains_compatible_after_profile_creation (accounts.tests.RegistrationAPITests.test_registration_response_remains_compatible_after_profile_creation) ... ok
+test_required_fields_are_rejected_when_missing (accounts.tests.RegistrationAPITests.test_required_fields_are_rejected_when_missing) ... ok
+test_successful_registration_creates_exactly_one_empty_student_profile (accounts.tests.RegistrationAPITests.test_successful_registration_creates_exactly_one_empty_student_profile) ... ok
+test_successful_registration_returns_201_and_safe_user_fields (accounts.tests.RegistrationAPITests.test_successful_registration_returns_201_and_safe_user_fields) ... ok
+test_successful_registration_stores_user_in_database (accounts.tests.RegistrationAPITests.test_successful_registration_stores_user_in_database) ... ok
+test_weak_password_is_rejected (accounts.tests.RegistrationAPITests.test_weak_password_is_rejected) ... ok
+test_inactive_user_is_rejected (accounts.tests.LoginAPITests.test_inactive_user_is_rejected) ... ok
+test_login_does_not_modify_user_role (accounts.tests.LoginAPITests.test_login_does_not_modify_user_role) ... ok
+test_login_response_does_not_leak_password_or_privileged_fields (accounts.tests.LoginAPITests.test_login_response_does_not_leak_password_or_privileged_fields) ... ok
+test_missing_credentials_are_rejected (accounts.tests.LoginAPITests.test_missing_credentials_are_rejected) ... ok
+test_nonexistent_email_is_rejected_with_same_safe_error (accounts.tests.LoginAPITests.test_nonexistent_email_is_rejected_with_same_safe_error) ... ok
+test_successful_login_accepts_email_case_insensitively (accounts.tests.LoginAPITests.test_successful_login_accepts_email_case_insensitively) ... ok
+test_successful_login_issues_valid_jwt_tokens (accounts.tests.LoginAPITests.test_successful_login_issues_valid_jwt_tokens) ... ok
+test_successful_login_returns_tokens_and_safe_user_information (accounts.tests.LoginAPITests.test_successful_login_returns_tokens_and_safe_user_information) ... ok
+test_wrong_password_and_nonexistent_email_return_same_error (accounts.tests.LoginAPITests.test_wrong_password_and_nonexistent_email_return_same_error) ... ok
+test_wrong_password_is_rejected_with_safe_error (accounts.tests.LoginAPITests.test_wrong_password_is_rejected_with_safe_error) ... ok
+test_access_token_cannot_be_used_as_refresh_token (accounts.tests.TokenRefreshAPITests.test_access_token_cannot_be_used_as_refresh_token) ... ok
+test_malformed_refresh_token_is_rejected (accounts.tests.TokenRefreshAPITests.test_malformed_refresh_token_is_rejected) ... ok
+test_missing_refresh_field_is_rejected (accounts.tests.TokenRefreshAPITests.test_missing_refresh_field_is_rejected) ... ok
+test_new_rotated_refresh_token_can_be_used_for_another_refresh (accounts.tests.TokenRefreshAPITests.test_new_rotated_refresh_token_can_be_used_for_another_refresh) ... ok
+test_original_refresh_token_cannot_be_reused_after_rotation (accounts.tests.TokenRefreshAPITests.test_original_refresh_token_cannot_be_reused_after_rotation) ... ok
+test_refresh_route_is_registered (accounts.tests.TokenRefreshAPITests.test_refresh_route_is_registered) ... ok
+test_valid_refresh_token_succeeds_and_returns_rotated_tokens (accounts.tests.TokenRefreshAPITests.test_valid_refresh_token_succeeds_and_returns_rotated_tokens) ... ok
+test_another_users_access_token_returns_that_user (accounts.tests.CurrentUserAPITests.test_another_users_access_token_returns_that_user) ... ok
+test_current_user_response_contains_safe_fields_only (accounts.tests.CurrentUserAPITests.test_current_user_response_contains_safe_fields_only) ... ok
+test_current_user_route_is_registered (accounts.tests.CurrentUserAPITests.test_current_user_route_is_registered) ... ok
+test_legacy_current_user_route_is_not_registered (accounts.tests.CurrentUserAPITests.test_legacy_current_user_route_is_not_registered) ... ok
+test_malformed_token_is_rejected (accounts.tests.CurrentUserAPITests.test_malformed_token_is_rejected) ... ok
+test_missing_authorization_header_is_rejected (accounts.tests.CurrentUserAPITests.test_missing_authorization_header_is_rejected) ... ok
+test_refresh_token_cannot_authenticate_current_user_endpoint (accounts.tests.CurrentUserAPITests.test_refresh_token_cannot_authenticate_current_user_endpoint) ... ok
+test_valid_access_token_returns_current_user (accounts.tests.CurrentUserAPITests.test_valid_access_token_returns_current_user) ... ok
+test_access_token_cannot_be_used_as_refresh_token (accounts.tests.LogoutAPITests.test_access_token_cannot_be_used_as_refresh_token) ... ok
+test_already_blacklisted_refresh_token_is_safely_rejected (accounts.tests.LogoutAPITests.test_already_blacklisted_refresh_token_is_safely_rejected) ... ok
+test_existing_access_token_remains_usable_until_expiry_after_logout (accounts.tests.LogoutAPITests.test_existing_access_token_remains_usable_until_expiry_after_logout) ... ok
+test_invalid_bearer_authentication_is_rejected (accounts.tests.LogoutAPITests.test_invalid_bearer_authentication_is_rejected) ... ok
+test_legacy_logout_route_is_not_registered (accounts.tests.LogoutAPITests.test_legacy_logout_route_is_not_registered) ... ok
+test_logout_route_is_registered (accounts.tests.LogoutAPITests.test_logout_route_is_registered) ... ok
+test_malformed_refresh_token_is_rejected (accounts.tests.LogoutAPITests.test_malformed_refresh_token_is_rejected) ... ok
+test_missing_bearer_authentication_is_rejected (accounts.tests.LogoutAPITests.test_missing_bearer_authentication_is_rejected) ... ok
+test_missing_refresh_token_is_rejected (accounts.tests.LogoutAPITests.test_missing_refresh_token_is_rejected) ... ok
+test_successful_logout_blacklists_submitted_refresh_token (accounts.tests.LogoutAPITests.test_successful_logout_blacklists_submitted_refresh_token) ... ok
+test_existing_email_request_succeeds_and_sends_one_email (accounts.tests.PasswordResetAPITests.test_existing_email_request_succeeds_and_sends_one_email) ... ok
+test_invalid_token_is_rejected (accounts.tests.PasswordResetAPITests.test_invalid_token_is_rejected) ... ok
+test_legacy_password_reset_routes_are_not_registered (accounts.tests.PasswordResetAPITests.test_legacy_password_reset_routes_are_not_registered) ... ok
+test_malformed_uid_is_rejected (accounts.tests.PasswordResetAPITests.test_malformed_uid_is_rejected) ... ok
+test_missing_or_malformed_email_is_rejected (accounts.tests.PasswordResetAPITests.test_missing_or_malformed_email_is_rejected) ... ok
+test_old_password_login_fails_and_new_password_login_succeeds_after_reset (accounts.tests.PasswordResetAPITests.test_old_password_login_fails_and_new_password_login_succeeds_after_reset) ... ok
+test_password_mismatch_is_rejected (accounts.tests.PasswordResetAPITests.test_password_mismatch_is_rejected) ... ok
+test_password_reset_routes_are_registered (accounts.tests.PasswordResetAPITests.test_password_reset_routes_are_registered) ... ok
+test_reset_confirm_missing_required_fields_are_rejected (accounts.tests.PasswordResetAPITests.test_reset_confirm_missing_required_fields_are_rejected) ... ok
+test_reset_request_response_does_not_expose_uid_or_token (accounts.tests.PasswordResetAPITests.test_reset_request_response_does_not_expose_uid_or_token) ... ok
+test_unknown_email_request_returns_same_safe_response_and_sends_no_email (accounts.tests.PasswordResetAPITests.test_unknown_email_request_returns_same_safe_response_and_sends_no_email) ... ok
+test_used_reset_token_cannot_be_reused (accounts.tests.PasswordResetAPITests.test_used_reset_token_cannot_be_reused) ... ok
+test_valid_reset_confirm_changes_password (accounts.tests.PasswordResetAPITests.test_valid_reset_confirm_changes_password) ... ok
+test_weak_password_is_rejected (accounts.tests.PasswordResetAPITests.test_weak_password_is_rejected) ... ok
+test_blank_names_are_rejected (accounts.tests.AccountSettingsAPITests.test_blank_names_are_rejected) ... ok
+test_delete_profile_photo_removes_stored_file (accounts.tests.AccountSettingsAPITests.test_delete_profile_photo_removes_stored_file) ... ok
+test_email_and_role_are_read_only (accounts.tests.AccountSettingsAPITests.test_email_and_role_are_read_only) ... ok
+test_first_and_last_name_can_be_updated (accounts.tests.AccountSettingsAPITests.test_first_and_last_name_can_be_updated) ... ok
+test_gif_profile_photo_is_rejected (accounts.tests.AccountSettingsAPITests.test_gif_profile_photo_is_rejected) ... ok
+test_png_profile_photo_upload_succeeds (accounts.tests.AccountSettingsAPITests.test_png_profile_photo_upload_succeeds) ... ok
+test_profile_photo_over_five_mb_is_rejected (accounts.tests.AccountSettingsAPITests.test_profile_photo_over_five_mb_is_rejected) ... ok
+test_profile_photo_replace_deletes_old_file (accounts.tests.AccountSettingsAPITests.test_profile_photo_replace_deletes_old_file) ... ok
+test_settings_backend_supports_admin_role (accounts.tests.AccountSettingsAPITests.test_settings_backend_supports_admin_role) ... ok
+test_settings_get_returns_safe_account_fields (accounts.tests.AccountSettingsAPITests.test_settings_get_returns_safe_account_fields) ... ok
+test_settings_requires_authentication (accounts.tests.AccountSettingsAPITests.test_settings_requires_authentication) ... ok
+test_settings_routes_are_registered (accounts.tests.AccountSettingsAPITests.test_settings_routes_are_registered) ... ok
+test_incorrect_current_password_is_rejected (accounts.tests.PasswordChangeAPITests.test_incorrect_current_password_is_rejected) ... ok
+test_old_password_login_fails_and_new_password_login_succeeds (accounts.tests.PasswordChangeAPITests.test_old_password_login_fails_and_new_password_login_succeeds) ... ok
+test_password_change_requires_authentication (accounts.tests.PasswordChangeAPITests.test_password_change_requires_authentication) ... ok
+test_password_change_route_is_registered (accounts.tests.PasswordChangeAPITests.test_password_change_route_is_registered) ... ok
+test_password_confirmation_mismatch_is_rejected (accounts.tests.PasswordChangeAPITests.test_password_confirmation_mismatch_is_rejected) ... ok
+test_same_password_is_rejected (accounts.tests.PasswordChangeAPITests.test_same_password_is_rejected) ... ok
+test_valid_password_change_succeeds (accounts.tests.PasswordChangeAPITests.test_valid_password_change_succeeds) ... ok
+test_weak_new_password_is_rejected (accounts.tests.PasswordChangeAPITests.test_weak_new_password_is_rejected) ... ok
+test_admin_can_access_all_admin_endpoints (administration.tests.AdministrationPermissionTests.test_admin_can_access_all_admin_endpoints) ... ok
+test_non_admins_cannot_access_admin_detail_endpoints (administration.tests.AdministrationPermissionTests.test_non_admins_cannot_access_admin_detail_endpoints) ... ok
+test_student_cannot_create_career (administration.tests.AdministrationPermissionTests.test_student_cannot_create_career) ... ok
+test_students_cannot_access_admin_endpoints (administration.tests.AdministrationPermissionTests.test_students_cannot_access_admin_endpoints) ... ok
+test_unauthenticated_users_cannot_access_admin_endpoints (administration.tests.AdministrationPermissionTests.test_unauthenticated_users_cannot_access_admin_endpoints) ... ok
+test_admin_can_list_users_with_safe_fields (administration.tests.AdminUserManagementTests.test_admin_can_list_users_with_safe_fields) ... ok
+test_admin_can_retrieve_user (administration.tests.AdminUserManagementTests.test_admin_can_retrieve_user) ... ok
+test_admin_can_update_user (administration.tests.AdminUserManagementTests.test_admin_can_update_user) ... ok
+test_admin_cannot_change_role_or_active_status (administration.tests.AdminUserManagementTests.test_admin_cannot_change_role_or_active_status) ... ok
+test_admin_can_change_user_active_status_through_dedicated_endpoint (administration.tests.AdminUserRoleStatusAuditTests.test_admin_can_change_user_active_status_through_dedicated_endpoint) ... ok
+test_admin_can_change_user_role_through_dedicated_endpoint (administration.tests.AdminUserRoleStatusAuditTests.test_admin_can_change_user_role_through_dedicated_endpoint) ... ok
+test_invalid_role_change_is_rejected (administration.tests.AdminUserRoleStatusAuditTests.test_invalid_role_change_is_rejected) ... ok
+test_student_cannot_change_role_or_status (administration.tests.AdminUserRoleStatusAuditTests.test_student_cannot_change_role_or_status) ... ok
+test_unauthenticated_user_cannot_change_role_or_status (administration.tests.AdminUserRoleStatusAuditTests.test_unauthenticated_user_cannot_change_role_or_status) ... ok
+test_admin_can_change_report_status_to_dismissed (administration.tests.AdminLearningResourceReportReviewTests.test_admin_can_change_report_status_to_dismissed) ... ok
+test_admin_can_change_report_status_to_resolved (administration.tests.AdminLearningResourceReportReviewTests.test_admin_can_change_report_status_to_resolved) ... ok
+test_admin_can_list_learning_resource_reports (administration.tests.AdminLearningResourceReportReviewTests.test_admin_can_list_learning_resource_reports) ... ok
+test_admin_can_retrieve_learning_resource_report (administration.tests.AdminLearningResourceReportReviewTests.test_admin_can_retrieve_learning_resource_report) ... ok
+test_invalid_report_status_is_rejected (administration.tests.AdminLearningResourceReportReviewTests.test_invalid_report_status_is_rejected) ... ok
+test_patch_cannot_alter_report_context_fields (administration.tests.AdminLearningResourceReportReviewTests.test_patch_cannot_alter_report_context_fields) ... ok
+test_student_cannot_access_report_detail_or_update (administration.tests.AdminLearningResourceReportReviewTests.test_student_cannot_access_report_detail_or_update) ... ok
+test_student_cannot_access_report_list (administration.tests.AdminLearningResourceReportReviewTests.test_student_cannot_access_report_list) ... ok
+test_unauthenticated_user_cannot_access_report_detail_or_update (administration.tests.AdminLearningResourceReportReviewTests.test_unauthenticated_user_cannot_access_report_detail_or_update) ... ok
+test_unauthenticated_user_cannot_access_report_list (administration.tests.AdminLearningResourceReportReviewTests.test_unauthenticated_user_cannot_access_report_list) ... ok
+test_admin_can_list_and_retrieve_audit_records (administration.tests.AdminAuditRecordTests.test_admin_can_list_and_retrieve_audit_records) ... ok
+test_audit_record_search_matches_action (administration.tests.AdminAuditRecordTests.test_audit_record_search_matches_action) ... ok
+test_audit_record_search_matches_administrator (administration.tests.AdminAuditRecordTests.test_audit_record_search_matches_administrator) ... ok
+test_audit_record_search_matches_area (administration.tests.AdminAuditRecordTests.test_audit_record_search_matches_area) ... ok
+test_audit_record_search_matches_target (administration.tests.AdminAuditRecordTests.test_audit_record_search_matches_target) ... ok
+test_audit_record_search_returns_empty_for_nonmatch (administration.tests.AdminAuditRecordTests.test_audit_record_search_returns_empty_for_nonmatch) ... ok
+test_audit_records_endpoint_is_read_only (administration.tests.AdminAuditRecordTests.test_audit_records_endpoint_is_read_only) ... ok
+test_audit_response_does_not_expose_user_email (administration.tests.AdminAuditRecordTests.test_audit_response_does_not_expose_user_email) ... ok
+test_career_create_update_and_delete_create_audit_records (administration.tests.AdminAuditRecordTests.test_career_create_update_and_delete_create_audit_records) ... ok
+test_learning_resource_report_status_change_creates_audit_record (administration.tests.AdminAuditRecordTests.test_learning_resource_report_status_change_creates_audit_record) ... ok
+test_admin_can_get_analytics_endpoint (administration.tests.AdminAnalyticsTests.test_admin_can_get_analytics_endpoint) ... ok
+test_analytics_endpoint_is_read_only (administration.tests.AdminAnalyticsTests.test_analytics_endpoint_is_read_only) ... ok
+test_analytics_response_exposes_no_student_data (administration.tests.AdminAnalyticsTests.test_analytics_response_exposes_no_student_data) ... ok
+test_common_skill_gap_ordering_is_deterministic (administration.tests.AdminAnalyticsTests.test_common_skill_gap_ordering_is_deterministic) ... ok
+test_common_skill_gaps_count_missing_and_below (administration.tests.AdminAnalyticsTests.test_common_skill_gaps_count_missing_and_below) ... ok
+test_different_careers_produce_separate_aggregates (administration.tests.AdminAnalyticsTests.test_different_careers_produce_separate_aggregates) ... ok
+test_empty_state_returns_empty_aggregate_lists (administration.tests.AdminAnalyticsTests.test_empty_state_returns_empty_aggregate_lists) ... ok
+test_popular_career_ordering_is_deterministic (administration.tests.AdminAnalyticsTests.test_popular_career_ordering_is_deterministic) ... ok
+test_popular_careers_aggregate_career_goal_counts (administration.tests.AdminAnalyticsTests.test_popular_careers_aggregate_career_goal_counts) ... ok
+test_student_request_receives_403 (administration.tests.AdminAnalyticsTests.test_student_request_receives_403) ... ok
+test_unauthenticated_request_receives_401 (administration.tests.AdminAnalyticsTests.test_unauthenticated_request_receives_401) ... ok
+test_authenticated_profile_get_returns_success_structure (profiles.tests.StudentProfileReadAPITests.test_authenticated_profile_get_returns_success_structure) ... ok
+test_authentication_is_required (profiles.tests.StudentProfileReadAPITests.test_authentication_is_required) ... ok
+test_complete_profile_sections_are_serialized (profiles.tests.StudentProfileReadAPITests.test_complete_profile_sections_are_serialized) ... ok
+test_empty_related_collections_are_returned (profiles.tests.StudentProfileReadAPITests.test_empty_related_collections_are_returned) ... ok
+test_get_uses_authenticated_user_and_does_not_leak_cross_user_data (profiles.tests.StudentProfileReadAPITests.test_get_uses_authenticated_user_and_does_not_leak_cross_user_data) ... ok
+test_invalid_authentication_uses_existing_error_envelope (profiles.tests.StudentProfileReadAPITests.test_invalid_authentication_uses_existing_error_envelope) ... ok
+test_missing_student_profile_returns_not_found_without_creating_profile (profiles.tests.StudentProfileReadAPITests.test_missing_student_profile_returns_not_found_without_creating_profile) ... ok
+test_route_resolves_to_profile_detail (profiles.tests.StudentProfileReadAPITests.test_route_resolves_to_profile_detail) ... ok
+test_authenticated_user_cannot_patch_another_profile_with_query_parameters (profiles.tests.StudentProfilePatchAPITests.test_authenticated_user_cannot_patch_another_profile_with_query_parameters) ... ok
+test_client_supplied_ownership_identifiers_are_rejected (profiles.tests.StudentProfilePatchAPITests.test_client_supplied_ownership_identifiers_are_rejected) ... ok
+test_cross_user_nested_id_is_rejected_without_modifying_other_profile (profiles.tests.StudentProfilePatchAPITests.test_cross_user_nested_id_is_rejected_without_modifying_other_profile) ... ok
+test_duplicate_skill_and_interest_inputs_are_rejected (profiles.tests.StudentProfilePatchAPITests.test_duplicate_skill_and_interest_inputs_are_rejected) ... ok
+test_education_end_date_only_update_validates_existing_start_date (profiles.tests.StudentProfilePatchAPITests.test_education_end_date_only_update_validates_existing_start_date) ... ok
+test_education_start_date_only_update_validates_existing_end_date (profiles.tests.StudentProfilePatchAPITests.test_education_start_date_only_update_validates_existing_end_date) ... ok
+test_existing_nested_records_can_be_updated_by_owned_id (profiles.tests.StudentProfilePatchAPITests.test_existing_nested_records_can_be_updated_by_owned_id) ... ok
+test_experience_partial_date_update_validates_effective_final_range (profiles.tests.StudentProfilePatchAPITests.test_experience_partial_date_update_validates_effective_final_range) ... ok
+test_failed_nested_validation_does_not_partially_modify_profile (profiles.tests.StudentProfilePatchAPITests.test_failed_nested_validation_does_not_partially_modify_profile) ... ok
+test_invalid_date_range_and_project_url_are_rejected (profiles.tests.StudentProfilePatchAPITests.test_invalid_date_range_and_project_url_are_rejected) ... ok
+test_invalid_proficiency_and_missing_reference_are_rejected (profiles.tests.StudentProfilePatchAPITests.test_invalid_proficiency_and_missing_reference_are_rejected) ... ok
+test_missing_student_profile_patch_returns_not_found_without_creating_profile (profiles.tests.StudentProfilePatchAPITests.test_missing_student_profile_patch_returns_not_found_without_creating_profile) ... ok
+test_omitted_sections_remain_unchanged (profiles.tests.StudentProfilePatchAPITests.test_omitted_sections_remain_unchanged) ... ok
+test_patch_requires_authentication (profiles.tests.StudentProfilePatchAPITests.test_patch_requires_authentication) ... ok
+test_patch_returns_success_structure_and_persists_to_get (profiles.tests.StudentProfilePatchAPITests.test_patch_returns_success_structure_and_persists_to_get) ... ok
+test_project_partial_date_update_validates_effective_final_range (profiles.tests.StudentProfilePatchAPITests.test_project_partial_date_update_validates_effective_final_range) ... ok
+test_supplied_collections_replace_existing_values_and_empty_arrays_clear (profiles.tests.StudentProfilePatchAPITests.test_supplied_collections_replace_existing_values_and_empty_arrays_clear) ... ok
+test_valid_partial_date_update_succeeds (profiles.tests.StudentProfilePatchAPITests.test_valid_partial_date_update_succeeds) ... ok
+test_authenticated_request_uses_composite_service (careers.tests.RecommendationAPITests.test_authenticated_request_uses_composite_service) ... ok
+test_authenticated_user_profile_is_used_exclusively (careers.tests.RecommendationAPITests.test_authenticated_user_profile_is_used_exclusively) ... ok
+test_component_scores_and_evidence_are_serialized (careers.tests.RecommendationAPITests.test_component_scores_and_evidence_are_serialized) ... ok
+test_composite_ranking_order_is_preserved (careers.tests.RecommendationAPITests.test_composite_ranking_order_is_preserved) ... ok
+test_composite_result_schema (careers.tests.RecommendationAPITests.test_composite_result_schema) ... ok
+test_effective_weights_are_serialized (careers.tests.RecommendationAPITests.test_effective_weights_are_serialized) ... ok
+test_empty_student_skills_returns_controlled_profile_error (careers.tests.RecommendationAPITests.test_empty_student_skills_returns_controlled_profile_error) ... ok
+test_missing_competency_component_stays_explicit (careers.tests.RecommendationAPITests.test_missing_competency_component_stays_explicit) ... ok
+test_missing_semantic_context_returns_controlled_profile_error (careers.tests.RecommendationAPITests.test_missing_semantic_context_returns_controlled_profile_error) ... ok
+test_missing_student_profile_returns_not_found (careers.tests.RecommendationAPITests.test_missing_student_profile_returns_not_found) ... ok
+test_provider_initialization_failure_returns_503 (careers.tests.RecommendationAPITests.test_provider_initialization_failure_returns_503) ... ok
+test_provider_runtime_failure_returns_503 (careers.tests.RecommendationAPITests.test_provider_runtime_failure_returns_503) ... ok
+test_response_exposes_composite_metadata (careers.tests.RecommendationAPITests.test_response_exposes_composite_metadata) ... ok
+test_unauthenticated_request_is_rejected (careers.tests.RecommendationAPITests.test_unauthenticated_request_is_rejected) ... ok
+test_api_delegates_to_wbs57_service (careers.tests.LearningRoadmapAPITests.test_api_delegates_to_wbs57_service) ... ok
+test_invalid_career_id_returns_validation_error (careers.tests.LearningRoadmapAPITests.test_invalid_career_id_returns_validation_error) ... ok
+test_learning_resource_serialization_and_zero_resource_gap (careers.tests.LearningRoadmapAPITests.test_learning_resource_serialization_and_zero_resource_gap) ... ok
+test_learning_resources_authentication_required (careers.tests.LearningRoadmapAPITests.test_learning_resources_authentication_required) ... ok
+test_missing_and_below_gaps_are_exposed_and_met_excluded (careers.tests.LearningRoadmapAPITests.test_missing_and_below_gaps_are_exposed_and_met_excluded) ... ok
+test_missing_student_profile_returns_not_found (careers.tests.LearningRoadmapAPITests.test_missing_student_profile_returns_not_found) ... ok
+test_nonexistent_career_returns_not_found (careers.tests.LearningRoadmapAPITests.test_nonexistent_career_returns_not_found) ... ok
+test_real_service_excludes_inactive_resources (careers.tests.LearningRoadmapAPITests.test_real_service_excludes_inactive_resources) ... ok
+test_repeated_response_is_deterministic (careers.tests.LearningRoadmapAPITests.test_repeated_response_is_deterministic) ... ok
+test_roadmap_authentication_required (careers.tests.LearningRoadmapAPITests.test_roadmap_authentication_required) ... ok
+test_roadmap_ordering_is_preserved (careers.tests.LearningRoadmapAPITests.test_roadmap_ordering_is_preserved) ... ok
+test_student_profile_is_derived_from_request_user (careers.tests.LearningRoadmapAPITests.test_student_profile_is_derived_from_request_user) ... ok
+test_unavailable_career_returns_validation_error (careers.tests.LearningRoadmapAPITests.test_unavailable_career_returns_validation_error) ... ok
+test_valid_learning_resource_response (careers.tests.LearningRoadmapAPITests.test_valid_learning_resource_response) ... ok
+test_valid_roadmap_response (careers.tests.LearningRoadmapAPITests.test_valid_roadmap_response) ... ok
+test_authenticated_profile_ownership (careers.test_job_description_matching.JobDescriptionMatchAPITests.test_authenticated_profile_ownership) ... ok
+test_authentication_required (careers.test_job_description_matching.JobDescriptionMatchAPITests.test_authentication_required) ... ok
+test_blank_job_description_rejected (careers.test_job_description_matching.JobDescriptionMatchAPITests.test_blank_job_description_rejected) ... ok
+test_complete_response_contract (careers.test_job_description_matching.JobDescriptionMatchAPITests.test_complete_response_contract) ... ok
+test_job_matching_output_is_independent_of_text_ai_provider (careers.test_job_description_matching.JobDescriptionMatchAPITests.test_job_matching_output_is_independent_of_text_ai_provider) ... ok
+test_no_known_requirement_is_valid (careers.test_job_description_matching.JobDescriptionMatchAPITests.test_no_known_requirement_is_valid) ... ok
+test_oversized_job_description_rejected (careers.test_job_description_matching.JobDescriptionMatchAPITests.test_oversized_job_description_rejected) ... ok
+test_unknown_fields_rejected (careers.test_job_description_matching.JobDescriptionMatchAPITests.test_unknown_fields_rejected) ... ok
+test_approved_profile_context_reaches_provider_through_privacy_mapper (documents.tests.ResumeGenerationServiceTests.test_approved_profile_context_reaches_provider_through_privacy_mapper) ... ok
+test_private_profile_fields_are_not_exposed_to_provider_prompt (documents.tests.ResumeGenerationServiceTests.test_private_profile_fields_are_not_exposed_to_provider_prompt) ... ok
+test_provider_is_called_with_resume_draft_output_model (documents.tests.ResumeGenerationServiceTests.test_provider_is_called_with_resume_draft_output_model) ... ok
+test_service_uses_injected_provider_only (documents.tests.ResumeGenerationServiceTests.test_service_uses_injected_provider_only) ... ok
+test_shared_ai_provider_errors_propagate (documents.tests.ResumeGenerationServiceTests.test_shared_ai_provider_errors_propagate) ... ok
+test_validated_resume_draft_is_returned (documents.tests.ResumeGenerationServiceTests.test_validated_resume_draft_is_returned) ... ok
+test_authenticated_user_profile_is_used_exclusively (documents.tests.ResumeGenerationAPITests.test_authenticated_user_profile_is_used_exclusively) ... ok
+test_authentication_is_required (documents.tests.ResumeGenerationAPITests.test_authentication_is_required) ... ok
+test_empty_optional_resume_job_description_is_rejected (documents.tests.ResumeGenerationAPITests.test_empty_optional_resume_job_description_is_rejected) ... ok
+test_empty_target_job_title_is_rejected (documents.tests.ResumeGenerationAPITests.test_empty_target_job_title_is_rejected) ... ok
+test_external_service_failure_creates_safe_system_audit_record (documents.tests.ResumeGenerationAPITests.test_external_service_failure_creates_safe_system_audit_record) ... ok
+test_invalid_authentication_uses_existing_error_envelope (documents.tests.ResumeGenerationAPITests.test_invalid_authentication_uses_existing_error_envelope) ... ok
+test_invalid_resume_focus_is_rejected (documents.tests.ResumeGenerationAPITests.test_invalid_resume_focus_is_rejected) ... ok
+test_missing_student_profile_returns_not_found (documents.tests.ResumeGenerationAPITests.test_missing_student_profile_returns_not_found) ... ok
+test_optional_job_description_reaches_resume_prompt (documents.tests.ResumeGenerationAPITests.test_optional_job_description_reaches_resume_prompt) ... ok
+test_optional_target_job_title_reaches_resume_prompt (documents.tests.ResumeGenerationAPITests.test_optional_target_job_title_reaches_resume_prompt) ... ok
+test_oversized_resume_job_description_is_rejected (documents.tests.ResumeGenerationAPITests.test_oversized_resume_job_description_is_rejected) ... ok
+test_provider_unavailable_returns_503 (documents.tests.ResumeGenerationAPITests.test_provider_unavailable_returns_503) ... ok
+test_request_requires_target_career (documents.tests.ResumeGenerationAPITests.test_request_requires_target_career) ... ok
+test_response_validation_failure_is_sanitized_503 (documents.tests.ResumeGenerationAPITests.test_response_validation_failure_is_sanitized_503) ... ok
+test_resume_generation_still_accepts_no_job_description (documents.tests.ResumeGenerationAPITests.test_resume_generation_still_accepts_no_job_description) ... ok
+test_route_resolves_to_resume_generation_view (documents.tests.ResumeGenerationAPITests.test_route_resolves_to_resume_generation_view) ... ok
+test_shared_ai_service_failure_returns_503 (documents.tests.ResumeGenerationAPITests.test_shared_ai_service_failure_returns_503) ... ok
+test_success_returns_structured_resume_draft (documents.tests.ResumeGenerationAPITests.test_success_returns_structured_resume_draft) ... ok
+test_unavailable_target_career_is_rejected (documents.tests.ResumeGenerationAPITests.test_unavailable_target_career_is_rejected) ... ok
+test_unexpected_request_fields_are_rejected (documents.tests.ResumeGenerationAPITests.test_unexpected_request_fields_are_rejected) ... ok
+test_view_calls_resume_service_with_profile_and_provider (documents.tests.ResumeGenerationAPITests.test_view_calls_resume_service_with_profile_and_provider) ... ok
+test_approved_profile_context_reaches_provider_through_privacy_mapper (documents.tests.CoverLetterGenerationServiceTests.test_approved_profile_context_reaches_provider_through_privacy_mapper) ... ok
+test_empty_job_description_is_rejected_by_input_contract (documents.tests.CoverLetterGenerationServiceTests.test_empty_job_description_is_rejected_by_input_contract) ... ok
+test_job_description_instructions_do_not_become_trusted_instructions (documents.tests.CoverLetterGenerationServiceTests.test_job_description_instructions_do_not_become_trusted_instructions) ... ok
+test_job_description_reaches_prompt_as_untrusted_content (documents.tests.CoverLetterGenerationServiceTests.test_job_description_reaches_prompt_as_untrusted_content) ... ok
+test_oversized_job_description_is_rejected_by_input_contract (documents.tests.CoverLetterGenerationServiceTests.test_oversized_job_description_is_rejected_by_input_contract) ... ok
+test_private_profile_fields_are_not_exposed_to_provider_prompt (documents.tests.CoverLetterGenerationServiceTests.test_private_profile_fields_are_not_exposed_to_provider_prompt) ... ok
+test_provider_is_called_with_cover_letter_draft_output_model (documents.tests.CoverLetterGenerationServiceTests.test_provider_is_called_with_cover_letter_draft_output_model) ... ok
+test_service_uses_injected_provider_only (documents.tests.CoverLetterGenerationServiceTests.test_service_uses_injected_provider_only) ... ok
+test_shared_ai_provider_errors_propagate (documents.tests.CoverLetterGenerationServiceTests.test_shared_ai_provider_errors_propagate) ... ok
+test_validated_cover_letter_draft_is_returned (documents.tests.CoverLetterGenerationServiceTests.test_validated_cover_letter_draft_is_returned) ... ok
+test_application_focus_is_rejected_from_ai_request (documents.tests.CoverLetterGenerationAPITests.test_application_focus_is_rejected_from_ai_request) ... ok
+test_authenticated_user_profile_is_used_exclusively (documents.tests.CoverLetterGenerationAPITests.test_authenticated_user_profile_is_used_exclusively) ... ok
+test_authentication_is_required (documents.tests.CoverLetterGenerationAPITests.test_authentication_is_required) ... ok
+test_client_cannot_select_another_student_profile (documents.tests.CoverLetterGenerationAPITests.test_client_cannot_select_another_student_profile) ... ok
+test_cover_letter_draft_serialization_matches_contract (documents.tests.CoverLetterGenerationAPITests.test_cover_letter_draft_serialization_matches_contract) ... ok
+test_empty_company_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_empty_company_is_rejected) ... ok
+test_empty_job_description_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_empty_job_description_is_rejected) ... ok
+test_empty_job_title_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_empty_job_title_is_rejected) ... ok
+test_invalid_authentication_uses_existing_error_envelope (documents.tests.CoverLetterGenerationAPITests.test_invalid_authentication_uses_existing_error_envelope) ... ok
+test_invalid_cover_letter_focus_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_invalid_cover_letter_focus_is_rejected) ... ok
+test_invalid_cover_letter_tone_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_invalid_cover_letter_tone_is_rejected) ... ok
+test_missing_student_profile_returns_not_found (documents.tests.CoverLetterGenerationAPITests.test_missing_student_profile_returns_not_found) ... ok
+test_oversized_job_description_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_oversized_job_description_is_rejected) ... ok
+test_profile_prompt_and_system_prompt_fields_are_rejected (documents.tests.CoverLetterGenerationAPITests.test_profile_prompt_and_system_prompt_fields_are_rejected) ... ok
+test_provider_unavailable_returns_503 (documents.tests.CoverLetterGenerationAPITests.test_provider_unavailable_returns_503) ... ok
+test_request_requires_company (documents.tests.CoverLetterGenerationAPITests.test_request_requires_company) ... ok
+test_request_requires_job_description (documents.tests.CoverLetterGenerationAPITests.test_request_requires_job_description) ... ok
+test_request_requires_job_title (documents.tests.CoverLetterGenerationAPITests.test_request_requires_job_title) ... ok
+test_request_requires_target_career (documents.tests.CoverLetterGenerationAPITests.test_request_requires_target_career) ... ok
+test_response_validation_failure_is_sanitized_503 (documents.tests.CoverLetterGenerationAPITests.test_response_validation_failure_is_sanitized_503) ... ok
+test_route_resolves_to_cover_letter_generation_view (documents.tests.CoverLetterGenerationAPITests.test_route_resolves_to_cover_letter_generation_view) ... ok
+test_service_receives_authenticated_profile_and_validated_job_description (documents.tests.CoverLetterGenerationAPITests.test_service_receives_authenticated_profile_and_validated_job_description) ... ok
+test_shared_ai_service_failure_returns_503 (documents.tests.CoverLetterGenerationAPITests.test_shared_ai_service_failure_returns_503) ... ok
+test_student_profile_id_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_student_profile_id_is_rejected) ... ok
+test_success_returns_structured_cover_letter_draft (documents.tests.CoverLetterGenerationAPITests.test_success_returns_structured_cover_letter_draft) ... ok
+test_unavailable_target_career_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_unavailable_target_career_is_rejected) ... ok
+test_unexpected_fields_are_rejected (documents.tests.CoverLetterGenerationAPITests.test_unexpected_fields_are_rejected) ... ok
+test_user_id_is_rejected (documents.tests.CoverLetterGenerationAPITests.test_user_id_is_rejected) ... ok
+test_authentication_is_required (interviews.tests.InterviewQuestionAPITests.test_authentication_is_required) ... ok
+test_extra_field_is_rejected (interviews.tests.InterviewQuestionAPITests.test_extra_field_is_rejected) ... ok
+test_invalid_question_count_is_rejected (interviews.tests.InterviewQuestionAPITests.test_invalid_question_count_is_rejected) ... ok
+test_invalid_token_is_rejected (interviews.tests.InterviewQuestionAPITests.test_invalid_token_is_rejected) ... ok
+test_provider_timeout_returns_503 (interviews.tests.InterviewQuestionAPITests.test_provider_timeout_returns_503) ... ok
+test_provider_unavailable_returns_503 (interviews.tests.InterviewQuestionAPITests.test_provider_unavailable_returns_503) ... ok
+test_route_resolves (interviews.tests.InterviewQuestionAPITests.test_route_resolves) ... ok
+test_semantic_validation_failure_logs_safe_category (interviews.tests.InterviewQuestionAPITests.test_semantic_validation_failure_logs_safe_category) ... ok
+test_semantic_validation_failure_returns_controlled_502 (interviews.tests.InterviewQuestionAPITests.test_semantic_validation_failure_returns_controlled_502) ... Interview question AI validation failed: focus_area_mismatch
+ok
+test_success_returns_structured_question_set (interviews.tests.InterviewQuestionAPITests.test_success_returns_structured_question_set) ... ok
+test_view_delegates_validated_data_to_service (interviews.tests.InterviewQuestionAPITests.test_view_delegates_validated_data_to_service) ... ok
+test_authentication_is_required (interviews.tests.InterviewFeedbackAPITests.test_authentication_is_required) ... ok
+test_blank_answer_is_rejected (interviews.tests.InterviewFeedbackAPITests.test_blank_answer_is_rejected) ... ok
+test_extra_profile_id_is_rejected (interviews.tests.InterviewFeedbackAPITests.test_extra_profile_id_is_rejected) ... ok
+test_feedback_grounding_failure_returns_controlled_502 (interviews.tests.InterviewFeedbackAPITests.test_feedback_grounding_failure_returns_controlled_502) ... Interview feedback AI validation failed: feedback_placeholder
+ok
+test_feedback_validation_failure_logs_safe_category (interviews.tests.InterviewFeedbackAPITests.test_feedback_validation_failure_logs_safe_category) ... ok
+test_invalid_token_is_rejected (interviews.tests.InterviewFeedbackAPITests.test_invalid_token_is_rejected) ... ok
+test_provider_timeout_returns_503 (interviews.tests.InterviewFeedbackAPITests.test_provider_timeout_returns_503) ... ok
+test_provider_unavailable_returns_503 (interviews.tests.InterviewFeedbackAPITests.test_provider_unavailable_returns_503) ... ok
+test_route_resolves (interviews.tests.InterviewFeedbackAPITests.test_route_resolves) ... ok
+test_success_returns_structured_feedback (interviews.tests.InterviewFeedbackAPITests.test_success_returns_structured_feedback) ... ok
+test_view_delegates_validated_data_to_service (interviews.tests.InterviewFeedbackAPITests.test_view_delegates_validated_data_to_service) ... ok
+test_empty_history_returns_empty_list (interviews.tests.InterviewHistoryAPITests.test_empty_history_returns_empty_list) ... ok
+test_feedback_count_must_not_exceed_total (interviews.tests.InterviewHistoryAPITests.test_feedback_count_must_not_exceed_total) ... ok
+test_get_authentication_is_required (interviews.tests.InterviewHistoryAPITests.test_get_authentication_is_required) ... ok
+test_get_returns_only_authenticated_user_history (interviews.tests.InterviewHistoryAPITests.test_get_returns_only_authenticated_user_history) ... ok
+test_post_authentication_is_required (interviews.tests.InterviewHistoryAPITests.test_post_authentication_is_required) ... ok
+test_post_creates_owned_session_metadata (interviews.tests.InterviewHistoryAPITests.test_post_creates_owned_session_metadata) ... ok
+test_route_resolves (interviews.tests.InterviewHistoryAPITests.test_route_resolves) ... ok
+test_sensitive_interview_content_is_rejected (interviews.tests.InterviewHistoryAPITests.test_sensitive_interview_content_is_rejected) ... ok
+test_total_questions_must_be_within_contract (interviews.tests.InterviewHistoryAPITests.test_total_questions_must_be_within_contract) ... ok
+test_user_id_is_rejected (interviews.tests.InterviewHistoryAPITests.test_user_id_is_rejected) ... ok
+test_feedback_request_accepts_valid_input (interviews.tests.InterviewRequestSerializerTests.test_feedback_request_accepts_valid_input) ... ok
+test_feedback_request_rejects_blank_answer (interviews.tests.InterviewRequestSerializerTests.test_feedback_request_rejects_blank_answer) ... ok
+test_feedback_request_rejects_profile_id (interviews.tests.InterviewRequestSerializerTests.test_feedback_request_rejects_profile_id) ... ok
+test_question_count_above_limit_is_rejected (interviews.tests.InterviewRequestSerializerTests.test_question_count_above_limit_is_rejected) ... ok
+test_question_count_below_limit_is_rejected (interviews.tests.InterviewRequestSerializerTests.test_question_count_below_limit_is_rejected) ... ok
+test_question_count_string_is_rejected (interviews.tests.InterviewRequestSerializerTests.test_question_count_string_is_rejected) ... ok
+test_question_request_rejects_client_prompt (interviews.tests.InterviewRequestSerializerTests.test_question_request_rejects_client_prompt) ... ok
+test_question_request_rejects_user_id (interviews.tests.InterviewRequestSerializerTests.test_question_request_rejects_user_id) ... ok
+test_question_request_uses_default_count (interviews.tests.InterviewRequestSerializerTests.test_question_request_uses_default_count) ... ok
+test_blank_declared_focus_area_is_rejected (interviews.tests.InterviewQuestionServiceTests.test_blank_declared_focus_area_is_rejected) ... ok
+test_duplicate_declared_focus_area_is_rejected (interviews.tests.InterviewQuestionServiceTests.test_duplicate_declared_focus_area_is_rejected) ... ok
+test_extra_declared_focus_area_is_rejected (interviews.tests.InterviewQuestionServiceTests.test_extra_declared_focus_area_is_rejected) ... ok
+test_extra_question_is_rejected (interviews.tests.InterviewQuestionServiceTests.test_extra_question_is_rejected) ... ok
+test_focus_area_comparison_is_case_insensitive (interviews.tests.InterviewQuestionServiceTests.test_focus_area_comparison_is_case_insensitive) ... ok
+test_missing_declared_focus_area_is_rejected (interviews.tests.InterviewQuestionServiceTests.test_missing_declared_focus_area_is_rejected) ... ok
+test_question_context_preserves_trust_boundary (interviews.tests.InterviewQuestionServiceTests.test_question_context_preserves_trust_boundary) ... ok
+test_question_count_must_match_requested_count (interviews.tests.InterviewQuestionServiceTests.test_question_count_must_match_requested_count) ... ok
+test_question_provider_error_propagates (interviews.tests.InterviewQuestionServiceTests.test_question_provider_error_propagates) ... ok
+test_question_service_requests_expected_output_model (interviews.tests.InterviewQuestionServiceTests.test_question_service_requests_expected_output_model) ... ok
+test_question_service_returns_validated_result (interviews.tests.InterviewQuestionServiceTests.test_question_service_returns_validated_result) ... ok
+test_question_service_uses_expected_operation (interviews.tests.InterviewQuestionServiceTests.test_question_service_uses_expected_operation) ... ok
+test_valid_multi_question_result_is_not_rewritten (interviews.tests.InterviewQuestionServiceTests.test_valid_multi_question_result_is_not_rewritten) ... ok
+test_feedback_allows_normal_grounded_response (interviews.tests.InterviewFeedbackServiceTests.test_feedback_allows_normal_grounded_response) ... ok
+test_feedback_allows_numeric_claim_from_question (interviews.tests.InterviewFeedbackServiceTests.test_feedback_allows_numeric_claim_from_question) ... ok
+test_feedback_allows_numeric_claim_from_student_answer (interviews.tests.InterviewFeedbackServiceTests.test_feedback_allows_numeric_claim_from_student_answer) ... ok
+test_feedback_allows_numeric_claim_from_target_role (interviews.tests.InterviewFeedbackServiceTests.test_feedback_allows_numeric_claim_from_target_role) ... ok
+test_feedback_allows_supplied_percentage_before_punctuation (interviews.tests.InterviewFeedbackServiceTests.test_feedback_allows_supplied_percentage_before_punctuation) ... ok
+test_feedback_context_is_untrusted (interviews.tests.InterviewFeedbackServiceTests.test_feedback_context_is_untrusted) ... ok
+test_feedback_prompt_enforces_numeric_grounding (interviews.tests.InterviewFeedbackServiceTests.test_feedback_prompt_enforces_numeric_grounding) ... ok
+test_feedback_prompt_handles_unrelated_answers (interviews.tests.InterviewFeedbackServiceTests.test_feedback_prompt_handles_unrelated_answers) ... ok
+test_feedback_provider_error_is_not_retried (interviews.tests.InterviewFeedbackServiceTests.test_feedback_provider_error_is_not_retried) ... ok
+test_feedback_provider_error_propagates (interviews.tests.InterviewFeedbackServiceTests.test_feedback_provider_error_propagates) ... ok
+test_feedback_rejects_bracketed_number_placeholder (interviews.tests.InterviewFeedbackServiceTests.test_feedback_rejects_bracketed_number_placeholder) ... ok
+test_feedback_rejects_tbd_placeholder (interviews.tests.InterviewFeedbackServiceTests.test_feedback_rejects_tbd_placeholder) ... ok
+test_feedback_rejects_unsupported_numeric_claim (interviews.tests.InterviewFeedbackServiceTests.test_feedback_rejects_unsupported_numeric_claim) ... ok
+test_feedback_rejects_x_users_placeholder (interviews.tests.InterviewFeedbackServiceTests.test_feedback_rejects_x_users_placeholder) ... ok
+test_feedback_rejects_y_percent_placeholder (interviews.tests.InterviewFeedbackServiceTests.test_feedback_rejects_y_percent_placeholder) ... ok
+test_feedback_retries_once_after_validation_failure (interviews.tests.InterviewFeedbackServiceTests.test_feedback_retries_once_after_validation_failure) ... ok
+test_feedback_retry_uses_corrective_prompt (interviews.tests.InterviewFeedbackServiceTests.test_feedback_retry_uses_corrective_prompt) ... ok
+test_feedback_second_validation_failure_is_raised (interviews.tests.InterviewFeedbackServiceTests.test_feedback_second_validation_failure_is_raised) ... ok
+test_feedback_service_requests_expected_output_model (interviews.tests.InterviewFeedbackServiceTests.test_feedback_service_requests_expected_output_model) ... ok
+test_feedback_service_returns_validated_result (interviews.tests.InterviewFeedbackServiceTests.test_feedback_service_returns_validated_result) ... ok
+test_feedback_service_uses_expected_operation (interviews.tests.InterviewFeedbackServiceTests.test_feedback_service_uses_expected_operation) ... ok
+test_feedback_valid_first_attempt_does_not_retry (interviews.tests.InterviewFeedbackServiceTests.test_feedback_valid_first_attempt_does_not_retry) ... ok
+
+----------------------------------------------------------------------
+Ran 330 tests in 228.806s
+
+OK
+Destroying test database for alias 'default' ('test_gradnavi_db')...
+
+  Applying token_blacklist.0013_alter_blacklistedtoken_options_and_more... OK
+System check identified no issues (0 silenced).
+
+============================================================
+WBS 8.3 AUTOMATED SECURITY RESULT
+============================================================
+
+Targeted test classes: 29
+Automated tests run: 330
+Exit code: 0
+Result: PASS
+
+Important:
+This result verifies the automated evidence layer only.
+POSTMAN + AUTOMATED cases still require Postman evidence.
+AUTOMATED + STATIC cases still require static-review evidence.
+Repository-review cases still require repository review.
+S5-SEC-FE-01 remains Blocked by WBS 7.7.
+S5-SEC-DEP-01 and S5-SEC-DEP-02 remain Deferred.
