@@ -2,7 +2,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 import {
   listAdminUsers,
@@ -61,6 +61,7 @@ function AdminUsersPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [dialogError, setDialogError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [auditLink, setAuditLink] = useState('')
 
 
   useEffect(() => {
@@ -126,6 +127,7 @@ function AdminUsersPage() {
 
   function openRoleDialog(user) {
     setSuccessMessage('')
+    setAuditLink('')
     setDialogError('')
     setPendingChange({
       user,
@@ -173,6 +175,9 @@ function AdminUsersPage() {
       setSuccessMessage(
         `${getFullName(user)} is now ${getRoleLabel(updated.role)}. `
         + 'This change was recorded in the audit log.',
+      )
+      setAuditLink(
+        `/admin/audit-records?action=admin.user.role_changed&target_id=${updated.id}`,
       )
       setPendingChange(null)
     }
@@ -223,11 +228,22 @@ function AdminUsersPage() {
 
       {successMessage && (
         <div className="admin-users__success" role="status">
-          <span>{successMessage}</span>
+          <span>
+            {successMessage}
+            {auditLink && (
+              <>
+                {' '}
+                <Link to={auditLink}>View audit record</Link>
+              </>
+            )}
+          </span>
           <button
             type="button"
             className="admin-users__link-button"
-            onClick={() => setSuccessMessage('')}
+            onClick={() => {
+              setSuccessMessage('')
+              setAuditLink('')
+            }}
           >
             Dismiss
           </button>

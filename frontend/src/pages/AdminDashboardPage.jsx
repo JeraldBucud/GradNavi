@@ -2,33 +2,23 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { Link } from 'react-router'
 
 import {
   getAdminAnalytics,
   getAdminDashboardSummary,
+  listAdminAuditRecords,
+  listAdminUsers,
 } from '../services/adminService'
 
 import './CareerGuidancePage.css'
 import './AdminDashboardPage.css'
+import './AdminUsersPage.css'
 
 
 const ANALYTICS_LIMIT = 5
-
-
-const attentionItems = [
-  {
-    badge: 'Info',
-    tone: 'info',
-    title: 'Recent admin changes',
-    text: 'Available once audit records (WBS 7.8) are connected.',
-  },
-  {
-    badge: 'Unavailable',
-    tone: 'neutral',
-    title: 'Data health',
-    text: 'Data health checks are not available yet.',
-  },
-]
+const RECENT_ACTIVITY_LIMIT = 5
+const RECENT_DAYS = 7
 
 
 function formatStudentCount(count) {
@@ -36,9 +26,55 @@ function formatStudentCount(count) {
 }
 
 
+function formatAuditAction(action) {
+  if (!action) {
+    return '—'
+  }
+
+  const text = action
+    .replace(/^admin\./, '')
+    .replace(/[._]/g, ' ')
+    .trim()
+
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+
+function formatDateTime(value) {
+  if (!value) {
+    return '—'
+  }
+
+  return new Date(value).toLocaleString('en-AU', {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+
+function getAuditLink(record) {
+  const params = new URLSearchParams()
+
+  if (record.action) {
+    params.set('action', record.action)
+  }
+
+  if (record.target_id) {
+    params.set('target_id', String(record.target_id))
+  }
+
+  return `/admin/audit-records?${params.toString()}`
+}
+
+
 function AdminDashboardPage() {
   const [summary, setSummary] = useState(null)
   const [analytics, setAnalytics] = useState(null)
+  const [auditRecords, setAuditRecords] = useState([])
+  const [usersById, setUsersById] = useState({})
+  const [isAuditUnavailable, setIsAuditUnavailable] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [isPermissionDenied, setIsPermissionDenied] = useState(false)
@@ -47,11 +83,43 @@ function AdminDashboardPage() {
   useEffect(() => {
     let isCancelled = false
 
+    async function loadAuditActivity() {
+      try {
+        const [recordResult, userResult] = await Promise.all([
+          listAdminAuditRecords(),
+          listAdminUsers(),
+        ])
+
+        if (isCancelled) {
+          return
+        }
+
+        const lookup = {}
+
+        userResult.forEach((user) => {
+          lookup[user.id] = user
+        })
+
+        const sorted = [...recordResult].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at),
+        )
+
+        setAuditRecords(sorted)
+        setUsersById(lookup)
+      }
+      catch {
+        if (!isCancelled) {
+          setIsAuditUnavailable(true)
+        }
+      }
+    }
+
     async function loadDashboard() {
       try {
         const [summaryResult, analyticsResult] = await Promise.all([
           getAdminDashboardSummary(),
           getAdminAnalytics(),
+          loadAuditActivity(),
         ])
 
         if (!isCancelled) {
@@ -89,6 +157,17 @@ function AdminDashboardPage() {
   }, [])
 
 
+  function getActorLabel(actorId) {
+    if (!actorId) {
+      return 'System'
+    }
+
+    const actor = usersById[actorId]
+
+    return actor ? actor.email : `User #${actorId}`
+  }
+
+
   const metrics = [
     {
       label: 'Students',
@@ -113,6 +192,8 @@ function AdminDashboardPage() {
   ]
 
 
+  /* Pending reports card */
+
   const pendingReportCount = summary?.pendingReportCount ?? 0
 
   let pendingReportText = 'No open resource reports.'
@@ -127,16 +208,61 @@ function AdminDashboardPage() {
     pendingReportText = `${pendingReportCount} open reports are waiting for review.`
   }
 
+
+  /* Recent admin changes card */
+
+  const recentCutoff = Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000
+
+  const recentChangeCount = auditRecords.filter(
+    (record) => new Date(record.created_at).getTime() >= recentCutoff,
+  ).length
+
+  let recentChangesText = `No admin changes in the last ${RECENT_DAYS} days.`
+
+  if (isLoading) {
+    recentChangesText = 'Checking recent changes…'
+  }
+  else if (isAuditUnavailable) {
+    recentChangesText = 'Audit records could not be loaded.'
+  }
+  else if (recentChangeCount === 1) {
+    recentChangesText = `1 admin change in the last ${RECENT_DAYS} days.`
+  }
+  else if (recentChangeCount > 1) {
+    recentChangesText = `${recentChangeCount} admin changes in the last ${RECENT_DAYS} days.`
+  }
+
+
   const attentionCards = [
     {
       badge: pendingReportCount > 0 ? 'Review' : 'Clear',
       tone: pendingReportCount > 0 ? 'warning' : 'success',
       title: 'Pending resource reports',
       text: pendingReportText,
+      link: { to: '/admin/reports', label: 'Review reports' },
     },
-    ...attentionItems,
+    {
+      badge: 'Info',
+      tone: 'info',
+      title: 'Recent admin changes',
+      text: recentChangesText,
+      link: isAuditUnavailable
+        ? null
+        : { to: '/admin/audit-records', label: 'View audit records' },
+    },
+    {
+      badge: 'Unavailable',
+      tone: 'neutral',
+      title: 'Data health',
+      text: 'Data health checks are not available yet.',
+    },
   ]
 
+
+  const recentActivity = auditRecords.slice(0, RECENT_ACTIVITY_LIMIT)
+
+
+  /* Analytics */
 
   const popularCareers = (analytics?.popular_careers ?? [])
     .slice(0, ANALYTICS_LIMIT)
@@ -204,6 +330,57 @@ function AdminDashboardPage() {
   }
 
 
+  function renderRecentActivity() {
+    if (isLoading) {
+      return <p className="admin-dashboard__empty">Loading activity…</p>
+    }
+
+    if (isAuditUnavailable) {
+      return (
+        <p className="admin-dashboard__empty">
+          Recent activity could not be loaded.
+        </p>
+      )
+    }
+
+    if (recentActivity.length === 0) {
+      return (
+        <p className="admin-dashboard__empty">
+          No admin activity recorded yet.
+        </p>
+      )
+    }
+
+    return (
+      <>
+        <ol className="admin-dashboard__list">
+          {recentActivity.map((record) => (
+            <li key={record.id}>
+              <span>
+                <Link to={getAuditLink(record)}>
+                  {formatAuditAction(record.action)}
+                </Link>
+                {' '}
+                {record.target_type}
+                {record.target_id ? ` #${record.target_id}` : ''}
+                {' · '}
+                {getActorLabel(record.actor)}
+              </span>
+              <span className="admin-dashboard__list-value">
+                {formatDateTime(record.created_at)}
+              </span>
+            </li>
+          ))}
+        </ol>
+
+        <p className="admin-users__count">
+          <Link to="/admin/audit-records">View all audit records</Link>
+        </p>
+      </>
+    )
+  }
+
+
   return (
     <div className="career-guidance-page">
       <header className="career-guidance-heading">
@@ -266,6 +443,11 @@ function AdminDashboardPage() {
                   </span>
                   <h3>{item.title}</h3>
                   <p>{item.text}</p>
+                  {item.link && !isLoading && (
+                    <p>
+                      <Link to={item.link.to}>{item.link.label}</Link>
+                    </p>
+                  )}
                 </article>
               ))}
             </div>
@@ -277,10 +459,7 @@ function AdminDashboardPage() {
               <p>Latest administrative changes recorded by the system.</p>
             </div>
 
-            <p className="admin-dashboard__empty">
-              No activity to show yet. Recent activity will appear
-              here once audit records (WBS 7.8) are available.
-            </p>
+            {renderRecentActivity()}
           </section>
 
           <section className="career-guidance-section">
