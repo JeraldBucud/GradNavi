@@ -219,9 +219,22 @@ function AdminLearningResourcesPage() {
   }, [isDialogOpen, isSaving])
 
 
-  useEffect(() => {
+  function handleSearchChange(event) {
+    setSearchText(event.target.value)
     setVisibleCount(PAGE_SIZE)
-  }, [searchText, healthFilter, activeFilter])
+  }
+
+
+  function handleHealthFilterChange(event) {
+    setHealthFilter(event.target.value)
+    setVisibleCount(PAGE_SIZE)
+  }
+
+
+  function handleActiveFilterChange(event) {
+    setActiveFilter(event.target.value)
+    setVisibleCount(PAGE_SIZE)
+  }
 
 
   const skillsById = {}
@@ -513,7 +526,7 @@ function AdminLearningResourcesPage() {
               <input
                 type="search"
                 value={searchText}
-                onChange={(event) => setSearchText(event.target.value)}
+                onChange={handleSearchChange}
                 placeholder="Search by title or provider"
               />
             </label>
@@ -522,7 +535,7 @@ function AdminLearningResourcesPage() {
               <span>Health</span>
               <select
                 value={healthFilter}
-                onChange={(event) => setHealthFilter(event.target.value)}
+                onChange={handleHealthFilterChange}
               >
                 <option value="all">All health statuses</option>
                 {HEALTH_STATUSES.map((option) => (
@@ -537,7 +550,7 @@ function AdminLearningResourcesPage() {
               <span>Visibility</span>
               <select
                 value={activeFilter}
-                onChange={(event) => setActiveFilter(event.target.value)}
+                onChange={handleActiveFilterChange}
               >
                 <option value="all">All</option>
                 <option value="active">Active</option>

@@ -165,9 +165,16 @@ function AdminSkillsPage() {
   }, [formMode, isSaving])
 
 
-  useEffect(() => {
+  function handleSearchChange(event) {
+    setSearchText(event.target.value)
     setVisibleCount(PAGE_SIZE)
-  }, [searchText, typeFilter])
+  }
+
+
+  function handleTypeFilterChange(event) {
+    setTypeFilter(event.target.value)
+    setVisibleCount(PAGE_SIZE)
+  }
 
 
   function openCreateForm() {
@@ -326,7 +333,7 @@ function AdminSkillsPage() {
               <input
                 type="search"
                 value={searchText}
-                onChange={(event) => setSearchText(event.target.value)}
+                onChange={handleSearchChange}
                 placeholder="Search by name or category"
               />
             </label>
@@ -335,7 +342,7 @@ function AdminSkillsPage() {
               <span>Type</span>
               <select
                 value={typeFilter}
-                onChange={(event) => setTypeFilter(event.target.value)}
+                onChange={handleTypeFilterChange}
               >
                 {TYPE_FILTERS.map((option) => (
                   <option key={option.value} value={option.value}>

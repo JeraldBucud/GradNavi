@@ -19,6 +19,7 @@ import './AdminUsersPage.css'
 const ANALYTICS_LIMIT = 5
 const RECENT_ACTIVITY_LIMIT = 5
 const RECENT_DAYS = 7
+const DAY_IN_MS = 24 * 60 * 60 * 1000
 
 
 function formatStudentCount(count) {
@@ -73,6 +74,7 @@ function AdminDashboardPage() {
   const [summary, setSummary] = useState(null)
   const [analytics, setAnalytics] = useState(null)
   const [auditRecords, setAuditRecords] = useState([])
+  const [recentChangeCount, setRecentChangeCount] = useState(0)
   const [usersById, setUsersById] = useState({})
   const [isAuditUnavailable, setIsAuditUnavailable] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -104,7 +106,14 @@ function AdminDashboardPage() {
           (a, b) => new Date(b.created_at) - new Date(a.created_at),
         )
 
+        const recentCutoff = Date.now() - RECENT_DAYS * DAY_IN_MS
+
         setAuditRecords(sorted)
+        setRecentChangeCount(
+          sorted.filter(
+            (record) => new Date(record.created_at).getTime() >= recentCutoff,
+          ).length,
+        )
         setUsersById(lookup)
       }
       catch {
@@ -197,9 +206,13 @@ function AdminDashboardPage() {
   const pendingReportCount = summary?.pendingReportCount ?? 0
 
   let pendingReportText = 'No open resource reports.'
+  let pendingBadge = pendingReportCount > 0 ? 'Review' : 'Clear'
+  let pendingTone = pendingReportCount > 0 ? 'warning' : 'success'
 
   if (isLoading) {
     pendingReportText = 'Checking for open reports…'
+    pendingBadge = 'Checking'
+    pendingTone = 'neutral'
   }
   else if (pendingReportCount === 1) {
     pendingReportText = '1 open report is waiting for review.'
@@ -210,12 +223,6 @@ function AdminDashboardPage() {
 
 
   /* Recent admin changes card */
-
-  const recentCutoff = Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000
-
-  const recentChangeCount = auditRecords.filter(
-    (record) => new Date(record.created_at).getTime() >= recentCutoff,
-  ).length
 
   let recentChangesText = `No admin changes in the last ${RECENT_DAYS} days.`
 
@@ -235,8 +242,8 @@ function AdminDashboardPage() {
 
   const attentionCards = [
     {
-      badge: pendingReportCount > 0 ? 'Review' : 'Clear',
-      tone: pendingReportCount > 0 ? 'warning' : 'success',
+      badge: pendingBadge,
+      tone: pendingTone,
       title: 'Pending resource reports',
       text: pendingReportText,
       link: { to: '/admin/reports', label: 'Review reports' },

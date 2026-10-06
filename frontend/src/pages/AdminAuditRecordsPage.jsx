@@ -36,7 +36,7 @@ function formatDateTime(value) {
 }
 
 
-export function formatAuditAction(action) {
+function formatAuditAction(action) {
   if (!action) {
     return '—'
   }
@@ -150,11 +150,6 @@ function AdminAuditRecordsPage() {
   }, [selectedRecord])
 
 
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE)
-  }, [searchText, areaFilter, actionParam, targetParam])
-
-
   function getActorLabel(actorId) {
     if (!actorId) {
       return 'System'
@@ -163,6 +158,24 @@ function AdminAuditRecordsPage() {
     const actor = usersById[actorId]
 
     return actor ? actor.email : `User #${actorId}`
+  }
+
+
+  function handleSearchChange(event) {
+    setSearchText(event.target.value)
+    setVisibleCount(PAGE_SIZE)
+  }
+
+
+  function handleAreaChange(event) {
+    setAreaFilter(event.target.value)
+    setVisibleCount(PAGE_SIZE)
+  }
+
+
+  function clearLinkFilter() {
+    setSearchParams({})
+    setVisibleCount(PAGE_SIZE)
   }
 
 
@@ -221,7 +234,7 @@ function AdminAuditRecordsPage() {
           <button
             type="button"
             className="admin-users__link-button"
-            onClick={() => setSearchParams({})}
+            onClick={clearLinkFilter}
           >
             Show all records
           </button>
@@ -236,7 +249,7 @@ function AdminAuditRecordsPage() {
               <input
                 type="search"
                 value={searchText}
-                onChange={(event) => setSearchText(event.target.value)}
+                onChange={handleSearchChange}
                 placeholder="Search action, target or admin"
               />
             </label>
@@ -245,7 +258,7 @@ function AdminAuditRecordsPage() {
               <span>Area</span>
               <select
                 value={areaFilter}
-                onChange={(event) => setAreaFilter(event.target.value)}
+                onChange={handleAreaChange}
               >
                 <option value="all">All areas</option>
                 {areas.map((area) => (
