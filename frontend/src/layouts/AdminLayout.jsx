@@ -7,6 +7,7 @@ import {
   BookOpen,
   Briefcase,
   ClipboardList,
+  Flag,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -59,6 +60,12 @@ const adminNavigation = [
     label: 'Learning Resources',
     icon: BookOpen,
     implemented: false,
+  },
+  {
+    label: 'Reports',
+    icon: Flag,
+    path: '/admin/reports',
+    implemented: true,
   },
   {
     label: 'Audit Records',

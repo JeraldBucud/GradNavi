@@ -83,3 +83,8 @@
   justify-content: center;
   margin-top: 16px;
 }
+
+.admin-users__table td.admin-reports__comment {
+  white-space: normal;
+  max-width: 280px;
+}
