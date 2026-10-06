@@ -59,7 +59,8 @@ const adminNavigation = [
   {
     label: 'Learning Resources',
     icon: BookOpen,
-    implemented: false,
+    path: '/admin/learning-resources',
+    implemented: true,
   },
   {
     label: 'Reports',

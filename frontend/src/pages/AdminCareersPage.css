@@ -88,3 +88,80 @@
   white-space: normal;
   max-width: 280px;
 }
+.admin-users__pill--danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.admin-resources__form {
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.admin-resources__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 560px) {
+  .admin-resources__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-resources__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-resources__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--color-info-bg, #dbeafe);
+  color: var(--color-info, #2563eb);
+}
+
+.admin-resources__chip button {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+}
+
+.admin-resources__skill-results {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.admin-resources__skill-results button {
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-resources__skill-results button:hover,
+.admin-resources__skill-results button:focus-visible {
+  background: var(--color-surface-muted, #f1f5f9);
+}
