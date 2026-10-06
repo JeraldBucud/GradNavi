@@ -226,3 +226,8 @@
   gap: 8px;
   margin-top: 8px;
 }
+
+.admin-users__action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

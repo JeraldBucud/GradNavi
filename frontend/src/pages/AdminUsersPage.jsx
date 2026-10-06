@@ -7,18 +7,26 @@ import { Link, useNavigate } from 'react-router'
 import {
   listAdminUsers,
   updateAdminUserRole,
+  updateAdminUserStatus,
 } from '../services/adminService'
 import { getStoredUser } from '../services/authService'
 import { clearAuthSession } from '../services/authStorage'
 import './CareerGuidancePage.css'
 import './AdminDashboardPage.css'
 import './AdminUsersPage.css'
+import './AdminCareersPage.css'
 
 
 const ROLE_FILTERS = [
   { value: 'all', label: 'All roles' },
   { value: 'student', label: 'Students' },
   { value: 'admin', label: 'Admins' },
+]
+
+const STATUS_FILTERS = [
+  { value: 'all', label: 'All statuses' },
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
 ]
 
 
@@ -47,6 +55,11 @@ function getRoleLabel(role) {
 }
 
 
+function getAuditLink(action, userId) {
+  return `/admin/audit-records?action=${action}&target_id=${userId}`
+}
+
+
 function AdminUsersPage() {
   const navigate = useNavigate()
   const currentUser = getStoredUser()
@@ -56,6 +69,7 @@ function AdminUsersPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [searchText, setSearchText] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
 
   const [pendingChange, setPendingChange] = useState(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -118,25 +132,41 @@ function AdminUsersPage() {
 
 
   function isOwnAccount(user) {
-    return (
+    return Boolean(
       currentUser
-      && String(currentUser.id) === String(user.id)
+      && String(currentUser.id) === String(user.id),
     )
   }
 
 
-  function openRoleDialog(user) {
+  function clearMessages() {
     setSuccessMessage('')
     setAuditLink('')
     setDialogError('')
+  }
+
+
+  function openRoleDialog(user) {
+    clearMessages()
     setPendingChange({
+      type: 'role',
       user,
       newRole: user.role === 'admin' ? 'student' : 'admin',
     })
   }
 
 
-  function closeRoleDialog() {
+  function openStatusDialog(user) {
+    clearMessages()
+    setPendingChange({
+      type: 'status',
+      user,
+      newIsActive: !user.is_active,
+    })
+  }
+
+
+  function closeDialog() {
     if (isSaving) {
       return
     }
@@ -146,45 +176,68 @@ function AdminUsersPage() {
   }
 
 
+  function replaceUser(userId, changes) {
+    setUsers((previous) => previous.map((item) => (
+      item.id === userId ? { ...item, ...changes } : item
+    )))
+  }
+
+
   async function handleConfirmRoleChange() {
     const { user, newRole } = pendingChange
+    const updated = await updateAdminUserRole(user.id, newRole)
 
+    if (isOwnAccount(user)) {
+      clearAuthSession()
+      navigate('/login', {
+        replace: true,
+        state: {
+          message: 'Your role was changed. Please sign in again.',
+        },
+      })
+      return
+    }
+
+    replaceUser(updated.id, { role: updated.role })
+    setSuccessMessage(
+      `${getFullName(user)} is now ${getRoleLabel(updated.role)}. `
+      + 'This change was recorded in the audit log.',
+    )
+    setAuditLink(getAuditLink('admin.user.role_changed', updated.id))
+  }
+
+
+  async function handleConfirmStatusChange() {
+    const { user, newIsActive } = pendingChange
+    const updated = await updateAdminUserStatus(user.id, newIsActive)
+
+    replaceUser(updated.id, { is_active: updated.is_active })
+    setSuccessMessage(
+      `${getFullName(user)} is now ${updated.is_active ? 'active' : 'inactive'}. `
+      + 'This change was recorded in the audit log.',
+    )
+    setAuditLink(getAuditLink('admin.user.status_changed', updated.id))
+  }
+
+
+  async function handleConfirm() {
     setIsSaving(true)
     setDialogError('')
 
     try {
-      const updated = await updateAdminUserRole(user.id, newRole)
-
-      if (isOwnAccount(user)) {
-        clearAuthSession()
-        navigate('/login', {
-          replace: true,
-          state: {
-            message: 'Your role was changed. Please sign in again.',
-          },
-        })
-        return
+      if (pendingChange.type === 'role') {
+        await handleConfirmRoleChange()
+      }
+      else {
+        await handleConfirmStatusChange()
       }
 
-      setUsers((previous) => previous.map((item) => (
-        item.id === updated.id
-          ? { ...item, role: updated.role }
-          : item
-      )))
-
-      setSuccessMessage(
-        `${getFullName(user)} is now ${getRoleLabel(updated.role)}. `
-        + 'This change was recorded in the audit log.',
-      )
-      setAuditLink(
-        `/admin/audit-records?action=admin.user.role_changed&target_id=${updated.id}`,
-      )
       setPendingChange(null)
     }
     catch (error) {
       setDialogError(
         error.message
-        || 'Could not change the role. Please try again.',
+        || 'Could not save the change. Please try again.',
       )
     }
     finally {
@@ -199,13 +252,88 @@ function AdminUsersPage() {
     const matchesRole =
       roleFilter === 'all' || user.role === roleFilter
 
+    const matchesStatus =
+      statusFilter === 'all'
+      || (statusFilter === 'active' && user.is_active)
+      || (statusFilter === 'inactive' && !user.is_active)
+
     const matchesSearch =
       !normalisedSearch
       || getFullName(user).toLowerCase().includes(normalisedSearch)
       || user.email.toLowerCase().includes(normalisedSearch)
 
-    return matchesRole && matchesSearch
+    return matchesRole && matchesStatus && matchesSearch
   })
+
+
+  function renderDialogBody() {
+    const { type, user } = pendingChange
+
+    if (type === 'role') {
+      return (
+        <>
+          <p>
+            Change <strong>{getFullName(user)}</strong>
+            {' '}({user.email}) from
+            {' '}<strong>{getRoleLabel(user.role)}</strong> to
+            {' '}<strong>{getRoleLabel(pendingChange.newRole)}</strong>?
+          </p>
+
+          {pendingChange.newRole === 'admin' && (
+            <p className="admin-users__warning">
+              Admins can manage users, careers, skills and learning
+              resources. Only give this role to trusted staff.
+            </p>
+          )}
+
+          {isOwnAccount(user) && (
+            <p className="admin-users__warning">
+              This is your own account. You will be signed out and
+              may lose access to the admin area.
+            </p>
+          )}
+        </>
+      )
+    }
+
+    return (
+      <>
+        <p>
+          {pendingChange.newIsActive ? 'Activate' : 'Deactivate'}
+          {' '}<strong>{getFullName(user)}</strong> ({user.email})?
+        </p>
+
+        {!pendingChange.newIsActive && (
+          <p className="admin-users__warning">
+            This user will not be able to log in until the account is
+            activated again. Their data is kept.
+          </p>
+        )}
+      </>
+    )
+  }
+
+
+  function getDialogTitle() {
+    if (pendingChange.type === 'role') {
+      return 'Change user role?'
+    }
+
+    return pendingChange.newIsActive ? 'Activate user?' : 'Deactivate user?'
+  }
+
+
+  function getConfirmLabel() {
+    if (isSaving) {
+      return 'Saving…'
+    }
+
+    if (pendingChange.type === 'role') {
+      return 'Confirm change'
+    }
+
+    return pendingChange.newIsActive ? 'Activate' : 'Deactivate'
+  }
 
 
   return (
@@ -276,6 +404,20 @@ function AdminUsersPage() {
                 ))}
               </select>
             </label>
+
+            <label className="admin-users__field">
+              <span>Status</span>
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+              >
+                {STATUS_FILTERS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           {isLoading && (
@@ -304,42 +446,61 @@ function AdminUsersPage() {
                 </thead>
 
                 <tbody>
-                  {visibleUsers.map((user) => (
-                    <tr key={user.id}>
-                      <td>
-                        {getFullName(user)}
-                        {isOwnAccount(user) && (
-                          <span className="admin-users__you"> (you)</span>
-                        )}
-                      </td>
-                      <td>{user.email}</td>
-                      <td>
-                        <span
-                          className={`admin-users__pill admin-users__pill--${user.role}`}
-                        >
-                          {getRoleLabel(user.role)}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`admin-users__pill ${user.is_active ? 'admin-users__pill--active' : 'admin-users__pill--inactive'}`}
-                        >
-                          {user.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td>{formatDate(user.date_joined)}</td>
-                      <td>{formatDate(user.last_login)}</td>
-                      <td>
-                        <button
-                          type="button"
-                          className="admin-users__action-button"
-                          onClick={() => openRoleDialog(user)}
-                        >
-                          {user.role === 'admin' ? 'Make student' : 'Make admin'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {visibleUsers.map((user) => {
+                    const ownAccount = isOwnAccount(user)
+
+                    return (
+                      <tr key={user.id}>
+                        <td>
+                          {getFullName(user)}
+                          {ownAccount && (
+                            <span className="admin-users__you"> (you)</span>
+                          )}
+                        </td>
+                        <td>{user.email}</td>
+                        <td>
+                          <span
+                            className={`admin-users__pill admin-users__pill--${user.role}`}
+                          >
+                            {getRoleLabel(user.role)}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className={`admin-users__pill ${user.is_active ? 'admin-users__pill--active' : 'admin-users__pill--inactive'}`}
+                          >
+                            {user.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td>{formatDate(user.date_joined)}</td>
+                        <td>{formatDate(user.last_login)}</td>
+                        <td>
+                          <div className="admin-careers__row-actions">
+                            <button
+                              type="button"
+                              className="admin-users__action-button"
+                              onClick={() => openRoleDialog(user)}
+                            >
+                              {user.role === 'admin' ? 'Make student' : 'Make admin'}
+                            </button>
+                            <button
+                              type="button"
+                              className="admin-users__action-button"
+                              onClick={() => openStatusDialog(user)}
+                              disabled={ownAccount}
+                              title={
+                                ownAccount
+                                  ? 'You cannot deactivate your own account.'
+                                  : undefined
+                              }
+                            >
+                              {user.is_active ? 'Deactivate' : 'Activate'}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -356,37 +517,18 @@ function AdminUsersPage() {
       {pendingChange && (
         <div
           className="admin-users__backdrop"
-          onClick={closeRoleDialog}
+          onClick={closeDialog}
         >
           <div
             className="admin-users__dialog"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="role-dialog-title"
+            aria-labelledby="user-dialog-title"
             onClick={(event) => event.stopPropagation()}
           >
-            <h2 id="role-dialog-title">Change user role?</h2>
+            <h2 id="user-dialog-title">{getDialogTitle()}</h2>
 
-            <p>
-              Change <strong>{getFullName(pendingChange.user)}</strong>
-              {' '}({pendingChange.user.email}) from
-              {' '}<strong>{getRoleLabel(pendingChange.user.role)}</strong> to
-              {' '}<strong>{getRoleLabel(pendingChange.newRole)}</strong>?
-            </p>
-
-            {pendingChange.newRole === 'admin' && (
-              <p className="admin-users__warning">
-                Admins can manage users, careers, skills and learning
-                resources. Only give this role to trusted staff.
-              </p>
-            )}
-
-            {isOwnAccount(pendingChange.user) && (
-              <p className="admin-users__warning">
-                This is your own account. You will be signed out and
-                may lose access to the admin area.
-              </p>
-            )}
+            {renderDialogBody()}
 
             <p className="admin-users__dialog-note">
               This change will be recorded in the audit log.
@@ -402,7 +544,7 @@ function AdminUsersPage() {
               <button
                 type="button"
                 className="admin-users__secondary-button"
-                onClick={closeRoleDialog}
+                onClick={closeDialog}
                 disabled={isSaving}
               >
                 Cancel
@@ -410,10 +552,10 @@ function AdminUsersPage() {
               <button
                 type="button"
                 className="admin-users__primary-button"
-                onClick={handleConfirmRoleChange}
+                onClick={handleConfirm}
                 disabled={isSaving}
               >
-                {isSaving ? 'Saving…' : 'Confirm change'}
+                {getConfirmLabel()}
               </button>
             </div>
           </div>
