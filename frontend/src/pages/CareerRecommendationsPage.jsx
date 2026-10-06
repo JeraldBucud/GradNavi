@@ -19,9 +19,8 @@ import {
 } from '../services/careerService'
 
 import {
-  getStoredCareerSelection,
-  saveCareerSelection,
-} from '../services/careerSelectionService'
+  getStudentProfile,
+} from '../services/profileService'
 
 import './CareerGuidancePage.css'
 
@@ -60,6 +59,19 @@ function getRequestErrorMessage(
     requestError?.data?.error?.message
     || requestError?.message
     || fallbackMessage
+  )
+}
+
+
+function isProfileSetupRequiredError(
+  requestError,
+) {
+  return (
+    requestError
+      ?.data
+      ?.error
+      ?.code
+    === 'insufficient_profile_context'
   )
 }
 
@@ -215,6 +227,11 @@ function CareerRecommendationsPage() {
   ] = useState('')
 
   const [
+    profileSetupRequired,
+    setProfileSetupRequired,
+  ] = useState(false)
+
+  const [
     showScoringDetails,
     setShowScoringDetails,
   ] = useState(false)
@@ -252,9 +269,6 @@ function CareerRecommendationsPage() {
 
   const topRecommendationId =
     topRecommendation?.career_id ?? null
-
-  const topRecommendationName =
-    topRecommendation?.career_name ?? ''
 
 
   const otherRecommendations =
@@ -312,38 +326,6 @@ function CareerRecommendationsPage() {
   }
 
 
-  useEffect(
-    () => {
-      if (
-        !topRecommendationId
-        || !topRecommendationName
-      ) {
-        return
-      }
-
-      const storedSelection =
-        getStoredCareerSelection()
-
-      if (storedSelection) {
-        return
-      }
-
-      saveCareerSelection(
-        {
-          career_id:
-            topRecommendationId,
-          career_name:
-            topRecommendationName,
-        },
-      )
-    },
-    [
-      topRecommendationId,
-      topRecommendationName,
-    ],
-  )
-
-
   async function loadReadinessForCareers(
     recommendationItems,
   ) {
@@ -397,6 +379,30 @@ function CareerRecommendationsPage() {
 
 
   async function fetchPageData() {
+    const profileResponse =
+      await getStudentProfile()
+
+    const profile =
+      profileResponse
+        ?.data
+        ?.profile
+
+    const profileSkills =
+      Array.isArray(
+        profile?.skills,
+      )
+        ? profile.skills
+        : []
+
+    if (profileSkills.length === 0) {
+      return {
+        recommendations: [],
+        meta: null,
+        readinessMap: {},
+        profileSetupRequired: true,
+      }
+    }
+
     const responseData =
       await getCareerRecommendations()
 
@@ -427,6 +433,7 @@ function CareerRecommendationsPage() {
       meta:
         responseData?.data || null,
       readinessMap,
+      profileSetupRequired: false,
     }
   }
 
@@ -444,6 +451,12 @@ function CareerRecommendationsPage() {
           return
         }
 
+        setProfileSetupRequired(
+          Boolean(
+            pageData.profileSetupRequired,
+          ),
+        )
+
         setRecommendations(
           pageData.recommendations,
         )
@@ -460,12 +473,24 @@ function CareerRecommendationsPage() {
           return
         }
 
-        setLoadError(
-          getRequestErrorMessage(
+        if (
+          isProfileSetupRequiredError(
             requestError,
-            'Unable to load your career recommendations.',
-          ),
-        )
+          )
+        ) {
+          setProfileSetupRequired(
+            true,
+          )
+          setLoadError('')
+        }
+        else {
+          setLoadError(
+            getRequestErrorMessage(
+              requestError,
+              'Unable to load your career recommendations.',
+            ),
+          )
+        }
       } finally {
         if (isActive) {
           setIsLoading(false)
@@ -487,9 +512,16 @@ function CareerRecommendationsPage() {
     try {
       setIsLoading(true)
       setLoadError('')
+      setProfileSetupRequired(false)
 
       const pageData =
         await fetchPageData()
+
+      setProfileSetupRequired(
+        Boolean(
+          pageData.profileSetupRequired,
+        ),
+      )
 
       setRecommendations(
         pageData.recommendations,
@@ -503,12 +535,24 @@ function CareerRecommendationsPage() {
         pageData.readinessMap,
       )
     } catch (requestError) {
-      setLoadError(
-        getRequestErrorMessage(
+      if (
+        isProfileSetupRequiredError(
           requestError,
-          'Unable to load your career recommendations.',
-        ),
-      )
+        )
+      ) {
+        setProfileSetupRequired(
+          true,
+        )
+        setLoadError('')
+      }
+      else {
+        setLoadError(
+          getRequestErrorMessage(
+            requestError,
+            'Unable to load your career recommendations.',
+          ),
+        )
+      }
     } finally {
       setIsLoading(false)
     }
@@ -597,47 +641,9 @@ function CareerRecommendationsPage() {
   ])
 
 
-  function rememberCareerSelection(
-    careerId,
-  ) {
-    const selectedCareer =
-      rankedRecommendations.find(
-        (recommendation) =>
-          Number(
-            recommendation
-              .career_id,
-          )
-          === Number(
-            careerId,
-          ),
-      )
-
-    if (!selectedCareer) {
-      return null
-    }
-
-    return saveCareerSelection(
-      {
-        career_id:
-          selectedCareer.career_id,
-        career_name:
-          selectedCareer.career_name,
-      },
-    )
-  }
-
-
   function openSkillGapAnalysis(
     careerId,
   ) {
-    if (
-      !rememberCareerSelection(
-        careerId,
-      )
-    ) {
-      return
-    }
-
     navigate(
       `/skill-gap-analysis?career_id=${careerId}`,
     )
@@ -647,14 +653,6 @@ function CareerRecommendationsPage() {
   function openCareerRoadmap(
     careerId,
   ) {
-    if (
-      !rememberCareerSelection(
-        careerId,
-      )
-    ) {
-      return
-    }
-
     navigate(
       `/career-roadmap?career_id=${careerId}`,
     )
@@ -664,14 +662,6 @@ function CareerRecommendationsPage() {
   function openLearningResources(
     careerId,
   ) {
-    if (
-      !rememberCareerSelection(
-        careerId,
-      )
-    ) {
-      return
-    }
-
     navigate(
       `/learning-resources?career_id=${careerId}`,
     )
@@ -777,7 +767,32 @@ function CareerRecommendationsPage() {
         </header>
 
 
-        {loadError ? (
+        {profileSetupRequired ? (
+          <section className="career-guidance-state-card">
+            <h2>
+              Set up your profile to get personalised career recommendations
+            </h2>
+
+            <p>
+              Add your skills, interests, education,
+              and career goals so GradNavi has enough
+              information to find career paths suited
+              to you.
+            </p>
+
+            <button
+              className="gn-button gn-button--primary"
+              type="button"
+              onClick={() =>
+                navigate(
+                  '/profile',
+                )
+              }
+            >
+              Set Up My Profile
+            </button>
+          </section>
+        ) : loadError ? (
           <section className="career-guidance-state-card">
             <h2>
               Recommendations unavailable

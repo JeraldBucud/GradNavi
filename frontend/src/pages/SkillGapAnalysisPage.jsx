@@ -271,6 +271,7 @@ function SkillGapAnalysisPage() {
       careerContextError,
     isLoading:
       isCareerContextLoading,
+    profileSetupRequired,
     selectedCareerId:
       careerId,
     selectCareer,
@@ -685,20 +686,36 @@ function SkillGapAnalysisPage() {
 
         <section className="skill-gap-figma__state-card">
           <span className="skill-gap-figma__pill skill-gap-figma__pill--amber">
-            Career matches needed
+            {
+              profileSetupRequired
+                ? 'Profile setup needed'
+                : 'Career matches needed'
+            }
           </span>
 
           <h2>
-            No career match is available yet
+            {
+              profileSetupRequired
+                ? 'Set up your profile to review skill gaps'
+                : 'No career match is available yet'
+            }
           </h2>
 
-          <p role="alert">
+          <p>
             {
-              careerContextError
-              || (
-                'Complete your profile and review '
-                + 'Career Recommendations first.'
-              )
+              profileSetupRequired
+                ? (
+                  'Add your skills and career goals first. '
+                  + 'GradNavi uses your profile to compare '
+                  + 'your evidence with career requirements.'
+                )
+                : (
+                  careerContextError
+                  || (
+                    'Review Career Recommendations '
+                    + 'to choose a career first.'
+                  )
+                )
             }
           </p>
 
@@ -707,11 +724,17 @@ function SkillGapAnalysisPage() {
             type="button"
             onClick={() =>
               navigate(
-                '/career-recommendations',
+                profileSetupRequired
+                  ? '/profile'
+                  : '/career-recommendations',
               )
             }
           >
-            Open Career Recommendations
+            {
+              profileSetupRequired
+                ? 'Set Up My Profile'
+                : 'Open Career Recommendations'
+            }
           </button>
         </section>
       </main>
@@ -864,9 +887,9 @@ function SkillGapAnalysisPage() {
             </h2>
 
             <p>
-              Your top recommendation is used by
-              default. Your career choice stays
-              consistent across guidance pages.
+              Your primary career goal is used by
+              default. Choose another career here
+              for a temporary comparison.
             </p>
           </div>
         </div>
@@ -884,8 +907,8 @@ function SkillGapAnalysisPage() {
           }
           helperText={
             (
-              'Changing your career refreshes '
-              + 'this Skill Gap Analysis.'
+              'This changes the current view only. '
+              + 'Update your primary career in Student Profile.'
             )
           }
           onChange={

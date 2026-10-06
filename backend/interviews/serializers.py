@@ -13,6 +13,8 @@ from collections.abc import Mapping
 
 from rest_framework import serializers
 
+from interviews.models import InterviewSession
+
 from ai_services.schemas.common import SHORT_TEXT_MAX_LENGTH
 from ai_services.schemas.inputs import (
     DEFAULT_INTERVIEW_QUESTION_COUNT,
@@ -197,3 +199,68 @@ class InterviewFeedbackSerializer(serializers.Serializer):
     is_ai_generated = serializers.BooleanField()
 
     requires_user_review = serializers.BooleanField()
+
+class InterviewHistoryCreateSerializer(
+    StrictRequestSerializer
+):
+    """
+    Validate one completed Interview Preparation session.
+
+    FR-13 stores metadata only.
+
+    Student answers, AI feedback text, and job descriptions
+    are not accepted by this endpoint.
+    """
+
+    target_role = StrictCharField(
+        max_length=SHORT_TEXT_MAX_LENGTH,
+    )
+
+    total_questions = StrictIntegerField(
+        min_value=MIN_INTERVIEW_QUESTION_COUNT,
+        max_value=MAX_INTERVIEW_QUESTION_COUNT,
+    )
+
+    questions_with_feedback = StrictIntegerField(
+        min_value=0,
+        max_value=MAX_INTERVIEW_QUESTION_COUNT,
+    )
+
+    def validate(self, attrs):
+        if (
+            attrs["questions_with_feedback"]
+            > attrs["total_questions"]
+        ):
+            raise serializers.ValidationError(
+                {
+                    "questions_with_feedback": [
+                        (
+                            "Questions with feedback must not "
+                            "exceed total questions."
+                        )
+                    ]
+                }
+            )
+
+        return attrs
+
+
+class InterviewSessionSerializer(
+    serializers.ModelSerializer
+):
+    """
+    Serialize safe FR-13 Interview History metadata.
+    """
+
+    class Meta:
+        model = InterviewSession
+
+        fields = (
+            "id",
+            "target_role",
+            "total_questions",
+            "questions_with_feedback",
+            "completed_at",
+        )
+
+        read_only_fields = fields

@@ -714,3 +714,23 @@
   }
 
 }
+
+/* FRESH ACCOUNT PROFILE GATE */
+
+.cover-letter-builder--profile-required
+.cover-letter-builder__section,
+.cover-letter-builder--profile-required
+.cover-letter-builder__state-card:not(
+  .cover-letter-builder__profile-gate
+),
+.cover-letter-builder--profile-required
+.cover-letter-builder__action-message {
+  display: none;
+}
+
+
+.cover-letter-builder__profile-gate {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #0f172a;
+}

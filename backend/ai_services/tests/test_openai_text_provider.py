@@ -176,6 +176,14 @@ class OpenAITextProviderTests(
         )
 
 
+        self.assertEqual(
+            kwargs[
+                "max_output_tokens"
+            ],
+            8000,
+        )
+
+
     def test_invalid_output_is_rejected(
         self,
     ):

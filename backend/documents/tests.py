@@ -606,6 +606,74 @@ class ResumeGenerationAPITests(APITestCase):
             prompt_package.untrusted_content,
         )
 
+    def test_optional_target_job_title_reaches_resume_prompt(
+        self,
+    ):
+        provider = FakeResumeProvider()
+
+        target_job_title = (
+            "Junior Backend Developer"
+        )
+
+        with patch(
+            "documents.views.get_resume_generation_provider",
+            return_value=provider,
+        ):
+            response = self.authenticated_post(
+                {
+                    "target_job_title": (
+                        target_job_title
+                    ),
+                }
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        prompt_package = (
+            provider.calls[0]["prompt_package"]
+        )
+
+        self.assertNotIn(
+            target_job_title,
+            prompt_package.trusted_context,
+        )
+
+        self.assertIn(
+            "<UNTRUSTED_TARGET_JOB_TITLE>",
+            prompt_package.untrusted_content,
+        )
+
+        self.assertIn(
+            target_job_title,
+            prompt_package.untrusted_content,
+        )
+
+
+    def test_empty_target_job_title_is_rejected(
+        self,
+    ):
+        response = self.authenticated_post(
+            {
+                "target_job_title": "",
+            }
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "target_job_title",
+        )
+
+
     def test_resume_generation_still_accepts_no_job_description(self):
         provider = FakeResumeProvider()
 

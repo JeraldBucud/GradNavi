@@ -3,10 +3,6 @@ import {
 } from './careerService'
 
 import {
-  getStoredCareerSelection,
-} from './careerSelectionService'
-
-import {
   getStudentProfile,
 } from './profileService'
 
@@ -231,28 +227,6 @@ function resolveDefaultCareerId(
 ) {
   if (!options.length) {
     return null
-  }
-
-  const storedSelection =
-    getStoredCareerSelection()
-
-  const storedCareerId =
-    normalizePositiveId(
-      storedSelection
-        ?.career_id,
-    )
-
-  if (storedCareerId) {
-    const storedExists =
-      options.some(
-        (option) =>
-          option.career_id
-          === storedCareerId,
-      )
-
-    if (storedExists) {
-      return storedCareerId
-    }
   }
 
   const primaryGoal =

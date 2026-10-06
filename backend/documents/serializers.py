@@ -64,6 +64,13 @@ class ResumeGenerationRequestSerializer(
         default="balanced",
     )
 
+    target_job_title = serializers.CharField(
+        required=False,
+        allow_blank=False,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+        trim_whitespace=True,
+    )
+
     job_description = serializers.CharField(
         required=False,
         allow_blank=False,

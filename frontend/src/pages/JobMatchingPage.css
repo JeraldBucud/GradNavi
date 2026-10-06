@@ -568,3 +568,19 @@
   }
 
 }
+
+/* FRESH ACCOUNT PROFILE GATE */
+
+.job-matching-page--profile-required
+.job-matching-input-card
+> :not(.job-matching-profile-context) {
+  display: none;
+}
+
+
+.job-matching-page--profile-required
+.job-matching-profile-context {
+  margin-bottom: 0;
+  border-color: var(--color-info);
+  background: var(--color-info-bg);
+}

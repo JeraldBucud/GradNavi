@@ -1,77 +1,66 @@
+import { useState } from 'react'
 import { Link } from 'react-router'
+
+import gradNaviLogo from '../assets/brand/gradnavi-logo-primary.png'
+
+import homepageHero from '../assets/landing/gradnavi-homepage-hero-graduate-career-path.png'
+import careerExploration from '../assets/landing/gradnavi-career-exploration-students.png'
+import aiGuidance from '../assets/landing/gradnavi-ai-guidance-students.png'
+import skillDevelopment from '../assets/landing/gradnavi-skill-development-student.png'
+import applicationPreparation from '../assets/landing/gradnavi-application-preparation.png'
+import ctaBackground from '../assets/landing/gradnavi-cta-career-path-background.png'
+import careerRecommendationsPreview from '../assets/landing/career-recommendations-preview.png'
+import skillGapPreview from '../assets/landing/skill-gap-preview.png'
 
 import './HomePage.css'
 
 
-/*
- * Landing Page content follows the approved Sprint 1-3
- * high-fidelity Figma screen.
- *
- * Future features such as Job Description Matcher and
- * Admin are intentionally excluded from the current
- * feature cards.
- */
-
-const features = [
+const trustItems = [
   {
-    title: 'Career Recommendations',
+    title: 'Your evidence first',
     description:
-      'Repository-aligned student capability using implemented Sprint 1-3 contracts.',
+      'Recommendations start from the profile data you choose to provide.',
   },
   {
-    title: 'Skill Gap Analysis',
+    title: 'AI explains the result',
     description:
-      'Repository-aligned student capability using implemented Sprint 1-3 contracts.',
+      'AI adds clear explanations and guidance after structured scoring.',
   },
   {
-    title: 'Career Roadmap',
+    title: 'You stay in control',
     description:
-      'Repository-aligned student capability using implemented Sprint 1-3 contracts.',
-  },
-  {
-    title: 'Learning Resources',
-    description:
-      'Repository-aligned student capability using implemented Sprint 1-3 contracts.',
-  },
-  {
-    title: 'Resume Draft Generation',
-    description:
-      'Repository-aligned student capability using implemented Sprint 1-3 contracts.',
-  },
-  {
-    title: 'Cover Letter Draft Generation',
-    description:
-      'Repository-aligned student capability using implemented Sprint 1-3 contracts.',
-  },
-  {
-    title: 'Interview Practice',
-    description:
-      'Repository-aligned student capability using implemented Sprint 1-3 contracts.',
-  },
-]
-
-
-const workflowSteps = [
-  {
-    number: '1',
-    title: 'Build Your Profile',
-  },
-  {
-    number: '2',
-    title: 'Explore Career Matches',
-  },
-  {
-    number: '3',
-    title: 'Close Skill Gaps',
-  },
-  {
-    number: '4',
-    title: 'Prepare Applications',
+      'Scores, drafts, and learning steps stay visible, editable, and reviewable.',
   },
 ]
 
 
 function HomePage() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] =
+    useState(false)
+
+
+  function closeMobileMenu() {
+    setIsMobileMenuOpen(false)
+  }
+
+
+  function scrollToSection(event, sectionId) {
+    event.preventDefault()
+
+    const section =
+      document.getElementById(sectionId)
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }
+
+    closeMobileMenu()
+  }
+
+
   return (
     <div className="landing-page">
       <header className="landing-header">
@@ -81,18 +70,49 @@ function HomePage() {
             to="/"
             aria-label="GradNavi home"
           >
-            GradNavi
+            <img
+              src={gradNaviLogo}
+              alt="GradNavi"
+            />
           </Link>
 
           <nav
-            className="landing-nav"
-            aria-label="Landing page navigation"
+            className="landing-nav landing-nav--desktop"
+            aria-label="Public navigation"
           >
-            <a href="#how-it-works">
+            <a
+              href="#how-it-works"
+              onClick={(event) => {
+                scrollToSection(
+                  event,
+                  'how-it-works',
+                )
+              }}
+            >
               How It Works
             </a>
 
-            <a href="#features">
+            <a
+              href="#ai-guidance"
+              onClick={(event) => {
+                scrollToSection(
+                  event,
+                  'ai-guidance',
+                )
+              }}
+            >
+              AI Guidance
+            </a>
+
+            <a
+              href="#features"
+              onClick={(event) => {
+                scrollToSection(
+                  event,
+                  'features',
+                )
+              }}
+            >
               Features
             </a>
 
@@ -101,292 +121,456 @@ function HomePage() {
             </Link>
 
             <Link
-              className="gn-button gn-button--primary landing-header__cta"
+              className="landing-button landing-button--primary landing-header__cta"
               to="/register"
             >
               Get Started
             </Link>
           </nav>
+
+          <button
+            className="landing-menu-button"
+            type="button"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="landing-mobile-navigation"
+            aria-label={
+              isMobileMenuOpen
+                ? 'Close navigation'
+                : 'Open navigation'
+            }
+            onClick={() => {
+              setIsMobileMenuOpen(
+                (currentValue) => !currentValue,
+              )
+            }}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
         </div>
+
+        {isMobileMenuOpen && (
+          <nav
+            className="landing-mobile-nav"
+            id="landing-mobile-navigation"
+            aria-label="Mobile public navigation"
+          >
+            <a
+              href="#how-it-works"
+              onClick={(event) => {
+                scrollToSection(
+                  event,
+                  'how-it-works',
+                )
+              }}
+            >
+              How It Works
+            </a>
+
+            <a
+              href="#ai-guidance"
+              onClick={(event) => {
+                scrollToSection(
+                  event,
+                  'ai-guidance',
+                )
+              }}
+            >
+              AI Guidance
+            </a>
+
+            <a
+              href="#features"
+              onClick={(event) => {
+                scrollToSection(
+                  event,
+                  'features',
+                )
+              }}
+            >
+              Features
+            </a>
+
+            <Link
+              to="/login"
+              onClick={closeMobileMenu}
+            >
+              Log In
+            </Link>
+
+            <Link
+              className="landing-button landing-button--primary"
+              to="/register"
+              onClick={closeMobileMenu}
+            >
+              Get Started
+            </Link>
+          </nav>
+        )}
       </header>
 
 
       <main>
         <section className="landing-hero">
-          <div className="landing-container landing-hero__grid">
-            <div className="landing-hero__content">
-              <h1 className="landing-hero__title">
-                Plan your career with clearer evidence and next steps.
+          <img
+            className="landing-hero__image"
+            src={homepageHero}
+            alt=""
+          />
+
+          <div className="landing-hero__overlay" />
+
+          <div className="landing-hero__inner">
+            <div className="landing-hero__copy">
+              <span className="landing-kicker landing-hero__badge">
+                AI-POWERED CAREER GUIDANCE
+              </span>
+
+              <h1>
+                Find Your Path.
+                <br />
+                Build Your Skills.
+                <br />
+                Get Career Ready.
               </h1>
 
-              <div className="landing-hero__actions">
+              <p>
+                GradNavi turns your profile evidence
+                into career recommendations, skill-gap
+                insights, personalised learning, and
+                application guidance.
+              </p>
+
+              <div className="landing-actions">
                 <Link
-                  className="gn-button gn-button--primary landing-button landing-button--primary"
+                  className="landing-button landing-button--primary"
                   to="/register"
                 >
                   Get Started
                 </Link>
 
-                <Link
-                  className="gn-button gn-button--secondary landing-button landing-button--login"
-                  to="/login"
+                <a
+                  className="landing-button landing-button--secondary"
+                  href="#how-it-works"
+                  onClick={(event) => {
+                    scrollToSection(
+                      event,
+                      'how-it-works',
+                    )
+                  }}
                 >
-                  Log In
-                </Link>
+                  See How It Works
+                </a>
               </div>
-
-              <p className="landing-hero__description">
-                Build your Student Profile, review deterministic GradNavi
-                career matches, understand readiness and skill gaps, follow
-                learning suggestions, and prepare AI-assisted drafts and
-                interview practice content.
-              </p>
-            </div>
-
-
-            <aside
-              className="landing-preview"
-              aria-label="Illustrative Student Dashboard preview"
-            >
-              <div className="landing-preview__header">
-                <h2>
-                  Student Dashboard Preview
-                </h2>
-
-                <span className="landing-preview__badge">
-                  Illustrative sample
-                </span>
-              </div>
-
-              <div className="landing-preview__metrics">
-                <div className="landing-preview__metric">
-                  <span className="landing-preview__metric-label">
-                    Recommendation Score
-                  </span>
-
-                  <strong>
-                    86%
-                  </strong>
-
-                  <span>
-                    GradNavi Analysis
-                  </span>
-                </div>
-
-                <div className="landing-preview__metric">
-                  <span className="landing-preview__metric-label">
-                    Readiness Score
-                  </span>
-
-                  <strong>
-                    72%
-                  </strong>
-
-                  <span>
-                    Separate career analysis
-                  </span>
-                </div>
-
-                <div className="landing-preview__metric">
-                  <span className="landing-preview__metric-label">
-                    Skill Gaps
-                  </span>
-
-                  <strong>
-                    3
-                  </strong>
-
-                  <span>
-                    Missing / below
-                  </span>
-                </div>
-              </div>
-
-              <h3 className="landing-preview__actions-title">
-                Recommended next actions
-              </h3>
-
-              <div className="landing-preview__actions">
-                <div>
-                  Review Career Recommendations
-                </div>
-
-                <div>
-                  Open Skill Gap Analysis
-                </div>
-
-                <div>
-                  Generate AI Resume Draft
-                </div>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-
-        <section
-          className="landing-section"
-          id="features"
-        >
-          <div className="landing-container">
-            <div className="landing-section__heading">
-              <h2>
-                What GradNavi Helps You Do
-              </h2>
-
-              <p>
-                Current Sprint 1-3 capabilities only. Job Description Matcher
-                and Admin are future work.
-              </p>
-            </div>
-
-            <div className="landing-features-grid">
-              {features.map((feature) => (
-                <article
-                  className="landing-feature-card"
-                  key={feature.title}
-                >
-                  <span
-                    className="landing-feature-card__marker"
-                    aria-hidden="true"
-                  >
-                    ◦
-                  </span>
-
-                  <div>
-                    <h3>
-                      {feature.title}
-                    </h3>
-
-                    <p>
-                      {feature.description}
-                    </p>
-                  </div>
-                </article>
-              ))}
             </div>
           </div>
         </section>
 
 
         <section
-          className="landing-section landing-section--workflow"
+          className="landing-trust"
           id="how-it-works"
         >
-          <div className="landing-container">
-            <div className="landing-section__heading">
-              <h2>
-                How GradNavi Works
-              </h2>
-
-              <p>
-                GradNavi separates deterministic analysis from AI-generated
-                draft and practice content.
-              </p>
-            </div>
-
-            <div className="landing-workflow-grid">
-              {workflowSteps.map((step) => (
-                <article
-                  className="landing-workflow-card"
-                  key={step.number}
-                >
-                  <div className="landing-workflow-card__metric">
-                    <span>
-                      Step {step.number}
-                    </span>
-
-                    <strong>
-                      {step.number}
-                    </strong>
-
-                    <small>
-                      {step.title}
-                    </small>
-                  </div>
-
-                  <h3>
-                    {step.title}
-                  </h3>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-
-        <section className="landing-section landing-section--responsibilities">
-          <div className="landing-container">
-            <div className="landing-responsibilities">
-              <h2>
-                AI and GradNavi Analysis Responsibilities
-              </h2>
-
-              <div className="landing-responsibilities__grid">
-                <article className="landing-responsibility-card landing-responsibility-card--analysis">
-                  <h3>
-                    GradNavi Analysis
-                  </h3>
-
-                  <p>
-                    Scores, ranks, readiness, skill gaps, priority ordering.
-                  </p>
-                </article>
-
-                <article className="landing-responsibility-card landing-responsibility-card--ai">
-                  <h3>
-                    AI-generated content
-                  </h3>
-
-                  <p>
-                    Resume drafts, cover-letter drafts, interview questions,
-                    feedback.
-                  </p>
-                </article>
-
-                <article className="landing-responsibility-card landing-responsibility-card--student">
-                  <h3>
-                    Student responsibility
-                  </h3>
-
-                  <p>
-                    Review generated content and maintain profile evidence.
-                  </p>
-                </article>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <section className="landing-cta-section">
-          <div className="landing-container">
-            <div className="landing-cta">
-              <div>
+          <div className="landing-trust__inner">
+            {trustItems.map((item) => (
+              <article
+                className="landing-trust__item"
+                key={item.title}
+              >
                 <h2>
-                  Ready to build your career plan?
+                  {item.title}
                 </h2>
 
                 <p>
-                  Start with your profile, then review matches and next steps.
+                  {item.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+
+        <section className="landing-feature-section landing-feature-section--muted">
+          <div className="landing-feature-section__inner">
+            <div className="landing-feature-section__media">
+              <img
+                src={careerExploration}
+                alt="Students exploring career directions"
+              />
+            </div>
+
+            <div className="landing-feature-section__copy">
+              <span className="landing-kicker">
+                EXPLORE
+              </span>
+
+              <h2>
+                See career directions that connect
+                with your profile.
+              </h2>
+
+              <p>
+                Browse career options, compare structured
+                match evidence, and choose the path you
+                want GradNavi to use across skill gaps,
+                roadmap, and learning resources.
+              </p>
+
+              <ul>
+                <li>
+                  Career recommendations with clear
+                  match evidence
+                </li>
+
+                <li>
+                  Explore careers beyond your current
+                  top recommendation
+                </li>
+
+                <li>
+                  Keep one selected career consistent
+                  across guidance pages
+                </li>
+              </ul>
+
+              <a
+                className="landing-button landing-button--secondary"
+                href="#product-evidence"
+                onClick={(event) => {
+                  scrollToSection(
+                    event,
+                    'product-evidence',
+                  )
+                }}
+              >
+                Explore Career Guidance
+              </a>
+            </div>
+          </div>
+        </section>
+
+
+        <section
+          className="landing-feature-section"
+          id="ai-guidance"
+        >
+          <div className="landing-feature-section__inner landing-feature-section__inner--reverse">
+            <div className="landing-feature-section__copy">
+              <span className="landing-kicker">
+                AI GUIDANCE
+              </span>
+
+              <h2>
+                Understand why a career fits,
+                where the gaps are, and what to do next.
+              </h2>
+
+              <p>
+                GradNavi keeps structured scores separate
+                from AI explanations. The AI layer explains
+                the evidence, summarises your gaps, and
+                gives focused next steps without changing
+                the underlying score.
+              </p>
+
+              <div className="landing-ai-points">
+                <article>
+                  <h3>
+                    Why this career matches
+                  </h3>
+
+                  <p>
+                    Explains the strongest evidence
+                    behind each recommendation.
+                  </p>
+                </article>
+
+                <article>
+                  <h3>
+                    AI Gap Summary
+                  </h3>
+
+                  <p>
+                    Explains readiness and turns unresolved
+                    gaps into clear next actions.
+                  </p>
+                </article>
+
+                <article>
+                  <h3>
+                    Roadmap guidance
+                  </h3>
+
+                  <p>
+                    Adds Why this matters and Your focus
+                    to structured development steps.
+                  </p>
+                </article>
+              </div>
+            </div>
+
+            <div className="landing-feature-section__media">
+              <img
+                src={aiGuidance}
+                alt="Students using AI-supported career guidance"
+              />
+            </div>
+          </div>
+        </section>
+
+
+        <section
+          className="landing-growth"
+          id="features"
+        >
+          <div className="landing-section-heading">
+            <span className="landing-kicker">
+              FROM LEARNING TO APPLICATIONS
+            </span>
+
+            <h2>
+              Build evidence. Improve readiness.
+              Prepare stronger applications.
+            </h2>
+
+            <p>
+              GradNavi connects learning resources,
+              roadmap progress, resume drafting,
+              cover letters, job matching, and
+              interview preparation around the same
+              Student Profile.
+            </p>
+          </div>
+
+          <div className="landing-growth__cards">
+            <article className="landing-story-card">
+              <img
+                src={skillDevelopment}
+                alt="Student developing career skills"
+              />
+
+              <div className="landing-story-card__copy">
+                <h3>
+                  Build your skills
+                </h3>
+
+                <p>
+                  Follow an ordered roadmap and use
+                  learning resources tied to unresolved
+                  gaps.
                 </p>
               </div>
+            </article>
 
-              <div className="landing-cta__actions">
-                <Link
-                  className="gn-button gn-button--primary landing-button landing-button--create"
-                  to="/register"
-                >
-                  Create Account
-                </Link>
+            <article className="landing-story-card">
+              <img
+                src={applicationPreparation}
+                alt="Students preparing career applications"
+              />
 
-                <Link
-                  className="gn-button gn-button--secondary landing-button landing-button--cta-login"
-                  to="/login"
-                >
-                  Log In
-                </Link>
+              <div className="landing-story-card__copy">
+                <h3>
+                  Prepare to apply
+                </h3>
+
+                <p>
+                  Turn your profile and job context
+                  into editable resume and
+                  cover-letter drafts.
+                </p>
               </div>
+            </article>
+          </div>
+        </section>
+
+
+        <section
+          className="landing-product"
+          id="product-evidence"
+        >
+          <div className="landing-section-heading">
+            <span className="landing-kicker">
+              INSIDE GRADNAVI
+            </span>
+
+            <h2>
+              The guidance stays visible and inspectable.
+            </h2>
+
+            <p>
+              See the real product experience, including
+              recommendation evidence and the AI Gap
+              Summary, with the reasoning kept visible
+              and reviewable.
+            </p>
+          </div>
+
+          <div className="landing-product__grid">
+            <article className="landing-product-card">
+              <div className="landing-product-card__image">
+                <img
+                  src={careerRecommendationsPreview}
+                  alt="GradNavi Career Recommendations screen"
+                />
+              </div>
+
+              <h3>
+                Career Recommendations
+              </h3>
+            </article>
+
+            <article className="landing-product-card">
+              <div className="landing-product-card__image">
+                <img
+                  src={skillGapPreview}
+                  alt="GradNavi Skill Gap Analysis screen"
+                />
+              </div>
+
+              <h3>
+                Skill Gap Analysis
+              </h3>
+            </article>
+          </div>
+        </section>
+
+
+        <section className="landing-final-cta">
+          <img
+            className="landing-final-cta__background"
+            src={ctaBackground}
+            alt=""
+          />
+
+          <div className="landing-final-cta__overlay" />
+
+          <div className="landing-final-cta__inner">
+            <h2>
+              Ready to move from career uncertainty
+              to a clear next step?
+            </h2>
+
+            <p>
+              Build your profile once, then use the same
+              evidence across recommendations, skill gaps,
+              roadmap, learning, and application preparation.
+            </p>
+
+            <div className="landing-actions">
+              <Link
+                className="landing-button landing-button--primary"
+                to="/register"
+              >
+                Create Your Profile
+              </Link>
+
+              <Link
+                className="landing-button landing-button--secondary"
+                to="/login"
+              >
+                Log In
+              </Link>
             </div>
           </div>
         </section>

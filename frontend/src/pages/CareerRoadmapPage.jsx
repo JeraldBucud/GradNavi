@@ -274,6 +274,7 @@ function CareerRoadmapPage() {
       careerContextError,
     isLoading:
       isCareerContextLoading,
+    profileSetupRequired,
     selectedCareer,
     selectedCareerId,
     selectCareer,
@@ -735,16 +736,28 @@ function CareerRoadmapPage() {
 
         <section className="career-guidance-state-card">
           <h2>
-            Career matches are needed first
+            {
+              profileSetupRequired
+                ? 'Set up your profile to build your career roadmap'
+                : 'Career matches are needed first'
+            }
           </h2>
 
-          <p role="alert">
+          <p>
             {
-              careerContextError
-              || (
-                'Complete your profile and '
-                + 'review Career Recommendations.'
-              )
+              profileSetupRequired
+                ? (
+                  'Add your skills, interests, and career '
+                  + 'goals so GradNavi has enough '
+                  + 'information to build your roadmap.'
+                )
+                : (
+                  careerContextError
+                  || (
+                    'Review Career Recommendations '
+                    + 'to choose a career first.'
+                  )
+                )
             }
           </p>
 
@@ -753,11 +766,17 @@ function CareerRoadmapPage() {
             type="button"
             onClick={() =>
               navigate(
-                '/career-recommendations',
+                profileSetupRequired
+                  ? '/profile'
+                  : '/career-recommendations',
               )
             }
           >
-            Open Career Recommendations
+            {
+              profileSetupRequired
+                ? 'Set Up My Profile'
+                : 'Open Career Recommendations'
+            }
           </button>
         </section>
       </main>
@@ -808,10 +827,9 @@ function CareerRoadmapPage() {
           </h2>
 
           <p>
-            Your top recommendation loads by
-            default. Your last career choice
-            carries across Skill Gaps,
-            Career Roadmap, and Learning Resources.
+            Your primary career goal loads by
+            default. Choose another career here
+            for a temporary roadmap comparison.
           </p>
         </div>
 
@@ -833,8 +851,8 @@ function CareerRoadmapPage() {
               }
               helperText={
                 (
-                  'Top match by default. '
-                  + 'Change anytime.'
+                  'Primary career by default. '
+                  + 'Change this view temporarily.'
                 )
               }
               onChange={
