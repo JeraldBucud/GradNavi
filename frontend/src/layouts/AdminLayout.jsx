@@ -52,7 +52,8 @@ const adminNavigation = [
   {
     label: 'Skills',
     icon: Sparkles,
-    implemented: false,
+    path: '/admin/skills',
+    implemented: true,
   },
   {
     label: 'Learning Resources',

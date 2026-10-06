@@ -35,7 +35,8 @@
 }
 
 .admin-careers__form-field input,
-.admin-careers__form-field textarea {
+.admin-careers__form-field textarea,
+.admin-careers__form-field select {
   width: 100%;
   box-sizing: border-box;
   padding: 8px 12px;
@@ -52,7 +53,8 @@
 }
 
 .admin-careers__form-field input:focus-visible,
-.admin-careers__form-field textarea:focus-visible {
+.admin-careers__form-field textarea:focus-visible,
+.admin-careers__form-field select:focus-visible {
   outline: 2px solid var(--color-info, #2563eb);
   outline-offset: 1px;
 }
@@ -74,4 +76,10 @@
 .admin-careers__form .admin-users__dialog-note,
 .admin-careers__form .admin-users__dialog-error {
   margin: 0;
+}
+
+.admin-skills__more {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
 }
