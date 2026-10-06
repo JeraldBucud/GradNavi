@@ -28,6 +28,7 @@ import StudentDashboardPage from './pages/StudentDashboardPage'
 import AdminSkillsPage from './pages/AdminSkillsPage'
 import AdminReportsPage from './pages/AdminReportsPage'
 import AdminLearningResourcesPage from './pages/AdminLearningResourcesPage'
+import AdminAuditRecordsPage from './pages/AdminAuditRecordsPage'
 
 
 function App() {
@@ -150,6 +151,11 @@ function App() {
             <Route
               path="/admin/learning-resources"
               element={<AdminLearningResourcesPage />}
+            />
+            
+            <Route
+              path="/admin/audit-records"
+              element={<AdminAuditRecordsPage />}
             />
           </Route>
         </Route>

@@ -165,3 +165,39 @@
 .admin-resources__skill-results button:focus-visible {
   background: var(--color-surface-muted, #f1f5f9);
 }
+
+
+.admin-audit__dialog {
+  max-width: 520px;
+}
+
+.admin-audit__details {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px 16px;
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.admin-audit__details dt {
+  font-weight: 600;
+  color: var(--color-muted, #64748b);
+  text-transform: capitalize;
+}
+
+.admin-audit__details dd {
+  margin: 0;
+  color: var(--color-body, #334155);
+  word-break: break-word;
+}
+
+.admin-audit__details code {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-muted, #64748b);
+}
+
+.admin-audit__meta-row {
+  display: contents;
+}

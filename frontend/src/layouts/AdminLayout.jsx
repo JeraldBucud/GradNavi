@@ -71,7 +71,8 @@ const adminNavigation = [
   {
     label: 'Audit Records',
     icon: ClipboardList,
-    implemented: false,
+    path: '/admin/audit-records',
+    implemented: true,
   },
 ]
 
