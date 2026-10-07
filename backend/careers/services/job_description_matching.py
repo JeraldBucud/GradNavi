@@ -302,6 +302,7 @@ def _find_requirement_index(
     text,
     term,
     concept_type,
+    start=0,
 ):
     """
     Find the first acceptable occurrence of a canonical or alias term.
@@ -312,7 +313,7 @@ def _find_requirement_index(
     requirement context to reduce false positives.
     """
 
-    search_start = 0
+    search_start = start
 
     while True:
         index = _find_term_index(
@@ -348,6 +349,169 @@ def _find_requirement_index(
         )
 
 
+def _technology_canonical_match_terms(
+    *,
+    name,
+    concept_type,
+):
+    """
+    Build conservative deterministic match terms for technology labels.
+
+    O*NET technology names can include a vendor label, an acronym, and the
+    generic suffix "software". Safe variants let job text such as
+    "Amazon Web Services" map to the canonical
+    "Amazon Web Services AWS software" Skill without creating a second Skill.
+    """
+
+    values = [
+        name,
+    ]
+
+    if concept_type != "technology":
+        return tuple(
+            values
+        )
+
+    stripped_name = (
+        name.strip()
+    )
+
+    software_suffix = re.search(
+        r"\s+software$",
+        stripped_name,
+        flags=re.IGNORECASE,
+    )
+
+    if software_suffix is None:
+        return tuple(
+            values
+        )
+
+    base_name = (
+        stripped_name[
+            :software_suffix.start()
+        ]
+        .strip()
+    )
+
+    if base_name:
+        values.append(
+            base_name
+        )
+
+    acronym_match = re.fullmatch(
+        (
+            r"(?P<label>.+?)\s+"
+            r"(?P<acronym>[A-Z][A-Z0-9.+#-]{1,10})"
+        ),
+        base_name,
+    )
+
+    if acronym_match is not None:
+        label = (
+            acronym_match
+            .group(
+                "label"
+            )
+            .strip()
+        )
+
+        acronym = (
+            acronym_match
+            .group(
+                "acronym"
+            )
+            .strip()
+        )
+
+        if label:
+            values.append(
+                label
+            )
+
+        if acronym:
+            values.append(
+                acronym
+            )
+
+    return tuple(
+        dict.fromkeys(
+            value
+            for value in values
+            if value
+        )
+    )
+
+
+def _spans_overlap(
+    *,
+    start,
+    end,
+    occupied_spans,
+):
+    return any(
+        start < occupied_end
+        and end > occupied_start
+        for (
+            occupied_start,
+            occupied_end,
+        )
+        in occupied_spans
+    )
+
+
+def _find_non_overlapping_requirement_index(
+    *,
+    text,
+    term,
+    concept_type,
+    occupied_spans,
+):
+    """
+    Find an acceptable requirement occurrence that does not overlap a
+    previously accepted longer or higher-priority term.
+    """
+
+    normalised_term = (
+        _normalise_match_text(
+            term
+        )
+    )
+
+    search_start = 0
+
+    while True:
+        index = _find_requirement_index(
+            text=text,
+            term=term,
+            concept_type=concept_type,
+            start=search_start,
+        )
+
+        if index is None:
+            return None
+
+        end = (
+            index
+            + len(
+                normalised_term
+            )
+        )
+
+        if not _spans_overlap(
+            start=index,
+            end=end,
+            occupied_spans=(
+                occupied_spans
+            ),
+        ):
+            return index
+
+        search_start = (
+            index + 1
+        )
+
+
 def _load_canonical_vocabulary():
     groups = {}
 
@@ -364,17 +528,36 @@ def _load_canonical_vocabulary():
     )
 
     for row in rows:
-        term = _normalise_match_text(
-            row["name"]
+        match_terms = (
+            _technology_canonical_match_terms(
+                name=row["name"],
+                concept_type=(
+                    row[
+                        "concept_type"
+                    ]
+                ),
+            )
         )
 
-        if not term:
-            continue
+        for display_term in match_terms:
+            term = _normalise_match_text(
+                display_term
+            )
 
-        groups.setdefault(
-            term,
-            [],
-        ).append(row)
+            if not term:
+                continue
+
+            groups.setdefault(
+                term,
+                [],
+            ).append(
+                {
+                    **row,
+                    "matched_term": (
+                        display_term
+                    ),
+                }
+            )
 
     return groups
 
@@ -440,6 +623,7 @@ def extract_job_requirements(
     )
 
     extracted = {}
+    occupied_spans = []
 
 
     for term in sorted(
@@ -461,17 +645,39 @@ def extract_job_requirements(
 
         row = rows[0]
 
-        index = _find_requirement_index(
-            text=text,
-            term=term,
-            concept_type=(
-                row[
-                    "concept_type"
-                ]
-            ),
+        index = (
+            _find_non_overlapping_requirement_index(
+                text=text,
+                term=term,
+                concept_type=(
+                    row[
+                        "concept_type"
+                    ]
+                ),
+                occupied_spans=(
+                    occupied_spans
+                ),
+            )
         )
 
         if index is None:
+            continue
+
+        occupied_spans.append(
+            (
+                index,
+                index + len(term),
+            )
+        )
+
+        current = extracted.get(
+            row["id"]
+        )
+
+        if (
+            current is not None
+            and current[0] <= index
+        ):
             continue
 
         extracted[
@@ -489,7 +695,9 @@ def extract_job_requirements(
                     ]
                 ),
                 matched_term=(
-                    row["name"]
+                    row[
+                        "matched_term"
+                    ]
                 ),
                 match_source=(
                     MATCH_SOURCE_CANONICAL
@@ -545,18 +753,30 @@ def extract_job_requirements(
         ):
             continue
 
-        index = _find_requirement_index(
-            text=text,
-            term=term,
-            concept_type=(
-                row[
-                    "skill__concept_type"
-                ]
-            ),
+        index = (
+            _find_non_overlapping_requirement_index(
+                text=text,
+                term=term,
+                concept_type=(
+                    row[
+                        "skill__concept_type"
+                    ]
+                ),
+                occupied_spans=(
+                    occupied_spans
+                ),
+            )
         )
 
         if index is None:
             continue
+
+        occupied_spans.append(
+            (
+                index,
+                index + len(term),
+            )
+        )
 
         extracted[
             skill_id

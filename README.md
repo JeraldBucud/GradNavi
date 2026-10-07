@@ -481,6 +481,18 @@ Apply migrations:
 python manage.py migrate
 ```
 
+Load the tracked Career Recommendation reference data before first use:
+
+```powershell
+python manage.py import_reference_dataset
+python manage.py import_onet_demand_snapshot --snapshot-date 2026-09-16
+```
+
+Run these imports in this order on a new database. The base reference
+dataset creates the Career, Skill, mapping, and O*NET evidence records.
+The demand snapshot then adds the employer-demand percentages required
+by the Technology Fit component.
+
 Run the Django development server:
 
 ```powershell

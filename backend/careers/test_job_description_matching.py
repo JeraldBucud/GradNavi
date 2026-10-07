@@ -293,6 +293,95 @@ class JobDescriptionMatchingServiceTests(
         )
 
 
+    def test_amazon_web_services_does_not_match_generic_web_services(
+        self,
+    ):
+        aws = Skill.objects.create(
+            name=(
+                "Amazon Web Services "
+                "AWS software"
+            ),
+            concept_type=(
+                Skill.ConceptType.TECHNOLOGY
+            ),
+        )
+
+        web_services = Skill.objects.create(
+            name="web services",
+            concept_type=(
+                Skill.ConceptType.KNOWLEDGE
+            ),
+        )
+
+        requirements = (
+            extract_job_requirements(
+                (
+                    "Experience with Amazon Web "
+                    "Services is required."
+                )
+            )
+        )
+
+        self.assertEqual(
+            len(requirements),
+            1,
+        )
+
+        self.assertEqual(
+            requirements[0].skill_id,
+            aws.id,
+        )
+
+        self.assertEqual(
+            requirements[0].matched_term,
+            "Amazon Web Services",
+        )
+
+        self.assertNotIn(
+            web_services.id,
+            {
+                requirement.skill_id
+                for requirement
+                in requirements
+            },
+        )
+
+
+    def test_aws_acronym_maps_to_canonical_aws_technology(
+        self,
+    ):
+        aws = Skill.objects.create(
+            name=(
+                "Amazon Web Services "
+                "AWS software"
+            ),
+            concept_type=(
+                Skill.ConceptType.TECHNOLOGY
+            ),
+        )
+
+        requirements = (
+            extract_job_requirements(
+                "AWS experience is required."
+            )
+        )
+
+        self.assertEqual(
+            len(requirements),
+            1,
+        )
+
+        self.assertEqual(
+            requirements[0].skill_id,
+            aws.id,
+        )
+
+        self.assertEqual(
+            requirements[0].matched_term,
+            "AWS",
+        )
+
+
     def test_student_profile_comparison(self):
         result = match_job_description(
             student_profile=self.profile,
