@@ -1081,6 +1081,57 @@ class RecommendationAPITests(APITestCase):
         )
 
 
+    def test_missing_technology_demand_data_returns_controlled_503(
+        self,
+    ):
+        from careers.services.technology_fit import (
+            TechnologyDemandDataUnavailableError,
+        )
+
+        with (
+            patch(
+                "careers.views.OpenAIEmbeddingProvider",
+                return_value=object(),
+            ),
+            patch(
+                "careers.views."
+                "generate_composite_recommendations",
+                side_effect=(
+                    TechnologyDemandDataUnavailableError(
+                        "Demand snapshot has not been imported."
+                    )
+                ),
+            ),
+        ):
+            response = (
+                self.authenticated_get()
+            )
+
+        self.assertEqual(
+            response.status_code,
+            503,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            (
+                "recommendation_reference_"
+                "data_unavailable"
+            ),
+        )
+
+        self.assertEqual(
+            response.data["error"]["message"],
+            (
+                "Career Recommendation reference data "
+                "is not ready. Complete the required "
+                "data imports and try again."
+            ),
+        )
+
+
+
 
 class LearningRoadmapAPITests(APITestCase):
     """

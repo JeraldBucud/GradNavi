@@ -88,6 +88,19 @@ SCORE_QUANTUM = Decimal("0.01")
 ONE = Decimal("1")
 
 
+class TechnologyDemandDataUnavailableError(
+    ValueError
+):
+    """
+    Raised when required O*NET demand percentages have not been imported.
+
+    This is a deployment or database-bootstrap condition rather than an
+    invalid Student request.
+    """
+
+    pass
+
+
 @dataclass(frozen=True)
 class TechnologyDemandRequirement:
     """
@@ -296,11 +309,13 @@ def load_demand_weighted_technologies_by_career(
         )
 
         if percentage is None:
-            raise ValueError(
-                "In-Demand O*NET technology "
-                "is missing demand percentage: "
-                f"Career {career_id}, "
-                f"Skill {career_skill.skill.name}"
+            raise (
+                TechnologyDemandDataUnavailableError(
+                    "In-Demand O*NET technology "
+                    "is missing demand percentage: "
+                    f"Career {career_id}, "
+                    f"Skill {career_skill.skill.name}"
+                )
             )
 
         if not (

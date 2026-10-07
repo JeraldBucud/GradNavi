@@ -689,13 +689,27 @@ function CoverLetterBuilderPage() {
       ? versionName
       : automaticVersionName
 
+  const missingGenerationRequirements = [
+    !selectedTargetCareer
+      ? 'Target Career'
+      : null,
+
+    !jobContext.jobTitle.trim()
+      ? 'Job Title'
+      : null,
+
+    !jobContext.company.trim()
+      ? 'Company'
+      : null,
+
+    !jobContext.jobDescription.trim()
+      ? 'Job Description'
+      : null,
+  ].filter(Boolean)
+
   const isGenerationReady =
-    Boolean(
-      selectedTargetCareer
-      && jobContext.jobTitle.trim()
-      && jobContext.company.trim()
-      && jobContext.jobDescription.trim()
-    )
+    missingGenerationRequirements.length
+    === 0
 
 
   useEffect(() => {
@@ -2452,6 +2466,14 @@ function CoverLetterBuilderPage() {
                 === 'generating'
                 || !isGenerationReady
               }
+              aria-describedby={
+                !isGenerationReady
+                  ? (
+                    'cover-letter-'
+                    + 'generation-requirements'
+                  )
+                  : undefined
+              }
               onClick={
                 handleGenerate
               }
@@ -2487,6 +2509,34 @@ function CoverLetterBuilderPage() {
               Clear Job Description
             </button>
           </div>
+
+          {
+            !isGenerationReady
+            && generationState
+              !== 'generating'
+              ? (
+                <p
+                  id={
+                    'cover-letter-'
+                    + 'generation-requirements'
+                  }
+                  className={
+                    'cover-letter-builder__field-note'
+                  }
+                  role="status"
+                >
+                  To generate a cover letter,
+                  complete:
+                  {' '}
+                  {
+                    missingGenerationRequirements
+                      .join(', ')
+                  }
+                  .
+                </p>
+              )
+              : null
+          }
         </section>
 
 

@@ -26,7 +26,10 @@ from documents.providers import (
     get_resume_generation_provider,
 )
 from documents.services.cover_letter_generation import generate_cover_letter_draft
-from documents.services.resume_generation import generate_resume_draft
+from documents.services.resume_generation import (
+    UNSUPPORTED_SKILL_LIMITATION,
+    generate_resume_draft,
+)
 from documents.services.target_career import (
     TargetCareerNotAvailableError,
 )
@@ -318,6 +321,50 @@ class ResumeGenerationServiceTests(TestCase):
             result,
             expected,
         )
+
+    def test_generated_resume_skills_are_limited_to_student_profile(
+        self,
+    ):
+        provider = FakeResumeProvider(
+            response=ResumeDraft(
+                professional_summary=(
+                    "Backend student with verified Python evidence."
+                ),
+                skills=[
+                    (
+                        "Programming Languages: "
+                        "Python | Docker | Kubernetes"
+                    ),
+                    "Cloud and DevOps: AWS",
+                ],
+                education=[],
+                experience=[],
+                projects=[],
+                missing_information=[],
+                limitations=[],
+                is_draft=True,
+                requires_user_review=True,
+            ),
+        )
+
+        result = generate_resume_draft(
+            student_profile=self.profile,
+            target_career_name="Software Developer",
+            ai_provider=provider,
+        )
+
+        self.assertEqual(
+            result.skills,
+            [
+                "Programming Languages: Python",
+            ],
+        )
+
+        self.assertIn(
+            UNSUPPORTED_SKILL_LIMITATION,
+            result.limitations,
+        )
+
 
     def test_private_profile_fields_are_not_exposed_to_provider_prompt(self):
         provider = FakeResumeProvider()

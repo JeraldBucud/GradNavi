@@ -51,6 +51,9 @@ from careers.services.composite_recommendation import (
     TECHNOLOGY_WEIGHT,
     generate_composite_recommendations,
 )
+from careers.services.technology_fit import (
+    TechnologyDemandDataUnavailableError,
+)
 from careers.services.recommendation_cache import (
     SCORING_VERSION,
     build_recommendation_cache_key,
@@ -205,6 +208,27 @@ class RecommendationAIUnavailable(APIException):
 
 
 
+class RecommendationReferenceDataUnavailable(
+    APIException
+):
+    """
+    Returned when required Career Recommendation reference data has not
+    completed database bootstrap.
+    """
+
+    status_code = 503
+
+    default_detail = (
+        "Career Recommendation reference data is "
+        "not ready. Complete the required data "
+        "imports and try again."
+    )
+
+    default_code = (
+        "recommendation_reference_data_unavailable"
+    )
+
+
 class RecommendationProfileIncomplete(APIException):
     """
     Returned when the student profile does not contain enough
@@ -274,6 +298,13 @@ class RecommendationListView(APIView):
 
         except AIMissingContextError as error:
             raise RecommendationProfileIncomplete() from error
+
+        except (
+            TechnologyDemandDataUnavailableError
+        ) as error:
+            raise (
+                RecommendationReferenceDataUnavailable()
+            ) from error
 
         except AIProviderError as error:
             raise RecommendationAIUnavailable() from error
@@ -2400,6 +2431,13 @@ def _ensure_explore_recommendation_snapshot(
     except AIMissingContextError as error:
         raise (
             RecommendationProfileIncomplete()
+        ) from error
+
+    except (
+        TechnologyDemandDataUnavailableError
+    ) as error:
+        raise (
+            RecommendationReferenceDataUnavailable()
         ) from error
 
     except AIProviderError as error:
