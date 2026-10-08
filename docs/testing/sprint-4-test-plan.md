@@ -779,3 +779,30 @@ Frontend lint completed with 0 warnings and 0 errors, and the production build c
 No unresolved Critical or High blocking defect was observed in the final integration smoke run.
 
 Detailed per-test execution results and evidence references are recorded in `docs/testing/sprint-4-test-cases.xlsx` and `docs/testing/evidence/sprint-4/`.
+
+## 35. Formal Sprint 4 Closeout Reference
+
+Formal Sprint 4 closeout date: 9 October 2026
+
+WBS 7.9 Sprint 4 Integration and Testing is complete.
+
+Final tracker:
+
+- Total: 129
+- Pass: 129
+- Fail: 0
+- Blocked: 0
+- Not Run: 0
+- Retest: 0
+
+WBS 7.10 Sprint 4 Review and Retrospective is complete.
+
+WBS 7.11 Feature Complete is complete for the scheduled Sprint 4 scope.
+
+The formal closeout record is stored at:
+
+docs/project-management/sprint-4-closeout.md
+
+The completed Sprint 3 predecessor history was reconciled into Sprint 4 through PR #84 before formal Sprint 4 closure.
+
+The completed Sprint 4 baseline is ready to merge forward into feature/sprint-5.

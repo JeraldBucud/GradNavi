@@ -120,3 +120,32 @@ Final completion activities:
 7. WBS 7.9 is ready for PR #73 completion and merge.
 
 No unresolved Critical or High blocking defect was observed in the final integration smoke run.
+
+## Formal Sprint 4 Closeout
+
+Formal closeout date: 9 October 2026
+
+WBS 7.9 Sprint 4 Integration and Testing: COMPLETE
+
+WBS 7.10 Sprint 4 Review and Retrospective: COMPLETE
+
+WBS 7.11 Feature Complete: COMPLETE
+
+Final tracker:
+
+- Total: 129
+- Pass: 129
+- Fail: 0
+- Blocked: 0
+- Not Run: 0
+- Retest: 0
+
+The formal closeout record is:
+
+docs/project-management/sprint-4-closeout.md
+
+PR #67 completed WBS 7.9.
+
+PR #84 reconciled the formally completed Sprint 3 history into the Sprint 4 baseline.
+
+Sprint 4 is formally closed and ready for merge-forward into feature/sprint-5.

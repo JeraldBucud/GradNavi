@@ -1,12 +1,14 @@
 # GradNavi Sprint 4 Plan
 
-Status: Draft for team review
+Status: Complete
 
 WBS: 7.1 Sprint 4 Planning
 
 Sprint: Sprint 4 - Job Matching, AI Integration, and Administration
 
 Planned Sprint dates: 21 September to 2 October 2026
+
+Formal closeout record date: 9 October 2026
 
 Official owner of WBS 7.1: All Members
 
@@ -780,3 +782,165 @@ Before Feature Complete:
 * WBS 7.10 Sprint 4 Review and Retrospective must finish.
 
 Only then should WBS 7.11 Feature Complete be reached.
+
+## 22. Formal Sprint 4 Closeout Update
+
+Formal closeout date: 9 October 2026
+
+This section records the final Sprint 4 state while preserving the original Sprint 4 planning baseline above.
+
+Sprint 4 implementation and formal closeout extended beyond the planned 21 September to 2 October 2026 Sprint window.
+
+Sprint 5 planning began under the documented controlled-overlap process before formal Sprint 4 closure.
+
+### 22.1 Final WBS Status
+
+| WBS | Task | Final Status |
+| --- | --- | --- |
+| 7.1 | Sprint 4 Planning | Complete |
+| 7.2 | Job Description Extraction and Matching | Complete |
+| 7.3 | OpenAI Service Integration | Complete |
+| 7.4 | AI Response Validation and Error Handling | Complete |
+| 7.5 | Job Matching Interface | Complete |
+| 7.6 | Admin Models and API | Complete |
+| 7.7 | Admin Dashboard Interface | Complete |
+| 7.8 | Role Permissions and Audit Records | Complete |
+| 7.9 | Sprint 4 Integration and Testing | Complete |
+| 7.10 | Sprint 4 Review and Retrospective | Complete |
+| 7.11 | Feature Complete | Complete |
+
+### 22.2 Sprint 4 Functional Outcome
+
+The completed Sprint 4 increment includes:
+
+- Job Description Matching.
+- Job Matching Student interface.
+- OpenAI provider integration through the existing backend AI boundary.
+- AI response validation.
+- Controlled AI provider failures.
+- Resume AI integration.
+- Cover Letter AI integration.
+- Interview AI integration.
+- Admin Models and API.
+- Admin Dashboard.
+- User Management.
+- Career Management.
+- Skill Management.
+- Learning Resource Management.
+- Resource Reports.
+- Role permission enforcement.
+- Audit Records.
+- Admin analytics.
+- Student Progress Dashboard as additional implemented scope.
+- Cross-Sprint regression verification.
+
+### 22.3 Final WBS 7.9 Testing Result
+
+Final Sprint 4 tracker:
+
+- Total: 129
+- Pass: 129
+- Fail: 0
+- Blocked: 0
+- Not Run: 0
+- Retest: 0
+
+Team completion:
+
+- Jerald: 46/46 Pass
+- MD: 38/38 Pass
+- Joyee: 45/45 Pass
+
+No unresolved Critical or High blocking defect was observed in the final Sprint 4 integration smoke run.
+
+### 22.4 WBS 7.10 Review and Retrospective
+
+WBS 7.10 is complete.
+
+The formal Sprint 4 review and retrospective is recorded in:
+
+docs/project-management/sprint-4-closeout.md
+
+The review uses:
+
+- Final Sprint 4 implementation state.
+- Final 129-case test tracker.
+- Sprint 4 test plan.
+- Sprint 4 testing-status record.
+- Sprint 4 evidence directory.
+- PR #67 WBS 7.9 completion.
+- PR #84 Sprint 3 to Sprint 4 reconciliation.
+
+### 22.5 WBS 7.11 Feature Complete
+
+WBS 7.11 is complete for the scheduled Sprint 4 scope.
+
+The Feature Complete milestone confirms completion of WBS 7.2 through WBS 7.10 and readiness to move the integrated application into Sprint 5 finalisation.
+
+Feature Complete does not silently change unresolved planning alignment for requirements which lack a dedicated Microsoft Project task.
+
+### 22.6 Schedule Alignment Decisions
+
+FR-13 Progress Dashboard:
+
+Implemented and merged through PR #75.
+
+The Product Backlog still records schedule alignment as required because no dedicated Microsoft Project task exists.
+
+Formal planning alignment remains tracked in Sprint 5 as ALIGN-S5-001.
+
+FR-15 Admin Analytics:
+
+Included in Sprint 4 through WBS 7.6, WBS 7.7, and WBS 7.9.
+
+The final Sprint 4 integration verifies the related administration and analytics behaviour.
+
+FR-16 AI Content Review:
+
+Existing Resume, Cover Letter, and AI workflows provide review and editing behaviour.
+
+The Product Backlog still records FR-16 as Backlog with no dedicated Microsoft Project task.
+
+Formal planning alignment remains tracked in Sprint 5 as ALIGN-S5-002.
+
+Sprint 4 closeout does not change FR-16 to Done.
+
+FR-17 Data Deletion:
+
+No dedicated Microsoft Project task exists.
+
+The Product Backlog still records FR-17 as Backlog.
+
+Formal planning alignment remains tracked in Sprint 5 as ALIGN-S5-003.
+
+Sprint 4 closeout does not claim FR-17 implementation or completion.
+
+### 22.7 Sprint 3 Reconciliation
+
+Formal Sprint 3 closeout was merged into Sprint 4 through PR #84.
+
+The reconciliation:
+
+- Preserved the completed Sprint 4 WBS 7.9 baseline.
+- Added the formal Sprint 3 closeout record.
+- Added late Sprint 2 testing evidence.
+- Preserved the newer Sprint 4 Sprint 1 evidence workbook.
+- Completed predecessor history before Sprint 4 formal closure.
+
+### 22.8 Merge-Forward Decision
+
+The completed Sprint 4 baseline will merge forward into:
+
+feature/sprint-5
+
+Sprint 5 already contains controlled-overlap work started before formal Sprint 4 closure.
+
+The Sprint 4 to Sprint 5 reconciliation must:
+
+1. Preserve completed Sprint 5 work.
+2. Bring forward the formal Sprint 3 and Sprint 4 closeout history.
+3. Preserve the completed Sprint 4 WBS 7.9 evidence.
+4. Resolve branch conflicts through review.
+5. Verify the resulting Sprint 5 baseline before further finalisation work.
+
+Sprint 4 - Job Matching, AI Integration, and Administration: COMPLETE
