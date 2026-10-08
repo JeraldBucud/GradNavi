@@ -1,11 +1,12 @@
 .settings-page {
   width: 100%;
-  max-width: 1180px;
+  max-width: none;
+  min-width: 0;
 
   box-sizing: border-box;
 
   margin: 0 auto;
-  padding: 40px 42px 64px;
+  padding: 40px 48px 64px;
 }
 
 

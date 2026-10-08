@@ -21,7 +21,8 @@
 
 .student-dashboard-v2__content {
   width: 100%;
-  max-width: 1040px;
+  max-width: none;
+  min-width: 0;
 }
 
 
