@@ -1,6 +1,8 @@
 .job-matching-page {
-  max-width: 1320px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
 }
 
 
@@ -428,7 +430,7 @@
 /* WBS 7.5 USER-FIRST JOB MATCHING */
 
 .job-matching-page {
-  max-width: 1180px;
+  max-width: none;
 }
 
 
