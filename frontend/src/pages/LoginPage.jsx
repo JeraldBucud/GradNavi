@@ -1,26 +1,21 @@
 import { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
 import {
   Link,
   useLocation,
   useNavigate,
 } from 'react-router'
 
+import AuthLayout from '../components/auth/AuthLayout'
 import { loginAccount } from '../services/authService'
-import './AuthPage.css'
 
 
 function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  /*
-   * Preserve the existing protected-route redirect behaviour.
-   *
-   * When a user is redirected to Login from a protected page,
-   * return them to the original destination after authentication.
-   */
-  const destination = location.state?.from || '/profile'
+  const requestedDestination =
+    location.state?.from
+    || null
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -41,16 +36,28 @@ function LoginPage() {
     setIsLoading(true)
 
     try {
-      await loginAccount(email, password)
+      const authData =
+        await loginAccount(
+          email,
+          password,
+        )
 
-      navigate(destination, { replace: true })
+      const defaultDestination =
+        authData
+          ?.user
+          ?.role
+        === 'admin'
+          ? '/admin'
+          : '/dashboard'
+
+      navigate(
+        requestedDestination
+        || defaultDestination,
+        {
+          replace: true,
+        },
+      )
     } catch (requestError) {
-      /*
-       * Credential failures use the approved Figma wording.
-       *
-       * Other API or network errors preserve the message returned
-       * by the application's API client.
-       */
       if (
         requestError.status === 400
         || requestError.status === 401
@@ -65,186 +72,149 @@ function LoginPage() {
   }
 
 
-  function handleEmailChange(event) {
-    setEmail(event.target.value)
-
-    if (error) {
-      setError('')
-    }
-  }
-
-
-  function handlePasswordChange(event) {
-    setPassword(event.target.value)
-
-    if (error) {
-      setError('')
-    }
-  }
-
-
-  function togglePasswordVisibility() {
-    setShowPassword((currentValue) => !currentValue)
-  }
-
-
   return (
-    <main className="login-page">
-      <header className="login-page__header">
-        <Link
-          className="login-page__brand"
-          to="/"
-          aria-label="GradNavi home"
-        >
-          GradNavi
-        </Link>
+    <AuthLayout>
+      <div className="auth-page-heading">
+        <h1>
+          Welcome back
+        </h1>
 
-        <div className="login-page__divider" />
-      </header>
+        <p>
+          Log in to continue your career journey.
+        </p>
+      </div>
 
+      <div className="auth-form-divider" />
 
-      <section className="login-layout">
-        <aside className="login-info-panel">
-          <h2>
-            GradNavi account access
-          </h2>
+      <form
+        className="auth-form"
+        onSubmit={handleSubmit}
+      >
+        <div className="auth-field">
+          <label htmlFor="login-email">
+            Email
+          </label>
 
-          <p>
-            Use one account to access profile, career analysis,
-            document drafts, interview preparation, and learning
-            resources.
-          </p>
-        </aside>
+          <input
+            id="login-email"
+            className="auth-input"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={email}
+            aria-invalid={Boolean(error)}
+            aria-describedby={
+              error
+                ? 'login-error'
+                : undefined
+            }
+            onChange={(event) => {
+              setEmail(event.target.value)
 
+              if (error) {
+                setError('')
+              }
+            }}
+          />
+        </div>
 
-        <div className="login-content">
-          <div className="login-heading">
-            <h1>
-              Welcome Back
-            </h1>
+        <div className="auth-field">
+          <label htmlFor="login-password">
+            Password
+          </label>
 
-            <p>
-              Log in to continue to GradNavi.
-            </p>
-          </div>
+          <div className="auth-password-control">
+            <input
+              id="login-password"
+              className="auth-input"
+              type={
+                showPassword
+                  ? 'text'
+                  : 'password'
+              }
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              value={password}
+              aria-invalid={Boolean(error)}
+              aria-describedby={
+                error
+                  ? 'login-error'
+                  : undefined
+              }
+              onChange={(event) => {
+                setPassword(event.target.value)
 
+                if (error) {
+                  setError('')
+                }
+              }}
+            />
 
-          <div className="login-card">
-            <form
-              className="login-form"
-              onSubmit={handleSubmit}
+            <button
+              className="auth-password-toggle"
+              type="button"
+              aria-label={
+                showPassword
+                  ? 'Hide password'
+                  : 'Show password'
+              }
+              aria-pressed={showPassword}
+              onClick={() => {
+                setShowPassword(
+                  (currentValue) => !currentValue,
+                )
+              }}
             >
-              <div className="login-field">
-                <label htmlFor="login-email">
-                  Email Address
-                </label>
-
-                <input
-                  id="login-email"
-                  className="login-input"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="student@example.com"
-                  value={email}
-                  aria-invalid={Boolean(error)}
-                  onChange={handleEmailChange}
-                />
-              </div>
-
-
-              <div className="login-field">
-                <label htmlFor="login-password">
-                  Password
-                </label>
-
-                <div className="login-password-control">
-                  <input
-                    id="login-password"
-                    className="login-input"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    placeholder="Password"
-                    value={password}
-                    aria-invalid={Boolean(error)}
-                    aria-describedby={
-                      error
-                        ? 'login-error'
-                        : undefined
-                    }
-                    onChange={handlePasswordChange}
-                  />
-
-                  <button
-                    className="login-password-toggle"
-                    type="button"
-                    aria-label={
-                      showPassword
-                        ? 'Hide password'
-                        : 'Show password'
-                    }
-                    aria-pressed={showPassword}
-                    onClick={togglePasswordVisibility}
-                  >
-                    {showPassword ? (
-                      <EyeOff
-                        aria-hidden="true"
-                        size={20}
-                        strokeWidth={1.8}
-                      />
-                    ) : (
-                      <Eye
-                        aria-hidden="true"
-                        size={20}
-                        strokeWidth={1.8}
-                      />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-
-              <div className="login-forgot-row">
-                <Link to="/forgot-password">
-                  Forgot Password?
-                </Link>
-              </div>
-
-
-              {error && (
-                <p
-                  className="login-error"
-                  id="login-error"
-                  role="alert"
-                >
-                  {error}
-                </p>
-              )}
-
-
-              <button
-                className="gn-button gn-button--primary login-submit"
-                type="submit"
-                disabled={isLoading}
-                aria-busy={isLoading}
-              >
-                {isLoading ? 'Logging In...' : 'Log In'}
-              </button>
-            </form>
-
-
-            <p className="login-register">
-              <span>
-                Don&apos;t have an account?
-              </span>
-
-              <Link to="/register">
-                Create Account
-              </Link>
-            </p>
+              {
+                showPassword
+                  ? 'Hide'
+                  : 'Show'
+              }
+            </button>
           </div>
         </div>
-      </section>
-    </main>
+
+        <div className="auth-form-utility">
+          <Link
+            className="auth-text-link"
+            to="/forgot-password"
+          >
+            Forgot password?
+          </Link>
+        </div>
+
+        {error && (
+          <p
+            className="auth-form-error"
+            id="login-error"
+            role="alert"
+          >
+            {error}
+          </p>
+        )}
+
+        <button
+          className="auth-primary-button"
+          type="submit"
+          disabled={isLoading}
+          aria-busy={isLoading}
+        >
+          {
+            isLoading
+              ? 'Logging In...'
+              : 'Log In'
+          }
+        </button>
+      </form>
+
+      <p className="auth-form-footer">
+        New to GradNavi?
+
+        <Link to="/register">
+          Create an account
+        </Link>
+      </p>
+    </AuthLayout>
   )
 }
 

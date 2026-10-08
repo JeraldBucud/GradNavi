@@ -132,6 +132,12 @@ function normaliseResumeDraft(value) {
     skills:
       normaliseList(
         value.skills,
+      ).map(
+        (item) =>
+          item.replace(
+            /^CATEGORY\s*:\s*/i,
+            '',
+          ),
       ),
 
     education:
@@ -231,6 +237,7 @@ function loadLocalDraft(user) {
 function buildResumePlainText(
   contact,
   draft,
+  resumeTitle = '',
 ) {
   if (!draft) {
     return ''
@@ -241,6 +248,19 @@ function buildResumePlainText(
   if (contact.fullName.trim()) {
     lines.push(
       contact.fullName.trim(),
+    )
+  }
+
+  if (
+    String(
+      resumeTitle
+      || '',
+    ).trim()
+  ) {
+    lines.push(
+      String(
+        resumeTitle,
+      ).trim(),
     )
   }
 
@@ -272,7 +292,7 @@ function buildResumePlainText(
     draft.professional_summary,
     '',
     'SKILLS',
-    draft.skills.join(', '),
+    draft.skills.join('\n'),
     '',
     'EXPERIENCE',
     ...draft.experience,
@@ -480,6 +500,11 @@ function ResumeBuilderPage() {
   ] = useState('')
 
   const [
+    targetJobTitle,
+    setTargetJobTitle,
+  ] = useState('')
+
+  const [
     resumeFocus,
     setResumeFocus,
   ] = useState('balanced')
@@ -540,6 +565,11 @@ function ResumeBuilderPage() {
         === resumeFocus,
     )?.label
     || 'Balanced'
+
+  const careerDirectionRequired =
+    !careerOptionsLoading
+    && !careerOptionsError
+    && careerOptions.length === 0
 
 
   useEffect(() => {
@@ -805,6 +835,7 @@ function ResumeBuilderPage() {
               'Job-tailored Resume',
             )
 
+            setTargetJobTitle('')
             setResumeFocus('balanced')
 
             setJobDescription(
@@ -844,6 +875,12 @@ function ResumeBuilderPage() {
               activeVersion
                 .version_name
               || 'General Resume',
+            )
+
+            setTargetJobTitle(
+              activeVersion
+                .target_job_title
+              || '',
             )
 
             setResumeFocus(
@@ -1150,6 +1187,11 @@ function ResumeBuilderPage() {
       || 'General Resume',
     )
 
+    setTargetJobTitle(
+      version.target_job_title
+      || '',
+    )
+
     setResumeFocus(
       version.resume_focus
       || 'balanced',
@@ -1209,6 +1251,8 @@ function ResumeBuilderPage() {
       'General Resume',
     )
 
+    setTargetJobTitle('')
+
     setResumeFocus(
       'balanced',
     )
@@ -1241,6 +1285,7 @@ function ResumeBuilderPage() {
 
     if (!nextCareerId) {
       setActiveVersionId(null)
+      setTargetJobTitle('')
       setDraft(null)
       setSavedAt(null)
       setGenerationState('empty')
@@ -1397,6 +1442,7 @@ function ResumeBuilderPage() {
           targetCareerId:
             selectedTargetCareer
               .career_id,
+          targetJobTitle,
           resumeFocus,
           jobDescription,
         })
@@ -1500,6 +1546,7 @@ function ResumeBuilderPage() {
           targetCareerName:
             selectedTargetCareer
               .career_name,
+          targetJobTitle,
           versionName,
           resumeFocus,
           jobDescription,
@@ -1554,6 +1601,10 @@ function ResumeBuilderPage() {
       buildResumePlainText(
         contact,
         draft,
+        targetJobTitle.trim()
+        || selectedTargetCareer
+          ?.career_name
+        || targetCareer,
       )
 
     try {
@@ -1585,6 +1636,11 @@ function ResumeBuilderPage() {
       await downloadResumeDocx(
         contact,
         draft,
+        profile,
+        targetJobTitle.trim()
+        || selectedTargetCareer
+          ?.career_name
+        || targetCareer,
       )
 
       setActionMessage(
@@ -1609,6 +1665,11 @@ function ResumeBuilderPage() {
       await downloadResumePdf(
         contact,
         draft,
+        profile,
+        targetJobTitle.trim()
+        || selectedTargetCareer
+          ?.career_name
+        || targetCareer,
       )
 
       setActionMessage(
@@ -1780,7 +1841,14 @@ function ResumeBuilderPage() {
 
   return (
     <main
-      className="resume-builder"
+      className={[
+        'resume-builder',
+        careerDirectionRequired
+          ? 'resume-builder--profile-required'
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       <div
         className="resume-builder__content"
@@ -1818,6 +1886,37 @@ function ResumeBuilderPage() {
         </header>
 
 
+        {
+          careerDirectionRequired
+            ? (
+              <section
+                className="resume-builder__state-card resume-builder__profile-gate"
+              >
+                <h2>
+                  Set up your profile before building a resume
+                </h2>
+
+                <p>
+                  Add a Career Goal and profile evidence
+                  so GradNavi has a target career and
+                  verified information to build from.
+                </p>
+
+                <button
+                  className="resume-builder__primary-button"
+                  type="button"
+                  onClick={() =>
+                    navigate('/profile')
+                  }
+                >
+                  Set Up My Profile
+                </button>
+              </section>
+            )
+            : null
+        }
+
+
         <details
           className="resume-builder__guide"
         >
@@ -1839,6 +1938,17 @@ function ResumeBuilderPage() {
                   {' '}
                   {
                     selectedTargetCareer
+                      ?.career_name
+                    || targetCareer
+                  }
+                </li>
+
+                <li>
+                  Resume title:
+                  {' '}
+                  {
+                    targetJobTitle.trim()
+                    || selectedTargetCareer
                       ?.career_name
                     || targetCareer
                   }
@@ -2003,6 +2113,51 @@ function ResumeBuilderPage() {
                 Career Goals and current
                 GradNavi recommendations
                 appear here.
+              </small>
+            </label>
+
+            <label>
+              <span
+                className="document-help-heading"
+              >
+                Target Job Title
+                {' '}
+                <em>
+                  Optional
+                </em>
+
+                <HelpTip
+                  label="Help with Target Job Title"
+                  title="Target Job Title"
+                  text="Enter the exact job title you are targeting for this resume. Leave it blank to use the selected Target Career. This title changes this resume version only and does not change your GradNavi Career."
+                />
+              </span>
+
+              <input
+                type="text"
+                maxLength={255}
+                value={
+                  targetJobTitle
+                }
+                placeholder={
+                  'e.g. Junior Software Engineer'
+                }
+                onChange={
+                  (event) => {
+                    setTargetJobTitle(
+                      event.target.value,
+                    )
+
+                    setActionMessage('')
+                  }
+                }
+              />
+
+              <small>
+                Optional. Enter the title
+                used by the job you are
+                targeting. Leave blank to
+                use your selected career.
               </small>
             </label>
 

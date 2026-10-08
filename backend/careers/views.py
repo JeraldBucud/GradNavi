@@ -2347,14 +2347,8 @@ def _ensure_explore_recommendation_snapshot(
     student_profile,
 ):
     """
-    Return the current RecommendationSnapshot.
-
-    Existing Career Recommendations behaviour stays
-    unchanged.
-
-    If the Student Profile or reference-data state
-    changed, Explore Careers refreshes the recommendation
-    snapshot before continuing.
+    Return or refresh the current RecommendationSnapshot
+    for profile-dependent Explore Careers actions.
     """
 
     cache_key = (
@@ -2380,6 +2374,13 @@ def _ensure_explore_recommendation_snapshot(
             False,
         )
 
+    if not (
+        student_profile
+        .student_skills
+        .exists()
+    ):
+        raise RecommendationProfileIncomplete()
+
     try:
         embedding_provider = (
             OpenAIEmbeddingProvider()
@@ -2395,6 +2396,11 @@ def _ensure_explore_recommendation_snapshot(
                 ),
             )
         )
+
+    except AIMissingContextError as error:
+        raise (
+            RecommendationProfileIncomplete()
+        ) from error
 
     except AIProviderError as error:
         raise (
@@ -2512,10 +2518,6 @@ class ExploreCareerListView(APIView):
 
         query.is_valid(
             raise_exception=True,
-        )
-
-        _ensure_explore_recommendation_snapshot(
-            profile
         )
 
         values = (
@@ -2656,10 +2658,6 @@ class ExploreCareerDetailView(APIView):
             _student_profile_for_api(
                 request.user
             )
-        )
-
-        _ensure_explore_recommendation_snapshot(
-            profile
         )
 
         item = (

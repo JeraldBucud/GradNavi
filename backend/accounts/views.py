@@ -1,13 +1,16 @@
 from rest_framework import generics
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import (
+    AccountSettingsSerializer,
     LoginSerializer,
     LogoutSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
+    PasswordChangeSerializer,
     RegistrationSerializer,
     UserSummarySerializer,
 )
@@ -35,6 +38,78 @@ class CurrentUserView(APIView):
 
     def get(self, request):
         return Response(UserSummarySerializer(request.user).data)
+
+
+
+
+class AccountSettingsView(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (
+        JSONParser,
+        FormParser,
+        MultiPartParser,
+    )
+
+    def get(self, request):
+        serializer = AccountSettingsSerializer(
+            request.user,
+            context={"request": request},
+        )
+
+        return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = AccountSettingsSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+            context={"request": request},
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(serializer.data)
+
+
+class ProfilePhotoView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def delete(self, request):
+        request.user.delete_profile_photo()
+
+        serializer = AccountSettingsSerializer(
+            request.user,
+            context={"request": request},
+        )
+
+        return Response(serializer.data)
+
+
+class PasswordChangeView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        serializer = PasswordChangeSerializer(
+            data=request.data,
+            context={"request": request},
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(
+            {
+                "message":
+                    "Password changed successfully."
+            }
+        )
 
 
 class LogoutView(APIView):

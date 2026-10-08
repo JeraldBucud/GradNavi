@@ -82,6 +82,12 @@ class ResumeGenerationInput(AIContractModel):
         max_length=SHORT_TEXT_MAX_LENGTH,
     )
 
+    target_job_title: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=SHORT_TEXT_MAX_LENGTH,
+    )
+
     resume_focus: ResumeFocus = "balanced"
 
     job_description: str | None = Field(

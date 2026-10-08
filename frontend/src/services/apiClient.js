@@ -81,9 +81,7 @@ async function sendRequest(
   },
   accessToken = null,
 ) {
-  const headers = {
-    'Content-Type': 'application/json',
-  }
+  const headers = {}
 
   if (
     requiresAuth
@@ -104,8 +102,20 @@ async function sendRequest(
         ? body()
         : body
 
-    requestOptions.body =
-      JSON.stringify(requestBody)
+    const isFormData =
+      typeof FormData !== 'undefined'
+      && requestBody instanceof FormData
+
+    if (isFormData) {
+      requestOptions.body =
+        requestBody
+    } else {
+      headers['Content-Type'] =
+        'application/json'
+
+      requestOptions.body =
+        JSON.stringify(requestBody)
+    }
   }
 
   const response = await fetch(

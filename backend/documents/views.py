@@ -70,6 +70,11 @@ class ResumeGenerationView(APIView):
                         "resume_focus"
                     ]
                 ),
+                target_job_title=(
+                    serializer.validated_data.get(
+                        "target_job_title"
+                    )
+                ),
                 job_description=(
                     serializer.validated_data.get(
                         "job_description"

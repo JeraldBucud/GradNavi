@@ -1,5 +1,6 @@
 function CareerSelector({
   careers,
+  disabled = false,
   helperText,
   label = 'Career Focus',
   onChange,
@@ -64,8 +65,9 @@ function CareerSelector({
             || ''
           }
           disabled={
-            displayedCareers.length
-            === 0
+            disabled
+            || displayedCareers.length
+              === 0
           }
           onChange={
             (event) =>

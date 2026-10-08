@@ -853,29 +853,19 @@ class ExploreCareersAPITests(
         )
 
 
-    def test_missing_snapshot_is_refreshed(
+    def test_missing_snapshot_lists_catalogue_without_ai_refresh(
         self,
     ):
         self.snapshot.delete()
 
-        report = (
-            self.refresh_report(
-                career=self.careers[0],
-            )
-        )
-
-        provider = object()
-
         with (
             patch(
                 "careers.views."
-                "OpenAIEmbeddingProvider",
-                return_value=provider,
+                "OpenAIEmbeddingProvider"
             ) as provider_mock,
             patch(
                 "careers.views."
-                "generate_composite_recommendations",
-                return_value=report,
+                "generate_composite_recommendations"
             ) as generate_mock,
         ):
             response = self.client.get(
@@ -887,17 +877,134 @@ class ExploreCareersAPITests(
             status.HTTP_200_OK,
         )
 
-        provider_mock.assert_called_once()
-
-        generate_mock.assert_called_once()
+        provider_mock.assert_not_called()
+        generate_mock.assert_not_called()
 
         self.assertEqual(
             RecommendationSnapshot.objects.filter(
-                student_profile=(
-                    self.profile
-                ),
+                student_profile=self.profile,
             ).count(),
-            1,
+            0,
+        )
+
+        results = response.data[
+            "data"
+        ][
+            "results"
+        ]
+
+        self.assertEqual(
+            len(results),
+            12,
+        )
+
+        self.assertTrue(
+            all(
+                item["status"]
+                == "not_evaluated"
+                for item in results
+            )
+        )
+
+        self.assertTrue(
+            all(
+                not item["recommended"]
+                for item in results
+            )
+        )
+
+    def test_detail_without_snapshot_is_browsable_without_ai_refresh(
+        self,
+    ):
+        self.snapshot.delete()
+
+        career = self.careers[0]
+
+        with (
+            patch(
+                "careers.views."
+                "OpenAIEmbeddingProvider"
+            ) as provider_mock,
+            patch(
+                "careers.views."
+                "generate_composite_recommendations"
+            ) as generate_mock,
+        ):
+            response = self.client.get(
+                (
+                    "/api/v1/"
+                    "explore-careers/"
+                    f"{career.id}/"
+                )
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        provider_mock.assert_not_called()
+        generate_mock.assert_not_called()
+
+        data = response.data[
+            "data"
+        ]
+
+        self.assertEqual(
+            data["career_id"],
+            career.id,
+        )
+
+        self.assertEqual(
+            data["status"],
+            "not_evaluated",
+        )
+
+        self.assertFalse(
+            data["recommended"]
+        )
+
+        self.assertFalse(
+            data["evaluated"]
+        )
+
+
+    def test_empty_profile_evaluation_requests_profile_setup(
+        self,
+    ):
+        self.snapshot.delete()
+
+        target = self.careers[7]
+
+        with patch(
+            "careers.views."
+            "OpenAIEmbeddingProvider"
+        ) as provider_mock:
+            response = self.client.post(
+                (
+                    "/api/v1/"
+                    "explore-careers/"
+                    f"{target.id}/"
+                    "evaluate/"
+                ),
+                {},
+                format="json",
+            )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        provider_mock.assert_not_called()
+
+        self.assertEqual(
+            response.data[
+                "error"
+            ][
+                "code"
+            ],
+            "insufficient_profile_context",
         )
 
 
@@ -984,10 +1091,32 @@ class ExploreCareersAPITests(
         )
 
 
-    def test_refresh_provider_failure_returns_503(
+    def test_evaluation_refresh_provider_failure_returns_503(
         self,
     ):
         self.snapshot.delete()
+
+        skill = Skill.objects.create(
+            name=(
+                "Explore API "
+                "Provider Failure Skill"
+            ),
+            concept_type=(
+                Skill.ConceptType.SKILL
+            ),
+        )
+
+        StudentSkill.objects.create(
+            student_profile=self.profile,
+            skill=skill,
+            proficiency_level=(
+                StudentSkill
+                .ProficiencyLevel
+                .DEVELOPING
+            ),
+        )
+
+        target = self.careers[7]
 
         with patch(
             "careers.views."
@@ -998,8 +1127,15 @@ class ExploreCareersAPITests(
                 )
             ),
         ):
-            response = self.client.get(
-                self.list_url
+            response = self.client.post(
+                (
+                    "/api/v1/"
+                    "explore-careers/"
+                    f"{target.id}/"
+                    "evaluate/"
+                ),
+                {},
+                format="json",
             )
 
         self.assertEqual(
