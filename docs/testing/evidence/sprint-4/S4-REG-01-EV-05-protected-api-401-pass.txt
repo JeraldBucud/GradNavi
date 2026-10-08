@@ -1,0 +1,6 @@
+S4-REG-01 Protected API Check
+Endpoint: GET /api/v1/auth/me/
+Authorization: None
+HTTP Status: 401
+Expected Status: 401
+RESULT: PASS

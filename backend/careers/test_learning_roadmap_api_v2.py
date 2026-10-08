@@ -511,6 +511,170 @@ class Sprint3LearningRoadmapAPITests(
 
 
     @patch(
+        "careers.views.generate_learning_plan"
+    )
+    def test_roadmap_student_progress_isolation(
+        self,
+        plan_mock,
+    ):
+        from dataclasses import replace
+
+        from ai_services.exceptions import (
+            AIProviderUnavailableError,
+        )
+
+        student_b = get_user_model().objects.create_user(
+            email="sprint4-roadmap-student-b@gradnavi.test",
+            password="StrongPassword123!",
+        )
+        profile_b = StudentProfile.objects.create(
+            user=student_b,
+        )
+        plan = self.plan()
+
+        # Preserve the requested owner in the mocked eligible roadmap.
+        def plan_for_student(*, student_profile_id, career_id):
+            self.assertEqual(career_id, self.career.id)
+            return replace(
+                plan,
+                student_profile_id=student_profile_id,
+            )
+
+        plan_mock.side_effect = plan_for_student
+        payload = {
+            "career_id": self.career.id,
+            "skill_id": self.skill.id,
+        }
+        start_a = self.client.post(
+            "/api/v1/roadmap-progress/start/",
+            payload,
+            format="json",
+            HTTP_AUTHORIZATION=self.authorization,
+        )
+        self.assertEqual(start_a.status_code, status.HTTP_200_OK)
+        self.assertEqual(start_a.data["data"]["status"], "in_progress")
+        plan_mock.assert_called_once_with(
+            student_profile_id=self.profile.id,
+            career_id=self.career.id,
+        )
+        progress_a = RoadmapProgress.objects.get(
+            student_profile=self.profile,
+            career=self.career,
+            skill=self.skill,
+        )
+        self.assertEqual(progress_a.status, RoadmapProgress.Status.IN_PROGRESS)
+        self.assertIsNotNone(progress_a.started_at)
+        self.assertIsNone(progress_a.completed_at)
+        original_a = RoadmapProgress.objects.values().get(pk=progress_a.pk)
+
+        token_b = str(RefreshToken.for_user(student_b).access_token)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token_b}")
+
+        # Use the real overview/progress services; only plan generation
+        # and the optional external AI provider are mocked.
+        with (
+            patch(
+                "careers.services.roadmap_overview.generate_learning_plan",
+                new=plan_mock,
+            ),
+            patch("careers.views.resolve_text_model", return_value="gpt-test"),
+            patch(
+                "careers.views.OpenAITextProvider",
+                side_effect=AIProviderUnavailableError("Unavailable"),
+            ),
+        ):
+            plan_mock.reset_mock()
+            overview_b = self.client.get(
+                "/api/v1/roadmap-overview/",
+                {"career_id": self.career.id},
+            )
+            self.assertEqual(overview_b.status_code, status.HTTP_200_OK)
+            step_b = overview_b.data["data"]["roadmap_steps"][0]
+            self.assertEqual(step_b["skill_id"], self.skill.id)
+            self.assertEqual(step_b["progress_status"], "not_started")
+            self.assertIsNone(step_b["started_at"])
+            self.assertIsNone(step_b["completed_at"])
+            self.assertEqual(
+                overview_b.data["data"]["progress_summary"],
+                {"total": 1, "completed": 0, "in_progress": 0, "not_started": 1},
+            )
+            plan_mock.assert_called_once_with(
+                student_profile_id=profile_b.id,
+                career_id=self.career.id,
+            )
+            self.assertEqual(
+                RoadmapProgress.objects.values().get(pk=progress_a.pk),
+                original_a,
+            )
+            self.assertFalse(
+                RoadmapProgress.objects.filter(student_profile=profile_b).exists()
+            )
+
+            # The same public career/skill identifiers must affect only B.
+            for operation, expected_status in (
+                ("start", "in_progress"),
+                ("complete", "completed"),
+            ):
+                with self.subTest(operation=operation):
+                    plan_mock.reset_mock()
+                    response_b = self.client.post(
+                        f"/api/v1/roadmap-progress/{operation}/",
+                        payload,
+                        format="json",
+                    )
+                    self.assertEqual(response_b.status_code, status.HTTP_200_OK)
+                    self.assertEqual(
+                        response_b.data["data"]["status"], expected_status
+                    )
+                    plan_mock.assert_called_once_with(
+                        student_profile_id=profile_b.id,
+                        career_id=self.career.id,
+                    )
+                    progress_b = RoadmapProgress.objects.get(
+                        student_profile=profile_b,
+                        career=self.career,
+                        skill=self.skill,
+                    )
+                    self.assertNotEqual(progress_b.pk, progress_a.pk)
+                    self.assertEqual(progress_b.student_profile_id, profile_b.id)
+                    self.assertEqual(progress_b.student_profile.user_id, student_b.id)
+                    self.assertEqual(progress_b.status, expected_status)
+                    self.assertEqual(RoadmapProgress.objects.count(), 2)
+                    self.assertEqual(
+                        RoadmapProgress.objects.values().get(pk=progress_a.pk),
+                        original_a,
+                    )
+
+            plan_mock.reset_mock()
+            overview_b = self.client.get(
+                "/api/v1/roadmap-overview/",
+                {"career_id": self.career.id},
+            )
+            self.assertEqual(overview_b.status_code, status.HTTP_200_OK)
+            self.assertEqual(
+                overview_b.data["data"]["roadmap_steps"][0]["progress_status"],
+                "completed",
+            )
+            self.assertEqual(
+                overview_b.data["data"]["progress_summary"],
+                {"total": 1, "completed": 1, "in_progress": 0, "not_started": 0},
+            )
+            plan_mock.assert_called_once_with(
+                student_profile_id=profile_b.id,
+                career_id=self.career.id,
+            )
+            self.assertEqual(
+                RoadmapProgress.objects.values().get(pk=progress_a.pk),
+                original_a,
+            )
+
+        progress_a.refresh_from_db()
+        self.assertEqual(progress_a.student_profile_id, self.profile.id)
+        self.assertEqual(progress_a.student_profile.user_id, self.user.id)
+        self.assertEqual(progress_a.status, RoadmapProgress.Status.IN_PROGRESS)
+
+
+    @patch(
         "careers.views.ensure_learning_resource_catalogue"
     )
     @patch(
