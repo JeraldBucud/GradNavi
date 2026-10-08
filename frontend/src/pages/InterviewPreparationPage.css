@@ -22,7 +22,8 @@
 .interview-prep > .career-guidance-heading,
 .interview-prep > .interview-prep__section {
   width: 100%;
-  max-width: 1036px;
+  max-width: none;
+  min-width: 0;
 }
 
 
@@ -507,7 +508,8 @@
 
 .interview-prep > .interview-prep__session-context {
   width: 100%;
-  max-width: 1036px;
+  max-width: none;
+  min-width: 0;
 }
 
 
