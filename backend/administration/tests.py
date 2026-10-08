@@ -1392,6 +1392,172 @@ class AdminAuditRecordTests(
             response_text,
         )
 
+    def test_audit_data_excludes_jwt_tokens_api_keys_and_secrets(self):
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        refresh = RefreshToken.for_user(self.admin)
+        refresh["audit_privacy_marker"] = "S4-AUDIT-04-JWT-SENTINEL"
+        self.admin_token = str(refresh.access_token)
+        secrets = {
+            "jwt": self.admin_token,
+            "access_token": self.admin_token,
+            "refresh_token": str(refresh),
+            "api_key": "S4-AUDIT-04-API-KEY-SENTINEL-7d39",
+            "secret": "S4-AUDIT-04-SECRET-SENTINEL-82f1",
+            "password": "S4-AUDIT-04-Password-Sentinel-5b26!",
+        }
+        self.student.set_password(secrets["password"])
+        self.student.save(update_fields=("password",))
+        secrets["password_hash"] = self.student.password
+        self.authenticate_admin()
+
+        # Trigger real audit creation with sensitive values present in
+        # the request, rather than inserting an already-safe audit row.
+        update_response = self.client.patch(
+            f"/api/v1/administration/users/{self.student.id}/",
+            {"first_name": "AuditPrivacy", **secrets},
+            format="json",
+            HTTP_X_API_KEY=secrets["api_key"],
+            HTTP_X_SECRET=secrets["secret"],
+        )
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+
+        record = AuditRecord.objects.get(
+            actor=self.admin,
+            action="admin.user.updated",
+            area="users",
+            target_type="User",
+            target_id=str(self.student.id),
+        )
+        self.assertEqual(record.metadata, {"changed_fields": ["first_name"]})
+
+        list_response = self.client.get(
+            "/api/v1/administration/audit-records/"
+        )
+        detail_response = self.client.get(
+            f"/api/v1/administration/audit-records/{record.id}/"
+        )
+        self.assertEqual(list_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(detail_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            [item["id"] for item in list_response.data],
+            [record.id],
+        )
+        self.assertEqual(detail_response.data["id"], record.id)
+        self.assertEqual(
+            detail_response.data["metadata"],
+            {"changed_fields": ["first_name"]},
+        )
+
+        audit_data = {
+            "persisted_record": str(
+                AuditRecord.objects.values().get(pk=record.pk)
+            ),
+            "list_response": list_response.content.decode(),
+            "detail_response": detail_response.content.decode(),
+        }
+        sensitive_values = (
+            *secrets.values(),
+            f"Bearer {self.admin_token}",
+            self.password,
+            self.admin.password,
+        )
+        for source, text in audit_data.items():
+            with self.subTest(source=source):
+                for value in sensitive_values:
+                    self.assertNotIn(value, text)
+                for field_name in secrets:
+                    self.assertNotIn(field_name, text.casefold())
+
+    def test_audit_data_excludes_unnecessary_student_private_data(self):
+        private_values = {
+            "first_name": "S4-AUDIT-05-PrivateGivenName-71c9",
+            "last_name": "S4-AUDIT-05-PrivateFamilyName-28d4",
+            "email": "s4-audit-05-private-email-93b6@gradnavi.test",
+            "target_role": "S4-AUDIT-05-PrivateCareerGoal-64e2",
+            "description": "S4-AUDIT-05-PrivateProfileNotes-85f3",
+        }
+        self.student.email = private_values["email"]
+        self.student.save(update_fields=("email",))
+        profile = StudentProfile.objects.create(user=self.student)
+        CareerGoal.objects.create(
+            student_profile=profile,
+            target_role=private_values["target_role"],
+            description=private_values["description"],
+        )
+        self.authenticate_admin()
+
+        # Exercise real audit creation with private account values being
+        # updated and private profile data present in storage and input.
+        update_response = self.client.patch(
+            f"/api/v1/administration/users/{self.student.id}/",
+            {
+                "first_name": private_values["first_name"],
+                "last_name": private_values["last_name"],
+                "email": private_values["email"],
+                "student_profile": {
+                    "career_goals": [{
+                        "target_role": private_values["target_role"],
+                        "description": private_values["description"],
+                    }],
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+        self.student.refresh_from_db()
+        self.assertEqual(self.student.first_name, private_values["first_name"])
+        self.assertEqual(self.student.last_name, private_values["last_name"])
+
+        record = AuditRecord.objects.get(
+            actor=self.admin,
+            action="admin.user.updated",
+            area="users",
+            target_type="User",
+            target_id=str(self.student.id),
+        )
+        safe_metadata = {"changed_fields": ["first_name", "last_name"]}
+        self.assertEqual(record.metadata, safe_metadata)
+        self.assertIsNotNone(record.created_at)
+
+        list_response = self.client.get(
+            "/api/v1/administration/audit-records/"
+        )
+        detail_response = self.client.get(
+            f"/api/v1/administration/audit-records/{record.id}/"
+        )
+        self.assertEqual(list_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(detail_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            [item["id"] for item in list_response.data],
+            [record.id],
+        )
+        approved_data = {
+            "id": record.id,
+            "actor": self.admin.id,
+            "action": "admin.user.updated",
+            "area": "users",
+            "target_type": "User",
+            "target_id": str(self.student.id),
+            "metadata": safe_metadata,
+        }
+        for representation in (list_response.data[0], detail_response.data):
+            for field, expected_value in approved_data.items():
+                self.assertEqual(representation[field], expected_value)
+            self.assertIsNotNone(representation["created_at"])
+
+        audit_data = {
+            "persisted_record": str(
+                AuditRecord.objects.values().get(pk=record.pk)
+            ),
+            "list_response": list_response.content.decode(),
+            "detail_response": detail_response.content.decode(),
+        }
+        for source, text in audit_data.items():
+            with self.subTest(source=source):
+                for value in private_values.values():
+                    self.assertNotIn(value, text)
+
     def test_career_create_update_and_delete_create_audit_records(
         self,
     ):
