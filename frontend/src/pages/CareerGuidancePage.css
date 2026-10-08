@@ -1128,7 +1128,8 @@
 
 .career-recommendations-figma__content {
   width: 100%;
-  max-width: 1036px;
+  max-width: none;
+  min-width: 0;
 }
 
 .career-recommendations-figma__header {
@@ -4154,7 +4155,8 @@
 
 .explore-careers-figma__content {
   width: 100%;
-  max-width: 1100px;
+  max-width: none;
+  min-width: 0;
 }
 
 
