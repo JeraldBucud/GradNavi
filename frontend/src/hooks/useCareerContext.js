@@ -13,9 +13,8 @@ import {
 } from '../services/careerService'
 
 import {
-  getStoredCareerSelection,
-  saveCareerSelection,
-} from '../services/careerSelectionService'
+  getStudentProfile,
+} from '../services/profileService'
 
 
 function getRequestErrorMessage(
@@ -28,6 +27,19 @@ function getRequestErrorMessage(
       ?.message
     || requestError?.message
     || 'Unable to load career choices.'
+  )
+}
+
+
+function getRequestErrorCode(
+  requestError,
+) {
+  return (
+    requestError
+      ?.data
+      ?.error
+      ?.code
+    || ''
   )
 }
 
@@ -97,6 +109,47 @@ function getPositiveCareerId(
 }
 
 
+function getPrimaryCareer(
+  profile,
+) {
+  const careerGoals =
+    Array.isArray(
+      profile?.career_goals,
+    )
+      ? profile.career_goals
+      : []
+
+  const primaryGoal =
+    careerGoals.find(
+      (goal) =>
+        Boolean(
+          goal?.is_primary,
+        )
+        && Boolean(
+          getPositiveCareerId(
+            goal?.career_id,
+          ),
+        ),
+    )
+
+  if (!primaryGoal) {
+    return null
+  }
+
+  return {
+    career_id:
+      getPositiveCareerId(
+        primaryGoal.career_id,
+      ),
+    career_name:
+      String(
+        primaryGoal.target_role
+        || '',
+      ).trim(),
+  }
+}
+
+
 function useCareerContext() {
   const [
     searchParams,
@@ -109,8 +162,18 @@ function useCareerContext() {
   ] = useState([])
 
   const [
+    profile,
+    setProfile,
+  ] = useState(null)
+
+  const [
     isLoadingRecommendations,
     setIsLoadingRecommendations,
+  ] = useState(true)
+
+  const [
+    isLoadingProfile,
+    setIsLoadingProfile,
   ] = useState(true)
 
   const [
@@ -119,12 +182,14 @@ function useCareerContext() {
   ] = useState('')
 
   const [
-    storedSelection,
-    setStoredSelection,
-  ] = useState(
-    () =>
-      getStoredCareerSelection(),
-  )
+    recommendationErrorCode,
+    setRecommendationErrorCode,
+  ] = useState('')
+
+  const [
+    profileError,
+    setProfileError,
+  ] = useState('')
 
 
   const urlCareerId =
@@ -147,9 +212,59 @@ function useCareerContext() {
     )
 
 
+  const primaryCareer =
+    useMemo(
+      () =>
+        getPrimaryCareer(
+          profile,
+        ),
+      [
+        profile,
+      ],
+    )
+
+
+  const profileSkills =
+    Array.isArray(
+      profile?.skills,
+    )
+      ? profile.skills
+      : []
+
+
+  const profileSetupRequired =
+    (
+      !isLoadingProfile
+      && !profileError
+      && Boolean(profile)
+      && profileSkills.length === 0
+    )
+    || (
+      recommendationErrorCode
+      === 'insufficient_profile_context'
+    )
+
+
+  const primaryCareerId =
+    getPositiveCareerId(
+      primaryCareer
+        ?.career_id,
+    )
+
+
   const selectedCareer =
     useMemo(
       () => {
+        /*
+         * Explicit career_id is temporary page-level
+         * exploration.
+         *
+         * Without an explicit career_id, the Student
+         * Profile primary career is authoritative.
+         *
+         * Top recommendation is only the final fallback.
+         */
+
         if (urlCareerId) {
           const urlCareer =
             careerOptions.find(
@@ -165,11 +280,10 @@ function useCareerContext() {
           }
 
           if (
-            storedSelection
-              ?.career_id
+            primaryCareerId
             === urlCareerId
           ) {
-            return storedSelection
+            return primaryCareer
           }
 
           return {
@@ -179,22 +293,28 @@ function useCareerContext() {
           }
         }
 
-        if (storedSelection) {
-          const storedCareer =
+        if (primaryCareer) {
+          const recommendationCareer =
             careerOptions.find(
               (career) =>
                 Number(
                   career.career_id,
                 )
-                === Number(
-                  storedSelection
-                    .career_id,
-                ),
+                === primaryCareerId,
             )
 
-          if (storedCareer) {
-            return storedCareer
+          if (recommendationCareer) {
+            return {
+              ...recommendationCareer,
+              career_name:
+                recommendationCareer
+                  .career_name
+                || primaryCareer
+                  .career_name,
+            }
           }
+
+          return primaryCareer
         }
 
         return (
@@ -204,7 +324,8 @@ function useCareerContext() {
       },
       [
         careerOptions,
-        storedSelection,
+        primaryCareer,
+        primaryCareerId,
         urlCareerId,
       ],
     )
@@ -217,20 +338,68 @@ function useCareerContext() {
     )
 
 
+  const isTemporarySelection =
+    Boolean(
+      urlCareerId
+      && (
+        !primaryCareerId
+        || urlCareerId
+          !== primaryCareerId
+      )
+    )
+
+
   const isResolvingCareer =
     Boolean(
-      isLoadingRecommendations
-      && !selectedCareerId,
+      (
+        isLoadingRecommendations
+        || isLoadingProfile
+      )
+      && !selectedCareerId
     )
 
 
   useEffect(
     () => {
+      if (isLoadingProfile) {
+        return undefined
+      }
+
       let isActive = true
 
       async function loadRecommendations() {
+        if (profileError) {
+          setRecommendations([])
+          setRecommendationError('')
+          setRecommendationErrorCode('')
+          setIsLoadingRecommendations(
+            false,
+          )
+
+          return
+        }
+
+        const skills =
+          Array.isArray(
+            profile?.skills,
+          )
+            ? profile.skills
+            : []
+
+        if (skills.length === 0) {
+          setRecommendations([])
+          setRecommendationError('')
+          setRecommendationErrorCode('')
+          setIsLoadingRecommendations(
+            false,
+          )
+
+          return
+        }
+
         try {
           setRecommendationError('')
+          setRecommendationErrorCode('')
 
           const response =
             await getCareerRecommendations()
@@ -258,11 +427,30 @@ function useCareerContext() {
             return
           }
 
-          setRecommendationError(
-            getRequestErrorMessage(
+          const errorCode =
+            getRequestErrorCode(
               requestError,
-            ),
+            )
+
+          setRecommendationErrorCode(
+            errorCode,
           )
+
+          setRecommendations([])
+
+          if (
+            errorCode
+            === 'insufficient_profile_context'
+          ) {
+            setRecommendationError('')
+          }
+          else {
+            setRecommendationError(
+              getRequestErrorMessage(
+                requestError,
+              ),
+            )
+          }
         } finally {
           if (isActive) {
             setIsLoadingRecommendations(
@@ -278,94 +466,63 @@ function useCareerContext() {
         isActive = false
       }
     },
-    [],
+    [
+      isLoadingProfile,
+      profile,
+      profileError,
+    ],
   )
 
 
   useEffect(
     () => {
-      if (!selectedCareerId) {
-        return
-      }
+      let isActive = true
 
-      const selectedCareerName =
-        String(
-          selectedCareer
-            ?.career_name
-          || '',
-        ).trim()
+      async function loadProfile() {
+        try {
+          setProfileError('')
 
-      if (selectedCareerName) {
-        const currentStoredId =
-          Number(
-            storedSelection
-              ?.career_id,
+          const response =
+            await getStudentProfile()
+
+          if (!isActive) {
+            return
+          }
+
+          setProfile(
+            response
+              ?.data
+              ?.profile
+            || null,
           )
-
-        const currentStoredName =
-          String(
-            storedSelection
-              ?.career_name
-            || '',
-          ).trim()
-
-        if (
-          currentStoredId
-            !== selectedCareerId
-          || currentStoredName
-            !== selectedCareerName
+        } catch (
+          requestError
         ) {
-          saveCareerSelection(
-            {
-              career_id:
-                selectedCareerId,
-              career_name:
-                selectedCareerName,
-            },
+          if (!isActive) {
+            return
+          }
+
+          setProfileError(
+            getRequestErrorMessage(
+              requestError,
+            ),
           )
+        } finally {
+          if (isActive) {
+            setIsLoadingProfile(
+              false,
+            )
+          }
         }
       }
 
-      const currentUrlCareerId =
-        getPositiveCareerId(
-          searchParams.get(
-            'career_id',
-          ),
-        )
+      void loadProfile()
 
-      if (
-        currentUrlCareerId
-        === selectedCareerId
-      ) {
-        return
+      return () => {
+        isActive = false
       }
-
-      const nextParams =
-        new URLSearchParams(
-          searchParams,
-        )
-
-      nextParams.set(
-        'career_id',
-        String(
-          selectedCareerId,
-        ),
-      )
-
-      setSearchParams(
-        nextParams,
-        {
-          replace: true,
-        },
-      )
     },
-    [
-      searchParams,
-      selectedCareer,
-      selectedCareerId,
-      setSearchParams,
-      storedSelection,
-    ],
+    [],
   )
 
 
@@ -384,7 +541,7 @@ function useCareerContext() {
       return false
     }
 
-    const career =
+    const recommendationCareer =
       careerOptions.find(
         (option) =>
           Number(
@@ -393,35 +550,39 @@ function useCareerContext() {
           === normalizedCareerId,
       )
 
-    if (!career) {
+    const isPrimaryCareer =
+      normalizedCareerId
+      === primaryCareerId
+
+    if (
+      !recommendationCareer
+      && !isPrimaryCareer
+    ) {
       return false
     }
-
-    const savedSelection =
-      saveCareerSelection(
-        {
-          career_id:
-            normalizedCareerId,
-          career_name:
-            career.career_name,
-        },
-      )
-
-    setStoredSelection(
-      savedSelection,
-    )
 
     const nextParams =
       new URLSearchParams(
         searchParams,
       )
 
-    nextParams.set(
-      'career_id',
-      String(
-        normalizedCareerId,
-      ),
-    )
+    /*
+     * Choosing the primary career restores the
+     * default state and removes the temporary
+     * career override from the URL.
+     */
+    if (isPrimaryCareer) {
+      nextParams.delete(
+        'career_id',
+      )
+    } else {
+      nextParams.set(
+        'career_id',
+        String(
+          normalizedCareerId,
+        ),
+      )
+    }
 
     if (clearSkillId) {
       nextParams.delete(
@@ -440,9 +601,13 @@ function useCareerContext() {
   return {
     careerOptions,
     error:
-      recommendationError,
+      recommendationError
+      || profileError,
+    profileSetupRequired,
     isLoading:
       isResolvingCareer,
+    isTemporarySelection,
+    primaryCareer,
     selectedCareer,
     selectedCareerId,
     selectCareer,
@@ -452,5 +617,9 @@ function useCareerContext() {
   }
 }
 
+
+export {
+  getPrimaryCareer,
+}
 
 export default useCareerContext

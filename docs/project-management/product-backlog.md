@@ -29,18 +29,18 @@ Execution status should reflect actual team progress. Planned dates alone do not
 | FR-04 | Recommendation explanation | Students see recommendation scores and understandable reasons for each result | Must | Sprint 2 | Jerald, MD, Joyee | 5.3, 5.4, 5.6, 5.9 | Review |
 | FR-05 | Skill-gap analysis | Students compare current skills with selected career requirements | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Review |
 | FR-06 | Career-readiness score | Students receive a readiness score based on documented weighted criteria | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Review |
-| FR-07 | Job-description matching | Students paste one job description and see matched and missing requirements | Must | Sprint 4 | Jerald, Joyee | 7.2, 7.5, 7.9 | Backlog |
-| FR-08 | Resume builder | Students generate and edit a resume draft from profile data | Must | Sprint 3 | MD, Joyee | 6.3, 6.5, 6.8, 6.9 | Backlog |
-| FR-09 | Cover-letter builder | Students generate and edit a cover letter for a selected job description | Must | Sprint 3 | MD, Joyee | 6.4, 6.5, 6.8, 6.9 | Backlog |
-| FR-10 | Interview preparation | Students receive interview questions and feedback on typed answers | Must | Sprint 3 | Jerald, Joyee | 6.2, 6.6, 6.7, 6.8, 6.9 | Backlog |
+| FR-07 | Job-description matching | Students paste one job description and see matched and missing requirements | Must | Sprint 4 | Jerald, Joyee | 7.2, 7.5, 7.9 | Testing |
+| FR-08 | Resume builder | Students generate and edit a resume draft from profile data | Must | Sprint 3 | MD, Joyee | 6.3, 6.5, 6.8, 6.9 | Testing |
+| FR-09 | Cover-letter builder | Students generate and edit a cover letter for a selected job description | Must | Sprint 3 | MD, Joyee | 6.4, 6.5, 6.8, 6.9 | Testing |
+| FR-10 | Interview preparation | Students receive interview questions and feedback on typed answers | Must | Sprint 3 | Jerald, Joyee | 6.2, 6.6, 6.7, 6.8, 6.9 | Testing |
 | FR-11 | Learning suggestions | Students receive learning resources linked to identified skill gaps | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Testing |
 | FR-12 | Career roadmap | Students receive ordered development steps for a selected career | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Testing |
-| FR-13 | Progress dashboard | Students view saved careers, gaps, readiness, roadmap progress, and interview history | Should | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Backlog |
-| FR-14 | Basic administration | Authorised administrators manage users, careers, skills, and learning resources | Must | Sprint 4 | MD, Joyee, Jerald | 7.6, 7.7, 7.8, 7.9 | Backlog |
-| FR-15 | Admin analytics | Administrators view aggregated statistics such as popular careers and common skill gaps | Should | Sprint 4, provisional mapping | MD, Joyee | 7.6, 7.7 | Backlog |
+| FR-13 | Progress dashboard | Students view saved careers, gaps, readiness, roadmap progress, and interview history | Should | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Testing |
+| FR-14 | Basic administration | Authorised administrators manage users, careers, skills, and learning resources | Must | Sprint 4 | MD, Joyee, Jerald | 7.6, 7.7, 7.8, 7.9 | In Progress |
+| FR-15 | Admin analytics | Administrators view aggregated statistics such as popular careers and common skill gaps | Should | Sprint 4, provisional mapping | MD, Joyee | 7.6, 7.7 | In Progress |
 | FR-16 | AI content review | Students review and edit generated AI-supported content before saving | Must | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Backlog |
 | FR-17 | Data deletion | Students delete saved generated documents and request deletion of their profile | Must | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Backlog |
-| FR-18 | Audit and error handling | The system records critical actions and returns controlled errors for external-service failures | Must | Sprint 4 | Jerald | 7.4, 7.8, 7.9 | Backlog |
+| FR-18 | Audit and error handling | The system records critical actions and returns controlled errors for external-service failures | Must | Sprint 4 | Jerald | 7.4, 7.8, 7.9 | Testing |
 
 ## Sprint 1 Backlog
 

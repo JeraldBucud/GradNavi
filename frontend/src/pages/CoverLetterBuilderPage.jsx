@@ -5,6 +5,7 @@ import {
 
 import {
   useLocation,
+  useNavigate,
 } from 'react-router'
 
 
@@ -250,6 +251,61 @@ function normaliseList(value) {
 }
 
 
+function isCoverLetterInternalArtifact(
+  value,
+) {
+  const clean =
+    String(
+      value || '',
+    ).trim()
+
+  if (!clean) {
+    return false
+  }
+
+  return (
+    /^(?:opening|body_paragraphs|closing|matched_profile_facts|missing_information|limitations|is_draft|requires_user_review)\s*(?::|=|\[|\{|$)/i
+      .test(
+        clean,
+      )
+  )
+}
+
+
+function normaliseCoverLetterText(
+  value,
+) {
+  const clean =
+    String(
+      value || '',
+    ).trim()
+
+  if (
+    isCoverLetterInternalArtifact(
+      clean,
+    )
+  ) {
+    return ''
+  }
+
+  return clean
+}
+
+
+function normaliseCoverLetterParagraphs(
+  value,
+) {
+  return normaliseList(
+    value,
+  ).filter(
+    (item) =>
+      !isCoverLetterInternalArtifact(
+        item,
+      ),
+  )
+}
+
+
 function normaliseDraft(value) {
   if (
     !value
@@ -260,21 +316,19 @@ function normaliseDraft(value) {
 
   return {
     opening:
-      String(
-        value.opening
-        || '',
-      ).trim(),
+      normaliseCoverLetterText(
+        value.opening,
+      ),
 
     body_paragraphs:
-      normaliseList(
+      normaliseCoverLetterParagraphs(
         value.body_paragraphs,
       ),
 
     closing:
-      String(
-        value.closing
-        || '',
-      ).trim(),
+      normaliseCoverLetterText(
+        value.closing,
+      ),
 
     matched_profile_facts:
       normaliseList(
@@ -420,6 +474,7 @@ function getDocumentCareerOptionLabel(
 
 function CoverLetterBuilderPage() {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const incomingJobDescription =
     typeof location.state?.jobDescription
@@ -615,6 +670,11 @@ function CoverLetterBuilderPage() {
           targetCareerId,
         ),
     )
+
+  const careerDirectionRequired =
+    !careerOptionsLoading
+    && !careerOptionsError
+    && careerOptions.length === 0
 
   const automaticVersionName =
     buildCoverLetterVersionLabel({
@@ -1831,7 +1891,14 @@ function CoverLetterBuilderPage() {
 
   return (
     <main
-      className="cover-letter-builder"
+      className={[
+        'cover-letter-builder',
+        careerDirectionRequired
+          ? 'cover-letter-builder--profile-required'
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       <div
         className="cover-letter-builder__content"
@@ -1867,6 +1934,37 @@ function CoverLetterBuilderPage() {
             </span>
           </div>
         </header>
+
+
+        {
+          careerDirectionRequired
+            ? (
+              <section
+                className="cover-letter-builder__state-card cover-letter-builder__state-card--warning cover-letter-builder__profile-gate"
+              >
+                <h2>
+                  Set up your profile before building a cover letter
+                </h2>
+
+                <p>
+                  Add a Career Goal and profile evidence
+                  so GradNavi has a target career and
+                  verified information to use in your letter.
+                </p>
+
+                <button
+                  className="cover-letter-builder__primary-button"
+                  type="button"
+                  onClick={() =>
+                    navigate('/profile')
+                  }
+                >
+                  Set Up My Profile
+                </button>
+              </section>
+            )
+            : null
+        }
 
 
         <details

@@ -1,6 +1,12 @@
+import os
+import tempfile
+from io import BytesIO
+
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import Resolver404, resolve
 from django.utils.encoding import force_bytes
@@ -1024,3 +1030,823 @@ class PasswordResetAPITests(APITestCase):
             with self.subTest(path=path):
                 with self.assertRaises(Resolver404):
                     resolve(path)
+
+
+
+def make_profile_photo(
+    *,
+    name="profile.png",
+    image_format="PNG",
+    content_type="image/png",
+):
+    buffer = BytesIO()
+
+    Image.new(
+        "RGB",
+        (32, 32),
+        (13, 48, 91),
+    ).save(
+        buffer,
+        format=image_format,
+    )
+
+    return SimpleUploadedFile(
+        name,
+        buffer.getvalue(),
+        content_type=content_type,
+    )
+
+
+class AccountSettingsAPITests(APITestCase):
+    def setUp(self):
+        self.media_directory = (
+            tempfile.TemporaryDirectory()
+        )
+
+        self.media_override = (
+            override_settings(
+                MEDIA_ROOT=(
+                    self.media_directory.name
+                )
+            )
+        )
+
+        self.media_override.enable()
+
+        self.addCleanup(
+            self.media_override.disable
+        )
+
+        self.addCleanup(
+            self.media_directory.cleanup
+        )
+
+        self.password = (
+            "GradNaviSettings123!"
+        )
+
+        self.user = User.objects.create_user(
+            email="settings@gradnavi.test",
+            password=self.password,
+            first_name="Original",
+            last_name="Student",
+        )
+
+        login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email":
+                    "settings@gradnavi.test",
+                "password":
+                    self.password,
+            },
+            format="json",
+        )
+
+        self.access_token = (
+            login_response.data["access"]
+        )
+
+        self.url = (
+            "/api/v1/auth/settings/"
+        )
+
+        self.photo_url = (
+            "/api/v1/auth/"
+            "settings/profile-photo/"
+        )
+
+    def auth_header(self):
+        return {
+            "HTTP_AUTHORIZATION":
+                f"Bearer {self.access_token}"
+        }
+
+    def test_settings_requires_authentication(self):
+        response = self.client.get(
+            self.url
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "not_authenticated",
+        )
+
+    def test_settings_get_returns_safe_account_fields(self):
+        response = self.client.get(
+            self.url,
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            set(response.data.keys()),
+            {
+                "id",
+                "email",
+                "first_name",
+                "last_name",
+                "role",
+                "profile_photo",
+            },
+        )
+
+        self.assertEqual(
+            response.data["email"],
+            "settings@gradnavi.test",
+        )
+
+        self.assertIsNone(
+            response.data[
+                "profile_photo"
+            ]
+        )
+
+        self.assertNotIn(
+            "password",
+            response.data,
+        )
+
+        self.assertNotIn(
+            "is_staff",
+            response.data,
+        )
+
+        self.assertNotIn(
+            "is_superuser",
+            response.data,
+        )
+
+    def test_first_and_last_name_can_be_updated(self):
+        response = self.client.patch(
+            self.url,
+            {
+                "first_name": "Alex",
+                "last_name": "Morgan",
+            },
+            format="json",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(
+            self.user.first_name,
+            "Alex",
+        )
+
+        self.assertEqual(
+            self.user.last_name,
+            "Morgan",
+        )
+
+    def test_email_and_role_are_read_only(self):
+        response = self.client.patch(
+            self.url,
+            {
+                "email":
+                    "changed@gradnavi.test",
+                "role":
+                    User.Role.ADMIN,
+                "first_name":
+                    "Updated",
+            },
+            format="json",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(
+            self.user.email,
+            "settings@gradnavi.test",
+        )
+
+        self.assertEqual(
+            self.user.role,
+            User.Role.STUDENT,
+        )
+
+        self.assertEqual(
+            self.user.first_name,
+            "Updated",
+        )
+
+    def test_blank_names_are_rejected(self):
+        for field in (
+            "first_name",
+            "last_name",
+        ):
+            with self.subTest(
+                field=field
+            ):
+                response = self.client.patch(
+                    self.url,
+                    {field: "   "},
+                    format="json",
+                    **self.auth_header(),
+                )
+
+                self.assertEqual(
+                    response.status_code,
+                    status.HTTP_400_BAD_REQUEST,
+                )
+
+                assert_error_envelope(
+                    self,
+                    response,
+                    "validation_error",
+                    field,
+                )
+
+    def test_png_profile_photo_upload_succeeds(self):
+        response = self.client.patch(
+            self.url,
+            {
+                "profile_photo":
+                    make_profile_photo()
+            },
+            format="multipart",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.user.refresh_from_db()
+
+        self.assertTrue(
+            self.user.profile_photo.name
+            .startswith(
+                "profile_photos/"
+                f"user_{self.user.pk}/"
+            )
+        )
+
+        self.assertTrue(
+            os.path.exists(
+                self.user
+                .profile_photo.path
+            )
+        )
+
+        self.assertIn(
+            "/media/profile_photos/",
+            response.data[
+                "profile_photo"
+            ],
+        )
+
+    def test_profile_photo_replace_deletes_old_file(self):
+        first_response = self.client.patch(
+            self.url,
+            {
+                "profile_photo":
+                    make_profile_photo(
+                        name="first.png"
+                    )
+            },
+            format="multipart",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            first_response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.user.refresh_from_db()
+
+        old_path = (
+            self.user.profile_photo.path
+        )
+
+        self.assertTrue(
+            os.path.exists(old_path)
+        )
+
+        second_response = (
+            self.client.patch(
+                self.url,
+                {
+                    "profile_photo":
+                        make_profile_photo(
+                            name="second.webp",
+                            image_format="WEBP",
+                            content_type=(
+                                "image/webp"
+                            ),
+                        )
+                },
+                format="multipart",
+                **self.auth_header(),
+            )
+        )
+
+        self.assertEqual(
+            second_response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.user.refresh_from_db()
+
+        self.assertFalse(
+            os.path.exists(old_path)
+        )
+
+        self.assertTrue(
+            os.path.exists(
+                self.user
+                .profile_photo.path
+            )
+        )
+
+    def test_delete_profile_photo_removes_stored_file(self):
+        upload_response = (
+            self.client.patch(
+                self.url,
+                {
+                    "profile_photo":
+                        make_profile_photo()
+                },
+                format="multipart",
+                **self.auth_header(),
+            )
+        )
+
+        self.assertEqual(
+            upload_response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.user.refresh_from_db()
+
+        stored_path = (
+            self.user.profile_photo.path
+        )
+
+        response = self.client.delete(
+            self.photo_url,
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.user.refresh_from_db()
+
+        self.assertFalse(
+            bool(
+                self.user.profile_photo
+            )
+        )
+
+        self.assertFalse(
+            os.path.exists(stored_path)
+        )
+
+        self.assertIsNone(
+            response.data[
+                "profile_photo"
+            ]
+        )
+
+    def test_gif_profile_photo_is_rejected(self):
+        response = self.client.patch(
+            self.url,
+            {
+                "profile_photo":
+                    make_profile_photo(
+                        name="profile.gif",
+                        image_format="GIF",
+                        content_type=(
+                            "image/gif"
+                        ),
+                    )
+            },
+            format="multipart",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "profile_photo",
+        )
+
+    def test_profile_photo_over_five_mb_is_rejected(self):
+        valid_photo = (
+            make_profile_photo()
+        )
+
+        oversized_bytes = (
+            valid_photo.read()
+            + (
+                b"\x00"
+                * (
+                    (5 * 1024 * 1024)
+                    + 1
+                )
+            )
+        )
+
+        oversized_photo = (
+            SimpleUploadedFile(
+                "oversized.png",
+                oversized_bytes,
+                content_type="image/png",
+            )
+        )
+
+        response = self.client.patch(
+            self.url,
+            {
+                "profile_photo":
+                    oversized_photo
+            },
+            format="multipart",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "profile_photo",
+        )
+
+    def test_settings_backend_supports_admin_role(self):
+        admin = User.objects.create_superuser(
+            email="admin@gradnavi.test",
+            password="AdminSettings123!",
+            first_name="Admin",
+            last_name="User",
+        )
+
+        admin_login = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email":
+                    "admin@gradnavi.test",
+                "password":
+                    "AdminSettings123!",
+            },
+            format="json",
+        )
+
+        response = self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION=(
+                "Bearer "
+                + admin_login.data[
+                    "access"
+                ]
+            ),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            response.data["id"],
+            admin.id,
+        )
+
+        self.assertEqual(
+            response.data["role"],
+            User.Role.ADMIN,
+        )
+
+    def test_settings_routes_are_registered(self):
+        self.assertEqual(
+            resolve(
+                "/api/v1/auth/settings/"
+            ).url_name,
+            "settings",
+        )
+
+        self.assertEqual(
+            resolve(
+                "/api/v1/auth/"
+                "settings/profile-photo/"
+            ).url_name,
+            "profile-photo",
+        )
+
+
+class PasswordChangeAPITests(APITestCase):
+    def setUp(self):
+        self.url = (
+            "/api/v1/auth/"
+            "password/change/"
+        )
+
+        self.current_password = (
+            "GradNaviCurrent123!"
+        )
+
+        self.new_password = (
+            "GradNaviUpdated456!"
+        )
+
+        self.user = User.objects.create_user(
+            email=(
+                "password-settings"
+                "@gradnavi.test"
+            ),
+            password=(
+                self.current_password
+            ),
+            first_name="Password",
+            last_name="Student",
+        )
+
+        login_response = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email":
+                    self.user.email,
+                "password":
+                    self.current_password,
+            },
+            format="json",
+        )
+
+        self.access_token = (
+            login_response.data["access"]
+        )
+
+    def auth_header(self):
+        return {
+            "HTTP_AUTHORIZATION":
+                f"Bearer {self.access_token}"
+        }
+
+    def test_password_change_requires_authentication(self):
+        response = self.client.post(
+            self.url,
+            {
+                "current_password":
+                    self.current_password,
+                "new_password":
+                    self.new_password,
+                "new_password_confirm":
+                    self.new_password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+    def test_valid_password_change_succeeds(self):
+        response = self.client.post(
+            self.url,
+            {
+                "current_password":
+                    self.current_password,
+                "new_password":
+                    self.new_password,
+                "new_password_confirm":
+                    self.new_password,
+            },
+            format="json",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            response.data,
+            {
+                "message":
+                    "Password changed successfully."
+            },
+        )
+
+        self.user.refresh_from_db()
+
+        self.assertFalse(
+            self.user.check_password(
+                self.current_password
+            )
+        )
+
+        self.assertTrue(
+            self.user.check_password(
+                self.new_password
+            )
+        )
+
+    def test_incorrect_current_password_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {
+                "current_password":
+                    "WrongPassword123!",
+                "new_password":
+                    self.new_password,
+                "new_password_confirm":
+                    self.new_password,
+            },
+            format="json",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "current_password",
+        )
+
+    def test_password_confirmation_mismatch_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {
+                "current_password":
+                    self.current_password,
+                "new_password":
+                    self.new_password,
+                "new_password_confirm":
+                    "DifferentPassword456!",
+            },
+            format="json",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "new_password_confirm",
+        )
+
+    def test_weak_new_password_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {
+                "current_password":
+                    self.current_password,
+                "new_password":
+                    "password",
+                "new_password_confirm":
+                    "password",
+            },
+            format="json",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "new_password",
+        )
+
+    def test_same_password_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {
+                "current_password":
+                    self.current_password,
+                "new_password":
+                    self.current_password,
+                "new_password_confirm":
+                    self.current_password,
+            },
+            format="json",
+            **self.auth_header(),
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        assert_error_envelope(
+            self,
+            response,
+            "validation_error",
+            "new_password",
+        )
+
+    def test_old_password_login_fails_and_new_password_login_succeeds(self):
+        change_response = (
+            self.client.post(
+                self.url,
+                {
+                    "current_password":
+                        self.current_password,
+                    "new_password":
+                        self.new_password,
+                    "new_password_confirm":
+                        self.new_password,
+                },
+                format="json",
+                **self.auth_header(),
+            )
+        )
+
+        self.assertEqual(
+            change_response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        old_login = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email":
+                    self.user.email,
+                "password":
+                    self.current_password,
+            },
+            format="json",
+        )
+
+        new_login = self.client.post(
+            "/api/v1/auth/login/",
+            {
+                "email":
+                    self.user.email,
+                "password":
+                    self.new_password,
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            old_login.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+        self.assertEqual(
+            new_login.status_code,
+            status.HTTP_200_OK,
+        )
+
+    def test_password_change_route_is_registered(self):
+        self.assertEqual(
+            resolve(
+                "/api/v1/auth/"
+                "password/change/"
+            ).url_name,
+            "password-change",
+        )

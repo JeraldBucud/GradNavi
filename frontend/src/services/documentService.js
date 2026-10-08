@@ -100,6 +100,7 @@ function normalizeText(
 
 async function generateResumeDraft({
   targetCareerId,
+  targetJobTitle = '',
   resumeFocus = 'balanced',
   jobDescription = '',
 } = {}) {
@@ -113,6 +114,16 @@ async function generateResumeDraft({
         resumeFocus,
       )
       || 'balanced',
+  }
+
+  const normalizedTargetJobTitle =
+    normalizeText(
+      targetJobTitle,
+    )
+
+  if (normalizedTargetJobTitle) {
+    body.target_job_title =
+      normalizedTargetJobTitle
   }
 
   const normalizedJobDescription =

@@ -37,9 +37,17 @@ INTERVIEW_QUESTION_SYSTEM_INSTRUCTIONS: tuple[str, ...] = (
 
 INTERVIEW_QUESTION_OUTPUT_REQUIREMENTS: tuple[str, ...] = (
     "Return content matching the GradNavi InterviewQuestionSet structure.",
-    "Provide questions as a non-empty list.",
-    "Each question must contain question and focus_area.",
-    "Provide focus_areas as a list.",
+    "Generate exactly the number of questions specified by question_count "
+    "in TRUSTED STRUCTURED CONTEXT.",
+    "Each question must contain question and exactly one meaningful, "
+    "non-blank focus_area.",
+    "Build the top-level focus_areas list from the distinct focus_area "
+    "values actually used by the generated questions.",
+    "Include each distinct focus_area exactly once in the top-level "
+    "focus_areas list.",
+    "Do not include a top-level focus_area that is not used by a generated "
+    "question.",
+    "Do not omit a focus_area that is used by a generated question.",
     "Provide limitations as a list.",
     "Set is_ai_generated to true.",
     "Set requires_user_review to true.",

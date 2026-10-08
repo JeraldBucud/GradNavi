@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Route,
   Search,
+  Settings2,
   User,
   X,
 } from 'lucide-react'
@@ -28,9 +29,14 @@ import {
 } from 'react-router'
 
 import {
+  USER_UPDATED_EVENT,
+  getAccountSettings,
   getStoredUser,
   logoutAccount,
 } from '../services/authService'
+
+import gradNaviLogoMark from '../assets/brand/gradnavi-logo-mark.png'
+import gradNaviLogoReversed from '../assets/brand/gradnavi-logo-reversed.png'
 
 import './StudentLayout.css'
 
@@ -39,7 +45,8 @@ const studentNavigation = [
   {
     label: 'Dashboard',
     icon: LayoutDashboard,
-    implemented: false,
+    path: '/dashboard',
+    implemented: true,
   },
   {
     label: 'Student Profile',
@@ -98,14 +105,27 @@ const studentNavigation = [
   {
     label: 'Interview Preparation',
     icon: MessageSquare,
-    implemented: false,
+    path: '/interview-preparation',
+    implemented: true,
+  },
+  {
+    label: 'Settings',
+    icon: Settings2,
+    path: '/settings',
+    implemented: true,
   },
 ]
 
 
 function StudentLayout() {
   const navigate = useNavigate()
-  const currentUser = getStoredUser()
+
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(
+    () => getStoredUser(),
+  )
 
   const [
     isMobileNavigationOpen,
@@ -117,6 +137,62 @@ function StudentLayout() {
 
   const studentInitial =
     studentName.charAt(0).toUpperCase()
+
+  const studentProfilePhoto =
+    typeof currentUser?.profile_photo
+      === 'string'
+      ? currentUser
+        .profile_photo
+        .trim()
+      : ''
+
+
+  useEffect(() => {
+    let isActive = true
+
+    async function syncCurrentAccount() {
+      try {
+        const accountData =
+          await getAccountSettings()
+
+        if (isActive) {
+          setCurrentUser(
+            accountData,
+          )
+        }
+      } catch {
+        /*
+         * Keep the locally stored account summary when
+         * Settings synchronization is unavailable.
+         */
+      }
+    }
+
+    function handleUserUpdated(
+      event,
+    ) {
+      setCurrentUser(
+        event.detail
+        || getStoredUser(),
+      )
+    }
+
+    window.addEventListener(
+      USER_UPDATED_EVENT,
+      handleUserUpdated,
+    )
+
+    syncCurrentAccount()
+
+    return () => {
+      isActive = false
+
+      window.removeEventListener(
+        USER_UPDATED_EVENT,
+        handleUserUpdated,
+      )
+    }
+  }, [])
 
 
   useEffect(
@@ -182,43 +258,29 @@ function StudentLayout() {
           to="/"
           onClick={closeMobileNavigation}
         >
-          GradNavi
+          <img
+            className="student-mobile-header__logo"
+            src={gradNaviLogoMark}
+            alt="GradNavi"
+          />
         </Link>
 
-        <div className="student-mobile-header__actions">
-          <div
-            className="student-mobile-header__account"
-            aria-label={`Signed in as ${studentName}`}
-          >
-            <span
-              className="student-account-avatar"
-              aria-hidden="true"
-            >
-              {studentInitial}
-            </span>
-
-            <span className="student-mobile-header__name">
-              {studentName}
-            </span>
-          </div>
-
-          <button
-            className="student-mobile-header__menu"
-            type="button"
-            aria-label="Open navigation menu"
-            aria-controls="student-navigation-drawer"
-            aria-expanded={isMobileNavigationOpen}
-            onClick={() =>
-              setIsMobileNavigationOpen(true)
-            }
-          >
-            <Menu
-              size={24}
-              strokeWidth={1.8}
-              aria-hidden="true"
-            />
-          </button>
-        </div>
+        <button
+          className="student-mobile-header__menu"
+          type="button"
+          aria-label="Open navigation menu"
+          aria-controls="student-navigation-drawer"
+          aria-expanded={isMobileNavigationOpen}
+          onClick={() =>
+            setIsMobileNavigationOpen(true)
+          }
+        >
+          <Menu
+            size={22}
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
+        </button>
       </header>
 
       <button
@@ -270,7 +332,11 @@ function StudentLayout() {
             to="/"
             onClick={closeMobileNavigation}
           >
-            GradNavi
+            <img
+              className="student-sidebar__logo"
+              src={gradNaviLogoReversed}
+              alt="GradNavi"
+            />
           </Link>
 
           <nav
@@ -339,9 +405,19 @@ function StudentLayout() {
           <div className="student-account-summary">
             <div
               className="student-account-avatar"
-              aria-hidden="true"
             >
-              {studentInitial}
+              {studentProfilePhoto ? (
+                <img
+                  src={studentProfilePhoto}
+                  alt={`${studentName} profile`}
+                />
+              ) : (
+                <span
+                  aria-hidden="true"
+                >
+                  {studentInitial}
+                </span>
+              )}
             </div>
 
             <div className="student-account-copy">
@@ -350,7 +426,7 @@ function StudentLayout() {
               </strong>
 
               <span>
-                Account
+                Student account
               </span>
             </div>
           </div>

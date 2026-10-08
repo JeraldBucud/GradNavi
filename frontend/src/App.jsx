@@ -9,14 +9,26 @@ import ExploreCareersPage from './pages/ExploreCareersPage'
 import CareerRoadmapPage from './pages/CareerRoadmapPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import HomePage from './pages/HomePage'
+import InterviewPreparationPage from './pages/InterviewPreparationPage'
 import JobMatchingPage from './pages/JobMatchingPage'
 import LoginPage from './pages/LoginPage'
 import LearningResourcesPage from './pages/LearningResourcesPage'
 import NotFoundPage from './pages/NotFoundPage'
 import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import SettingsPage from './pages/SettingsPage'
 import SkillGapAnalysisPage from './pages/SkillGapAnalysisPage'
 import StudentProfilePage from './pages/StudentProfilePage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
+import AdminUsersPage from './pages/AdminUsersPage'
+import AdminLayout from './layouts/AdminLayout'
+import AdminRoute from './components/auth/AdminRoute'
+import AdminCareersPage from './pages/AdminCareersPage'
+import StudentDashboardPage from './pages/StudentDashboardPage'
+import AdminSkillsPage from './pages/AdminSkillsPage'
+import AdminReportsPage from './pages/AdminReportsPage'
+import AdminLearningResourcesPage from './pages/AdminLearningResourcesPage'
+import AdminAuditRecordsPage from './pages/AdminAuditRecordsPage'
 
 
 function App() {
@@ -49,6 +61,11 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<StudentLayout />}>
+          <Route
+            path="/dashboard"
+            element={<StudentDashboardPage />}
+          />
+
           <Route
             path="/profile"
             element={<StudentProfilePage />}
@@ -93,6 +110,54 @@ function App() {
             path="/cover-letter-builder"
             element={<CoverLetterBuilderPage />}
           />
+
+          <Route
+            path="/interview-preparation"
+            element={<InterviewPreparationPage />}
+          />
+
+          <Route
+            path="/settings"
+            element={<SettingsPage />}
+          />
+        </Route>
+
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route
+              path="/admin"
+              element={<AdminDashboardPage />}
+            />
+
+            <Route
+              path="/admin/users"
+              element={<AdminUsersPage />}
+            />
+            <Route
+              path="/admin/careers"
+              element={<AdminCareersPage />}
+            />
+            
+            <Route
+              path="/admin/skills"
+              element={<AdminSkillsPage />}
+            />
+            
+            <Route
+              path="/admin/reports"
+              element={<AdminReportsPage />}
+            />
+            
+            <Route
+              path="/admin/learning-resources"
+              element={<AdminLearningResourcesPage />}
+            />
+            
+            <Route
+              path="/admin/audit-records"
+              element={<AdminAuditRecordsPage />}
+            />
+          </Route>
         </Route>
       </Route>
 
