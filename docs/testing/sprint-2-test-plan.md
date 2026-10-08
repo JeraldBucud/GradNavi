@@ -1,6 +1,6 @@
 # GradNavi Sprint 2 Test Plan
 
-Status: Active Sprint 2 closeout test plan reflecting the verified testing checkpoint through 20 September 2026. The integrated Career Analysis flow has been tested across recommendations, readiness, Skill Gap Analysis, Learning Resources, Career Roadmap, responsive layouts, keyboard behaviour, Student ownership isolation, and browser compatibility. The tracker records 72 Pass and 8 Blocked cases. The remaining blocked cases are the MD-assigned WBS 5.7 Learning Suggestions and Roadmap API tests.
+Status: Active Sprint 2 closeout test plan reflecting the verified testing checkpoint through 23 September 2026. The integrated Career Analysis flow has been tested across recommendations, readiness, Skill Gap Analysis, Learning Resources, Career Roadmap, responsive layouts, keyboard behaviour, Student ownership isolation, browser compatibility, and the dedicated WBS 5.7 Learning Suggestions and Roadmap API scenarios. The tracker now records 80 Pass, 0 Fail, and 0 Blocked cases. Final Sprint 2 closure remains subject to the team closeout review.
 
 ## 1. Purpose
 
@@ -257,28 +257,17 @@ Dataset 1.0 must not be modified by read-only scoring tests.
 
 The Sprint 2 Test Case Tracker contains 80 cases.
 
-At the 20 September 2026 closeout checkpoint:
+At the 23 September 2026 closeout checkpoint:
 
-- Pass: 72.
+- Pass: 80.
 - Fail: 0.
-- Blocked: 8.
+- Blocked: 0.
 - Retest: 0.
 - Not Run: 0.
 
 The completed cases cover reference data, recommendation scoring, Career Recommendation API behaviour, Skill Gap Analysis, Career Readiness, recommendation and readiness interfaces, Learning Resources and Career Roadmap integration, controlled empty and error states, end-to-end Career Analysis flows, Student ownership isolation, responsive layouts, keyboard behaviour, and Chrome, Edge, and Firefox compatibility.
 
-The eight remaining blocked cases are:
-
-- `S2-LEARN-01`
-- `S2-LEARN-02`
-- `S2-LEARN-03`
-- `S2-LEARN-04`
-- `S2-LEARN-05`
-- `S2-LEARN-06`
-- `S2-LEARN-07`
-- `S2-LEARN-08`
-
-These cases are the dedicated WBS 5.7 Learning Suggestions and Roadmap API tests assigned to MD.
+The dedicated WBS 5.7 Learning Suggestions and Roadmap API cases `S2-LEARN-01` through `S2-LEARN-08`, assigned to MD, have now been executed successfully. All eight cases passed and their evidence is recorded as `S2-EV-038` through `S2-EV-045`.
 
 Closeout integration testing also identified and verified fixes for:
 
@@ -306,9 +295,9 @@ The implementation dependencies required for broad WBS 5.9 integration are now a
 - Chrome, Edge, and Firefox compatibility has been manually verified.
 - Cross-Student profile-derived result isolation has been verified.
 
-The remaining Sprint 2 testing gate is execution of the eight dedicated WBS 5.7 Learning Suggestions and Roadmap API test cases assigned to MD.
+The dedicated WBS 5.7 Learning Suggestions and Roadmap API testing gate has now been completed. `S2-LEARN-01` through `S2-LEARN-08` all passed.
 
-Until those cases are completed, Sprint 2 remains in closeout rather than being marked fully complete.
+All 80 planned Sprint 2 test cases have now passed. Sprint 2 remains in closeout pending the final team review required by the exit criteria.
 
 ## 12. Reference Data Tests
 
@@ -567,7 +556,7 @@ The 20 September 2026 integrated repository baseline confirms:
 - WBS 5.6 Recommendation and Readiness Interface is implemented and integrated.
 - WBS 5.7 Learning Suggestions and Roadmap API implementation is present.
 - WBS 5.8 Learning Roadmap Interface is implemented and integrated into the Student flow.
-- WBS 5.9 integration and testing has progressed to 72 Pass cases from 80 planned Sprint 2 tests.
+- WBS 5.9 integration and testing has progressed to 80 Pass cases from 80 planned Sprint 2 tests.
 
 The current integrated verification branch is `feature/sprint-3`, which contains the merged Sprint 2 implementation and closeout fixes.
 
@@ -585,9 +574,9 @@ Verified integration behaviour includes:
 
 Closeout testing identified DEF-S2-003, DEF-S2-004, and DEF-S2-005. Each defect was fixed and retested successfully.
 
-The remaining eight Blocked cases are `S2-LEARN-01` through `S2-LEARN-08`, assigned to MD under WBS 5.7.
+The previously Blocked cases `S2-LEARN-01` through `S2-LEARN-08`, assigned to MD under WBS 5.7, have all passed. Verification covered unresolved gaps, missing Skills, below-requirement Skills, exclusion of met requirements, selected Career context, insufficient-profile handling, invalid-request validation, and repeated-input stability.
 
-Sprint 2 must not be marked fully complete until those remaining test cases and the final team closeout review are completed.
+All 80 planned Sprint 2 cases have now passed. Final Sprint 2 completion remains subject to the team closeout review.
 
 ## 29. Sprint 2 Exit Criteria
 
@@ -610,10 +599,12 @@ Current closeout status:
 - Security and Student ownership isolation checks have passed.
 - Responsive, keyboard, and browser compatibility checks have passed.
 - Required evidence for the completed integration tests has been recorded.
-- Eight WBS 5.7 Learning Suggestions and Roadmap API cases remain Blocked and assigned to MD.
-- Final Sprint 2 closure remains pending those tests and team review.
+- All eight WBS 5.7 Learning Suggestions and Roadmap API cases assigned to MD have passed.
+- The Sprint 2 tracker now records 80 Pass, 0 Fail, and 0 Blocked cases.
+- Evidence for the WBS 5.7 closeout tests is recorded as `S2-EV-038` through `S2-EV-045`.
+- Final Sprint 2 closure remains pending the team closeout review.
 
-The Sprint 2 exit criteria are therefore not yet fully satisfied.
+The test-execution portion of the Sprint 2 exit criteria is satisfied. Formal Sprint 2 closure remains pending the final team review.
 
 ## 30. Test Plan Maintenance
 
