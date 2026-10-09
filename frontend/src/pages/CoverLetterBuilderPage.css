@@ -12,7 +12,8 @@
 
 .cover-letter-builder__content {
   width: 100%;
-  max-width: 1100px;
+  max-width: none;
+  min-width: 0;
 }
 
 .cover-letter-builder__header {

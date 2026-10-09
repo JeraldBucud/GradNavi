@@ -30,7 +30,15 @@ The Sprint focuses on:
 
 Sprint 5 does not introduce new core functional requirements unless the team approves a formal scope change.
 
-## 2. Schedule Acceleration
+## 2. Schedule Acceleration Historical Context
+
+The following section preserves the project state recorded when Sprint 5 planning began.
+
+Sprint 4 was still open at that planning checkpoint.
+
+Sprint 4 is now formally complete and reconciled into Sprint 5.
+
+Section 18 records the current authoritative execution baseline.
 
 Sprint 5 planning has started before formal Sprint 4 closeout because the project has a fixed final presentation date of 12 October 2026 and only one scheduled week for Sprint 5.
 
@@ -57,7 +65,13 @@ The final update will record:
 - Sprint 4 review outcome.
 - Sprint 4 feature-complete status.
 
-## 3. Current Sprint 4 Carry-Over
+## 3. Historical Sprint 4 Carry-Over at Sprint 5 Planning Start
+
+The carry-over records below preserve the original Sprint 5 planning checkpoint.
+
+They no longer describe the current repository state.
+
+The resolved Sprint 4 state is recorded in Section 18.
 
 Unfinished Sprint 4 work is recorded as carry-over or a blocker.
 
@@ -177,18 +191,24 @@ Required action:
 
 Complete the remaining Sprint 4 implementation and testing, perform the Sprint 4 review, and record WBS 7.11 when the approved completion conditions are met.
 
-## 4. Completed Sprint 4 Implementation Available to Sprint 5
+## 4. Reconciled Sprint 4 Baseline Available to Sprint 5
 
-The current Sprint 4 baseline contains integrated implementation for:
+Sprint 4 is formally complete.
+
+The reconciled Sprint 5 baseline contains:
 
 - WBS 7.2 Job Description Extraction and Matching.
 - WBS 7.3 OpenAI Service Integration.
 - WBS 7.4 AI Response Validation and Error Handling.
 - WBS 7.5 Job Matching Interface.
 - WBS 7.6 Admin Models and API.
+- WBS 7.7 Admin Dashboard Interface.
 - WBS 7.8 Role Permissions and Audit Records.
+- WBS 7.9 Sprint 4 Integration and Testing.
+- WBS 7.10 Sprint 4 Review and Retrospective.
+- WBS 7.11 Feature Complete.
 
-Additional integrated Sprint 4 work includes:
+Additional integrated work includes:
 
 - Interview AI validation stabilisation.
 - FR-13 Student Progress Dashboard.
@@ -202,89 +222,99 @@ Additional integrated Sprint 4 work includes:
 - Target Job Title support.
 - Student Dashboard Recent Interview Activity.
 
-WBS 7.7 Admin Dashboard Interface remains the main unfinished Sprint 4 implementation dependency.
+Final Sprint 4 testing records:
+
+- Total: 129.
+- Pass: 129.
+- Fail: 0.
+- Blocked: 0.
+- Not Run: 0.
+- Retest: 0.
+
+PR #85 completed the formal Sprint 4 closeout.
+
+PR #86 reconciled the completed Sprint 4 baseline into feature/sprint-5.
 
 ## 5. Sprint 5 Work Breakdown
 
-| WBS | Task | Owner | Planned Dates | Current Readiness |
+| WBS | Task | Owner | Planned Dates | Current Status |
 | --- | --- | --- | --- | --- |
-| 8.1 | Sprint 5 planning and defect triage | All Members | 05 Oct | Active |
-| 8.2 | Full regression testing | All Members | 05-06 Oct | Partial start allowed on stable integrated features |
-| 8.3 | Security and permission testing | Jerald | 05-06 Oct | Ready to start on integrated functionality |
-| 8.4 | Performance and usability review | Joyee | 06-07 Oct | Partial start allowed on stable integrated features |
-| 8.5 | Bug fixing and final refinement | All Members | 07-08 Oct | Starts when confirmed defects are identified |
-| 8.6 | User acceptance testing | All Members | 07-08 Oct | Wait for stable feature-complete test baseline |
-| 8.7 | Backend and database deployment | MD | 07-08 Oct | Wait for regression readiness |
-| 8.8 | Frontend deployment | Joyee | 07-08 Oct | Wait for regression readiness |
-| 8.9 | Production verification | Jerald | 09 Oct | Wait for deployment and final fixes |
-| 8.10 | Technical documentation finalisation | MD | 05-08 Oct | Preparation may start now |
-| 8.11 | User guide finalisation | Joyee | 05-08 Oct | Preparation may start now |
-| 8.12 | Final report and GitHub review | Jerald | 05-09 Oct | Preparation may start now |
-| 8.13 | Project delivery complete | All Members | 09 Oct | Blocked by final delivery dependencies |
-| 8.14 | Final presentation preparation | All Members | 09 Oct | Preparation material may be developed early |
+| 8.1 | Sprint 5 planning and defect triage | All Members | 05 Oct | Active - baseline reconciliation update in progress |
+| 8.2 | Full regression testing | All Members | 05-06 Oct | Ready - dedicated final regression execution record still required |
+| 8.3 | Security and permission testing | Jerald | 05-06 Oct | Local scope complete through PR #80 - frontend follow-up ready and deployment checks deferred |
+| 8.4 | Performance and usability review | Joyee | 06-07 Oct | No completion evidence identified |
+| 8.5 | Bug fixing and final refinement | All Members | 07-08 Oct | In Progress - Sprint 4 findings fix merged through PR #81 |
+| 8.6 | User acceptance testing | All Members | 07-08 Oct | Ready - no completion evidence identified |
+| 8.7 | Backend and database deployment | MD | 07-08 Oct | Not complete - deployment branch exists without a unique deployment commit |
+| 8.8 | Frontend deployment | Joyee | 07-08 Oct | In Progress - deployment commit exists on Joyee branch and requires reconciliation |
+| 8.9 | Production verification | Jerald | 09 Oct | Blocked by final fixes, UAT, backend deployment, and frontend deployment |
+| 8.10 | Technical documentation finalisation | MD | 05-08 Oct | No completion evidence identified |
+| 8.11 | User guide finalisation | Joyee | 05-08 Oct | No completion evidence identified |
+| 8.12 | Final report and GitHub review | Jerald | 05-09 Oct | Ready - no completion evidence identified |
+| 8.13 | Project delivery complete | All Members | 09 Oct | Blocked by WBS 8.9, 8.10, 8.11, and 8.12 |
+| 8.14 | Final presentation preparation | All Members | 09 Oct | Preparation may proceed |
 | 8.15 | Final presentation | All Members | 12 Oct | Scheduled |
 
 ## 6. Sprint 5 Execution Priority
 
-Sprint 5 uses the following execution priority.
+Sprint 4 carry-over is resolved.
 
-### Priority 1 - Complete Sprint 4 Carry-Over
+Sprint 5 now uses the reconciled feature-complete baseline.
 
-- Finish WBS 7.7.
-- Complete remaining WBS 7.9 testing.
-- Resolve any confirmed blocking defects.
-- Complete WBS 7.10.
-- Record WBS 7.11.
+### Priority 1 - Final Verification
 
-### Priority 2 - Start Independent Sprint 5 Verification
+Complete:
 
-Work which does not require unfinished WBS 7.7 may proceed.
+- WBS 8.2 Full Regression Testing.
+- WBS 8.3 Administrator frontend-route security follow-up.
+- WBS 8.4 Performance and Usability Review.
+- WBS 8.6 User Acceptance Testing.
 
-This includes:
+### Priority 2 - Stabilisation
 
-- WBS 8.3 Security and Permission Testing.
-- Preparation for WBS 8.2 Full Regression Testing.
-- Preparation for WBS 8.10 Technical Documentation.
-- Preparation for WBS 8.11 User Guide.
-- Preparation for WBS 8.12 Final Report and GitHub Review.
+Where executed tests identify confirmed defects:
 
-### Priority 3 - Stabilisation
-
-After testing identifies confirmed defects:
-
-- Record each defect.
+- Record the defect.
 - Assign severity and priority.
 - Assign an owner.
 - Correct the defect.
 - Perform the required retest.
 - Preserve evidence.
 
-### Priority 4 - Deployment and Production Verification
+WBS 8.5 remains active only for confirmed defects and required final refinement.
 
-After the application reaches a stable regression baseline:
+### Priority 3 - Deployment
 
-- Deploy backend and database.
-- Deploy frontend.
-- Run production smoke testing.
-- Verify authentication and permissions.
+Complete:
+
+- WBS 8.7 Backend and Database Deployment.
+- WBS 8.8 Frontend Deployment.
+
+Deployment branches must first align with the current reconciled Sprint 5 baseline.
+
+### Priority 4 - Production Verification
+
+After backend and frontend deployment:
+
+- Execute WBS 8.9 Production Verification.
+- Verify authentication.
+- Verify permissions.
 - Verify primary Student workflows.
 - Verify Administrator workflows.
 - Verify AI provider behaviour.
 - Verify production error handling.
+- Complete deferred deployment-security checks.
 
-### Priority 5 - Closure and Presentation
+### Priority 5 - Documentation, Delivery, and Presentation
 
 Complete:
 
-- UAT.
-- Technical documentation.
-- User guide.
-- Final report.
-- GitHub review.
-- Contribution evidence.
-- Project delivery review.
-- Demonstration preparation.
-- Presentation rehearsal.
+- WBS 8.10 Technical Documentation.
+- WBS 8.11 User Guide.
+- WBS 8.12 Final Report and GitHub Review.
+- WBS 8.13 Project Delivery.
+- WBS 8.14 Final Presentation Preparation.
+- WBS 8.15 Final Presentation.
 
 ## 7. Defect Triage Baseline
 
@@ -432,7 +462,7 @@ Current relevance:
 
 High.
 
-Sprint 4 work remains unfinished while the project enters its final scheduled week.
+Sprint 4 is complete. The current delivery risk is concentrated in remaining Sprint 5 verification, deployment, documentation, and project-delivery work.
 
 Current response:
 
@@ -481,11 +511,11 @@ Current response:
 
 The Microsoft Project schedule remains the authoritative planning baseline.
 
-Starting WBS 8.1 while Sprint 4 closeout remains active is a controlled schedule acceleration caused by the fixed final presentation date and remaining Sprint 4 delivery delay.
+WBS 8.1 started while Sprint 4 closeout was still active. This was a controlled schedule acceleration caused by the fixed final presentation date and the remaining Sprint 4 delivery delay at that time.
 
-The overlap does not silently change approved task ownership.
+The overlap did not silently change approved task ownership.
 
-It does not mark incomplete Sprint 4 tasks complete.
+The overlap did not mark incomplete Sprint 4 tasks complete. Sprint 4 completion was recorded later through the formal closeout process.
 
 Any permanent change to:
 
@@ -516,51 +546,57 @@ Unfinished implementation should not remain only on a local development machine.
 
 Current decisions:
 
-- Sprint 5 planning starts before formal Sprint 4 closeout.
-- Sprint 4 remains open.
-- Sprint 4 carry-over remains tracked separately.
-- Unfinished work is not automatically treated as a defect.
-- Stable Sprint 5 work proceeds in parallel.
-- WBS 7.7 remains the main Sprint 4 implementation blocker.
-- Final Sprint 4 test execution resumes after WBS 7.7 integration.
-- WBS 8.3 Security and Permission Testing is the next Jerald-owned Sprint 5 task.
+- Sprint 5 originally started before formal Sprint 4 closeout under the controlled-overlap process.
+- Sprint 4 is now formally closed.
+- WBS 7.7 Admin Dashboard Interface is integrated.
+- WBS 7.9 Sprint 4 Integration and Testing is complete.
+- The final Sprint 4 tracker records 129 of 129 test cases as Pass.
+- WBS 7.10 Sprint 4 Review and Retrospective is complete.
+- WBS 7.11 Feature Complete is reached.
+- PR #86 reconciled the completed Sprint 4 baseline into Sprint 5.
+- WBS 8.3 local security and permission testing is complete through PR #80.
+- WBS 8.5 contains the Sprint 4 findings correction merged through PR #81.
 - Sprint 5 introduces no unapproved core feature expansion.
-- Final project delivery remains targeted for 9 October 2026.
+- Remaining work focuses on final regression, usability, UAT, deployment, production verification, documentation, delivery, and presentation preparation.
 - Final presentation remains scheduled for 12 October 2026.
 
 ## 15. Immediate Actions
 
 ### Jerald
 
-- Maintain Sprint 5 planning.
-- Prepare WBS 8.3 Security and Permission Testing.
-- Resume the five blocked Sprint 4 integration tests after WBS 7.7 integration.
-- Prepare WBS 8.12 Final Report and GitHub Review.
+- Maintain the reconciled Sprint 5 baseline.
+- Complete the S5-SEC-FE-01 Administrator frontend-route security follow-up.
+- Coordinate WBS 8.2 Full Regression Testing.
+- Complete WBS 8.12 Final Report and GitHub Review.
+- Execute WBS 8.9 Production Verification after deployment dependencies are complete.
 - Coordinate final integration where required.
 
 ### Joyee
 
-- Complete or hand over WBS 7.7 Admin Dashboard Interface.
-- Complete assigned Sprint 4 testing.
-- Prepare WBS 8.4 Performance and Usability Review.
-- Prepare WBS 8.11 User Guide Finalisation.
-- Prepare for WBS 8.8 Frontend Deployment.
+- Complete WBS 8.4 Performance and Usability Review.
+- Reconcile and complete WBS 8.8 Frontend Deployment.
+- Complete WBS 8.11 User Guide Finalisation.
+- Participate in WBS 8.2 Full Regression Testing.
+- Participate in WBS 8.6 User Acceptance Testing.
 
 ### MD
 
-- Complete assigned Sprint 4 testing.
-- Prepare WBS 8.7 Backend and Database Deployment.
-- Prepare WBS 8.10 Technical Documentation Finalisation.
+- Reconcile and complete WBS 8.7 Backend and Database Deployment.
+- Complete WBS 8.10 Technical Documentation Finalisation.
+- Participate in WBS 8.2 Full Regression Testing.
+- Participate in WBS 8.6 User Acceptance Testing.
 
 ### All Members
 
-- Complete Sprint 4 carry-over as quickly as possible.
-- Participate in WBS 8.2 Full Regression Testing.
-- Record defects from executed tests.
-- Participate in WBS 8.5 Bug Fixing and Final Refinement.
-- Participate in WBS 8.6 User Acceptance Testing.
+- Complete WBS 8.2 Full Regression Testing.
+- Record defects from executed expected behaviour.
+- Continue WBS 8.5 where confirmed defects or required final refinements exist.
+- Complete WBS 8.6 User Acceptance Testing.
+- Review final deployment evidence.
 - Review final delivery evidence.
-- Prepare for the final presentation.
+- Complete WBS 8.13 Project Delivery.
+- Prepare WBS 8.14 Final Presentation.
+- Preserve testing and contribution evidence.
 
 ## 16. Planning Alignment Items
 
@@ -619,19 +655,210 @@ Do not mark FR-17 complete without verified profile-deletion and generated-docum
 
 ## 17. Plan Update Rule
 
-This plan is an active working Sprint 5 baseline.
+This plan is the active Sprint 5 execution baseline.
 
 Update this document when:
 
-- WBS 7.7 is integrated.
-- Sprint 4 testing status changes materially.
-- WBS 7.9 completes.
-- WBS 7.10 completes.
-- WBS 7.11 is reached.
+- WBS 8.2 Full Regression Testing changes status.
+- WBS 8.3 follow-up security checks change status.
+- WBS 8.4 Performance and Usability Review changes status.
 - A confirmed Sprint 5 defect is recorded.
-- A task owner changes.
-- Deployment status changes.
-- Production verification completes.
-- Final project-delivery status changes.
+- WBS 8.5 corrective work changes status.
+- WBS 8.6 User Acceptance Testing changes status.
+- Backend deployment changes status.
+- Frontend deployment changes status.
+- Production verification changes status.
+- Technical documentation changes status.
+- User-guide status changes.
+- Final report status changes.
+- Project-delivery status changes.
+- Presentation preparation changes status.
 
-All updates should reflect actual project evidence rather than planned dates alone.
+All updates must reflect repository, testing, deployment, or approved project-management evidence.
+
+## 18. Reconciled Sprint 5 Baseline Update - 9 October 2026
+
+This section records the authoritative Sprint 5 execution baseline after formal Sprint 4 closure and reconciliation.
+
+The original controlled-overlap and Sprint 4 carry-over records are retained as historical planning evidence.
+
+Where an earlier historical section conflicts with this section, this reconciled section records the current project state.
+
+### 18.1 Sprint 4 Closure
+
+Sprint 4 is formally complete.
+
+Final Sprint 4 tracker:
+
+- Total: 129.
+- Pass: 129.
+- Fail: 0.
+- Blocked: 0.
+- Not Run: 0.
+- Retest: 0.
+
+Final Sprint 4 WBS state:
+
+- WBS 7.7 Admin Dashboard Interface: Complete.
+- WBS 7.9 Sprint 4 Integration and Testing: Complete.
+- WBS 7.10 Sprint 4 Review and Retrospective: Complete.
+- WBS 7.11 Feature Complete: Complete.
+
+PR #85 completed the formal Sprint 4 closeout.
+
+PR #86 reconciled the completed Sprint 4 baseline into feature/sprint-5.
+
+### 18.2 Reconciled Technical Baseline
+
+PR #86 validation recorded:
+
+- Merge conflicts: 0.
+- Django system check: Pass.
+- Full backend regression: 1065 of 1065 tests Pass.
+- Frontend lint: 0 warnings and 0 errors.
+- Frontend production build: Pass.
+- Staged diff check: Pass.
+
+The first backend regression attempt was blocked because the local PostgreSQL service was not running.
+
+After PostgreSQL was started, all 1065 backend tests passed.
+
+### 18.3 Current Sprint 5 Audit
+
+#### WBS 8.1 Sprint 5 Planning and Defect Triage
+
+Status: Active.
+
+The current update reconciles the Sprint 5 plan with the formally completed Sprint 4 baseline.
+
+#### WBS 8.2 Full Regression Testing
+
+Status: Ready.
+
+Broad regression evidence exists from the reconciled baseline validation.
+
+A dedicated completed WBS 8.2 execution record is still required.
+
+#### WBS 8.3 Security and Permission Testing
+
+Status: Local scope complete.
+
+PR #80 records:
+
+- Total: 32.
+- Pass: 29.
+- Fail: 0.
+- Blocked: 1.
+- Deferred: 2.
+
+S5-SEC-FE-01 was blocked by WBS 7.7 at the original execution checkpoint.
+
+WBS 7.7 is now integrated.
+
+S5-SEC-FE-01 is ready for follow-up execution.
+
+S5-SEC-DEP-01 and S5-SEC-DEP-02 remain deployment-stage checks for WBS 8.7 through WBS 8.9.
+
+#### WBS 8.4 Performance and Usability Review
+
+Status: No completion evidence identified.
+
+#### WBS 8.5 Bug Fixing and Final Refinement
+
+Status: In Progress.
+
+PR #81 merged the first Sprint 5 correction batch for Sprint 4 testing findings.
+
+Further work must relate to confirmed defects or required final refinement.
+
+#### WBS 8.6 User Acceptance Testing
+
+Status: Ready.
+
+No completion evidence has been identified.
+
+#### WBS 8.7 Backend and Database Deployment
+
+Status: Not complete.
+
+Branch `enamul/wbs-8.7-backend-database-deployment` exists.
+
+No unique deployment commit is currently published beyond the earlier Sprint 5 baseline.
+
+#### WBS 8.8 Frontend Deployment
+
+Status: In Progress.
+
+Branch `joyee/wbs-8.8-frontend-deployment` contains one unique deployment commit.
+
+The commit includes:
+
+- Configurable frontend API base URL.
+- Vercel SPA rewrites.
+- Frontend environment example.
+
+The branch requires reconciliation with the current Sprint 5 baseline before merge.
+
+#### WBS 8.9 Production Verification
+
+Status: Blocked.
+
+Dependencies include:
+
+- WBS 8.5.
+- WBS 8.6.
+- WBS 8.7.
+- WBS 8.8.
+
+#### WBS 8.10 Technical Documentation Finalisation
+
+Status: No completion evidence identified.
+
+#### WBS 8.11 User Guide Finalisation
+
+Status: No completion evidence identified.
+
+#### WBS 8.12 Final Report and GitHub Review
+
+Status: Ready.
+
+No completion evidence has been identified.
+
+#### WBS 8.13 Project Delivery Complete
+
+Status: Blocked.
+
+Dependencies include:
+
+- WBS 8.9.
+- WBS 8.10.
+- WBS 8.11.
+- WBS 8.12.
+
+#### WBS 8.14 Final Presentation Preparation
+
+Status: Preparation may proceed.
+
+Formal completion evidence has not yet been identified.
+
+#### WBS 8.15 Final Presentation
+
+Status: Scheduled for 12 October 2026.
+
+### 18.4 Current Execution Order
+
+The current execution order is:
+
+1. Complete the WBS 8.3 frontend permission follow-up.
+2. Complete WBS 8.2 Full Regression Testing.
+3. Complete WBS 8.4 Performance and Usability Review.
+4. Complete WBS 8.6 User Acceptance Testing.
+5. Reconcile and complete WBS 8.7 Backend and Database Deployment.
+6. Reconcile and complete WBS 8.8 Frontend Deployment.
+7. Complete WBS 8.9 Production Verification.
+8. Complete WBS 8.10 Technical Documentation.
+9. Complete WBS 8.11 User Guide.
+10. Complete WBS 8.12 Final Report and GitHub Review.
+11. Complete WBS 8.13 Project Delivery.
+12. Complete WBS 8.14 Final Presentation Preparation.
+13. Deliver WBS 8.15 Final Presentation.

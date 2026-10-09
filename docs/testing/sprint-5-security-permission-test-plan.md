@@ -99,20 +99,20 @@ The test belongs to a later deployment or production stage and is not an executa
 
 WBS 8.1 Sprint 5 Planning is merged.
 
-WBS 7.7 Admin Dashboard Interface remains outside the integrated Sprint 4 baseline.
+WBS 7.7 Admin Dashboard Interface is integrated into the current Sprint 5 baseline.
 
-Backend Administrator models, APIs, permissions, analytics, role management, account-status management, and audit records are integrated.
+Backend Administrator models, APIs, permissions, analytics, role management, account-status management, audit records, and Administrator frontend routes are integrated.
 
-Administrator frontend route and interface testing stays Blocked until WBS 7.7 is integrated.
+S5-SEC-FE-01 was executed after WBS 7.7 integration and passed manual browser permission verification.
 
 Deployment-specific security checks stay Deferred until the deployment and production-verification stages.
 
 Final local execution status:
 
-- Pass: 29
+- Pass: 30
 - Fail: 0
 - Not Run: 0
-- Blocked: 1
+- Blocked: 0
 - Deferred: 2
 - Confirmed WBS 8.3 security defects: 0
 
@@ -188,11 +188,17 @@ The tables below preserve the approved Initial status values as planning history
 | --- | --- | --- | --- | --- |
 | S5-SEC-FE-01 | Administrator frontend routes reject unauthenticated and Student access while allowing the approved Administrator role | Manual and integration | Blocked | WBS 7.7 |
 
-The current integrated `frontend/src/App.jsx` does not contain the WBS 7.7 Administrator route.
+The Initial status above is preserved as planning history.
 
-This test stays Blocked rather than Fail until WBS 7.7 is integrated.
+WBS 7.7 is now integrated. The current `frontend/src/App.jsx` contains the Administrator routes behind `ProtectedRoute` and `AdminRoute`.
 
-Backend Administrator permission testing remains executable.
+Follow-up manual browser verification passed:
+
+- Unauthenticated access to `/admin` and `/admin/users` redirected to `/login`.
+- Authenticated Student access to Administrator routes redirected to `/profile`.
+- Authenticated Administrator access to `/admin` and `/admin/users` succeeded.
+
+No screenshot was retained. The manual verification result is recorded in the Sprint 5 security-permission test-case workbook.
 
 ## 13. Deployment Security Checks
 
@@ -220,9 +226,9 @@ Initial status:
 Final status:
 
 - Not Run: 0
-- Pass: 29
+- Pass: 30
 - Fail: 0
-- Blocked: 1
+- Blocked: 0
 - Deferred: 2
 
 ## 15. Automated Test Reuse
@@ -284,7 +290,7 @@ Examples:
 
 `S5-SEC-RBAC-02-pass`
 
-`S5-SEC-FE-01-blocked`
+`S5-SEC-FE-01-pass`
 
 ## 18. Exit Conditions
 
@@ -299,13 +305,13 @@ WBS 8.3 local security and permission testing is ready for completion when:
 - Blocked tests identify their dependency.
 - Deferred deployment tests identify their later WBS owner or stage.
 
-S5-SEC-FE-01 remains outside WBS 8.3 executable completion while WBS 7.7 remains unintegrated.
+S5-SEC-FE-01 was executed after WBS 7.7 integration and passed.
 
 S5-SEC-DEP-01 and S5-SEC-DEP-02 continue during deployment and production verification.
 
 Final local exit-condition result: SATISFIED.
 
-All 29 executable local WBS 8.3 cases have recorded Pass results. No Critical or High WBS 8.3 security defect remains unresolved. No failed case requires a defect reference. The blocked and deferred cases retain their approved dependencies and later execution stages.
+All 30 executable local WBS 8.3 cases have recorded Pass results. No Critical or High WBS 8.3 security defect remains unresolved. No failed case requires a defect reference. The two deferred deployment cases retain their approved later execution stages.
 
 ## 19. Current Audit Findings
 
@@ -329,12 +335,13 @@ Current integrated controls found during the pre-test audit:
 
 Final blockers and deferred checks:
 
-- WBS 7.7 Administrator frontend permission testing remains Blocked until the Administrator frontend route is integrated.
+- No local WBS 8.3 case remains Blocked.
 - S5-SEC-DEP-01 and S5-SEC-DEP-02 remain Deferred until deployment and production verification.
 
 Final local execution findings:
 
-- All 29 executable WBS 8.3 cases passed.
+- All 30 executable WBS 8.3 cases passed.
+- S5-SEC-FE-01 passed after WBS 7.7 integration using manual browser verification.
 - No WBS 8.3 security defect was confirmed.
 - Backend and frontend repository secret reviews passed.
 - AI privacy, trust-boundary, and controlled-failure reviews passed.
@@ -353,24 +360,26 @@ Final local execution findings:
 | AI Privacy and External Service | S5-SEC-AI-01 to S5-SEC-AI-04 | Pass |
 | Audit and Error Protection | S5-SEC-AUD-01 to S5-SEC-AUD-03 | Pass |
 | Secret and Configuration Protection | S5-SEC-SECRET-01 to S5-SEC-SECRET-02 | Pass |
-| Frontend Permission | S5-SEC-FE-01 | Blocked by WBS 7.7 |
+| Frontend Permission | S5-SEC-FE-01 | Pass |
 | Deployment Security | S5-SEC-DEP-01 to S5-SEC-DEP-02 | Deferred to WBS 8.7 to WBS 8.9 |
 
 Final totals:
 
 - Total: 32
-- Pass: 29
+- Pass: 30
 - Fail: 0
 - Not Run: 0
-- Blocked: 1
+- Blocked: 0
 - Deferred: 2
 
 Confirmed WBS 8.3 security defects: 0
 
 Final evidence records are maintained in:
 
-- `sprint-5-security-permission-test-cases-final.xlsx`
+- `sprint-5-security-permission-test-cases.xlsx`
 - `wbs-8.3-security-evidence-screenshots-final.zip`
 - `wbs-8.3-security-testing-final-package.zip`
 
 The original Initial status values in Sections 5 to 13 remain unchanged to preserve the approved planning baseline.
+
+S5-SEC-FE-01 follow-up evidence is recorded in `sprint-5-security-permission-test-cases.xlsx`. No screenshot was retained for the manual browser verification.
