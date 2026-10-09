@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 
 import gradNaviLogoReversed from '../../assets/brand/gradnavi-logo-reversed-no-background.svg'
-import authVisual from '../../assets/landing/gradnavi-homepage-hero-graduate-career-path.png'
+import authVisual from '../../assets/landing/gradnavi-homepage-hero-graduate-career-path.webp'
 
 import './AuthLayout.css'
 
