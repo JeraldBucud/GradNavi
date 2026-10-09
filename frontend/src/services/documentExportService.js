@@ -379,6 +379,12 @@ function parseSkillRow(
       '',
     )
 
+  clean =
+    clean.replace(
+      /\s*\|\s*/g,
+      ' | ',
+    )
+
   const colonIndex =
     clean.indexOf(':')
 
@@ -861,7 +867,7 @@ function wordRichParagraph(
           (run) =>
             new TextRun({
               text:
-                safeText(
+                normaliseExportText(
                   run.text,
                 ),
               bold:
@@ -890,7 +896,7 @@ function wordSectionHeading(
     keepNext: true,
 
     spacing: {
-      before: 210,
+      before: 260,
       after: 130,
     },
 
@@ -1790,7 +1796,7 @@ function createPdfWriter(
       required,
     )
 
-    y += 1.5
+    y += 3
 
     text(
       safeText(
@@ -1842,6 +1848,9 @@ function createPdfWriter(
     const cleanValue =
       safeText(
         value,
+      ).replace(
+        /\s*\|\s*/g,
+        ' | ',
       )
 
     if (
@@ -1857,62 +1866,41 @@ function createPdfWriter(
         size,
       )
 
-    const labelWidth = 43
-    const columnGap = 3
-
-    const valueWidth =
-      usableWidth
-      - labelWidth
-      - columnGap
-
-    pdf.setFontSize(
-      size,
-    )
-
-    const valueLines =
-      pdf.splitTextToSize(
-        cleanValue,
-        valueWidth,
-      )
-
-    const blockHeight =
-      Math.max(
-        step,
-        valueLines.length
-        * step,
-      )
-      + 2
-
-    ensureSpace(
-      blockHeight,
-    )
-
-    pdf.setFont(
-      PDF_FONT,
-      'bold',
-    )
-
-    pdf.text(
-      `${cleanLabel}:`,
-      marginLeft,
-      y,
-    )
+    const atsLine =
+      `${cleanLabel}: ${cleanValue}`
 
     pdf.setFont(
       PDF_FONT,
       'normal',
     )
 
+    pdf.setFontSize(
+      size,
+    )
+
+    const lines =
+      pdf.splitTextToSize(
+        atsLine,
+        usableWidth,
+      )
+
+    const blockHeight =
+      lines.length
+      * step
+      + 2
+
+    ensureSpace(
+      blockHeight,
+    )
+
     for (
       let index = 0;
-      index < valueLines.length;
+      index < lines.length;
       index += 1
     ) {
       pdf.text(
-        valueLines[index],
-        marginLeft
-          + labelWidth
-          + columnGap,
+        lines[index],
+        marginLeft,
         y
           + (
             index
@@ -1922,11 +1910,8 @@ function createPdfWriter(
     }
 
     y +=
-      Math.max(
-        step,
-        valueLines.length
-        * step,
-      )
+      lines.length
+      * step
       + 2
   }
 
