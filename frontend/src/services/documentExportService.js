@@ -867,7 +867,7 @@ function wordRichParagraph(
           (run) =>
             new TextRun({
               text:
-                safeText(
+                normaliseExportText(
                   run.text,
                 ),
               bold:
