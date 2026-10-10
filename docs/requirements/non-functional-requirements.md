@@ -20,6 +20,24 @@ Status: Draft for team review
 | NFR-14 | Ethical AI | Generated outputs shall include limitations and shall avoid protected attributes as direct scoring factors. | Draft for approval |
 | NFR-15 | Recoverability | Database backup or export procedures shall be documented for the demonstration environment. | Draft for approval |
 
+## WBS 8.12 Implementation Reconciliation
+
+The `Draft for approval` labels remain the formal approval state from the requirements record.
+
+WBS 8.12 records evidence separately and does not silently convert requirement approval status.
+
+Current reconciliation findings:
+
+- NFR-05 Security and NFR-06 Privacy have strong local evidence through WBS 8.3 security, permission, ownership, input-protection, secret, audit, and AI-security testing.
+- NFR-07 Maintainability is directly supported by WBS 8.12 repository review, modular project structure, version control, and setup documentation.
+- NFR-08 Reliability and NFR-09 Explainability are supported by deterministic scoring design and completed Sprint regression evidence.
+- NFR-10 Accessibility and NFR-11 Compatibility have Sprint-level manual and browser evidence, with final Sprint 5 usability work still being closed.
+- NFR-03 Performance is under final Sprint 5 review through WBS 8.4.
+- NFR-04 Availability remains pending final deployment and WBS 8.9 production verification.
+- NFR-15 Recoverability remains pending final WBS 8.7, WBS 8.9, and WBS 8.10 evidence.
+
+Formal approval changes require a recorded team decision.
+
 ## Evidence expectations
 
 | Quality area | Planned evidence |
