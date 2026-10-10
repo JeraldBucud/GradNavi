@@ -29,6 +29,27 @@ These requirements describe the planned V1 behaviour of GradNavi.
 
 A requirement becomes approved after all three members confirm its wording, priority, owner, acceptance criteria, and planned Sprint.
 
+## WBS 8.12 Implementation Reconciliation
+
+The `Draft for approval` values above are formal requirement-approval labels from the original requirements record.
+
+WBS 8.12 does not replace those labels with implementation status.
+
+Implementation and testing state is tracked separately in the Product Backlog, Sprint closeout records, test plans, and the WBS 8.12 final GitHub review.
+
+Current reconciliation findings:
+
+- FR-01 and FR-02 have completed Sprint 1 implementation and testing evidence.
+- FR-03 through FR-06, FR-11, and FR-12 have completed the 80 of 80 passing Sprint 2 test baseline.
+- FR-08 through FR-10 have completed the 100 of 100 passing Sprint 3 closeout baseline.
+- FR-07, FR-14, and FR-18 are covered by the 129 of 129 passing Sprint 4 Feature Complete baseline.
+- FR-13 has merged implementation evidence through PR #75, but its formal Microsoft Project WBS mapping remains unresolved.
+- FR-15 has implementation evidence in the Sprint 4 administration work, but its mapping remains provisional.
+- FR-16 reviewable and editable generated-content behaviour exists across the document interfaces and AI service contracts, but its formal WBS mapping remains unresolved.
+- FR-17 must stay open because WBS 8.12 did not identify verified Student-facing evidence satisfying the full deletion requirement.
+
+Formal requirement approval should only change after the team records the required approval decision.
+
 ## Change control
 
 Any proposed change must record:
