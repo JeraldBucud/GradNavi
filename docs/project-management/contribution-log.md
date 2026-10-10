@@ -22,6 +22,47 @@ WBS 5.6 ownership note:
 - This contribution entry records Jerald's actual implementation support and recovery work after the delayed interface became an integration blocker.
 - The contribution record does not reassign the official WBS ownership.
 - Supporting evidence includes Pull Request #44, `docs/project-management/wbs-5.6-closeout.md`, Git history, and the final WBS 5.6 regression results.
+## WBS 8.12 Late-Project Contribution Reconciliation
+
+This section adds a verified late-project snapshot without replacing detailed GitHub history.
+
+Official WBS ownership remains defined by Microsoft Project and the project-management ownership records. Supporting work does not transfer official task ownership.
+
+| Sprint or period | Member | Verified contribution | Evidence | Status |
+| --- | --- | --- | --- | --- |
+| Sprint 3 | Jerald | WBS 6.2 AI Prompt Templates and Safety Rules | PR #36 | Complete |
+| Sprint 3 | Jerald | WBS 6.6 Interview Question and Feedback API | PR #38 | Complete |
+| Sprint 3 | Jerald | Resume and Cover Letter interface implementation support on the delayed WBS 6.5 work | PR #59 | Complete |
+| Sprint 3 closeout | Jerald | Sprint 3 testing reconciliation, review, retrospective, and closeout evidence | PR #83 and `sprint-3-closeout.md` | Complete |
+| Sprint 3 | MD | WBS 6.3 Resume Generation Backend | PR #37 | Complete |
+| Sprint 3 | MD | WBS 6.4 Cover Letter Generation Backend | PR #40 | Complete |
+| Sprint 4 | Jerald | WBS 7.1 Sprint 4 planning | PR #43 | Complete |
+| Sprint 4 | Jerald | WBS 7.2 Job Description Extraction and Matching | PR #60 | Complete |
+| Sprint 4 | Jerald | WBS 7.4 AI Response Validation and Error Handling | PR #66 | Complete |
+| Sprint 4 | Jerald | WBS 7.8 Role Permissions and Audit Records | PR #70 | Complete |
+| Sprint 4 | Jerald | Sprint 4 integration/testing and final closeout coordination | PR #67, PR #73, PR #85 | Complete |
+| Sprint 4 | Jerald | FR-13 Student Progress Dashboard implementation | PR #75 | Complete |
+| Sprint 4 | Joyee | WBS 7.5 Job Matching Interface | PR #61 | Complete |
+| Sprint 4 | Joyee | WBS 7.7 Admin Dashboard Interface | PR #64 | Complete |
+| Sprint 4 | MD | WBS 7.3 OpenAI Service Integration | PR #65 | Complete |
+| Sprint 4 | MD | WBS 7.6 Admin Models and API | PR #62 | Complete |
+| Sprint 5 | Jerald | WBS 8.3 Security and Permission Testing | PR #80 and PR #89 | Complete for local scope, 2 deployment checks deferred |
+| Sprint 5 | Jerald | Resume grounding and ATS export correction found during WBS 8.2 regression | PR #90 | Complete |
+| Sprint 5 | Jerald | WBS 8.2 integration regression review checkpoint | PR #91 | In Progress |
+| Sprint 5 | Jerald | WBS 8.12 Final Report and GitHub Review | `jerald/wbs-8.12-final-report-github-review` | In Progress |
+| Sprint 5 | Joyee | WBS 8.4 Performance and Usability Review and WebP optimisation | PR #94 | In Progress |
+| Sprint 5 | Joyee | WBS 8.5 Admin Dashboard mobile heading correction | PR #95 | In Progress |
+| Sprint 5 | Joyee | WBS 8.8 Frontend Deployment preparation and Vercel preview | PR #92 | In Progress |
+| Sprint 5 | MD | WBS 8.7 Backend and Database Deployment configuration and Railway work | PR #93 | In Progress |
+
+### Reconciliation rule
+
+- A merged PR or formal closeout record supports a Complete contribution entry.
+- An open PR remains In Progress until its WBS closeout is verified.
+- Contribution evidence records actual work and support.
+- Contribution evidence does not silently reassign Microsoft Project ownership.
+- Final WBS 8.12 closeout should add any remaining WBS 8.6, 8.9, 8.10, 8.11, 8.13, and presentation contributions after evidence exists.
+
 ## Contribution types
 
 - Project management
