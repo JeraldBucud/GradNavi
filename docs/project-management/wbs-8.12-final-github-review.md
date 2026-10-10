@@ -257,18 +257,21 @@ At the audit checkpoint:
 - WBS 8.12 must be updated again after the final Sprint 5 merges.
 - Final delivery should not leave unexplained project-delivery PRs open.
 
-## 15. Documentation Changes Required
+## 15. Documentation Reconciliation Completed in This Checkpoint
 
-WBS 8.12 should reconcile:
+The following documentation updates were applied on the WBS 8.12 branch:
 
-- `README.md`.
-- `docs/project-management/sprint-5-plan.md`.
-- `docs/project-management/product-backlog.md`.
-- `docs/project-management/contribution-log.md`.
-- `docs/requirements/functional-requirements.md`.
-- `docs/requirements/non-functional-requirements.md`.
-- `docs/requirements/requirements-assignment-matrix.md`.
-- `docs/project-management/roadmap-and-milestones.md` where stale current-Sprint text remains.
+- `README.md`: removed stale Sprint 3 current-state text and replaced it with the verified Sprint 5 finalisation baseline.
+- `docs/project-management/sprint-5-plan.md`: updated WBS 8.2 to WBS 8.15 execution state, current Sprint 5 audit, planning decisions, and immediate actions.
+- `docs/project-management/product-backlog.md`: reconciled completed Sprint 2, Sprint 3, and Sprint 4 requirement statuses while keeping unresolved requirement mappings under Review or Backlog.
+- `docs/project-management/contribution-log.md`: added a verified late-project contribution reconciliation snapshot.
+- `docs/project-management/roadmap-and-milestones.md`: replaced stale current-Sprint text with Sprint 5 finalisation and reconciled the Sprint 2 execution state.
+- `docs/requirements/functional-requirements.md`: added implementation reconciliation while preserving formal approval labels.
+- `docs/requirements/non-functional-requirements.md`: added evidence reconciliation while preserving formal approval labels.
+- `docs/requirements/requirements-assignment-matrix.md`: updated the FR-13, FR-15, FR-16, and FR-17 reconciliation findings without changing the Microsoft Project source-of-truth rule.
+- `docs/project-management/wbs-8.12-final-github-review.md`: added this WBS 8.12 audit and closeout checklist.
+
+No application code was changed by this WBS 8.12 documentation checkpoint.
 
 ## 16. Items That Must Stay Pending
 
@@ -293,12 +296,16 @@ Completed in this checkpoint:
 
 - Repository audit.
 - Sprint closeout reconciliation review.
-- Open PR review.
-- README stale-state identification.
-- Requirements alignment review.
-- Product backlog status review.
-- Contribution evidence review.
+- Open Sprint 5 PR review.
+- README reconciliation.
+- Sprint 5 planning-status reconciliation.
+- Product backlog execution-status reconciliation.
+- Late-project contribution reconciliation.
+- Functional and non-functional requirement evidence interpretation.
+- FR-13, FR-15, FR-16, and FR-17 mapping review.
+- Roadmap current-phase reconciliation.
 - Release-condition review.
-- Documentation reconciliation plan.
 
-Final WBS 8.12 closeout remains pending the remaining Sprint 5 evidence and final GitHub state.
+The branch remains documentation-only at this checkpoint.
+
+Final WBS 8.12 closeout remains pending the final Sprint 5 regression, UAT, deployment, production verification, technical documentation, user guide, final PR dispositions, and project-delivery evidence.
