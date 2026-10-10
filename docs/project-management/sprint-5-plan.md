@@ -547,56 +547,62 @@ Unfinished implementation should not remain only on a local development machine.
 Current decisions:
 
 - Sprint 5 originally started before formal Sprint 4 closeout under the controlled-overlap process.
-- Sprint 4 is now formally closed.
+- Sprint 4 is formally closed.
 - WBS 7.7 Admin Dashboard Interface is integrated.
 - WBS 7.9 Sprint 4 Integration and Testing is complete.
 - The final Sprint 4 tracker records 129 of 129 test cases as Pass.
 - WBS 7.10 Sprint 4 Review and Retrospective is complete.
 - WBS 7.11 Feature Complete is reached.
 - PR #86 reconciled the completed Sprint 4 baseline into Sprint 5.
-- WBS 8.3 local security and permission testing is complete through PR #80.
-- WBS 8.5 contains the Sprint 4 findings correction merged through PR #81.
+- WBS 8.3 local security and permission testing is complete through PR #80 and PR #89.
+- Two WBS 8.3 deployment-security checks remain deferred to WBS 8.7 through WBS 8.9.
+- WBS 8.2 remains in progress through Draft PR #91.
+- WBS 8.4 remains in progress through Draft PR #94.
+- WBS 8.5 includes merged Sprint 5 corrections and the open PR #95 usability fix.
+- WBS 8.7 remains in progress through PR #93.
+- WBS 8.8 remains in progress through Draft PR #92.
+- WBS 8.12 is in progress on `jerald/wbs-8.12-final-report-github-review`.
 - Sprint 5 introduces no unapproved core feature expansion.
-- Remaining work focuses on final regression, usability, UAT, deployment, production verification, documentation, delivery, and presentation preparation.
+- Remaining work focuses on final regression, usability closeout, UAT, deployment, production verification, documentation, delivery, and presentation preparation.
 - Final presentation remains scheduled for 12 October 2026.
 
 ## 15. Immediate Actions
 
 ### Jerald
 
-- Maintain the reconciled Sprint 5 baseline.
-- Complete the S5-SEC-FE-01 Administrator frontend-route security follow-up.
-- Coordinate WBS 8.2 Full Regression Testing.
-- Complete WBS 8.12 Final Report and GitHub Review.
-- Execute WBS 8.9 Production Verification after deployment dependencies are complete.
-- Coordinate final integration where required.
+- Continue WBS 8.12 Final Report and GitHub Review.
+- Resume the final WBS 8.2 combined regression review when the remaining team results are available.
+- Run the final integrated S4-REG-06 smoke regression at the WBS 8.2 closeout stage.
+- Execute WBS 8.9 Production Verification after WBS 8.7 and WBS 8.8 reach the required deployed state.
+- Complete the two deployment-deferred WBS 8.3 security checks during production verification.
+- Coordinate final integration and WBS 8.13 delivery review where required.
 
 ### Joyee
 
-- Complete WBS 8.4 Performance and Usability Review.
-- Reconcile and complete WBS 8.8 Frontend Deployment.
-- Complete WBS 8.11 User Guide Finalisation.
-- Participate in WBS 8.2 Full Regression Testing.
+- Complete the WBS 8.4 review record and final PR #94 disposition.
+- Complete the confirmed WBS 8.5 mobile usability correction in PR #95.
+- Complete WBS 8.8 staging/full-flow verification and final PR #92 disposition.
+- Finalise WBS 8.11 User Guide evidence.
+- Complete assigned WBS 8.2 regression work.
 - Participate in WBS 8.6 User Acceptance Testing.
 
 ### MD
 
-- Reconcile and complete WBS 8.7 Backend and Database Deployment.
+- Complete WBS 8.7 Railway staging/deployment evidence and final PR #93 disposition.
 - Complete WBS 8.10 Technical Documentation Finalisation.
-- Participate in WBS 8.2 Full Regression Testing.
+- Complete assigned WBS 8.2 regression work.
 - Participate in WBS 8.6 User Acceptance Testing.
 
 ### All Members
 
 - Complete WBS 8.2 Full Regression Testing.
-- Record defects from executed expected behaviour.
-- Continue WBS 8.5 where confirmed defects or required final refinements exist.
 - Complete WBS 8.6 User Acceptance Testing.
-- Review final deployment evidence.
-- Review final delivery evidence.
+- Record and retest only confirmed defects under WBS 8.5.
+- Review final deployment and production evidence.
+- Review final documentation and contribution evidence.
 - Complete WBS 8.13 Project Delivery.
-- Prepare WBS 8.14 Final Presentation.
-- Preserve testing and contribution evidence.
+- Complete WBS 8.14 Final Presentation Preparation.
+- Preserve final assessment evidence.
 
 ## 16. Planning Alignment Items
 
