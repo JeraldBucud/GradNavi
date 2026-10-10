@@ -260,36 +260,39 @@ Final milestone:
 
 ## Current Sprint
 
-The active implementation period is Sprint 2.
+The active project phase is Sprint 5 finalisation and project closure.
 
-Sprint 2 runs from:
+Sprint 5 scheduled dates:
 
-    24 August to 4 September 2026
+    5 October to 9 October 2026
 
-Current Sprint 2 implementation sequence:
+Final presentation:
 
-    5.1 Sprint 2 planning
-        |
-        v
-    5.2 Career and skill reference data
-        |
-        v
-    5.3 Weighted recommendation engine
-        |
-        +------------------+
-        |                  |
-        v                  v
-    5.4 Career        5.5 Skill gap and
-    recommendation   readiness scoring
-    API               logic
-                           |
-                           v
-                    5.7 Learning suggestions
-                    and roadmap API
+    12 October 2026
 
-Frontend work proceeds alongside the backend sequence through WBS 5.6 and WBS 5.8.
+Current finalisation sequence:
 
-Sprint 2 closes with WBS 5.9 integration and testing, WBS 5.10 review and retrospective, and WBS 5.11 Sprint completion.
+1. Complete WBS 8.2 Full Regression Testing.
+2. Complete WBS 8.4 Performance and Usability Review.
+3. Complete WBS 8.6 User Acceptance Testing.
+4. Complete WBS 8.7 Backend and Database Deployment.
+5. Complete WBS 8.8 Frontend Deployment.
+6. Execute WBS 8.9 Production Verification.
+7. Complete WBS 8.10 Technical Documentation Finalisation.
+8. Complete WBS 8.11 User Guide Finalisation.
+9. Complete WBS 8.12 Final Report and GitHub Review.
+10. Complete WBS 8.13 Project Delivery.
+11. Complete WBS 8.14 Final Presentation Preparation.
+12. Deliver WBS 8.15 Final Presentation.
+
+Verified earlier Sprint baselines:
+
+- Sprint 1: Complete, 61 of 61 tests Pass.
+- Sprint 2: 80 of 80 planned tests Pass; formal closeout documentation requires reconciliation.
+- Sprint 3: Complete, 100 of 100 tests Pass.
+- Sprint 4: Complete, 129 of 129 tests Pass and WBS 7.11 Feature Complete reached.
+
+Sprint 5 introduces no unapproved core feature expansion. Remaining work focuses on final verification, deployment, documentation, delivery evidence, and presentation readiness.
 
 ## Schedule Review
 
