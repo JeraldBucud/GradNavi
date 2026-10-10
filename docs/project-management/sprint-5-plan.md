@@ -239,18 +239,18 @@ PR #86 reconciled the completed Sprint 4 baseline into feature/sprint-5.
 
 | WBS | Task | Owner | Planned Dates | Current Status |
 | --- | --- | --- | --- | --- |
-| 8.1 | Sprint 5 planning and defect triage | All Members | 05 Oct | Active - baseline reconciliation update in progress |
-| 8.2 | Full regression testing | All Members | 05-06 Oct | Ready - dedicated final regression execution record still required |
-| 8.3 | Security and permission testing | Jerald | 05-06 Oct | Local scope complete through PR #80 - frontend follow-up ready and deployment checks deferred |
-| 8.4 | Performance and usability review | Joyee | 06-07 Oct | No completion evidence identified |
-| 8.5 | Bug fixing and final refinement | All Members | 07-08 Oct | In Progress - Sprint 4 findings fix merged through PR #81 |
-| 8.6 | User acceptance testing | All Members | 07-08 Oct | Ready - no completion evidence identified |
-| 8.7 | Backend and database deployment | MD | 07-08 Oct | Not complete - deployment branch exists without a unique deployment commit |
-| 8.8 | Frontend deployment | Joyee | 07-08 Oct | In Progress - deployment commit exists on Joyee branch and requires reconciliation |
-| 8.9 | Production verification | Jerald | 09 Oct | Blocked by final fixes, UAT, backend deployment, and frontend deployment |
+| 8.1 | Sprint 5 planning and defect triage | All Members | 05 Oct | Complete for reconciled baseline through PR #87; ongoing status maintenance continues |
+| 8.2 | Full regression testing | All Members | 05-06 Oct | In Progress - Jerald checkpoint recorded in Draft PR #91; remaining team regression and final smoke review pending |
+| 8.3 | Security and permission testing | Jerald | 05-06 Oct | Local scope complete through PR #80 and PR #89 - 30 Pass, 0 Fail, 0 Blocked, 2 deployment checks deferred |
+| 8.4 | Performance and usability review | Joyee | 06-07 Oct | In Progress - PR #94 contains WebP optimisation and reported Lighthouse improvement; final WBS 8.4 review record pending |
+| 8.5 | Bug fixing and final refinement | All Members | 07-08 Oct | In Progress - PR #81 merged earlier correction batch; PR #95 addresses confirmed Admin Dashboard mobile heading issue |
+| 8.6 | User acceptance testing | All Members | 07-08 Oct | Ready - no completed UAT evidence identified |
+| 8.7 | Backend and database deployment | MD | 07-08 Oct | In Progress - PR #93 aligned with Sprint 5; Railway staging and final deployment evidence pending |
+| 8.8 | Frontend deployment | Joyee | 07-08 Oct | In Progress - Draft PR #92 aligned with Sprint 5; Vercel Preview configured for staging integration verification |
+| 8.9 | Production verification | Jerald | 09 Oct | Blocked by final regression/UAT and completed backend/frontend deployment |
 | 8.10 | Technical documentation finalisation | MD | 05-08 Oct | No completion evidence identified |
-| 8.11 | User guide finalisation | Joyee | 05-08 Oct | No completion evidence identified |
-| 8.12 | Final report and GitHub review | Jerald | 05-09 Oct | Ready - no completion evidence identified |
+| 8.11 | User guide finalisation | Joyee | 05-08 Oct | In Progress by team status update; final repository evidence pending |
+| 8.12 | Final report and GitHub review | Jerald | 05-09 Oct | In Progress - WBS 8.12 audit branch and final GitHub review baseline created |
 | 8.13 | Project delivery complete | All Members | 09 Oct | Blocked by WBS 8.9, 8.10, 8.11, and 8.12 |
 | 8.14 | Final presentation preparation | All Members | 09 Oct | Preparation may proceed |
 | 8.15 | Final presentation | All Members | 12 Oct | Scheduled |
@@ -727,77 +727,115 @@ After PostgreSQL was started, all 1065 backend tests passed.
 
 #### WBS 8.1 Sprint 5 Planning and Defect Triage
 
-Status: Active.
+Status: Reconciled baseline complete.
 
-The current update reconciles the Sprint 5 plan with the formally completed Sprint 4 baseline.
+PR #87 reconciled the Sprint 5 planning baseline after Sprint 4 closeout.
+
+Ongoing status maintenance continues as Sprint 5 evidence changes.
 
 #### WBS 8.2 Full Regression Testing
 
-Status: Ready.
+Status: In Progress.
 
-Broad regression evidence exists from the reconciled baseline validation.
+Draft PR #91 records Jerald's integration and security-critical regression checkpoint.
 
-A dedicated completed WBS 8.2 execution record is still required.
+Verified checkpoint results include:
+
+- S4-RESUME-04: Pass after fix and retest.
+- S4-JOB-06: Pass.
+- PR #90 corrected Resume grounding and ATS export spacing.
+
+Remaining work includes:
+
+- Remaining team regression results.
+- Combined regression review.
+- Final S4-REG-06 integrated smoke regression.
+- Final WBS 8.2 status update.
 
 #### WBS 8.3 Security and Permission Testing
 
 Status: Local scope complete.
 
-PR #80 records:
+PR #80 and PR #89 together record the final local checkpoint:
 
 - Total: 32.
-- Pass: 29.
+- Pass: 30.
 - Fail: 0.
-- Blocked: 1.
+- Blocked: 0.
 - Deferred: 2.
 
-S5-SEC-FE-01 was blocked by WBS 7.7 at the original execution checkpoint.
-
-WBS 7.7 is now integrated.
-
-S5-SEC-FE-01 is ready for follow-up execution.
+S5-SEC-FE-01 passed after WBS 7.7 integration.
 
 S5-SEC-DEP-01 and S5-SEC-DEP-02 remain deployment-stage checks for WBS 8.7 through WBS 8.9.
 
 #### WBS 8.4 Performance and Usability Review
 
-Status: No completion evidence identified.
+Status: In Progress.
+
+Draft PR #94 contains the landing/authentication WebP optimisation.
+
+The PR description reports:
+
+- image payload reduced from about 17.8 MB to about 1 MB.
+- Lighthouse desktop homepage Performance improved from 75 to 96.
+- Largest Contentful Paint improved from 8.5 seconds to 1.2 seconds.
+- lint completed with 0 errors and 0 warnings.
+- production build passed.
+
+A dedicated WBS 8.4 review record is still required before formal completion.
 
 #### WBS 8.5 Bug Fixing and Final Refinement
 
 Status: In Progress.
 
-PR #81 merged the first Sprint 5 correction batch for Sprint 4 testing findings.
+PR #81 merged the earlier Sprint 5 correction batch.
 
-Further work must relate to confirmed defects or required final refinement.
+PR #95 addresses the confirmed Admin Dashboard mobile section-heading usability issue found during final review.
+
+Further WBS 8.5 work must relate to confirmed defects or required final refinement.
 
 #### WBS 8.6 User Acceptance Testing
 
 Status: Ready.
 
-No completion evidence has been identified.
+No completed UAT evidence has been identified.
 
 #### WBS 8.7 Backend and Database Deployment
 
-Status: Not complete.
+Status: In Progress.
 
-Branch `enamul/wbs-8.7-backend-database-deployment` exists.
+PR #93 is aligned with the current Sprint 5 baseline.
 
-No unique deployment commit is currently published beyond the earlier Sprint 5 baseline.
+The branch contains:
+
+- Gunicorn production dependency.
+- environment-driven DEBUG configuration with a False fallback.
+- allowed-host configuration.
+- CORS and CSRF configuration.
+- secure cookie behaviour for production.
+- proxy HTTPS support.
+- STATIC_ROOT.
+- deployment environment documentation.
+
+GitHub reports successful Railway and Vercel checks for the PR head commit.
+
+Final WBS 8.7 closeout still requires the agreed Railway staging/deployment evidence.
 
 #### WBS 8.8 Frontend Deployment
 
 Status: In Progress.
 
-Branch `joyee/wbs-8.8-frontend-deployment` contains one unique deployment commit.
+Draft PR #92 is aligned with the current Sprint 5 baseline.
 
-The commit includes:
+The branch contains:
 
-- Configurable frontend API base URL.
+- configurable frontend API base URL.
 - Vercel SPA rewrites.
-- Frontend environment example.
+- frontend environment example.
 
-The branch requires reconciliation with the current Sprint 5 baseline before merge.
+The Vercel Preview has been configured for Railway staging integration testing.
+
+Full staging flow verification remains pending.
 
 #### WBS 8.9 Production Verification
 
@@ -805,10 +843,11 @@ Status: Blocked.
 
 Dependencies include:
 
-- WBS 8.5.
-- WBS 8.6.
-- WBS 8.7.
-- WBS 8.8.
+- final WBS 8.2 regression state.
+- WBS 8.6 UAT.
+- WBS 8.7 deployment.
+- WBS 8.8 deployment.
+- required WBS 8.5 fixes.
 
 #### WBS 8.10 Technical Documentation Finalisation
 
@@ -816,13 +855,30 @@ Status: No completion evidence identified.
 
 #### WBS 8.11 User Guide Finalisation
 
-Status: No completion evidence identified.
+Status: In Progress by team status update.
+
+Joyee reported that the Student features, Administrator guide, troubleshooting, and screenshots are substantially prepared.
+
+Final repository evidence is still required before WBS 8.11 is marked complete.
 
 #### WBS 8.12 Final Report and GitHub Review
 
-Status: Ready.
+Status: In Progress.
 
-No completion evidence has been identified.
+Branch:
+
+`jerald/wbs-8.12-final-report-github-review`
+
+Current checkpoint includes:
+
+- final GitHub review baseline.
+- README reconciliation.
+- product backlog reconciliation.
+- contribution reconciliation.
+- functional and non-functional requirement status interpretation.
+- requirements mapping review.
+
+WBS 8.12 must be reviewed again after the remaining Sprint 5 delivery PRs and evidence are final.
 
 #### WBS 8.13 Project Delivery Complete
 
