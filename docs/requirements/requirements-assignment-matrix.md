@@ -200,53 +200,62 @@ Shared integration:
 
 ## Requirements Requiring Schedule Alignment
 
+WBS 8.12 reviewed the implementation state without changing the authoritative Microsoft Project ownership or Sprint allocation.
+
 ### FR-13 Progress Dashboard
 
-FR-13 remains part of the functional requirements.
+The requirements matrix still lacks a dedicated approved Microsoft Project task for FR-13.
 
-The revised Microsoft Project schedule does not currently identify a dedicated Progress Dashboard task.
+Implementation evidence now exists through merged PR #75, which added the Student Progress Dashboard during Sprint 4 support work.
 
-Before implementation, the team must decide whether FR-13:
+Current reconciliation state:
 
-1. Fits within an existing Sprint interface task.
-2. Requires a new Sprint 4 task.
-3. Requires another approved Sprint placement.
-4. Requires an approved scope change.
+- Implementation present.
+- Formal WBS mapping unresolved.
+- Do not rewrite Microsoft Project ownership from this GitHub review alone.
 
 ### FR-15 Admin Analytics
 
-FR-15 currently has a provisional mapping to:
+FR-15 retains its provisional mapping to:
 
     7.6 Admin models and API
     7.7 Admin dashboard interface
 
-The team must confirm that these tasks include the required aggregated analytics behaviour.
+Sprint 4 administration implementation is present and Sprint 4 reached Feature Complete with 129 of 129 planned cases passing.
+
+Current reconciliation state:
+
+- Implementation evidence present.
+- Existing WBS mapping remains provisional until the team confirms the requirement mapping.
 
 ### FR-16 AI Content Review
 
-FR-16 requires users to review and edit generated content before saving.
+FR-16 requires reviewable and editable generated content before saving.
 
-Related AI and interface work exists in Sprint 3 and Sprint 4, but the revised schedule does not identify a dedicated FR-16 task.
+Implementation evidence exists across the Sprint 3 document generation and interface work, the AI provider boundary, and the review/edit behaviour of generated application content.
 
-The team must explicitly map this requirement before declaring it complete.
+Current reconciliation state:
+
+- Required behaviour is present in the implemented document workflows.
+- No dedicated approved FR-16 WBS mapping exists in the current Microsoft Project record.
+- Formal mapping remains unresolved.
 
 ### FR-17 Data Deletion
 
-FR-17 remains part of V1.
+FR-17 remains part of the functional requirements.
 
-The revised schedule does not currently identify dedicated deletion implementation work.
+WBS 8.12 did not identify verified Student-facing evidence that satisfies the full requirement for:
 
-The team must confirm:
+- deletion of saved generated documents, and
+- profile-deletion request behaviour.
 
-- Backend deletion behaviour.
-- Profile deletion request behaviour.
-- Generated document deletion.
-- Required frontend controls.
-- Permission rules.
-- Audit requirements.
-- Acceptance tests.
-- Sprint placement.
-- Task ownership.
+Model cascade behaviour and internal record replacement are not sufficient evidence for the Student-facing FR-17 acceptance requirement.
+
+Current reconciliation state:
+
+- Requirement remains open.
+- Do not mark FR-17 complete without implementation and acceptance evidence.
+- Any scope, ownership, or schedule change must follow the existing change-control process.
 
 ---
 
