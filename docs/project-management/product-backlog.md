@@ -219,48 +219,62 @@ Sprint 5 does not introduce new core functional requirements unless an approved 
 
 ## Schedule Alignment Items
 
-The following functional requirements do not currently have a dedicated task in the revised Microsoft Project schedule:
+WBS 8.12 reviewed the remaining requirement-to-schedule differences without changing Microsoft Project ownership or Sprint allocation.
 
 ### FR-13 Progress Dashboard
 
-The functional requirement remains part of GradNavi V1, but the revised Microsoft Project WBS does not identify a dedicated Progress Dashboard implementation task.
+FR-13 remains part of GradNavi V1.
 
-The team should decide whether FR-13:
+Merged PR #75 provides implementation evidence for the Student Progress Dashboard.
 
-- Fits within an existing interface task.
-- Requires a new Sprint 4 task.
-- Moves to another approved Sprint.
-- Requires a documented scope change.
+The Microsoft Project schedule still has no dedicated FR-13 implementation task.
+
+Current state:
+
+- Implementation present.
+- Backlog status: Review.
+- Formal WBS mapping still requires reconciliation.
 
 ### FR-16 AI Content Review
 
-The functional requirement requires generated content to remain reviewable and editable.
+FR-16 requires generated content to remain reviewable and editable.
 
-The Microsoft Project schedule contains AI prompt, generation, interface, and validation work, but does not identify FR-16 as a dedicated implementation task.
+The implemented Sprint 3 document workflows and AI service contracts provide review/edit behaviour.
 
-The team should explicitly map FR-16 to the appropriate Sprint 3 and Sprint 4 tasks or add a separate task.
+The Microsoft Project schedule still has no dedicated FR-16 requirement mapping.
+
+Current state:
+
+- Required behaviour present in the document workflows.
+- Backlog status: Review.
+- Formal WBS mapping still requires reconciliation.
 
 ### FR-17 Data Deletion
 
-The functional requirement remains in the approved requirements list, but the revised Microsoft Project schedule does not identify a dedicated deletion implementation task.
+FR-17 remains part of the functional requirements.
 
-The team should assign:
+WBS 8.12 did not identify verified Student-facing evidence that satisfies the full deletion requirement.
 
-- Sprint.
-- Owner.
-- Backend task.
-- Frontend task where required.
-- Permission testing.
-- Acceptance evidence.
+Current state:
+
+- Backlog status: Backlog.
+- Do not mark complete without generated-document deletion and profile-deletion request evidence.
+- Any scope or ownership change must follow project change control.
 
 ### FR-15 Admin Analytics
 
-FR-15 is provisionally mapped to:
+FR-15 retains its provisional mapping to:
 
-- WBS 7.6 Admin models and API.
-- WBS 7.7 Admin dashboard interface.
+- WBS 7.6 Admin Models and API.
+- WBS 7.7 Admin Dashboard Interface.
 
-The team should confirm whether those tasks include aggregated analytics or whether a separate task is required.
+Sprint 4 administration implementation exists and Sprint 4 reached Feature Complete.
+
+Current state:
+
+- Implementation evidence present.
+- Backlog status: Review.
+- Formal mapping confirmation remains required.
 
 ## Backlog Fields
 
