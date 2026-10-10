@@ -122,6 +122,7 @@ Note: the current repository filename for the ER diagram is `GrandNavi ER diagra
 - [Sprint 1 Integration Plan](docs/system-design/sprint-1-integration-plan.md)
 - [Sprint 2 Integration Plan](docs/system-design/sprint-2-integration-plan.md)
 - [Sprint 3 Integration Plan](docs/system-design/sprint-3-integration-plan.md)
+- [Sprint 4 Integration Plan](docs/system-design/sprint-4-integration-plan.md)
 
 ## Testing documentation
 
@@ -139,6 +140,21 @@ Note: the current repository filename for the ER diagram is `GrandNavi ER diagra
 
 - [Sprint 3 Test Plan](docs/testing/sprint-3-test-plan.md)
 - [Sprint 3 Test Case Tracker](docs/testing/sprint-3-test-cases.xlsx)
+- [Sprint 3 Closeout](docs/project-management/sprint-3-closeout.md)
+
+### Sprint 4
+
+- [Sprint 4 Test Plan](docs/testing/sprint-4-test-plan.md)
+- [Sprint 4 Test Case Tracker](docs/testing/sprint-4-test-cases.xlsx)
+- [Sprint 4 Testing Status](docs/testing/sprint-4-testing-status.md)
+- [Sprint 4 Closeout](docs/project-management/sprint-4-closeout.md)
+
+### Sprint 5
+
+- [Sprint 5 Security and Permission Test Plan](docs/testing/sprint-5-security-permission-test-plan.md)
+- [Sprint 5 Security and Permission Test Cases](docs/testing/sprint-5-security-permission-test-cases.xlsx)
+- [Sprint 5 Security and Permission Execution Matrix](docs/testing/sprint-5-security-permission-execution-matrix.md)
+- [WBS 8.12 Final GitHub Review](docs/project-management/wbs-8.12-final-github-review.md)
 
 Testing evidence is stored under:
 
@@ -166,7 +182,7 @@ The current GradNavi requirements identify the following main system actors and 
 |---|---|
 | Student | Maintains a profile, receives career guidance, analyses skill gaps, prepares application material, practises interviews, and tracks progress |
 | System Administrator | Manages users, careers, skills, learning resources, reports, audit records, and reference data |
-| OpenAI API | Planned external AI provider for structured explanations and editable generated content through the Django backend |
+| OpenAI API | External AI provider used through the Django backend for validated explanations and generated application/interview content |
 | Public Career and Learning Sources | Supply reference information reviewed before entry into GradNavi |
 
 Career Adviser access is outside the current V1 scope.
@@ -218,10 +234,10 @@ The team also uses the CQU Microsoft 365 shared workspace for collaborative file
 | Database | PostgreSQL through Psycopg |
 | CORS | django-cors-headers |
 | AI architecture | Provider-independent AI service layer, structured schemas, prompt templates, safety rules, privacy mapping, and validated output contracts |
-| AI provider status | Provider-independent AI layer plus limited Django-backed OpenAI text generation using `gpt-5-nano` for WBS 5.6 explanations; broader provider integration remains under WBS 7.3 |
+| AI provider status | Provider-independent AI layer with Django-backed OpenAI integration completed during Sprint 4; deterministic scoring remains separate from generated text |
 | Planning | Scrum, Trello, GitHub, Microsoft Project |
 | Communication | Microsoft Teams |
-| Planned deployment | Vercel frontend, Railway backend and PostgreSQL |
+| Deployment | Vercel frontend, Railway backend and PostgreSQL; Sprint 5 staging and production verification are tracked under WBS 8.7 to WBS 8.9 |
 
 ## AI architecture status
 
@@ -252,163 +268,58 @@ The current AI service foundation includes:
 
 Resume, Cover Letter, and Interview services continue to use the provider boundary established during Sprint 3.
 
-WBS 5.6 now uses a limited Django-backed OpenAI text provider with `gpt-5-nano` as the default text model for the Top Match explanation and AI Gap Summary. Recommendation scoring, ranking, readiness scoring, requirement status, and Fix First priority remain deterministic. Broader provider integration for Resume, Cover Letter, and Interview services remains under WBS 7.3.
+WBS 5.6 uses a Django-backed OpenAI text provider for the Top Match explanation and AI Gap Summary. Sprint 4 completed the broader OpenAI service integration used by Resume, Cover Letter, and Interview features. Recommendation scoring, ranking, readiness scoring, requirement status, and Fix First priority remain deterministic.
 
 ## Current implementation status
 
-GradNavi is currently in Sprint 3 development.
+GradNavi is in Sprint 5 finalisation.
 
-### Sprint 1 foundation
+The repository baseline has formally completed Sprint 1, Sprint 3, and Sprint 4 closeout records. Sprint 2 test execution is complete, with all 80 planned cases passing, but a dedicated Sprint 2 closeout record was not identified during the WBS 8.12 audit.
 
-Implemented Sprint 1 work includes:
+### Verified Sprint baselines
 
-- Django REST Framework backend foundation
-- React frontend foundation and routing
-- PostgreSQL development database configuration
-- Django migrations
-- Student account model
-- Registration
-- Login
-- JWT access and refresh handling
-- Logout
-- Current authenticated-user endpoint
-- Password reset backend flow
-- Student Profile backend
-- Frontend registration and login integration
-- Protected frontend routes
-- Authentication session handling
-- CORS configuration for approved local frontend origins
-- Authentication, security, profile, database, and regression testing
-
-### Sprint 2 backend
-
-Implemented and merged Sprint 2 backend work includes:
-
-- Career and skill reference data
-- Weighted recommendation engine
-- Career Recommendation API
-- Skill-gap calculation
-- Career Readiness scoring
-- Learning-resource reference data
-- Learning Suggestions API
-- Learning Roadmap API
-- Sprint 2 backend regression coverage
-
-WBS 5.6 Recommendation and Readiness Interface is now implemented and regression-tested on its working branch. It includes the redesigned Career Recommendations and Skill Gap Analysis interfaces, selected-career Readiness API, Top Match AI explanation, AI Gap Summary, deterministic Fix First presentation, and controlled Learning Resource states. The separate WBS 5.8 Learning Roadmap Interface remains outside this WBS 5.6 completion.
-
-### Sprint 3
-
-The current Sprint 3 shared branch includes:
-
-| WBS | Task | Current repository status |
+| Sprint | Verified result | Current repository state |
 | --- | --- | --- |
-| 6.1 | Sprint 3 Planning | Complete and merged |
-| 6.2 | AI Prompt Templates and Safety Rules | Implemented and merged |
-| 6.3 | Resume Generation Backend | Implemented and merged |
-| 6.4 | Cover Letter Generation Backend | Implemented and merged |
-| 6.5 | Resume and Cover Letter Interface | Pending frontend implementation |
-| 6.6 | Interview Question and Feedback API | Implemented and merged |
-| 6.7 | Interview Preparation Interface | Pending frontend implementation |
-| 6.8 | Document and Interview Integration | Waiting for WBS 6.5 and WBS 6.7 |
-| 6.9 | Sprint 3 Testing | Planned and partially prepared |
-| 6.10 | Sprint 3 Review and Retrospective | Not started |
-| 6.11 | Sprint 3 Complete | Not reached |
+| Sprint 1 | 61 Pass, 0 Fail, 0 Blocked, 0 Not Run | Complete |
+| Sprint 2 | 80 Pass, 0 Fail, 0 Blocked, 0 Not Run | Testing complete; formal closeout record pending reconciliation |
+| Sprint 3 | 100 Pass, 0 Fail, 0 Blocked, 0 Not Run | Complete |
+| Sprint 4 | 129 Pass, 0 Fail, 0 Blocked, 0 Not Run | Complete; WBS 7.11 Feature Complete reached |
+| Sprint 5 | Final verification and delivery work in progress | Regression, usability, deployment, UAT, production verification, documentation, and closure remain active |
 
-Sprint 3 integration and testing plans are already stored in the repository.
+### Current Sprint 5 work
 
-WBS 6.8 requires WBS 6.3, 6.4, 6.5, 6.6, and 6.7 before full integration begins.
+The WBS 8.12 audit records the active delivery state.
 
-## Current Sprint 3 backend capabilities
+At the 11 October 2026 audit checkpoint:
 
-### Resume Generation
+- WBS 8.2 Full Regression Testing is in progress through PR #91.
+- WBS 8.3 local Security and Permission Testing records 30 Pass, 0 Fail, 0 Blocked, and 2 deployment-deferred cases.
+- WBS 8.4 Performance and Usability Review is in progress through PR #94.
+- WBS 8.5 final refinement includes the Admin Dashboard mobile heading correction in PR #95.
+- WBS 8.7 Backend and Database Deployment is in progress through PR #93.
+- WBS 8.8 Frontend Deployment is in progress through PR #92.
+- WBS 8.9 Production Verification waits for the final deployed baseline.
+- WBS 8.10 Technical Documentation Finalisation remains pending.
+- WBS 8.11 User Guide Finalisation remains pending.
+- WBS 8.12 Final Report and GitHub Review is in progress.
 
-The backend includes an authenticated Resume Generation service based on the Student's own profile.
+Open Sprint 5 PRs must not be treated as merged implementation until their final review and merge are complete.
 
-The implementation uses:
+### Current testing baseline
 
-- authenticated Student Profile context
-- shared privacy mapping
-- shared AI prompt contracts
-- structured Resume Draft output
-- AI-generated content indicators
-- Student-review requirements
-- controlled provider failure behaviour
+Authoritative completed Sprint-level test records are:
 
-### Cover Letter Generation
+- Sprint 1: 61 of 61 Pass.
+- Sprint 2: 80 of 80 Pass.
+- Sprint 3: 100 of 100 Pass.
+- Sprint 4: 129 of 129 Pass.
+- Sprint 5 WBS 8.3 local security and permission scope: 30 Pass, 0 Fail, 0 Blocked, 2 Deferred to deployment.
 
-The backend includes an authenticated Cover Letter Generation service.
+Sprint 5 final regression, UAT, deployment smoke testing, and production verification remain separate completion gates.
 
-The implementation uses:
+Automated AI regression tests use mocked provider calls where external-provider isolation is required. Controlled live validation and Sprint 4 integration evidence cover the configured OpenAI provider path.
 
-- validated Job Description input
-- authenticated Student Profile context
-- privacy-controlled profile mapping
-- untrusted Job Description boundaries
-- structured Cover Letter Draft output
-- AI-generated content indicators
-- Student-review requirements
-- controlled provider failure behaviour
-
-### Interview Preparation
-
-The backend includes authenticated endpoints for:
-
-```text
-POST /api/v1/interviews/questions/
-POST /api/v1/interviews/feedback/
-```
-
-Interview Question Generation supports:
-
-- target role
-- optional Job Description
-- controlled question count
-- structured question sets
-- focus areas
-- AI-generated content indicators
-- Student-review requirements
-
-Interview Feedback supports:
-
-- target role
-- interview question
-- typed Student answer
-- strengths
-- improvement areas
-- suggested responses
-- feedback summary
-- AI-generated content indicators
-- Student-review requirements
-
-The Interview API does not provide hiring probability, pass or fail classifications, or guaranteed employment outcomes.
-
-## Current testing baseline
-
-The latest WBS 5.6 full-branch regression completed with no recorded failures:
-
-- Full backend regression: `673 / 673 PASS`
-- Student Profile model and API regression: `38 / 38 PASS`
-- Selected-career Readiness API: `8 / 8 PASS`
-- Top Match AI regression: `4 / 4 PASS`
-- AI Gap Summary regression: `7 / 7 PASS`
-- AI services regression: `119 / 119 PASS`
-- Recommendation cache regression: `19 / 19 PASS`
-- Recommendation API regression: `12 / 12 PASS`
-- Readiness and Learning regression: `37 / 37 PASS`
-- Django system check: `PASS`
-- Migration drift check: `No changes detected`
-- Frontend lint: `0 warnings, 0 errors`
-- Frontend production build: `PASS`
-- Git diff check: `PASS`
-
-Automated AI regression tests use mocked provider calls.
-
-Separate controlled live validation confirmed real `gpt-5-nano` generation and database-cache reuse for:
-
-- Top Match career explanation.
-- AI Gap Summary.
-
-The second request for each valid cached result reused the database cache without another OpenAI generation.
+For the current delivery audit, see [WBS 8.12 Final GitHub Review](docs/project-management/wbs-8.12-final-github-review.md).
 
 ## Delivery planning
 
