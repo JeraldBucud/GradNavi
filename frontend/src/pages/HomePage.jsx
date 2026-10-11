@@ -3,14 +3,14 @@ import { Link } from 'react-router'
 
 import gradNaviLogo from '../assets/brand/gradnavi-logo-primary.png'
 
-import homepageHero from '../assets/landing/gradnavi-homepage-hero-graduate-career-path.png'
-import careerExploration from '../assets/landing/gradnavi-career-exploration-students.png'
-import aiGuidance from '../assets/landing/gradnavi-ai-guidance-students.png'
-import skillDevelopment from '../assets/landing/gradnavi-skill-development-student.png'
-import applicationPreparation from '../assets/landing/gradnavi-application-preparation.png'
-import ctaBackground from '../assets/landing/gradnavi-cta-career-path-background.png'
-import careerRecommendationsPreview from '../assets/landing/career-recommendations-preview.png'
-import skillGapPreview from '../assets/landing/skill-gap-preview.png'
+import homepageHero from '../assets/landing/gradnavi-homepage-hero-graduate-career-path.webp'
+import careerExploration from '../assets/landing/gradnavi-career-exploration-students.webp'
+import aiGuidance from '../assets/landing/gradnavi-ai-guidance-students.webp'
+import skillDevelopment from '../assets/landing/gradnavi-skill-development-student.webp'
+import applicationPreparation from '../assets/landing/gradnavi-application-preparation.webp'
+import ctaBackground from '../assets/landing/gradnavi-cta-career-path-background.webp'
+import careerRecommendationsPreview from '../assets/landing/career-recommendations-preview.webp'
+import skillGapPreview from '../assets/landing/skill-gap-preview.webp'
 
 import './HomePage.css'
 
