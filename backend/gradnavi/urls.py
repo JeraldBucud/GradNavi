@@ -17,9 +17,11 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from gradnavi.media_views import profile_photo_media
 from django.urls import include, path
 
 urlpatterns = [
+    path('media/profile_photos/user_<int:user_id>/<str:filename>', profile_photo_media, name='profile-photo-media'),
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('accounts.urls')),
     path('api/v1/', include('careers.urls')),
