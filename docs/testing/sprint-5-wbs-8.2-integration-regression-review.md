@@ -208,3 +208,48 @@ Railway staging verification, or final integrated smoke
 testing.
 
 Final WBS 8.2 sign-off remains pending.
+
+## Post-Merge Sprint 5 Backend Regression
+
+Execution date: 11 October 2026
+Executor: Jerald
+Branch: jerald/wbs-8.2-integration-regression-review
+Verified commit: b81fa7e
+Environment: Local Django backend, PostgreSQL 17.11
+Database: Dedicated local gradnavi_db on port 5433
+
+### Baseline Update
+
+Merged origin/feature/sprint-5 into the WBS 8.2
+regression branch using merge commit b81fa7e.
+
+The merged baseline includes the profile photo
+serving changes from PR #96 and the Administrator
+Dashboard mobile heading fix from PR #95.
+
+### Execution Results
+
+| Check | Result |
+| --- | --- |
+| Django system check | PASS, zero issues |
+| Migration consistency | PASS, no changes detected |
+| Full backend test suite | PASS, 1,069 tests |
+| Failures and errors | 0 |
+| Test runner exit code | 0 |
+| Test database cleanup | Completed |
+
+Execution duration: 446.061 seconds.
+
+The post-merge run includes four additional passing
+tests compared with the earlier 1,065-test baseline.
+
+### Evidence
+
+- `docs/testing/evidence/sprint-5/wbs-8.2/backend-regression/S5-REG-BE-post-merge-full-suite.log`
+
+### Verification Boundary
+
+The local backend regression passed against commit b81fa7e.
+
+Deployed API verification, final integrated smoke testing,
+and complete WBS 8.2 sign-off are still pending.
