@@ -12,6 +12,7 @@ Class-based views
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
+from gradnavi.media_views import profile_photo_media
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
@@ -20,6 +21,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    path('media/profile_photos/user_<int:user_id>/<str:filename>', profile_photo_media, name='profile-photo-media'),
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('accounts.urls')),
     path('api/v1/', include('careers.urls')),
