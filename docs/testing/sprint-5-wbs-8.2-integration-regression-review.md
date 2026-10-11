@@ -109,3 +109,54 @@ Jerald's targeted Sprint 4 integration regressions are complete.
 - S4-REG-06: PENDING final combined regression stage
 
 WBS 8.2 remains In Progress until the team regression portions are combined and the final integrated smoke regression is completed.
+
+## Joyee Frontend Regression Evidence
+
+Tester: Joyee Chakraborty
+WBS: 8.2 Full Regression Testing
+Source: Joyee's Sprint 5 frontend regression evidence submission
+Evidence received: 11 October 2026
+
+### Reported Execution
+
+Joyee reported retesting Student and Administrator pages
+on desktop and mobile.
+
+Her submission states that the tested pages loaded and
+functioned as expected, with no new issues identified
+apart from the Administrator Dashboard mobile heading,
+which was addressed in PR #95.
+
+The evidence package includes:
+
+- Desktop and mobile landing-page screenshots.
+- Student workflow screenshots.
+- Administrator Dashboard and audit-page screenshots.
+- Frontend lint output.
+- Frontend production-build output.
+
+### Evidence Files
+
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-admin-dashboard.png`
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-admin-pages.png`
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-build.png`
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-desktop-home.png`
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-lint.png`
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-mobile-admin.png`
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-mobile-home.png`
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-mobile-student.png`
+- `docs/testing/evidence/sprint-5/wbs-8.2/frontend-regression/S5-REG-FE-student-smoke.png`
+
+### Verification Boundary
+
+The screenshots support the documented frontend checks.
+
+They do not independently establish that every approved
+frontend regression case was executed.
+
+A complete WBS 8.2 sign-off also requires the final
+backend/API regression results, database regression,
+combined evidence review, and integrated smoke test.
+
+Frontend evidence: Received and organised.
+Formal WBS 8.2 completion: Pending final consolidation.
