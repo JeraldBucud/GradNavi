@@ -1,6 +1,6 @@
 # GradNavi Sprint 1 Integration Plan
 
-Status: Active Sprint 1 integration plan. Authentication backend and frontend authentication integration are implemented and tested. Student Profile backend implementation and frontend-to-profile integration remain pending.
+Status: Closed Sprint 1 integration plan. Authentication, Student Profile backend, Student Profile interface, frontend-to-backend integration, ownership verification, persistence, and Sprint 1 testing are complete. The final Sprint 1 tracker records 61 Pass, 0 Fail, 0 Blocked, and 0 Not Run.
 
 ## 1. Purpose
 
@@ -61,29 +61,37 @@ The completed flow should allow a student to:
 
 ## 3. Current Integration Status
 
-At the current Sprint 1 checkpoint:
+Sprint 1 integration is complete.
 
-- The REST API Design is available as the shared API contract.
-- The Security Architecture is available for authentication, authorization, ownership, and security rules.
-- The Student Profile Data Design and ERD are available.
-- The Student Profile API and Model Mapping is available.
-- The Django authentication backend is implemented and merged.
-- Student registration is implemented.
-- Login and JWT token issuance are implemented.
-- JWT access-token refresh is implemented.
-- Authenticated logout and refresh-token blacklisting are implemented.
-- Password-reset request and confirmation flows are implemented.
-- `/api/v1/auth/me/` is implemented.
-- The React registration and login interfaces are connected to the Django backend.
-- Frontend authentication state and protected-route behaviour are implemented.
-- Approved local CORS origins are configured.
-- PostgreSQL connectivity and migrations have been verified.
-- Authentication integration and regression testing have been completed.
-- The Student Profile frontend interface exists.
-- The Student Profile backend implementation is not yet merged.
-- Student Profile frontend-to-backend integration remains pending until the backend API is available.
+The final integrated Sprint 1 flow includes:
 
-The remaining Sprint 1 integration work therefore focuses on the Student Profile backend, Student Profile API integration, ownership verification, persistence, and final Sprint 1 regression testing.
+- Shared REST API and security contracts.
+- Django authentication backend.
+- Student registration.
+- Login and JWT issuance.
+- JWT access-token refresh.
+- Authenticated logout and refresh-token blacklisting.
+- Password-reset request and confirmation flows.
+- `/api/v1/auth/me/`.
+- React registration and login integration.
+- Protected frontend routes.
+- Student Profile models and API.
+- Student Profile frontend interface.
+- Authenticated profile retrieval.
+- Profile updates.
+- Profile persistence.
+- Profile ownership enforcement.
+- Validation and controlled error handling.
+- PostgreSQL connectivity and relationship verification.
+- Sprint 1 integration and regression testing.
+
+The final Sprint 1 Test Case Tracker records 61 of 61 tests as Pass.
+
+No Sprint 1 test case is Fail, Blocked, or Not Run.
+
+Formal closeout is recorded in:
+
+`docs/project-management/sprint-1-closeout.md`
 
 ## 4. Integration Components
 
@@ -208,7 +216,7 @@ After successful registration, the React frontend redirects the student to `/log
 
 JWT access and refresh tokens are issued through the Login endpoint rather than through the Registration endpoint.
 
-StudentProfile creation timing remains dependent on the final WBS 4.6 backend implementation and must stay aligned with the Student Profile API contract.
+The merged Sprint 1 registration implementation creates the Student account and associated Student Profile according to the implemented backend contract.
 
 ## 7. Current User Integration
 
@@ -299,7 +307,7 @@ A PATCH request should update only the submitted profile information.
 
 Unrelated Student Profile data should not be unintentionally replaced.
 
-The exact handling of nested Education, Experience, Project, Skill, Interest, CareerGoal, and PersonalityResponse records is still pending backend confirmation.
+Nested Education, Experience, Project, Skill, Interest, CareerGoal, and PersonalityResponse handling follows the merged Student Profile API implementation and the verified Sprint 1 profile tests.
 
 ## 10. JWT Integration
 
@@ -468,49 +476,51 @@ Sprint 1 integration depends on:
 
 Integration tasks blocked by unfinished components should be recorded rather than worked around through undocumented temporary behaviour.
 
-## 17. Known Integration Decisions Pending
+## 17. Integration Decision Closeout
 
-The following Student Profile integration decisions remain pending:
+The planning questions previously listed in this section were resolved through the merged WBS 4.6 Student Profile backend and WBS 4.8 integration work.
 
-1. StudentProfile creation timing.
-2. Final Student Profile serializer structure.
-3. Final Skill JSON structure used by the implemented Student Profile API.
-4. Final Interest JSON structure used by the implemented Student Profile API.
-5. Nested profile updates versus dedicated related-resource endpoints.
-6. Handling deletion of related Student Profile records.
-7. Final Student Profile form-to-API field mapping after backend implementation.
-8. Final Student Profile error behaviour where no profile exists.
-9. Final personality-response structure.
-10. Final serializer nesting strategy.
+The implemented application and current API documentation define the final Sprint 1 behaviour.
 
-The following Sprint 1 integration decisions are already established and are no longer treated as pending:
+Sprint 1 closeout verification confirms:
 
-- Authentication response behaviour.
-- Frontend JWT storage approach.
-- Approved Student Skill proficiency scale.
-- Local frontend CORS origins.
-- Registration redirect behaviour.
+- Student Profile creation is integrated with account registration.
+- Authenticated profile retrieval is implemented.
+- Profile PATCH behaviour is implemented.
+- Related Student Profile collections are integrated.
+- Validation behaviour is implemented.
+- Ownership protection is implemented.
+- Profile persistence is verified.
+- Frontend field mapping is integrated.
+- Controlled profile errors are tested.
 
-Remaining Student Profile decisions should be confirmed against the WBS 4.6 backend implementation before WBS 4.8 integration is considered complete.
+These items no longer block Sprint 1 closure.
 
 ## 18. Integration Completion Criteria
 
-Sprint 1 integration should be treated as complete when:
+Sprint 1 integration completion criteria are satisfied.
 
-- A student can register.
-- A student can log in.
-- Valid authentication provides access to protected Student functions.
+Verified final state:
+
+- Student registration is implemented and tested.
+- Student login is implemented and tested.
+- Protected Student functions require valid authentication.
 - Invalid authentication is rejected.
-- The current authenticated user can be retrieved.
-- The authenticated student can retrieve their own profile.
-- The authenticated student can update their own profile.
-- Another student's profile cannot be accessed.
-- Validation errors are displayed and handled correctly.
-- JWT refresh behaviour works according to the approved implementation.
-- Logout behaviour works according to the approved implementation.
-- Frontend and backend field names are aligned.
-- Automated and manual Sprint 1 integration tests pass.
-- Relevant evidence is recorded for Sprint review.
+- Current authenticated-user retrieval is implemented.
+- Authenticated Student Profile retrieval is implemented.
+- Authenticated Student Profile updates are implemented.
+- Student ownership isolation is verified.
+- Validation behaviour is verified.
+- JWT refresh behaviour is implemented and recorded as Pass in the Sprint 1 tracker.
+- Logout behaviour is implemented and tested.
+- Frontend and backend field handling is integrated.
+- Sprint 1 integration and regression testing is complete.
+- The tracker records 61 Pass, 0 Fail, 0 Blocked, and 0 Not Run.
+- Sprint 1 evidence is indexed from EV-001 through EV-070.
+
+Formal Sprint 1 closeout is recorded in:
+
+`docs/project-management/sprint-1-closeout.md`
 
 ## 19. Documentation Update Rules
 

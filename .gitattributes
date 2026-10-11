@@ -1,0 +1,4 @@
+# Frozen O*NET snapshot files are SHA-256 validated byte-for-byte.
+# Disable Git text normalization for the two approved snapshot payloads.
+/data/reference/snapshots/onet_api_v2_in_demand/2026-09-16/onet_api_v2_in_demand_raw.json -text
+/data/reference/snapshots/onet_api_v2_in_demand/2026-09-16/onet_api_v2_in_demand_normalized.csv -text

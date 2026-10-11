@@ -1,0 +1,37 @@
+career_name,osca_code,expected_title,official_title,skill_level,status
+Cloud Engineer,273331,Cloud Engineer,Cloud Engineer,1,MATCH
+DevOps Engineer,273332,DevOps Engineer,DevOps Engineer,1,MATCH
+Software Engineer,273333,Software Engineer,Software Engineer,1,MATCH
+ICT Business Analyst,273232,ICT Business Analyst,ICT Business Analyst,1,MATCH
+Data Analyst,223231,Data Analyst,Data Analyst,1,MATCH
+Data Architect,223232,Data Architect,Data Architect,1,MATCH
+Data Engineer,223233,Data Engineer,Data Engineer,1,MATCH
+Data Scientist,223234,Data Scientist,Data Scientist,1,MATCH
+Cyber Security Advice and Assessment Specialist,271132,Cyber Security Advice and Assessment Specialist,Cyber Security Advice and Assessment Specialist,1,MATCH
+Cyber Security Analyst,271133,Cyber Security Analyst,Cyber Security Analyst,1,MATCH
+Cyber Security Architect,271134,Cyber Security Architect,Cyber Security Architect,1,MATCH
+Cyber Security Engineer,271135,Cyber Security Engineer,Cyber Security Engineer,1,MATCH
+Accountant (General),211131,Accountant (General),Accountant (General),1,MATCH
+Management Accountant,211134,Management Accountant,Management Accountant,1,MATCH
+Taxation Accountant,211135,Taxation Accountant,Taxation Accountant,1,MATCH
+Management Consultant,223432,Management Consultant,Management Consultant,1,MATCH
+Civil Engineer,243231,Civil Engineer,Civil Engineer,1,MATCH
+Electrical Engineer,243331,Electrical Engineer,Electrical Engineer,1,MATCH
+Industrial Engineer,243531,Industrial Engineer,Industrial Engineer,1,MATCH
+Mechanical Engineer,243532,Mechanical Engineer,Mechanical Engineer,1,MATCH
+Registered Nurse (Acute Care),265432,Registered Nurse (Acute Care),Registered Nurse (Acute Care),1,MATCH
+Physiotherapist,262431,Physiotherapist,Physiotherapist,1,MATCH
+Occupational Therapist,262331,Occupational Therapist,Occupational Therapist,1,MATCH
+Health Information Manager,223933,Health Information Manager,Health Information Manager,1,MATCH
+Content Creator (Marketing),221531,Content Creator (Marketing),Content Creator (Marketing),1,MATCH
+Digital Marketing Analyst,221532,Digital Marketing Analyst,Digital Marketing Analyst,1,MATCH
+Market Research Analyst,221533,Market Research Analyst,Market Research Analyst,1,MATCH
+Marketing Specialist,221534,Marketing Specialist,Marketing Specialist,1,MATCH
+Multimedia Designer,242131,Multimedia Designer,Multimedia Designer,1,MATCH
+UI / UX Designer,242132,UI / UX Designer,UI / UX Designer,1,MATCH
+Web Designer,242133,Web Designer,Web Designer,1,MATCH
+Graphic Designer,242332,Graphic Designer,Graphic Designer,1,MATCH
+Human Resources Adviser,222131,Human Resources Adviser,Human Resources Adviser,1,MATCH
+Recruitment Consultant,222231,Recruitment Consultant,Recruitment Consultant,1,MATCH
+Workplace Relations Adviser,222132,Workplace Relations Adviser,Workplace Relations Adviser,1,MATCH
+Supply Chain Analyst,223434,Supply Chain Analyst,Supply Chain Analyst,1,MATCH

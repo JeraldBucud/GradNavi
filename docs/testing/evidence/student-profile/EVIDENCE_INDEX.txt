@@ -1,0 +1,46 @@
+GradNavi Student Profile Frontend Evidence
+
+EV-SP-01-skills-reference-data-final.png
+Skills reference data and final proficiency values.
+
+EV-SP-02-interests-duplicate-validation.png
+Duplicate interest validation using existing Sprint 1 reference data.
+
+EV-SP-03-education-date-validation.png
+Education date validation rejects an end date earlier than the start date.
+
+EV-SP-04-education-edit-persistence.png
+Education edit and saved persisted state.
+
+EV-SP-05-experience-date-validation.png
+Experience date validation rejects an end date earlier than the start date.
+
+EV-SP-06-experience-current-role.png
+Current-role behavior, with end date disabled and Present displayed.
+
+EV-SP-07-experience-edit-persistence.png
+Experience edited persisted state after save.
+
+EV-SP-08-project-date-validation.png
+Project date validation rejects an end date earlier than the start date.
+
+EV-SP-09-project-add-save-persistence.png
+Project added, saved, and persisted with project URL.
+
+EV-SP-10-project-edit-persistence.png
+Project edited and persisted without duplicate creation.
+
+EV-SP-11-career-goal-add-persistence.png
+Career goal added and persisted with updated summary count.
+
+EV-SP-12-career-goal-edit-persistence.png
+Career goal edited and persisted without duplicate creation.
+
+EV-SP-13-personality-add-save-persistence.png
+Personality responses added, saved, and reflected in answered count.
+
+EV-SP-14-personality-edit-persistence.png
+Personality response edit persisted after save.
+
+EV-SP-15-final-clean-state.png
+Final cleanup state showing temporary Education, Experience, Projects, Career Goals, and Personality test data removed.

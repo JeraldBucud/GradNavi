@@ -1,3 +1,6 @@
+import os
+
+from PIL import Image, UnidentifiedImageError
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.password_validation import validate_password
@@ -85,6 +88,272 @@ class UserSummarySerializer(serializers.ModelSerializer):
         model = User
         fields = ("id", "email", "first_name", "last_name", "role")
         read_only_fields = fields
+
+
+
+
+PROFILE_PHOTO_MAX_BYTES = 5 * 1024 * 1024
+
+PROFILE_PHOTO_CONTENT_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
+
+PROFILE_PHOTO_FORMATS = {
+    "JPEG",
+    "PNG",
+    "WEBP",
+}
+
+PROFILE_PHOTO_EXTENSIONS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+}
+
+
+class AccountSettingsSerializer(serializers.ModelSerializer):
+    profile_photo = serializers.ImageField(
+        required=False,
+        allow_null=True,
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "profile_photo",
+        )
+        read_only_fields = (
+            "id",
+            "email",
+            "role",
+        )
+
+    def validate_first_name(self, value):
+        value = value.strip()
+
+        if not value:
+            raise serializers.ValidationError(
+                "First name cannot be blank."
+            )
+
+        return value
+
+    def validate_last_name(self, value):
+        value = value.strip()
+
+        if not value:
+            raise serializers.ValidationError(
+                "Last name cannot be blank."
+            )
+
+        return value
+
+    def validate_profile_photo(self, value):
+        if value is None:
+            return value
+
+        if value.size > PROFILE_PHOTO_MAX_BYTES:
+            raise serializers.ValidationError(
+                "Profile photo must be 5 MB or smaller."
+            )
+
+        content_type = (
+            getattr(
+                value,
+                "content_type",
+                "",
+            )
+            or ""
+        ).lower()
+
+        if content_type not in PROFILE_PHOTO_CONTENT_TYPES:
+            raise serializers.ValidationError(
+                "Profile photo must be a JPEG, PNG, or WebP image."
+            )
+
+        extension = os.path.splitext(
+            value.name
+        )[1].lower()
+
+        if extension not in PROFILE_PHOTO_EXTENSIONS:
+            raise serializers.ValidationError(
+                "Profile photo must use a .jpg, .jpeg, .png, or .webp extension."
+            )
+
+        try:
+            value.seek(0)
+
+            with Image.open(value) as image:
+                image_format = image.format
+                image.verify()
+
+        except (
+            UnidentifiedImageError,
+            OSError,
+            ValueError,
+        ) as exc:
+            raise serializers.ValidationError(
+                "Profile photo is not a valid image."
+            ) from exc
+
+        finally:
+            value.seek(0)
+
+        if image_format not in PROFILE_PHOTO_FORMATS:
+            raise serializers.ValidationError(
+                "Profile photo must be a JPEG, PNG, or WebP image."
+            )
+
+        return value
+
+    def update(self, instance, validated_data):
+        old_photo_name = (
+            instance.profile_photo.name
+            if instance.profile_photo
+            else ""
+        )
+
+        old_photo_storage = (
+            instance.profile_photo.storage
+            if instance.profile_photo
+            else None
+        )
+
+        photo_was_submitted = (
+            "profile_photo"
+            in validated_data
+        )
+
+        instance = super().update(
+            instance,
+            validated_data,
+        )
+
+        new_photo_name = (
+            instance.profile_photo.name
+            if instance.profile_photo
+            else ""
+        )
+
+        if (
+            photo_was_submitted
+            and old_photo_name
+            and old_photo_name
+            != new_photo_name
+            and old_photo_storage
+            and old_photo_storage.exists(
+                old_photo_name
+            )
+        ):
+            old_photo_storage.delete(
+                old_photo_name
+            )
+
+        return instance
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    current_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        trim_whitespace=False,
+    )
+    new_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        trim_whitespace=False,
+    )
+    new_password_confirm = serializers.CharField(
+        required=True,
+        write_only=True,
+        trim_whitespace=False,
+    )
+
+    def validate(self, attrs):
+        request = self.context["request"]
+        user = request.user
+
+        current_password = attrs[
+            "current_password"
+        ]
+        new_password = attrs[
+            "new_password"
+        ]
+        new_password_confirm = attrs[
+            "new_password_confirm"
+        ]
+
+        if not user.check_password(
+            current_password
+        ):
+            raise serializers.ValidationError(
+                {
+                    "current_password":
+                        "Current password is incorrect."
+                }
+            )
+
+        if (
+            new_password
+            != new_password_confirm
+        ):
+            raise serializers.ValidationError(
+                {
+                    "new_password_confirm":
+                        "Password confirmation does not match."
+                }
+            )
+
+        if user.check_password(
+            new_password
+        ):
+            raise serializers.ValidationError(
+                {
+                    "new_password":
+                        "New password must be different from the current password."
+                }
+            )
+
+        try:
+            validate_password(
+                new_password,
+                user=user,
+            )
+
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(
+                {
+                    "new_password":
+                        list(exc.messages)
+                }
+            )
+
+        attrs["user"] = user
+
+        return attrs
+
+    def save(self):
+        user = self.validated_data["user"]
+
+        user.set_password(
+            self.validated_data[
+                "new_password"
+            ]
+        )
+
+        user.save(
+            update_fields=["password"]
+        )
+
+        return user
 
 
 class LoginSerializer(serializers.Serializer):

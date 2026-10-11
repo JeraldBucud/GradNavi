@@ -1,167 +1,418 @@
 import {
+  useState,
+} from 'react'
+
+import {
   PROFILE_QUESTIONNAIRE,
   QUESTIONNAIRE_OPTIONS,
 } from '../../data/profileQuestionnaire'
 
+
 function PersonalityResponsesSection({
   items,
   onChange,
+  onClose,
+  onSave,
+  isSaving = false,
 }) {
-  function getResponse(questionKey) {
+  function getResponse(
+    questionKey,
+  ) {
     return (
       items.find(
         (item) =>
-          item.question_key === questionKey,
-      )?.response_value || ''
+          item.question_key
+          === questionKey,
+      )?.response_value
+      || ''
     )
   }
 
+
+  const firstUnansweredIndex =
+    PROFILE_QUESTIONNAIRE.findIndex(
+      (question) =>
+        !getResponse(
+          question.key,
+        ),
+    )
+
+
+  const [
+    currentQuestionIndex,
+    setCurrentQuestionIndex,
+  ] = useState(
+    firstUnansweredIndex >= 0
+      ? firstUnansweredIndex
+      : 0,
+  )
+
+
+  const [
+    error,
+    setError,
+  ] = useState('')
+
+
+  const currentQuestion =
+    PROFILE_QUESTIONNAIRE[
+      currentQuestionIndex
+    ]
+
+
+  const currentResponse =
+    getResponse(
+      currentQuestion.key,
+    )
+
+
+  const answeredCount =
+    PROFILE_QUESTIONNAIRE.filter(
+      (question) =>
+        Boolean(
+          getResponse(
+            question.key,
+          ),
+        ),
+    ).length
+
+
   function handleResponseChange(
-    questionKey,
     responseValue,
   ) {
     const existingResponseIndex =
       items.findIndex(
         (item) =>
-          item.question_key === questionKey,
+          item.question_key
+          === currentQuestion.key,
       )
 
-    if (existingResponseIndex === -1) {
+    if (
+      existingResponseIndex
+      === -1
+    ) {
       onChange([
         ...items,
+
         {
-          question_key: questionKey,
-          response_value: responseValue,
+          question_key:
+            currentQuestion.key,
+
+          response_value:
+            responseValue,
         },
       ])
+    } else {
+      onChange(
+        items.map(
+          (
+            item,
+            index,
+          ) => {
+            if (
+              index
+              !== existingResponseIndex
+            ) {
+              return item
+            }
+
+            return {
+              ...item,
+
+              response_value:
+                responseValue,
+            }
+          },
+        ),
+      )
+    }
+
+    setError('')
+  }
+
+
+  function handleClearResponse() {
+    onChange(
+      items.filter(
+        (item) =>
+          item.question_key
+          !== currentQuestion.key,
+      ),
+    )
+
+    setError('')
+  }
+
+
+  function handlePrevious() {
+    setError('')
+
+    setCurrentQuestionIndex(
+      (
+        currentIndex,
+      ) =>
+        Math.max(
+          0,
+          currentIndex - 1,
+        ),
+    )
+  }
+
+
+  async function handleSaveAndContinue() {
+    if (!currentResponse) {
+      setError(
+        'Choose a response before continuing.',
+      )
 
       return
     }
 
-    const updatedItems = items.map(
-      (item, index) => {
-        if (index !== existingResponseIndex) {
-          return item
-        }
+    let didSave = true
 
-        return {
-          ...item,
-          response_value: responseValue,
-        }
-      },
-    )
+    if (onSave) {
+      didSave =
+        await onSave()
+    }
 
-    onChange(updatedItems)
+    if (!didSave) {
+      return
+    }
+
+    setError('')
+
+    if (
+      currentQuestionIndex
+      < PROFILE_QUESTIONNAIRE
+        .length - 1
+    ) {
+      setCurrentQuestionIndex(
+        (
+          currentIndex,
+        ) =>
+          currentIndex + 1,
+      )
+    }
   }
 
-  function handleClearResponse(questionKey) {
-    onChange(
-      items.filter(
-        (item) =>
-          item.question_key !== questionKey,
-      ),
-    )
-  }
-
-  const answeredCount =
-    PROFILE_QUESTIONNAIRE.filter(
-      (question) =>
-        Boolean(getResponse(question.key)),
-    ).length
 
   return (
-    <section className="profile-section">
-      <h2>Career Work Style Questionnaire</h2>
+    <div className="student-profile-personality">
+      <div className="student-profile-personality__progress">
+        <div>
+          <strong>
+            Question {
+              currentQuestionIndex
+              + 1
+            } of {
+              PROFILE_QUESTIONNAIRE
+                .length
+            }
+          </strong>
 
-      <p>
-        Rate how strongly you agree or disagree
-        with each statement.
-      </p>
+          <span>
+            {
+              answeredCount
+            } of {
+              PROFILE_QUESTIONNAIRE
+                .length
+            } answered
+          </span>
+        </div>
 
-      <p>
-        These responses help GradNavi understand
-        your preferred work style for future
-        career recommendations.
-      </p>
+        <div
+          className="student-profile-personality__progress-track"
+          aria-hidden="true"
+        >
+          <span
+            style={{
+              width:
+                `${
+                  (
+                    answeredCount
+                    / PROFILE_QUESTIONNAIRE
+                      .length
+                  ) * 100
+                }%`,
+            }}
+          />
+        </div>
+      </div>
 
-      <p>
-        Answered: {answeredCount} of{' '}
-        {PROFILE_QUESTIONNAIRE.length}
-      </p>
 
-      <div className="questionnaire-list">
-        {PROFILE_QUESTIONNAIRE.map(
-          (question, questionIndex) => {
-            const currentResponse =
-              getResponse(question.key)
+      <div className="student-profile-personality__question-card">
+        <span className="student-profile-personality__trait">
+          {
+            currentQuestion.label
+          }
+        </span>
 
-            return (
-              <fieldset
-                className="questionnaire-item"
-                key={question.key}
-              >
-                <legend>
-                  {questionIndex + 1}.{' '}
-                  {question.label}
-                </legend>
+        <h3>
+          {
+            currentQuestion.question
+          }
+        </h3>
 
-                <p>{question.question}</p>
+        <div className="student-profile-personality__options">
+          {
+            QUESTIONNAIRE_OPTIONS.map(
+              (option) => {
+                const optionId =
+                  `${
+                    currentQuestion.key
+                  }-${
+                    option.value
+                  }`
 
-                <div className="questionnaire-options">
-                  {QUESTIONNAIRE_OPTIONS.map(
-                    (option) => {
-                      const inputId =
-                        `${question.key}-${option.value}`
+                const isSelected =
+                  currentResponse
+                  === option.value
 
-                      return (
-                        <label
-                          key={option.value}
-                          htmlFor={inputId}
-                        >
-                          <input
-                            id={inputId}
-                            type="radio"
-                            name={question.key}
-                            value={option.value}
-                            checked={
-                              currentResponse ===
-                              option.value
-                            }
-                            onChange={(event) =>
-                              handleResponseChange(
-                                question.key,
-                                event.target.value,
-                              )
-                            }
-                          />
-
-                          {option.value}.{' '}
-                          {option.label}
-                        </label>
-                      )
-                    },
-                  )}
-                </div>
-
-                {currentResponse && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleClearResponse(
-                        question.key,
-                      )
+                return (
+                  <label
+                    key={
+                      option.value
+                    }
+                    className={[
+                      'student-profile-personality__option',
+                      isSelected
+                        ? 'student-profile-personality__option--selected'
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    htmlFor={
+                      optionId
                     }
                   >
-                    Clear Response
-                  </button>
-                )}
-              </fieldset>
+                    <input
+                      id={
+                        optionId
+                      }
+                      type="radio"
+                      name={
+                        currentQuestion
+                          .key
+                      }
+                      value={
+                        option.value
+                      }
+                      checked={
+                        isSelected
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        handleResponseChange(
+                          event
+                            .target
+                            .value,
+                        )
+                      }
+                    />
+
+                    <span className="student-profile-personality__option-value">
+                      {
+                        option.value
+                      }
+                    </span>
+
+                    <span>
+                      {
+                        option.label
+                      }
+                    </span>
+                  </label>
+                )
+              },
             )
-          },
-        )}
+          }
+        </div>
+
+
+        {
+          currentResponse
+          && (
+            <button
+              className="student-profile-personality__clear"
+              type="button"
+              onClick={
+                handleClearResponse
+              }
+            >
+              Clear response
+            </button>
+          )
+        }
+
+
+        {
+          error
+          && (
+            <p
+              className="student-profile-redesign__error"
+              role="alert"
+            >
+              {error}
+            </p>
+          )
+        }
       </div>
-    </section>
+
+
+      <div className="student-profile-personality__actions">
+        <div>
+          <button
+            className="student-profile-redesign__secondary-button"
+            type="button"
+            onClick={
+              handlePrevious
+            }
+            disabled={
+              currentQuestionIndex
+              === 0
+            }
+          >
+            Previous
+          </button>
+
+          <button
+            className="student-profile-redesign__secondary-button"
+            type="button"
+            onClick={
+              onClose
+            }
+          >
+            Back to Profile Summary
+          </button>
+        </div>
+
+        <button
+          className="student-profile-redesign__primary-button"
+          type="button"
+          onClick={
+            handleSaveAndContinue
+          }
+          disabled={
+            isSaving
+          }
+        >
+          {
+            isSaving
+              ? 'Saving...'
+              : (
+                currentQuestionIndex
+                === PROFILE_QUESTIONNAIRE
+                  .length - 1
+                  ? 'Save Assessment'
+                  : 'Save & Continue'
+              )
+          }
+        </button>
+      </div>
+    </div>
   )
 }
+
 
 export default PersonalityResponsesSection

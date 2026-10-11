@@ -1,0 +1,41 @@
+career_name,osca_code,osca_title,isco08_code,isco08_title,correspondence_flag
+Accountant (General),211131,Accountant (General),2411,Accountants,p
+Management Accountant,211134,Management Accountant,2411,Accountants,p
+Taxation Accountant,211135,Taxation Accountant,2411,Accountants,p
+Content Creator (Marketing),221531,Content Creator (Marketing),2431,Advertising and marketing professionals,p
+Digital Marketing Analyst,221532,Digital Marketing Analyst,2431,Advertising and marketing professionals,p
+Market Research Analyst,221533,Market Research Analyst,2431,Advertising and marketing professionals,p
+Marketing Specialist,221534,Marketing Specialist,2431,Advertising and marketing professionals,p
+Human Resources Adviser,222131,Human Resources Adviser,2423,Personnel and career professionals,p
+Workplace Relations Adviser,222132,Workplace Relations Adviser,2423,Personnel and career professionals,p
+Recruitment Consultant,222231,Recruitment Consultant,2423,Personnel and career professionals,p
+Recruitment Consultant,222231,Recruitment Consultant,3333,Employment agents and contractors,p
+Recruitment Consultant,222231,Recruitment Consultant,3339,Business service agents not elsewhere classified,p
+Data Analyst,223231,Data Analyst,2120,"Mathematicians, actuaries and statisticians",p
+Data Architect,223232,Data Architect,2120,"Mathematicians, actuaries and statisticians",p
+Data Engineer,223233,Data Engineer,2120,"Mathematicians, actuaries and statisticians",p
+Data Scientist,223234,Data Scientist,2120,"Mathematicians, actuaries and statisticians",p
+Management Consultant,223432,Management Consultant,2421,Management and organisation analysts,p
+Supply Chain Analyst,223434,Supply Chain Analyst,2421,Management and organisation analysts,p
+Health Information Manager,223933,Health Information Manager,3252,Medical records and health information technicians,p
+Multimedia Designer,242131,Multimedia Designer,2166,Graphic and multimedia designers,p
+UI / UX Designer,242132,UI / UX Designer,2166,Graphic and multimedia designers,p
+Web Designer,242133,Web Designer,2166,Graphic and multimedia designers,p
+Graphic Designer,242332,Graphic Designer,2166,Graphic and multimedia designers,p
+Civil Engineer,243231,Civil Engineer,2142,Civil engineers,p
+Electrical Engineer,243331,Electrical Engineer,2151,Electrical engineers,p
+Industrial Engineer,243531,Industrial Engineer,2141,Industrial and production engineers,p
+Industrial Engineer,243531,Industrial Engineer,2149,Engineering professionals not elsewhere classified,p
+Mechanical Engineer,243532,Mechanical Engineer,2144,Mechanical engineers,p
+Occupational Therapist,262331,Occupational Therapist,2269,Health professionals not elsewhere classified,p
+Physiotherapist,262431,Physiotherapist,2264,Physiotherapists,
+Registered Nurse (Acute Care),265432,Registered Nurse (Acute Care),2221,Nursing professionals,p
+Cyber Security Advice and Assessment Specialist,271132,Cyber Security Advice and Assessment Specialist,2529,Database and network professionals not elsewhere classified,p
+Cyber Security Analyst,271133,Cyber Security Analyst,2529,Database and network professionals not elsewhere classified,p
+Cyber Security Architect,271134,Cyber Security Architect,2529,Database and network professionals not elsewhere classified,p
+Cyber Security Engineer,271135,Cyber Security Engineer,2512,Software developers,p
+ICT Business Analyst,273232,ICT Business Analyst,2511,Systems analysts,p
+Cloud Engineer,273331,Cloud Engineer,2512,Software developers,p
+DevOps Engineer,273332,DevOps Engineer,2512,Software developers,p
+Software Engineer,273333,Software Engineer,2512,Software developers,p
+Software Engineer,273333,Software Engineer,2514,Applications programmers,

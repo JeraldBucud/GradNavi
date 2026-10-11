@@ -16,11 +16,60 @@ class StudentProfile(models.Model):
 
 
 class Skill(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    category = models.CharField(max_length=100, blank=True)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    """
+    Canonical Skill reference used by both StudentSkill and CareerSkill.
+
+    A Skill represents one approved GradNavi concept. External labels,
+    aliases, and external identifiers are mapped to this canonical record
+    instead of creating duplicate Skill concepts.
+    """
+
+    class ConceptType(models.TextChoices):
+        SKILL = "skill", "Skill"
+        KNOWLEDGE = "knowledge", "Knowledge"
+        TECHNOLOGY = "technology", "Technology"
+
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+    )
+
+    concept_type = models.CharField(
+        max_length=20,
+        choices=ConceptType.choices,
+        default=ConceptType.SKILL,
+    )
+
+    category = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    concept_type__in=[
+                        "skill",
+                        "knowledge",
+                        "technology",
+                    ],
+                ),
+                name="valid_skill_concept_type",
+            ),
+        ]
 
     def __str__(self):
         return self.name
@@ -166,17 +215,76 @@ class Project(models.Model):
 
 
 class CareerGoal(models.Model):
+    """
+    Student-selected Career target.
+
+    career is the structured GradNavi Career reference.
+
+    target_role stays during the transition so existing
+    records and older API consumers keep their original text.
+    """
+
     student_profile = models.ForeignKey(
         StudentProfile,
         on_delete=models.CASCADE,
         related_name="career_goals",
     )
-    target_role = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
+    career = models.ForeignKey(
+        "careers.Career",
+        on_delete=models.PROTECT,
+        related_name="student_career_goals",
+        blank=True,
+        null=True,
+    )
+
+    target_role = models.CharField(
+        max_length=255,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    is_primary = models.BooleanField(
+        default=False,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                ],
+                condition=models.Q(
+                    is_primary=True,
+                ),
+                name="unique_primary_career_goal_per_profile",
+            ),
+            models.UniqueConstraint(
+                fields=[
+                    "student_profile",
+                    "career",
+                ],
+                condition=models.Q(
+                    career__isnull=False,
+                ),
+                name="unique_profile_career_goal",
+            ),
+        ]
 
     def __str__(self):
+        if self.career_id:
+            return self.career.name
+
         return self.target_role
 
 

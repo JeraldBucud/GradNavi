@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+
 function createEmptyExperienceForm() {
   return {
     job_title: '',
@@ -11,49 +12,125 @@ function createEmptyExperienceForm() {
   }
 }
 
+
 function ExperienceSection({
   items,
   onChange,
 }) {
-  const [experienceForm, setExperienceForm] = useState(
+  const [
+    experienceForm,
+    setExperienceForm,
+  ] = useState(
     createEmptyExperienceForm,
   )
-  const [editingIndex, setEditingIndex] = useState(null)
-  const [error, setError] = useState('')
+
+  const [
+    editingIndex,
+    setEditingIndex,
+  ] = useState(null)
+
+  const [
+    isFormOpen,
+    setIsFormOpen,
+  ] = useState(false)
+
+  const [error, setError] =
+    useState('')
+
+
+  function resetForm() {
+    setExperienceForm(
+      createEmptyExperienceForm(),
+    )
+
+    setEditingIndex(null)
+    setError('')
+    setIsFormOpen(false)
+  }
+
 
   function handleChange(event) {
     const {
       name,
       value,
-      type,
-      checked,
     } = event.target
 
-    setExperienceForm((currentForm) => ({
-      ...currentForm,
-      [name]:
-        type === 'checkbox'
-          ? checked
-          : value,
-    }))
+    setExperienceForm(
+      (currentForm) => ({
+        ...currentForm,
+        [name]: value,
+      }),
+    )
 
     setError('')
   }
 
-  function handleCurrentRoleChange(event) {
-    const isCurrent = event.target.checked
 
-    setExperienceForm((currentForm) => ({
-      ...currentForm,
-      is_current: isCurrent,
+  function handleCurrentRoleChange(
+    event,
+  ) {
+    const isCurrent =
+      event.target.checked
+
+    setExperienceForm(
+      (currentForm) => ({
+        ...currentForm,
+
+        is_current:
+          isCurrent,
+
+        end_date:
+          isCurrent
+            ? ''
+            : currentForm.end_date,
+      }),
+    )
+
+    setError('')
+  }
+
+
+  function handleAdd() {
+    setExperienceForm(
+      createEmptyExperienceForm(),
+    )
+
+    setEditingIndex(null)
+    setError('')
+    setIsFormOpen(true)
+  }
+
+
+  function handleEdit(index) {
+    const experience = items[index]
+
+    setExperienceForm({
+      job_title:
+        experience.job_title || '',
+
+      company:
+        experience.company || '',
+
+      start_date:
+        experience.start_date || '',
+
       end_date:
-        isCurrent
-          ? ''
-          : currentForm.end_date,
-    }))
+        experience.end_date || '',
 
+      is_current:
+        Boolean(
+          experience.is_current,
+        ),
+
+      description:
+        experience.description || '',
+    })
+
+    setEditingIndex(index)
     setError('')
+    setIsFormOpen(true)
   }
+
 
   function validateForm() {
     if (
@@ -61,7 +138,10 @@ function ExperienceSection({
       !experienceForm.company.trim() ||
       !experienceForm.start_date
     ) {
-      return 'Job title, company, and start date are required.'
+      return (
+        'Job title, company, and start date ' +
+        'are required.'
+      )
     }
 
     if (
@@ -70,16 +150,21 @@ function ExperienceSection({
       experienceForm.end_date <
         experienceForm.start_date
     ) {
-      return 'End date must not be earlier than start date.'
+      return (
+        'End date must not be earlier than ' +
+        'start date.'
+      )
     }
 
     return ''
   }
 
+
   function handleSubmit(event) {
     event.preventDefault()
 
-    const validationError = validateForm()
+    const validationError =
+      validateForm()
 
     if (validationError) {
       setError(validationError)
@@ -89,16 +174,21 @@ function ExperienceSection({
     const nextExperience = {
       job_title:
         experienceForm.job_title.trim(),
+
       company:
         experienceForm.company.trim(),
+
       start_date:
         experienceForm.start_date,
+
       end_date:
         experienceForm.is_current
           ? ''
           : experienceForm.end_date,
+
       is_current:
         experienceForm.is_current,
+
       description:
         experienceForm.description.trim(),
     }
@@ -110,232 +200,297 @@ function ExperienceSection({
       ])
     } else {
       onChange(
-        items.map((experience, index) => {
-          if (index !== editingIndex) {
-            return experience
-          }
+        items.map(
+          (experience, index) => {
+            if (index !== editingIndex) {
+              return experience
+            }
 
-          return {
-            ...experience,
-            ...nextExperience,
-          }
-        }),
+            return {
+              ...experience,
+              ...nextExperience,
+            }
+          },
+        ),
       )
     }
 
-    setExperienceForm(
-      createEmptyExperienceForm(),
-    )
-    setEditingIndex(null)
-    setError('')
+    resetForm()
   }
 
-  function handleEdit(index) {
-    const experience = items[index]
-
-    setExperienceForm({
-      job_title:
-        experience.job_title || '',
-      company:
-        experience.company || '',
-      start_date:
-        experience.start_date || '',
-      end_date:
-        experience.end_date || '',
-      is_current:
-        Boolean(experience.is_current),
-      description:
-        experience.description || '',
-    })
-
-    setEditingIndex(index)
-    setError('')
-  }
 
   function handleRemove(indexToRemove) {
     onChange(
       items.filter(
-        (_, index) => index !== indexToRemove,
+        (_, index) =>
+          index !== indexToRemove,
       ),
     )
 
-    if (editingIndex === indexToRemove) {
-      handleCancelEdit()
-    } else if (
+    if (
+      editingIndex === indexToRemove
+    ) {
+      resetForm()
+      return
+    }
+
+    if (
       editingIndex !== null &&
       editingIndex > indexToRemove
     ) {
       setEditingIndex(
-        (currentIndex) => currentIndex - 1,
+        (currentIndex) =>
+          currentIndex - 1,
       )
     }
   }
 
-  function handleCancelEdit() {
-    setExperienceForm(
-      createEmptyExperienceForm(),
-    )
-    setEditingIndex(null)
-    setError('')
-  }
 
   return (
-    <section className="profile-section">
-      <h2>Experience</h2>
-
-      <form onSubmit={handleSubmit}>
+    <section
+      id="experience"
+      className="profile-evidence-group"
+    >
+      <div className="profile-evidence-group__heading">
         <div>
-          <label htmlFor="job_title">
-            Job Title
-          </label>
+          <h3>
+            Experience
+          </h3>
 
-          <input
-            id="job_title"
-            name="job_title"
-            type="text"
-            value={experienceForm.job_title}
-            onChange={handleChange}
-            required
-          />
+          <p>
+            Employment and professional experience.
+          </p>
         </div>
 
-        <div>
-          <label htmlFor="company">
-            Company
-          </label>
-
-          <input
-            id="company"
-            name="company"
-            type="text"
-            value={experienceForm.company}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="experience_start_date">
-            Start Date
-          </label>
-
-          <input
-            id="experience_start_date"
-            name="start_date"
-            type="date"
-            value={experienceForm.start_date}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div>
-          <label>
-            <input
-              name="is_current"
-              type="checkbox"
-              checked={experienceForm.is_current}
-              onChange={handleCurrentRoleChange}
-            />
-            I currently work here
-          </label>
-        </div>
-
-        <div>
-          <label htmlFor="experience_end_date">
-            End Date
-          </label>
-
-          <input
-            id="experience_end_date"
-            name="end_date"
-            type="date"
-            value={experienceForm.end_date}
-            onChange={handleChange}
-            disabled={experienceForm.is_current}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="experience_description">
-            Description
-          </label>
-
-          <textarea
-            id="experience_description"
-            name="description"
-            value={experienceForm.description}
-            onChange={handleChange}
-          />
-        </div>
-
-        {error && (
-          <p role="alert">{error}</p>
-        )}
-
-        <button type="submit">
-          {editingIndex === null
-            ? 'Add Experience'
-            : 'Update Experience'}
-        </button>
-
-        {editingIndex !== null && (
+        {!isFormOpen && (
           <button
+            className="profile-evidence-add"
             type="button"
-            onClick={handleCancelEdit}
+            onClick={handleAdd}
           >
-            Cancel Edit
+            Add Experience
           </button>
         )}
-      </form>
+      </div>
 
-      {items.length > 0 && (
-        <div>
-          <h3>Experience History</h3>
 
-          {items.map((experience, index) => (
-            <article
-              className="profile-item"
-              key={
-                experience.id ||
-                `${experience.company}-${experience.job_title}-${index}`
-              }
+      <div className="profile-evidence-records">
+        {items.length === 0 ? (
+          <div className="profile-evidence-empty">
+            No experience records added.
+          </div>
+        ) : (
+          items.map(
+            (experience, index) => (
+              <article
+                className="profile-evidence-record"
+                key={
+                  experience.id ||
+                  `${experience.company}-${experience.job_title}-${index}`
+                }
+              >
+                <div className="profile-evidence-record__content">
+                  <strong>
+                    {experience.job_title}
+                  </strong>
+
+                  <span>
+                    {experience.company}
+                  </span>
+
+                  <span>
+                    {experience.start_date}
+                    {' to '}
+                    {
+                      experience.is_current
+                        ? 'Present'
+                        : experience.end_date ||
+                          'Not specified'
+                    }
+                  </span>
+
+                  {experience.description && (
+                    <p>
+                      {experience.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="profile-evidence-record__actions">
+                  <button
+                    className="profile-text-action"
+                    type="button"
+                    onClick={() =>
+                      handleEdit(index)
+                    }
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="profile-text-action profile-text-action--danger"
+                    type="button"
+                    onClick={() =>
+                      handleRemove(index)
+                    }
+                  >
+                    Remove
+                  </button>
+                </div>
+              </article>
+            ),
+          )
+        )}
+      </div>
+
+
+      {isFormOpen && (
+        <form
+          className="profile-evidence-form"
+          onSubmit={handleSubmit}
+        >
+          <div className="profile-evidence-form__grid">
+            <div className="profile-field">
+              <label htmlFor="job_title">
+                Job Title
+              </label>
+
+              <input
+                id="job_title"
+                name="job_title"
+                type="text"
+                value={
+                  experienceForm.job_title
+                }
+                onChange={handleChange}
+              />
+            </div>
+
+
+            <div className="profile-field">
+              <label htmlFor="company">
+                Company
+              </label>
+
+              <input
+                id="company"
+                name="company"
+                type="text"
+                value={
+                  experienceForm.company
+                }
+                onChange={handleChange}
+              />
+            </div>
+
+
+            <div className="profile-field">
+              <label htmlFor="experience_start_date">
+                Start Date
+              </label>
+
+              <input
+                id="experience_start_date"
+                name="start_date"
+                type="date"
+                value={
+                  experienceForm.start_date
+                }
+                onChange={handleChange}
+              />
+            </div>
+
+
+            <div className="profile-field">
+              <label htmlFor="experience_end_date">
+                End Date
+              </label>
+
+              <input
+                id="experience_end_date"
+                name="end_date"
+                type="date"
+                value={
+                  experienceForm.end_date
+                }
+                onChange={handleChange}
+                disabled={
+                  experienceForm.is_current
+                }
+              />
+            </div>
+
+
+            <div className="profile-field profile-field--full">
+              <label className="profile-checkbox-field">
+                <input
+                  name="is_current"
+                  type="checkbox"
+                  checked={
+                    experienceForm.is_current
+                  }
+                  onChange={
+                    handleCurrentRoleChange
+                  }
+                />
+
+                <span>
+                  I currently work here
+                </span>
+              </label>
+            </div>
+
+
+            <div className="profile-field profile-field--full">
+              <label htmlFor="experience_description">
+                Description
+              </label>
+
+              <textarea
+                id="experience_description"
+                name="description"
+                value={
+                  experienceForm.description
+                }
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+
+          {error && (
+            <p
+              className="profile-error-message"
+              role="alert"
             >
-              <h4>{experience.job_title}</h4>
+              {error}
+            </p>
+          )}
 
-              <p>{experience.company}</p>
 
-              <p>
-                {experience.start_date} to{' '}
-                {experience.is_current
-                  ? 'Present'
-                  : experience.end_date ||
-                    'Not specified'}
-              </p>
+          <div className="profile-inline-form__actions">
+            <button
+              className="profile-primary-action"
+              type="submit"
+            >
+              {editingIndex === null
+                ? 'Add Experience'
+                : 'Update Experience'}
+            </button>
 
-              {experience.description && (
-                <p>{experience.description}</p>
-              )}
-
-              <button
-                type="button"
-                onClick={() => handleEdit(index)}
-              >
-                Edit
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleRemove(index)}
-              >
-                Remove
-              </button>
-            </article>
-          ))}
-        </div>
+            <button
+              className="profile-secondary-action"
+              type="button"
+              onClick={resetForm}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       )}
     </section>
   )
 }
+
 
 export default ExperienceSection

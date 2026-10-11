@@ -15,14 +15,67 @@ def gradnavi_exception_handler(exc, context):
     if response is None:
         return response
 
+    error_code = _get_error_code(exc)
     response.data = {
         "error": {
-            "code": _get_error_code(exc),
+            "code": error_code,
             "message": _get_error_message(exc),
             "details": _get_error_details(exc, response.data),
         }
     }
+    _audit_external_service_failure(
+        response=response,
+        error_code=error_code,
+        context=context,
+    )
     return response
+
+
+def _audit_external_service_failure(
+    *,
+    response,
+    error_code,
+    context,
+):
+    if (
+        response.status_code
+        != status.HTTP_503_SERVICE_UNAVAILABLE
+        or error_code != "external_service_unavailable"
+    ):
+        return
+
+    try:
+        from administration.models import AuditRecord
+
+        view = (
+            context
+            .get("view")
+            if isinstance(context, dict)
+            else None
+        )
+
+        AuditRecord.objects.create(
+            actor=None,
+            action="external_service.failure",
+            area="external_services",
+            target_type="ExternalService",
+            target_id="ai_provider",
+            metadata={
+                "result": "failure",
+                "status_code": (
+                    status.HTTP_503_SERVICE_UNAVAILABLE
+                ),
+                "error_code": error_code,
+                "view": (
+                    view.__class__.__name__
+                    if view is not None
+                    else ""
+                ),
+            },
+        )
+
+    except Exception:
+        return
 
 
 def _get_error_code(exc):

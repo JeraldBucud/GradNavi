@@ -1,0 +1,221 @@
+/*
+ * GradNavi Design System V1
+ *
+ * Source:
+ * Figma -> 02 - Design System -> GradNavi Design System V1
+ *
+ * This file contains shared design tokens only.
+ * Page-specific layout and component styling should reference these values
+ * instead of repeating raw colours, spacing values, and typography settings.
+ */
+
+:root {
+  /* -------------------------------------------------
+   * Brand colours
+   * ------------------------------------------------- */
+
+  --color-primary: #1d4ed8;
+  --color-primary-dark: #1e3a8a;
+  --color-primary-light: #dbeafe;
+
+  --color-secondary: #0f766e;
+  --color-secondary-light: #ccfbf1;
+
+  --color-accent: #d97706;
+
+
+  /* -------------------------------------------------
+   * Neutral palette
+   * ------------------------------------------------- */
+
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-500: #64748b;
+  --color-neutral-700: #334155;
+  --color-neutral-900: #0f172a;
+
+  /*
+   * These text colours also appear throughout the approved
+   * Figma components.
+   */
+  --color-text-secondary: #475569;
+  --color-text-disabled: #94a3b8;
+
+
+  /* -------------------------------------------------
+   * Semantic colours
+   * ------------------------------------------------- */
+
+  --color-success: #15803d;
+  --color-success-bg: #dcfce7;
+
+  --color-warning: #b45309;
+  --color-warning-bg: #fef3c7;
+
+  --color-error: #b91c1c;
+  --color-error-bg: #fee2e2;
+
+  --color-info: #0369a1;
+  --color-info-bg: #e0f2fe;
+
+
+  /* -------------------------------------------------
+   * Surface and text aliases
+   *
+   * These aliases make component CSS easier to understand.
+   * ------------------------------------------------- */
+
+  --color-page: var(--color-neutral-50);
+  --color-surface: var(--color-neutral-0);
+  --color-surface-subtle: var(--color-neutral-100);
+
+  --color-border: var(--color-neutral-200);
+  --color-border-strong: var(--color-neutral-300);
+
+  --color-heading: var(--color-neutral-900);
+  --color-body: var(--color-neutral-700);
+  --color-muted: var(--color-neutral-500);
+
+
+  /* -------------------------------------------------
+   * Typography
+   * ------------------------------------------------- */
+
+  --font-family-base: "Inter", sans-serif;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Display Large: 48 / 56 Semibold */
+  --font-size-display-large: 48px;
+  --line-height-display-large: 56px;
+
+  /* Display Small: 40 / 48 Semibold */
+  --font-size-display-small: 40px;
+  --line-height-display-small: 48px;
+
+  /* H1: 32 / 40 Semibold */
+  --font-size-h1: 32px;
+  --line-height-h1: 40px;
+
+  /* H2: 24 / 32 Semibold */
+  --font-size-h2: 24px;
+  --line-height-h2: 32px;
+
+  /* H3: 20 / 28 Semibold */
+  --font-size-h3: 20px;
+  --line-height-h3: 28px;
+
+  /* H4: 18 / 26 Semibold */
+  --font-size-h4: 18px;
+  --line-height-h4: 26px;
+
+  /* Body Large: 16 / 24 Regular */
+  --font-size-body-large: 16px;
+  --line-height-body-large: 24px;
+
+  /* Body Medium: 14 / 20 Regular */
+  --font-size-body-medium: 14px;
+  --line-height-body-medium: 20px;
+
+  /* Body Small: 12 / 18 Regular */
+  --font-size-body-small: 12px;
+  --line-height-body-small: 18px;
+
+  /* Label Large: 14 / 20 Medium */
+  --font-size-label-large: 14px;
+  --line-height-label-large: 20px;
+
+  /* Label Medium: 12 / 18 Medium */
+  --font-size-label-medium: 12px;
+  --line-height-label-medium: 18px;
+
+  /* Label Small: 11 / 16 Medium */
+  --font-size-label-small: 11px;
+  --line-height-label-small: 16px;
+
+  /* Button: 14 / 20 Semibold */
+  --font-size-button: 14px;
+  --line-height-button: 20px;
+
+
+  /* -------------------------------------------------
+   * Spacing
+   *
+   * Figma uses an 8px base with useful 4px increments.
+   * ------------------------------------------------- */
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+
+  /* -------------------------------------------------
+   * Border radius
+   * ------------------------------------------------- */
+
+  --radius-small: 6px;
+  --radius-medium: 8px;
+  --radius-large: 12px;
+  --radius-xl: 16px;
+
+
+  /* -------------------------------------------------
+   * Borders
+   * ------------------------------------------------- */
+
+  --border-default: 1px solid var(--color-neutral-200);
+  --border-strong: 1px solid var(--color-neutral-300);
+  --border-focus: 2px solid var(--color-primary);
+  --border-error: 1px solid var(--color-error);
+
+
+  /* -------------------------------------------------
+   * Shadows
+   *
+   * Figma specifies:
+   * Small: 0 1 2 / 6%
+   * Medium: 0 4 10 / 8%
+   * ------------------------------------------------- */
+
+  --shadow-small: 0 1px 2px rgb(15 23 42 / 6%);
+  --shadow-medium: 0 4px 10px rgb(15 23 42 / 8%);
+
+
+  /* -------------------------------------------------
+   * Standard control sizes
+   * ------------------------------------------------- */
+
+  --control-height-medium: 44px;
+  --input-height: 40px;
+
+  --control-padding-inline: 16px;
+
+
+  /* -------------------------------------------------
+   * Application layout
+   * ------------------------------------------------- */
+
+  --sidebar-width: 256px;
+  --main-content-padding: 32px;
+
+  --card-padding-small: 20px;
+  --card-padding: 24px;
+
+  --section-gap: 32px;
+
+  --content-max-width: 1240px;
+}

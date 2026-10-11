@@ -258,31 +258,67 @@ If one is introduced later, both the Student Profile Data Design and this mappin
 
 ## 13. Career Goal Mapping
 
-Each career-goal API item maps to one `CareerGoal` record.
+Each Career Goal API item maps to one `CareerGoal` record.
 
-| API Concept | Planned Model Field |
+The current API contract supports multiple Career Goals with one Primary Goal.
+
+| API Concept | Implemented Model Field |
 | --- | --- |
-| Career goal identifier | `CareerGoal.id` |
-| Target role | `CareerGoal.target_role` |
+| Career Goal identifier | `CareerGoal.id` |
+| Structured Career identifier | `CareerGoal.career_id` |
+| Career name / legacy role text | `CareerGoal.target_role` |
 | Description | `CareerGoal.description` |
+| Primary Goal flag | `CareerGoal.is_primary` |
 
-Career goals may later provide input to recommendation, readiness, skill-gap, learning-resource, and roadmap functions.
+The preferred write path uses `career_id`.
 
-The scoring behaviour is outside the scope of this mapping document.
+A typical structured Career Goal contains:
+
+- `career_id`
+- `description`
+- `is_primary`
+
+`target_role` remains supported as a compatibility path for older records and clients.
+
+When an approved Career is selected, the backend may synchronize the canonical Career name into `target_role`.
+
+When both `career_id` and `target_role` are supplied, they must identify the same Career.
+
+The backend prevents:
+
+- Duplicate structured Careers in one Student Profile.
+- More than one Primary Career Goal.
+- Invalid or unavailable structured Career references.
+
+Career Goals may contribute profile direction to recommendation, readiness, skill-gap, learning-resource, and roadmap features.
+
+The scoring behaviour remains outside the scope of this mapping document.
 
 ## 14. Personality Response Mapping
 
 Each personality-response API item maps to one `PersonalityResponse` record.
 
-| API Concept | Planned Model Field |
+| API Concept | Implemented Model Field |
 | --- | --- |
 | Response identifier | `PersonalityResponse.id` |
 | Question identifier | `PersonalityResponse.question_key` |
 | Response value | `PersonalityResponse.response_value` |
 
-The final personality questionnaire and permitted values remain an open design decision.
+The implemented Student Profile frontend uses 16 approved work-style questions.
 
-This mapping only defines how approved responses would connect to the Student Profile model.
+The student-facing response scale is:
+
+- Strongly Disagree.
+- Disagree.
+- Neutral.
+- Agree.
+- Strongly Agree.
+
+The interface presents one question at a time.
+
+Responses are saved through the authenticated Student Profile update contract.
+
+The personality-response structure supports GradNavi career-analysis features and is not defined as a clinical diagnosis.
 
 ## 15. Ownership Mapping
 
@@ -386,50 +422,53 @@ Serializer responsibilities may include:
 - Preventing writable access to server-controlled fields.
 - Coordinating nested or related Student Profile data where required.
 
-The final serializer structure should be selected by the backend developer based on the approved API contract and data model.
+The implemented serializers translate the approved nested Student Profile API contract into the current Django model relationships and validation rules.
 
-## 20. Current Contract Gap
+## 20. Current Implemented Contract
 
-The current Sprint 1 REST API contract defines the overall `GET /api/v1/profile/` and `PATCH /api/v1/profile/` operations but does not yet define detailed CRUD endpoints for each related entity.
+The Student Profile frontend and backend currently use the authenticated nested profile contract:
 
-For example, separate endpoints are not yet confirmed for:
+- `GET /api/v1/profile/`
+- `PATCH /api/v1/profile/`
 
-- Education.
-- Experience.
-- Projects.
-- Student skills.
-- Student interests.
-- Career goals.
-- Personality responses.
+The profile payload includes the related collections required by the current interface:
 
-This is not treated as an implementation decision in this document.
+- `skills`
+- `interests`
+- `education`
+- `experience`
+- `projects`
+- `career_goals`
+- `personality_responses`
 
-The team should decide whether related records will be managed:
+Searchable shared-reference endpoints are used for approved Skills, Interests, and Careers.
 
-1. Through nested profile requests.
-2. Through dedicated resource endpoints.
-3. Through a combination of both approaches.
+The redesigned frontend keeps database implementation details behind the REST contract.
 
-The chosen approach should be documented in the REST API Design before frontend and backend integration depends on it.
+Students edit profile sections through the frontend while the backend validates and persists the related Student-owned records.
 
-## 21. Open Mapping Decisions
+The current WBS 5.6 Student Profile redesign does not require separate CRUD endpoints for each nested profile collection.
 
-The following items require team or backend confirmation:
+## 21. Implemented Mapping Decisions
 
-1. Final JSON structure for each Skill item.
-2. Final JSON structure for each Interest item.
-3. Whether `proficiency_level` is exposed and writable through the profile API.
-4. Final proficiency scale.
-5. Whether related entities use nested profile updates or dedicated endpoints.
-6. Whether StudentProfile is automatically created during registration.
-7. Whether `created_at` and `updated_at` values are exposed to the frontend.
-8. Whether shared Skills and Interests are read-only for Student users.
-9. How deleted related records are handled through PATCH requests.
-10. How current Education, Experience, and Project records represent missing end dates.
-11. Final personality-response structure.
-12. Final serializer nesting strategy.
+The following Student Profile mapping decisions are implemented in the current contract:
 
-These decisions should be resolved before the Student Profile backend and frontend integration is considered complete.
+1. Skill items use shared Skill references and an approved proficiency level.
+2. Interest items use shared Interest references.
+3. `proficiency_level` is writable using the approved Student proficiency scale.
+4. Student-owned related collections are updated through the nested profile PATCH workflow.
+5. Career Goals support structured `career_id` input.
+6. Multiple Career Goals are allowed with one Primary Career Goal when goals exist.
+7. Legacy `target_role` input remains supported for compatibility.
+8. Duplicate structured Career Goals for the same Career are rejected.
+9. Student-owned collections are validated against the authenticated Student Profile.
+10. The personality contract uses 16 approved work-style questions and the five-choice response scale.
+11. Education, Experience, and Project records support their implemented nullable or blank end-date rules.
+12. Shared Skills, Interests, and Careers are selected through approved reference-data search flows.
+13. The React frontend consumes the REST API contract rather than Django or PostgreSQL implementation details.
+14. Server-controlled ownership fields are not accepted as proof of Student ownership.
+
+Future material changes to serializer nesting, related-resource endpoints, shared-reference rules, or Career Goal behaviour must update this mapping document and the REST API Design.
 
 ## 22. Implementation Review Checklist
 
@@ -450,11 +489,11 @@ Before the Student Profile API is considered aligned with this design, the team 
 
 ## 23. Design Status
 
-This document is a working mapping artifact for Sprint 1 team review.
+This document is an implementation-aligned mapping artifact for the current Student Profile frontend and backend contract.
 
 It connects the Student Profile REST API contract to the conceptual Student Profile data design.
 
-Final field names, serializer behaviour, nested update behaviour, and related-resource endpoints should be confirmed against the implemented backend before this mapping is treated as final.
+Current field names, serializer behaviour, nested update behaviour, Career Goal rules, and Personality Response behaviour are aligned with the implemented backend and WBS 5.6 Student Profile frontend. Future contract changes must be reflected here.
 
 Any material API or model change should be reflected in:
 

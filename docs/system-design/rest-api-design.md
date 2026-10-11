@@ -264,19 +264,49 @@ The GradNavi API is organised into functional resource groups.
 | Authentication     | `/api/v1/auth/`               | Registration, login, token refresh, logout, and account recovery |
 | Student Profile    | `/api/v1/profile/`            | Manage the authenticated student's profile information           |
 | Careers            | `/api/v1/careers/`            | Retrieve career reference data                                   |
-| Recommendations    | `/api/v1/recommendations/`    | Generate and retrieve ranked career recommendations              |
-| Skill Gaps         | `/api/v1/skill-gaps/`         | Compare student skills against career requirements               |
-| Readiness          | `/api/v1/readiness/`          | Calculate and retrieve career-readiness results                  |
+| Recommendations | `/api/v1/recommendations/` | Generate and retrieve deterministic ranked career recommendations |
+| Top Match Explanation | `/api/v1/recommendations/top-explanation/` | Retrieve the authenticated student's AI-assisted Top Match explanation |
+| Skill Gap Summary | `/api/v1/skill-gap-summary/` | Retrieve deterministic Fix First data plus the AI-assisted gap explanation for one selected Career |
+| Readiness | `/api/v1/readiness/` | Retrieve deterministic selected-career readiness and requirement details |
 | Job Descriptions   | `/api/v1/job-descriptions/`   | Analyse pasted job descriptions and compare requirements         |
 | Documents          | `/api/v1/documents/`          | Manage generated resume and cover-letter drafts                  |
 | Interviews         | `/api/v1/interviews/`         | Manage interview questions, answers, and feedback                |
-| Learning Resources | `/api/v1/learning-resources/` | Retrieve learning suggestions linked to skill gaps               |
+| Learning Resources | `/api/v1/learning-resources/` | Retrieve controlled learning suggestions linked to a selected Career's unresolved skill gaps |
 | Career Roadmaps    | `/api/v1/roadmaps/`           | Manage ordered career-development steps                          |
 | Progress           | `/api/v1/progress/`           | Retrieve student progress and saved activity                     |
 | Administration     | `/api/v1/admin/`              | Manage authorised administrative resources                       |
 | Audit              | `/api/v1/audit/`              | Access permitted audit information and system records            |
 
 These endpoint groups define the planned V1 API structure. Detailed request and response contracts are documented separately for endpoints as implementation work progresses.
+### 8.1 Implemented WBS 5.6 Career and Readiness Contracts
+
+The current WBS 5.6 implementation exposes these authenticated student-facing contracts:
+
+| Method | Endpoint | Required input | Main behaviour |
+| --- | --- | --- | --- |
+| `GET` | `/api/v1/recommendations/` | Authenticated Student | Returns deterministic ranked Career Recommendations. Valid recommendation snapshots may be reused when the controlled recommendation cache remains valid. |
+| `GET` | `/api/v1/recommendations/top-explanation/` | Authenticated Student | Returns the Top Match explanation through the approved backend text-provider boundary. |
+| `GET` | `/api/v1/readiness/?career_id=<id>` | Active `career_id` | Returns deterministic readiness status, Readiness Score, requirement counts, and the complete selected-career requirement breakdown. |
+| `GET` | `/api/v1/skill-gap-summary/?career_id=<id>` | Active `career_id` | Returns deterministic Fix First data plus AI-written readiness explanation and next-step wording. Valid responses are persisted in `SkillGapSummarySnapshot`. |
+| `GET` | `/api/v1/learning-resources/?career_id=<id>` | Active `career_id` | Returns only controlled Learning Resources linked through the backend learning-suggestion workflow. |
+
+WBS 5.6 keeps numerical and priority decisions outside generative AI.
+
+The deterministic backend remains authoritative for:
+
+- Recommendation scores.
+- Recommendation ranking.
+- Career Readiness Score.
+- Requirement statuses.
+- Missing, Partially Matched, and Matched counts.
+- Skill-gap ordering.
+- Fix First priority and order.
+
+The AI layer may explain an approved result and write controlled next-step wording, but it must not modify those deterministic values.
+
+The default WBS 5.6 text-generation model is `gpt-5-nano`, resolved through backend provider configuration.
+
+The frontend does not call OpenAI directly.
 
 ## 9. Sprint 1 Detailed API Contracts
 

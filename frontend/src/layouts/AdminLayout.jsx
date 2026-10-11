@@ -1,0 +1,425 @@
+import {
+  useEffect,
+  useState,
+} from 'react'
+
+import {
+  BookOpen,
+  Briefcase,
+  ClipboardList,
+  Flag,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Sparkles,
+  Users,
+  X,
+} from 'lucide-react'
+
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useNavigate,
+} from 'react-router'
+
+import {
+  USER_UPDATED_EVENT,
+  getAccountSettings,
+  getStoredUser,
+  logoutAccount,
+} from '../services/authService'
+
+import gradNaviLogoMark from '../assets/brand/gradnavi-logo-mark.png'
+import gradNaviLogoReversed from '../assets/brand/gradnavi-logo-reversed.png'
+
+import './StudentLayout.css'
+
+
+const adminNavigation = [
+  {
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    path: '/admin',
+    implemented: true,
+  },
+  {
+    label: 'Users',
+    icon: Users,
+    path: '/admin/users',
+    implemented: true,
+  },
+  {
+    label: 'Careers',
+    icon: Briefcase,
+    path: '/admin/careers',
+    implemented: true,
+  },
+  {
+    label: 'Skills',
+    icon: Sparkles,
+    path: '/admin/skills',
+    implemented: true,
+  },
+  {
+    label: 'Learning Resources',
+    icon: BookOpen,
+    path: '/admin/learning-resources',
+    implemented: true,
+  },
+  {
+    label: 'Reports',
+    icon: Flag,
+    path: '/admin/reports',
+    implemented: true,
+  },
+  {
+    label: 'Audit Records',
+    icon: ClipboardList,
+    path: '/admin/audit-records',
+    implemented: true,
+  },
+]
+
+
+function AdminLayout() {
+  const navigate = useNavigate()
+
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState(
+    () => getStoredUser(),
+  )
+
+  const [
+    isMobileNavigationOpen,
+    setIsMobileNavigationOpen,
+  ] = useState(false)
+
+  const adminName =
+    currentUser?.first_name?.trim() || 'Admin'
+
+  const adminInitial =
+    adminName.charAt(0).toUpperCase()
+
+  const adminProfilePhoto =
+    typeof currentUser?.profile_photo
+      === 'string'
+      ? currentUser
+        .profile_photo
+        .trim()
+      : ''
+
+
+  useEffect(() => {
+    let isActive = true
+
+    async function syncCurrentAccount() {
+      try {
+        const accountData =
+          await getAccountSettings()
+
+        if (isActive) {
+          setCurrentUser(
+            accountData,
+          )
+        }
+      } catch {
+        /*
+         * Keep the locally stored account summary when
+         * account synchronization is unavailable.
+         */
+      }
+    }
+
+    function handleUserUpdated(
+      event,
+    ) {
+      setCurrentUser(
+        event.detail
+        || getStoredUser(),
+      )
+    }
+
+    window.addEventListener(
+      USER_UPDATED_EVENT,
+      handleUserUpdated,
+    )
+
+    syncCurrentAccount()
+
+    return () => {
+      isActive = false
+
+      window.removeEventListener(
+        USER_UPDATED_EVENT,
+        handleUserUpdated,
+      )
+    }
+  }, [])
+
+
+  useEffect(
+    () => {
+      if (!isMobileNavigationOpen) {
+        return undefined
+      }
+
+      const previousOverflow =
+        document.body.style.overflow
+
+      document.body.style.overflow =
+        'hidden'
+
+      function handleKeyDown(event) {
+        if (event.key === 'Escape') {
+          setIsMobileNavigationOpen(false)
+        }
+      }
+
+      document.addEventListener(
+        'keydown',
+        handleKeyDown,
+      )
+
+      return () => {
+        document.body.style.overflow =
+          previousOverflow
+
+        document.removeEventListener(
+          'keydown',
+          handleKeyDown,
+        )
+      }
+    },
+    [isMobileNavigationOpen],
+  )
+
+
+  function closeMobileNavigation() {
+    setIsMobileNavigationOpen(false)
+  }
+
+
+  async function handleLogout() {
+    closeMobileNavigation()
+
+    try {
+      await logoutAccount()
+    } finally {
+      navigate('/login', {
+        replace: true,
+      })
+    }
+  }
+
+
+  return (
+    <div className="student-shell">
+      <header className="student-mobile-header">
+        <Link
+          className="student-mobile-header__brand"
+          to="/admin"
+          onClick={closeMobileNavigation}
+        >
+          <img
+            className="student-mobile-header__logo"
+            src={gradNaviLogoMark}
+            alt="GradNavi"
+          />
+        </Link>
+
+        <button
+          className="student-mobile-header__menu"
+          type="button"
+          aria-label="Open navigation menu"
+          aria-controls="admin-navigation-drawer"
+          aria-expanded={isMobileNavigationOpen}
+          onClick={() =>
+            setIsMobileNavigationOpen(true)
+          }
+        >
+          <Menu
+            size={22}
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
+        </button>
+      </header>
+
+      <button
+        className={[
+          'student-mobile-overlay',
+          isMobileNavigationOpen
+            ? 'student-mobile-overlay--visible'
+            : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        type="button"
+        aria-label="Close navigation menu"
+        tabIndex={
+          isMobileNavigationOpen
+            ? 0
+            : -1
+        }
+        onClick={closeMobileNavigation}
+      />
+
+      <aside
+        id="admin-navigation-drawer"
+        className={[
+          'student-sidebar',
+          isMobileNavigationOpen
+            ? 'student-sidebar--mobile-open'
+            : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        <button
+          className="student-sidebar__mobile-close"
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={closeMobileNavigation}
+        >
+          <X
+            size={24}
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
+        </button>
+
+        <div className="student-sidebar__top">
+          <Link
+            className="student-sidebar__brand"
+            to="/admin"
+            onClick={closeMobileNavigation}
+          >
+            <img
+              className="student-sidebar__logo"
+              src={gradNaviLogoReversed}
+              alt="GradNavi"
+            />
+          </Link>
+
+          <nav
+            className="student-sidebar__navigation"
+            aria-label="Admin navigation"
+          >
+            {adminNavigation.map((item) => {
+              const Icon = item.icon
+
+              if (item.implemented) {
+                return (
+                  <NavLink
+                    key={item.label}
+                    to={item.path}
+                    end
+                    onClick={
+                      closeMobileNavigation
+                    }
+                    className={({ isActive }) =>
+                      [
+                        'student-nav-item',
+                        isActive
+                          ? 'student-nav-item--active'
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')
+                    }
+                  >
+                    <Icon
+                      size={20}
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
+
+                    <span>
+                      {item.label}
+                    </span>
+                  </NavLink>
+                )
+              }
+
+              return (
+                <div
+                  key={item.label}
+                  className="student-nav-item student-nav-item--disabled"
+                  aria-disabled="true"
+                  title="This screen is not implemented yet."
+                >
+                  <Icon
+                    size={20}
+                    strokeWidth={1.8}
+                    aria-hidden="true"
+                  />
+
+                  <span>
+                    {item.label}
+                  </span>
+                </div>
+              )
+            })}
+          </nav>
+        </div>
+
+        <div className="student-sidebar__account">
+          <div className="student-account-summary">
+            <div
+              className="student-account-avatar"
+            >
+              {adminProfilePhoto ? (
+                <img
+                  src={adminProfilePhoto}
+                  alt={`${adminName} profile`}
+                />
+              ) : (
+                <span
+                  aria-hidden="true"
+                >
+                  {adminInitial}
+                </span>
+              )}
+            </div>
+
+            <div className="student-account-copy">
+              <strong>
+                {adminName}
+              </strong>
+
+              <span>
+                Administrator account
+              </span>
+            </div>
+          </div>
+
+          <button
+            className="student-account-logout"
+            type="button"
+            onClick={handleLogout}
+          >
+            <LogOut
+              size={16}
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
+
+            <span>
+              Log Out
+            </span>
+          </button>
+        </div>
+      </aside>
+
+      <div className="student-shell__content">
+        <Outlet />
+      </div>
+    </div>
+  )
+}
+
+
+export default AdminLayout

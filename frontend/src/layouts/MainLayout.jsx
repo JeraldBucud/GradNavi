@@ -9,7 +9,9 @@ import {
   getStoredUser,
   logoutAccount,
 } from '../services/authService'
+
 import './MainLayout.css'
+
 
 function MainLayout() {
   const navigate = useNavigate()
@@ -17,11 +19,24 @@ function MainLayout() {
 
   const currentUser = getStoredUser()
 
-  async function handleLogout() {
-    await logoutAccount()
 
-    navigate('/login', { replace: true })
+  async function handleLogout() {
+    try {
+      await logoutAccount()
+    } finally {
+      /*
+       * logoutAccount clears the local authentication
+       * session even when the backend request fails.
+       *
+       * Navigation therefore also needs to finish
+       * regardless of the server response.
+       */
+      navigate('/login', {
+        replace: true,
+      })
+    }
   }
+
 
   return (
     <>
@@ -34,11 +49,17 @@ function MainLayout() {
             GradNavi
           </Link>
 
-          <Link to="/">Home</Link>
+
+          <Link to="/">
+            Home
+          </Link>
+
 
           {currentUser ? (
             <>
-              <Link to="/profile">Student Profile</Link>
+              <Link to="/profile">
+                Student Profile
+              </Link>
 
               <button
                 className="main-logout"
@@ -50,16 +71,23 @@ function MainLayout() {
             </>
           ) : (
             <>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
+              <Link to="/login">
+                Login
+              </Link>
+
+              <Link to="/register">
+                Register
+              </Link>
             </>
           )}
         </nav>
       </header>
 
+
       <Outlet key={location.pathname} />
     </>
   )
 }
+
 
 export default MainLayout

@@ -1,0 +1,5 @@
+resource_key,title,provider,url,resource_type,description,is_active
+python_tutorial,Python Tutorial,Python Software Foundation,https://docs.python.org/3/tutorial/,tutorial,Official Python tutorial for core language syntax and standard programming concepts,true
+javascript_guide,JavaScript Guide,MDN Web Docs,https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide,documentation,Official MDN guide covering JavaScript language fundamentals and browser use,true
+git_book,Pro Git Book,Git SCM,https://git-scm.com/book/en/v2,book,Official Git project book covering version control concepts and daily Git workflows,true
+postgresql_sql_tutorial,PostgreSQL SQL Tutorial,PostgreSQL Global Development Group,https://www.postgresql.org/docs/current/tutorial-sql.html,tutorial,Official PostgreSQL documentation introducing SQL querying and relational database operations,true
