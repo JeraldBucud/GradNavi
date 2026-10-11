@@ -389,7 +389,7 @@ function AdminDashboardPage() {
 
 
   return (
-    <div className="career-guidance-page">
+    <div className="career-guidance-page admin-dashboard-page">
       <header className="career-guidance-heading">
         <div className="career-guidance-heading__copy">
           <h1>Admin Dashboard</h1>

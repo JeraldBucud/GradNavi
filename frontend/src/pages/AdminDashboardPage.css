@@ -110,3 +110,13 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+@media (max-width: 640px) {
+  .admin-dashboard-page .career-guidance-section__heading {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
