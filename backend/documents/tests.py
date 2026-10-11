@@ -328,7 +328,8 @@ class ResumeGenerationServiceTests(TestCase):
         provider = FakeResumeProvider(
             response=ResumeDraft(
                 professional_summary=(
-                    "Backend student with verified Python evidence."
+                    "Backend student with verified Python evidence. "
+                    "Claims Docker and Kubernetes experience."
                 ),
                 skills=[
                     (
@@ -358,6 +359,21 @@ class ResumeGenerationServiceTests(TestCase):
             [
                 "Programming Languages: Python",
             ],
+        )
+
+        self.assertEqual(
+            result.professional_summary,
+            "Backend student with verified Python evidence.",
+        )
+
+        self.assertNotIn(
+            "Docker",
+            result.professional_summary,
+        )
+
+        self.assertNotIn(
+            "Kubernetes",
+            result.professional_summary,
         )
 
         self.assertIn(

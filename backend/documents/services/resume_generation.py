@@ -5,6 +5,10 @@ The caller must authenticate the Student and enforce profile ownership
 before calling this service.
 """
 
+import re
+
+from django.db.models import Q
+
 from ai_services.prompts.resume import build_resume_prompt
 from ai_services.providers.base import AIProvider
 from ai_services.safety.privacy import build_student_profile_context
@@ -13,7 +17,7 @@ from ai_services.schemas.outputs import (
     MAX_LIMITATION_ITEMS,
     ResumeDraft,
 )
-from profiles.models import StudentProfile
+from profiles.models import Skill, StudentProfile
 
 
 UNSUPPORTED_SKILL_LIMITATION = (
@@ -137,6 +141,152 @@ def _split_generated_skill_values(
     ]
 
 
+def _expand_unsupported_skill_values(
+    unsupported_values: list[str],
+) -> list[str]:
+    """
+    Expand unsupported generated labels to matching Skill names and aliases.
+
+    Query only catalogue entries related to the unsupported provider output
+    rather than loading the complete Skill and alias catalogue.
+    """
+
+    clean_values = [
+        str(value).strip()
+        for value in unsupported_values
+        if str(value).strip()
+    ]
+
+    variants = set(
+        clean_values
+    )
+
+    if not clean_values:
+        return []
+
+    match_query = Q()
+
+    for value in clean_values:
+        match_query |= (
+            Q(
+                name__iexact=value
+            )
+            | Q(
+                aliases__alias__iexact=value
+            )
+        )
+
+    skills = (
+        Skill.objects
+        .filter(
+            match_query
+        )
+        .prefetch_related(
+            "aliases",
+        )
+        .distinct()
+    )
+
+    for skill in skills:
+        variants.add(
+            skill.name.strip()
+        )
+
+        variants.update(
+            alias.alias.strip()
+            for alias
+            in skill.aliases.all()
+            if alias.alias.strip()
+        )
+
+    return sorted(
+        variants,
+        key=len,
+        reverse=True,
+    )
+
+
+def _summary_sentence_contains_unsupported_skill(
+    *,
+    sentence: str,
+    unsupported_values: list[str],
+) -> bool:
+    """
+    Return True when one summary sentence contains an unsupported Skill.
+    """
+
+    for value in unsupported_values:
+        if re.search(
+            (
+                rf"(?<![\w+#.])"
+                rf"{re.escape(value)}"
+                rf"(?![\w+#.])"
+            ),
+            sentence,
+            flags=re.IGNORECASE,
+        ):
+            return True
+
+    return False
+
+
+def _remove_unsupported_skill_claims_from_summary(
+    *,
+    summary: str,
+    unsupported_values: list[str],
+) -> str:
+    """
+    Remove summary sentences that claim unsupported generated Skills.
+
+    Removing the complete affected sentence avoids leaving broken list
+    punctuation or changing the meaning of the remaining grounded text.
+    """
+
+    clean_summary = str(
+        summary
+    ).strip()
+
+    expanded_values = (
+        _expand_unsupported_skill_values(
+            unsupported_values
+        )
+    )
+
+    if not expanded_values:
+        return clean_summary
+
+    sentences = [
+        sentence.strip()
+        for sentence
+        in re.split(
+            r"(?<=[.!?])\s+",
+            clean_summary,
+        )
+        if sentence.strip()
+    ]
+
+    grounded_sentences = [
+        sentence
+        for sentence in sentences
+        if not (
+            _summary_sentence_contains_unsupported_skill(
+                sentence=sentence,
+                unsupported_values=expanded_values,
+            )
+        )
+    ]
+
+    if grounded_sentences:
+        return " ".join(
+            grounded_sentences
+        )
+
+    return (
+        "Professional summary limited to verified "
+        "Student Profile evidence."
+    )
+
+
 def _filter_resume_skills_to_profile(
     *,
     student_profile: StudentProfile,
@@ -256,8 +406,22 @@ def _filter_resume_skills_to_profile(
             UNSUPPORTED_SKILL_LIMITATION
         )
 
+    professional_summary = (
+        _remove_unsupported_skill_claims_from_summary(
+            summary=(
+                draft.professional_summary
+            ),
+            unsupported_values=(
+                unsupported_values
+            ),
+        )
+    )
+
     return draft.model_copy(
         update={
+            "professional_summary": (
+                professional_summary
+            ),
             "skills": filtered_lines,
             "limitations": limitations,
         }
