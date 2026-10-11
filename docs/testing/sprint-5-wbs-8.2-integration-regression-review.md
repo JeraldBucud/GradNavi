@@ -160,3 +160,51 @@ combined evidence review, and integrated smoke test.
 
 Frontend evidence: Received and organised.
 Formal WBS 8.2 completion: Pending final consolidation.
+
+## Latest Sprint 5 Backend Regression
+
+Execution date: 11 October 2026
+Executor: Jerald
+Branch: jerald/wbs-8.2-integration-regression-review
+Environment: Local Django backend, PostgreSQL 17.11
+Database: Dedicated local gradnavi_db on port 5433
+
+### Execution Results
+
+| Check | Result |
+| --- | --- |
+| Django system check | PASS, zero issues |
+| Migration file consistency | PASS, no changes detected |
+| Initial database migrations | PASS |
+| Pending migrations after setup | None |
+| Full Django backend test suite | PASS, 1,065 tests |
+| Test failures and errors | 0 |
+| Test runner exit code | 0 |
+| Test database cleanup | Completed |
+
+The full backend regression suite completed in 435.247 seconds.
+
+Two expected AI validation log messages appeared during
+execution, but the test runner reported OK.
+
+### Evidence
+
+- `docs/testing/evidence/sprint-5/wbs-8.2/backend-regression/S5-REG-BE-full-suite.log`
+
+### Attribution and Scope
+
+MD previously completed backend regression checks
+against an earlier Sprint 5 baseline.
+
+Jerald performed this additional local backend regression
+run following subsequent Sprint 5 integration and
+deployment changes.
+
+These results verify the checked-out WBS 8.2 branch
+against the dedicated local PostgreSQL environment.
+
+They do not establish successful deployed API regression,
+Railway staging verification, or final integrated smoke
+testing.
+
+Final WBS 8.2 sign-off remains pending.
