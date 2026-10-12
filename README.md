@@ -1,33 +1,32 @@
 # GradNavi
 
-GradNavi is an AI-powered Career Guidance System for students.
+GradNavi is an AI-powered Career Guidance System developed for the COIT20273 / COIT13230 Software Design and Development Project, Term 2 2026.
 
-The responsive web application analyses a student's skills, interests, education, experience, projects, and career goals. GradNavi provides ranked career recommendations, readiness scores, skill-gap analysis, learning suggestions, career roadmaps, application-document support, interview preparation, and administration functions.
+The responsive web application helps students explore careers, compare their current profile with career requirements, plan skill development, prepare application documents, and practise interviews. Student and administrator workflows are implemented in the React frontend and Django REST Framework backend.
+
+**Repository status (12 October 2026):** The Sprint 5 integration branch was merged into `main` through [PR #101](https://github.com/JeraldBucud/GradNavi/pull/101) on 11 October 2026. The repository contains the feature-complete Sprint 4 baseline, Sprint 5 deployment configuration, and recorded staging and regression evidence. A merge into `main` does not by itself establish that every production verification or project-closeout task has been signed off.
 
 ## Project overview
 
-GradNavi uses a structured Student Profile containing skills, education, interests, experience, projects, and career goals.
+Implemented student-facing capabilities include:
 
-The planned system includes:
+- Student registration, login, password recovery, account settings, and profile-photo management
+- Student Profile covering skills, education, interests, experience, projects, and career goals
+- Explore Careers and evaluated career selection
+- Ranked Career Recommendations, score explanations, Career Readiness, and Skill Gap Analysis
+- Learning Resources, recommended development steps, Career Roadmap, and progress tracking
+- Job Description Matching against the student's recorded skills
+- AI-assisted Resume Builder and Cover Letter Builder with editable drafts and export options
+- Text-based Interview Preparation with generated questions and written feedback
+- Student Dashboard and a responsive interface
 
-- Secure student and administrator authentication
-- Student Profile management
-- Ranked career recommendations using documented weighted rules
-- Recommendation scores and explanations
-- Career-readiness scoring
-- Skill-gap analysis
-- Job-description analysis and matching
-- Editable resume drafts
-- Job-specific cover-letter drafts
-- Text-based interview preparation and written feedback
-- Learning suggestions
-- Career-development roadmaps
-- Progress tracking
-- Administrator management of users, careers, skills, learning resources, audit records, and reports
+Implemented administrator areas include the Dashboard, User Management, Career Management, Skill Management, Learning Resource Management, resource reports, and audit records. Backend permission enforcement restricts administrator functions.
 
-Numerical recommendation and readiness scores come from documented deterministic scoring logic.
+The local reference dataset documents **36 careers** and source-backed career/skill mappings. Source material includes Australian occupation information, O*NET and ESCO evidence, a reviewed Interest catalogue, and learning-resource data. See [Reference Data](docs/reference-data/README.md) and [Dataset Version](docs/reference-data/DATASET_VERSION.md).
 
-Generative AI supports structured explanations, resume drafts, cover-letter drafts, and interview-preparation content. AI-generated content stays subject to Student review and does not independently determine numerical career scores.
+**Scoring and AI:** Competency Fit and Technology Fit use documented rules, while AI-generated embeddings support semantic alignment. A defined weighted formula combines the component scores. The separate generative text provider supplies explanations, editable Resume and Cover Letter drafts, and Interview content. See the detailed [AI architecture](#ai-architecture-status) below.
+
+GradNavi is a student capstone prototype providing decision support rather than verified professional career advice.
 
 ## Repository purpose
 
@@ -53,10 +52,10 @@ The repository currently includes:
 - JWT authentication implementation
 - Student Profile backend
 - Career and skill reference data
-- Weighted career-recommendation logic
-- Career Recommendation API
+- Weighted composite career-recommendation logic, including embedding-based semantic alignment
+- Career Recommendation API and Explore Careers API
 - Skill-gap and Career Readiness scoring
-- Learning Suggestions and Roadmap API
+- Learning Suggestions, Roadmap, and progress APIs
 - Shared AI service foundation
 - AI prompt templates and safety rules
 - AI privacy mapping and structured contracts
@@ -64,6 +63,9 @@ The repository currently includes:
 - Cover Letter Generation backend
 - Interview Question and Feedback API
 - PostgreSQL configuration and migrations
+- Student and administrator interface implementations
+- Job Description Matching and administration APIs
+- Staging and production deployment configuration
 - Frontend and backend integration work
 - Sprint integration plans
 - Sprint testing plans, test cases, and evidence
@@ -116,12 +118,14 @@ Note: the current repository filename for the ER diagram is `GrandNavi ER diagra
 - [Recommendation Scoring Design](docs/system-design/recommendation-scoring-design.md)
 - [Readiness Scoring Design](docs/system-design/readiness_scoring_design.md)
 - [AI Prompt and Safety Design](docs/system-design/ai-prompt-safety-design.md)
+- [Scoring Validation Evidence](docs/system-design/wbs-5.3-scoring-validation.md)
 
 ## Integration plans
 
 - [Sprint 1 Integration Plan](docs/system-design/sprint-1-integration-plan.md)
 - [Sprint 2 Integration Plan](docs/system-design/sprint-2-integration-plan.md)
 - [Sprint 3 Integration Plan](docs/system-design/sprint-3-integration-plan.md)
+- [Sprint 4 Integration Plan](docs/system-design/sprint-4-integration-plan.md)
 
 ## Testing documentation
 
@@ -139,6 +143,20 @@ Note: the current repository filename for the ER diagram is `GrandNavi ER diagra
 
 - [Sprint 3 Test Plan](docs/testing/sprint-3-test-plan.md)
 - [Sprint 3 Test Case Tracker](docs/testing/sprint-3-test-cases.xlsx)
+
+### Sprint 4
+
+- [Sprint 4 Test Plan](docs/testing/sprint-4-test-plan.md)
+- [Sprint 4 Test Case Tracker](docs/testing/sprint-4-test-cases.xlsx)
+- [Sprint 4 Testing Status](docs/testing/sprint-4-testing-status.md)
+- [Sprint 4 Postman Collection](docs/testing/postman/GradNavi-Sprint4.postman_collection.json)
+
+### Sprint 5
+
+- [Security and Permission Test Plan](docs/testing/sprint-5-security-permission-test-plan.md)
+- [Security and Permission Test Cases](docs/testing/sprint-5-security-permission-test-cases.xlsx)
+- [Security Execution Matrix](docs/testing/sprint-5-security-permission-execution-matrix.md)
+- [Integration Regression Review](docs/testing/sprint-5-wbs-8.2-integration-regression-review.md)
 
 Testing evidence is stored under:
 
@@ -166,14 +184,14 @@ The current GradNavi requirements identify the following main system actors and 
 |---|---|
 | Student | Maintains a profile, receives career guidance, analyses skill gaps, prepares application material, practises interviews, and tracks progress |
 | System Administrator | Manages users, careers, skills, learning resources, reports, audit records, and reference data |
-| OpenAI API | Planned external AI provider for structured explanations and editable generated content through the Django backend |
+| OpenAI API | Backend-integrated text generation and semantic embeddings for approved AI features; no direct React-to-OpenAI calls |
 | Public Career and Learning Sources | Supply reference information reviewed before entry into GradNavi |
 
 Career Adviser access is outside the current V1 scope.
 
 ## High-level student use cases
 
-The current project proposal identifies these student use cases:
+The project proposal and integrated implementation cover these student use cases:
 
 1. Register and authenticate
 2. Manage Student Profile
@@ -189,7 +207,9 @@ The current project proposal identifies these student use cases:
 12. View career path roadmap
 13. Track progress
 14. Review, edit, and save generated content
-15. Delete saved content or request profile deletion
+15. Manage saved document drafts where supported
+
+**Scope qualification:** FR-17 (data deletion, including a profile-deletion request) is still marked Backlog in the project records. Deleting browser-stored Resume or Cover Letter draft versions is not equivalent to the full FR-17 requirement. FR-16 (AI content review) has related editing and review behaviour, but its formal WBS mapping and final backlog status still require reconciliation. See the [Product Backlog](docs/project-management/product-backlog.md).
 
 The visual use case diagram is stored in the project-management folder.
 
@@ -211,114 +231,105 @@ The team also uses the CQU Microsoft 365 shared workspace for collaborative file
 
 | Area | Technology |
 | --- | --- |
-| Frontend | React, JavaScript, Vite, React Router |
-| Frontend quality | Oxlint |
+| Frontend | React, JavaScript, Vite, React Router, Lucide React |
+| Frontend quality | Oxlint, Vite production build |
 | Backend | Python, Django, Django REST Framework |
-| Authentication | Django authentication and Simple JWT |
+| Authentication | Django authentication, Simple JWT, role-based permissions |
 | Database | PostgreSQL through Psycopg |
 | CORS | django-cors-headers |
-| AI architecture | Provider-independent AI service layer, structured schemas, prompt templates, safety rules, privacy mapping, and validated output contracts |
-| AI provider status | Provider-independent AI layer plus limited Django-backed OpenAI text generation using `gpt-5-nano` for WBS 5.6 explanations; broader provider integration remains under WBS 7.3 |
+| AI service architecture | Provider-independent service contracts, validated schemas, prompt templates, privacy allowlists, and safety rules |
+| Text generation | Backend OpenAI Responses API, with `gpt-5-nano` as the configured default text model |
+| Semantic alignment | OpenAI embeddings, `text-embedding-3-small` as the provider default |
 | Planning | Scrum, Trello, GitHub, Microsoft Project |
 | Communication | Microsoft Teams |
-| Planned deployment | Vercel frontend, Railway backend and PostgreSQL |
+| Deployment configuration | Vercel frontend, Railway Django backend and PostgreSQL; Docker/Gunicorn backend startup |
 
 ## AI architecture status
 
-GradNavi separates deterministic career-scoring logic from generative AI features.
+GradNavi uses a **composite Career Recommendation model**. Its documented base weights are:
 
-Deterministic logic handles:
+| Recommendation component | Base weight | Method |
+| --- | ---: | --- |
+| Competency Fit | 20% | Source-backed, rule-based matching of student skills to career competencies |
+| Technology Fit | 20% | Technology-demand evidence and student technology alignment |
+| AI Semantic Alignment | 60% | OpenAI text embeddings and cosine-similarity calculations |
 
-- Career recommendation scores
-- Recommendation ranking
-- Skill-gap calculations
-- Career Readiness scoring
-- Learning-gap ordering
+Components are min-max normalised within a recommendation run. The Technology Fit component is active only where its specified alignment threshold is met. When applicable components are unavailable, the service redistributes the available weights rather than fabricating missing scores. The backend computes the weighted result and its rank using defined formulas.
 
-The current AI service foundation includes:
+AI embeddings therefore **inform numerical recommendations**. This differs from letting a generative text model invent a career score. Skill Gap, Career Readiness, requirement matching, and related priority rules use their documented calculations separately.
 
-- Approved AI operation identifiers
-- Shared input schemas
-- Shared output schemas
-- Prompt templates
-- Trusted and untrusted content separation
-- Prompt-injection boundaries
-- Privacy allowlists
-- AI safety rules
-- Provider-independent service contracts
-- Controlled provider exceptions
-- AI-generated content indicators
-- Student-review requirements
+Key implementation references:
 
-Resume, Cover Letter, and Interview services continue to use the provider boundary established during Sprint 3.
+- [Composite Recommendation Service](backend/careers/services/composite_recommendation.py)
+- [AI Semantic Alignment](backend/careers/services/ai_semantic_alignment.py)
+- [OpenAI Embedding Provider](backend/ai_services/providers/openai_embeddings.py)
+- [Recommendation Scoring Design](docs/system-design/recommendation-scoring-design.md)
+- [Readiness Scoring Design](docs/system-design/readiness_scoring_design.md)
 
-WBS 5.6 now uses a limited Django-backed OpenAI text provider with `gpt-5-nano` as the default text model for the Top Match explanation and AI Gap Summary. Recommendation scoring, ranking, readiness scoring, requirement status, and Fix First priority remain deterministic. Broader provider integration for Resume, Cover Letter, and Interview services remains under WBS 7.3.
+The server-side generative AI layer supports Top Match and Skill Gap explanations, Resume drafts, Cover Letter drafts, Interview Questions, and Interview Feedback. The concrete OpenAI integration was completed in WBS 7.3 and uses the provider boundary established during Sprint 3. The shared foundation includes approved operation identifiers, schemas, prompt templates, trusted/untrusted input boundaries, privacy allowlists, provider exceptions, validated outputs, and Student review indicators.
+
+OpenAI credentials stay in the backend environment, not in the browser. The default backend text model is `gpt-5-nano`. AI-generated career documents are editable and require Student review. Numerical career calculations are not delegated to unrestricted text generation.
 
 ## Current implementation status
 
-GradNavi is currently in Sprint 3 development.
+**Code baseline:** Sprint 5 merged into `main` on 11 October 2026 in [PR #101](https://github.com/JeraldBucud/GradNavi/pull/101). Earlier Sprint closeouts were reconciled before this merge. The final production and project-sign-off status must be read from deployment and testing evidence rather than inferred from branch names.
 
-### Sprint 1 foundation
+### Sprint 1: Foundation and Student Profile
 
-Implemented Sprint 1 work includes:
+Completed foundation work includes Django REST Framework, React routing, PostgreSQL migrations, registration, login, logout, access/refresh tokens, password recovery, protected routes, Student Profile creation and updates, and frontend/backend authentication and profile integration.
 
-- Django REST Framework backend foundation
-- React frontend foundation and routing
-- PostgreSQL development database configuration
-- Django migrations
-- Student account model
-- Registration
-- Login
-- JWT access and refresh handling
-- Logout
-- Current authenticated-user endpoint
-- Password reset backend flow
-- Student Profile backend
-- Frontend registration and login integration
-- Protected frontend routes
-- Authentication session handling
-- CORS configuration for approved local frontend origins
-- Authentication, security, profile, database, and regression testing
+- [Sprint 1 Closeout](docs/project-management/sprint-1-closeout.md)
 
-### Sprint 2 backend
+### Sprint 2: Career guidance and learning
 
-Implemented and merged Sprint 2 backend work includes:
+The integrated application includes career and skill reference data, composite Career Recommendations, recommendation explanations, Skill Gap Analysis, Career Readiness, Explore Careers, Learning Resources, Career Roadmap, and roadmap progress.
 
-- Career and skill reference data
-- Weighted recommendation engine
-- Career Recommendation API
-- Skill-gap calculation
-- Career Readiness scoring
-- Learning-resource reference data
-- Learning Suggestions API
-- Learning Roadmap API
-- Sprint 2 backend regression coverage
+- [Sprint 2 Integration Plan](docs/system-design/sprint-2-integration-plan.md)
+- [Recommendation Scoring Design](docs/system-design/recommendation-scoring-design.md)
 
-WBS 5.6 Recommendation and Readiness Interface is now implemented and regression-tested on its working branch. It includes the redesigned Career Recommendations and Skill Gap Analysis interfaces, selected-career Readiness API, Top Match AI explanation, AI Gap Summary, deterministic Fix First presentation, and controlled Learning Resource states. The separate WBS 5.8 Learning Roadmap Interface remains outside this WBS 5.6 completion.
+### Sprint 3: Application documents and interviews
 
-### Sprint 3
+Sprint 3 is formally closed. Its completed increment includes AI prompt/safety contracts, Resume Generation, Cover Letter Generation, their interfaces, Interview Question/Feedback APIs, Interview Preparation UI, and integrated Student application workflows.
 
-The current Sprint 3 shared branch includes:
+The final Sprint 3 tracker records **100 passed out of 100 cases**, with zero failed or blocked. Formal closeout reconciled existing and later-Sprint evidence rather than rerunning all 100 cases at closeout.
 
-| WBS | Task | Current repository status |
-| --- | --- | --- |
-| 6.1 | Sprint 3 Planning | Complete and merged |
-| 6.2 | AI Prompt Templates and Safety Rules | Implemented and merged |
-| 6.3 | Resume Generation Backend | Implemented and merged |
-| 6.4 | Cover Letter Generation Backend | Implemented and merged |
-| 6.5 | Resume and Cover Letter Interface | Pending frontend implementation |
-| 6.6 | Interview Question and Feedback API | Implemented and merged |
-| 6.7 | Interview Preparation Interface | Pending frontend implementation |
-| 6.8 | Document and Interview Integration | Waiting for WBS 6.5 and WBS 6.7 |
-| 6.9 | Sprint 3 Testing | Planned and partially prepared |
-| 6.10 | Sprint 3 Review and Retrospective | Not started |
-| 6.11 | Sprint 3 Complete | Not reached |
+**Traceability:** The original WBS 6.7 interface PR #63 closed without merging into the historical Sprint 3 branch. The final Interview Preparation interface was integrated later through PR #78 in Sprint 4, as recorded in the closeout.
 
-Sprint 3 integration and testing plans are already stored in the repository.
+- [Sprint 3 Closeout](docs/project-management/sprint-3-closeout.md)
 
-WBS 6.8 requires WBS 6.3, 6.4, 6.5, 6.6, and 6.7 before full integration begins.
+### Sprint 4: Job Matching, AI integration, and Administration
 
-## Current Sprint 3 backend capabilities
+Sprint 4 is formally complete and records **129 passed out of 129 test cases**. Its integrated scope includes:
+
+- Deterministic Job Description Matching and Student Job Matching interface
+- OpenAI provider integration for Resume, Cover Letter, and Interview operations
+- AI response validation, safe error handling, and privacy controls
+- Administration APIs, Dashboard, User/Career/Skill/Learning Resource management, reports, permissions, analytics, and audit records
+- Student Progress Dashboard
+- Cross-Sprint integration and regression testing
+
+- [Sprint 4 Closeout](docs/project-management/sprint-4-closeout.md)
+- [Sprint 4 Testing Status](docs/testing/sprint-4-testing-status.md)
+
+### Sprint 5: Final regression, deployment, and delivery
+
+The Sprint 5 branch, staging fixes, backend/database deployment configuration, and frontend deployment preparation were merged to `main` in [PR #101](https://github.com/JeraldBucud/GradNavi/pull/101).
+
+The repository contains local regression, security, frontend verification, and staging smoke-test records. **Do not treat this merge as blanket sign-off** for production security checks, user acceptance testing, documentation finalisation, or every project-closure WBS item.
+
+- [Sprint 5 Plan and Execution Baseline](docs/project-management/sprint-5-plan.md)
+- [Sprint 5 Integration Regression Review](docs/testing/sprint-5-wbs-8.2-integration-regression-review.md)
+
+### Outstanding requirement and evidence reconciliation
+
+- **FR-13 Progress Dashboard:** Implemented, but the planning documents note missing dedicated Microsoft Project task mapping.
+- **FR-16 AI Content Review:** Student editing and review behaviour exists; formal requirement/WBS status is still Backlog in the Product Backlog.
+- **FR-17 Data Deletion:** The complete profile-deletion and generated-document-deletion requirement is not marked complete.
+- **Sprint 5 evidence:** Some committed WBS 8.2 and deployment-specific security records retain pending/deferred statuses even after newer staging and release activity. These records require explicit reconciliation before claiming final sign-off.
+
+See the [Product Backlog](docs/project-management/product-backlog.md) and [Sprint 5 Plan](docs/project-management/sprint-5-plan.md) for the planning history.
+
+## Document generation and interview API capabilities
 
 ### Resume Generation
 
@@ -382,37 +393,35 @@ Interview Feedback supports:
 
 The Interview API does not provide hiring probability, pass or fail classifications, or guaranteed employment outcomes.
 
-## Current testing baseline
+## Latest recorded testing evidence
 
-The latest WBS 5.6 full-branch regression completed with no recorded failures:
+The most recent **committed full local Django backend regression** reviewed for Sprint 5 records **1,069 passed, zero failures/errors**. This run was executed against commit `b81fa7e` on 11 October 2026 with a dedicated local PostgreSQL 17.11 database. The release PR includes this regression result, but the test log is evidence for the tested commit, not a fresh execution against every later commit.
 
-- Full backend regression: `673 / 673 PASS`
-- Student Profile model and API regression: `38 / 38 PASS`
-- Selected-career Readiness API: `8 / 8 PASS`
-- Top Match AI regression: `4 / 4 PASS`
-- AI Gap Summary regression: `7 / 7 PASS`
-- AI services regression: `119 / 119 PASS`
-- Recommendation cache regression: `19 / 19 PASS`
-- Recommendation API regression: `12 / 12 PASS`
-- Readiness and Learning regression: `37 / 37 PASS`
-- Django system check: `PASS`
-- Migration drift check: `No changes detected`
-- Frontend lint: `0 warnings, 0 errors`
-- Frontend production build: `PASS`
-- Git diff check: `PASS`
+Other recorded results:
 
-Automated AI regression tests use mocked provider calls.
+| Verification | Recorded result | Qualification |
+| --- | --- | --- |
+| Sprint 3 tracker | 100/100 PASS | Final formal closeout reconciliation |
+| Sprint 4 tracker | 129/129 PASS | Formal Sprint 4 closeout |
+| Sprint 5 local security and permission tests | 30 PASS, 0 FAIL, 2 deferred | Two deployment-specific checks were still deferred in the committed execution matrix |
+| Sprint 5 frontend lint | PASS, zero warnings/errors | Recorded in frontend regression evidence and release PR |
+| Sprint 5 frontend production build | PASS | Build included a non-blocking Vite large-chunk advisory |
+| Staging Student smoke test | PASS reported on 11 October 2026 | Manual tester report for Vercel Staging + Railway Staging; not a substitute for Production verification |
 
-Separate controlled live validation confirmed real `gpt-5-nano` generation and database-cache reuse for:
+The reported staging Student smoke flow covered login, Job Matching, Resume Builder, Cover Letter Builder, and Interview Preparation. The integration review notes that final committed screenshots/logs for that particular manual smoke run were not yet available.
 
-- Top Match career explanation.
-- AI Gap Summary.
+One non-blocking observation remained in the regression review: Admin User Management displayed `Never` in the Last Login field for listed users. Do not represent this finding as fixed without a verified retest.
 
-The second request for each valid cached result reused the database cache without another OpenAI generation.
+- [Sprint 5 Regression Review](docs/testing/sprint-5-wbs-8.2-integration-regression-review.md)
+- [Sprint 5 Security Execution Matrix](docs/testing/sprint-5-security-permission-execution-matrix.md)
+- [Sprint 4 Closeout](docs/project-management/sprint-4-closeout.md)
+- [Sprint 3 Closeout](docs/project-management/sprint-3-closeout.md)
+
+Automated AI tests use mocked provider responses where appropriate. Separate live-provider smoke evidence is recorded in the relevant integration closeouts.
 
 ## Delivery planning
 
-GradNavi follows a five-Sprint Scrum implementation schedule.
+GradNavi followed a five-Sprint Scrum implementation schedule. These are the approved **planned dates**, not proof that formal closeout or every deployment check occurred on the scheduled day.
 
 | Sprint | Dates | Main Outcome |
 | --- | --- | --- |
@@ -421,7 +430,7 @@ GradNavi follows a five-Sprint Scrum implementation schedule.
 | Sprint 3 | 7 September to 18 September 2026 | Resume, cover-letter, and interview-preparation functions |
 | Sprint 4 | 21 September to 2 October 2026 | Job matching, administration, permissions, audit behaviour, and AI integration |
 | Sprint 5 | 5 October to 9 October 2026 | Stabilisation, regression testing, deployment, documentation, and closure |
-| Final Presentation | 12 October 2026 | Final demonstration and presentation |
+| Final Presentation | 12 October 2026 | Scheduled final demonstration and presentation |
 
 The Microsoft Project schedule is the authoritative planning baseline.
 
@@ -437,6 +446,15 @@ The detailed task-level schedule, dependencies, ownership, resources, milestones
 
 When Sprint dates, ownership, dependencies, or milestones change, Microsoft Project should be updated first. Related GitHub planning documents should then be updated to match.
 
+## Deployment and release status
+
+- **Frontend:** Vercel SPA rewrite and configurable `VITE_API_BASE_URL` are tracked in [PR #92](https://github.com/JeraldBucud/GradNavi/pull/92) and `frontend/vercel.json`.
+- **Backend:** Railway deployment preparation uses a root-level `Dockerfile`, Gunicorn, environment-based Django settings, and PostgreSQL configuration. See [PR #93](https://github.com/JeraldBucud/GradNavi/pull/93) and the staging packaging fixes in PRs #98 through #100.
+- **Release:** [PR #101](https://github.com/JeraldBucud/GradNavi/pull/101) merged `feature/sprint-5` into `main` on 11 October 2026 and records a checked Production release checklist, including the production domain and smoke-test tasks.
+- **Evidence boundary:** The release PR reports Production checklist completion. The committed WBS 8.2 regression review and WBS 8.3 matrix still distinguish local/Staging checks from Production-specific verification. A current live health or uptime guarantee is **not** established by this README.
+
+Configuration values and credentials belong in the respective service environments. Do not commit real API keys, database passwords, or Django secrets.
+
 ## Local development
 
 ### Backend
@@ -447,7 +465,14 @@ Move into the backend directory:
 cd backend
 ```
 
-Activate the Python virtual environment:
+Create and activate a local Python virtual environment if needed:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Alternatively, activate an existing environment:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -475,6 +500,8 @@ DB_HOST
 DB_PORT
 ```
 
+For OpenAI-backed features, configure `OPENAI_API_KEY` in `backend/.env`. The optional `OPENAI_TEXT_MODEL` defaults to `gpt-5-nano`. Keep credentials out of Git.
+
 Apply migrations:
 
 ```powershell
@@ -492,6 +519,15 @@ Run these imports in this order on a new database. The base reference
 dataset creates the Career, Skill, mapping, and O*NET evidence records.
 The demand snapshot then adds the employer-demand percentages required
 by the Technology Fit component.
+
+Import the reviewed Interest catalogue and curated learning resources when preparing a full local demonstration database:
+
+```powershell
+python manage.py import_interest_catalogue
+python manage.py import_learning_resources
+```
+
+These management commands use tracked files under `data/reference/`. A deployed environment may use a separate import or seed procedure and should not be assumed to contain every local dataset.
 
 Run the Django development server:
 
@@ -548,70 +584,37 @@ npm run build
 ```text
 GradNavi/
 ├── backend/
-│   ├── accounts/
-│   ├── ai_services/
-│   ├── careers/
-│   ├── docs/
-│   ├── documents/
-│   ├── gradnavi/
-│   ├── interviews/
-│   ├── profiles/
+│   ├── accounts/          # Authentication, settings, profile photos
+│   ├── administration/    # Admin API, permissions, analytics, audit records
+│   ├── ai_services/       # Provider contracts, text and embedding adapters
+│   ├── careers/           # Recommendations, skill gaps, job matching, learning
+│   ├── documents/         # Resume and cover-letter APIs
+│   ├── interviews/        # Interview questions and feedback
+│   ├── profiles/          # Student Profile API
+│   ├── gradnavi/          # Django project settings and URLs
 │   ├── .env.example
 │   ├── manage.py
 │   └── requirements.txt
-│
 ├── frontend/
 │   ├── public/
-│   ├── src/
-│   ├── .oxlintrc.json
-│   ├── package.json
-│   └── vite.config.js
-│
+│   ├── src/               # Pages, layouts, components, services
+│   ├── .env.example
+│   ├── vercel.json
+│   └── package.json
+├── data/
+│   └── reference/         # Curated career, skill, Interest and learning data
 ├── docs/
-│   ├── 01-project-overview.md
-│   ├── 02-team-members-and-roles.md
-│   │
-│   ├── requirements/
-│   │   ├── functional-requirements.md
-│   │   ├── non-functional-requirements.md
-│   │   └── requirements-assignment-matrix.md
-│   │
 │   ├── project-management/
-│   │   ├── contribution-log.md
-│   │   ├── product-backlog.md
-│   │   ├── quality-plan.md
-│   │   ├── responsibility-matrix.md
-│   │   ├── risk-register.md
-│   │   ├── roadmap-and-milestones.md
-│   │   ├── task-leads.md
-│   │   ├── work-breakdown-structure.md
-│   │   └── GradNavi_Final_Project_Plan.mpp
-│   │
+│   ├── reference-data/
+│   ├── requirements/
 │   ├── system-design/
-│   │   ├── ai-prompt-safety-design.md
-│   │   ├── career-skill-reference-data-design.md
-│   │   ├── readiness_scoring_design.md
-│   │   ├── recommendation-scoring-design.md
-│   │   ├── rest-api-design.md
-│   │   ├── security-architecture.md
-│   │   ├── sprint-1-integration-plan.md
-│   │   ├── sprint-2-integration-plan.md
-│   │   ├── sprint-3-integration-plan.md
-│   │   ├── student-profile-api-model-mapping.md
-│   │   └── student-profile-data-design.md
-│   │
-│   └── testing/
-│       ├── sprint-1-test-plan.md
-│       ├── sprint-1-test-cases.xlsx
-│       ├── sprint-2-test-plan.md
-│       ├── sprint-2-test-cases.xlsx
-│       ├── sprint-3-test-plan.md
-│       ├── sprint-3-test-cases.xlsx
-│       └── evidence/
-│
-├── .gitignore
+│   ├── testing/
+│   └── meetings/
+├── Dockerfile
 └── README.md
 ```
+
+The full Git tree includes additional migrations, design artefacts, test suites, source attribution, import scripts, and evidence files.
 
 ## Project scope limits
 
@@ -636,8 +639,10 @@ Students review AI-generated material before saving or using generated content.
 
 ## Document status
 
-The repository is an active project workspace.
+Last reviewed against the `main` repository baseline: **12 October 2026**.
+
+The repository is a delivered code and evidence workspace with some formal documentation and WBS reconciliation still pending.
 
 Requirements, diagrams, task ownership, architecture decisions, database design, Sprint planning, testing evidence, deployment records, and assessment documents should stay aligned with the latest approved project baseline.
 
-The Microsoft Project schedule remains the authoritative planning source for Sprint dates, task dependencies, ownership, and milestones.
+The Microsoft Project schedule remains the authoritative planning source for planned Sprint dates, task dependencies, ownership, and milestones. GitHub closeout, test, and deployment evidence records the implementation outcome; planned dates alone do not certify execution.
