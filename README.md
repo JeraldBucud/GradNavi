@@ -453,7 +453,9 @@ When Sprint dates, ownership, dependencies, or milestones change, Microsoft Proj
 - **Release:** [PR #101](https://github.com/JeraldBucud/GradNavi/pull/101) merged `feature/sprint-5` into `main` on 11 October 2026 and records a checked Production release checklist, including the production domain and smoke-test tasks.
 - **Evidence boundary:** The release PR reports Production checklist completion. The committed WBS 8.2 regression review and WBS 8.3 matrix still distinguish local/Staging checks from Production-specific verification. A current live health or uptime guarantee is **not** established by this README.
 
-Configuration values and credentials belong in the respective service environments. Do not commit real API keys, database passwords, or Django secrets.## Local development
+Configuration values and credentials belong in the respective service environments. Do not commit real API keys, database passwords, or Django secrets.
+
+## Local development
 
 ### Backend
 
