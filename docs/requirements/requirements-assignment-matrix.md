@@ -47,7 +47,7 @@ If ownership or Sprint placement changes, Microsoft Project must be updated firs
 | FR-14 Basic administration | Sprint 4 | MD, Joyee, Jerald | 7.6, 7.7, 7.8, 7.9 | MD leads admin models and API. Joyee leads the admin dashboard. Jerald leads role permissions and audit records. |
 | FR-15 Admin analytics | Sprint 4, provisional | MD, Joyee | 7.6, 7.7 | Current mapping places backend aggregation with admin API work and display with the admin dashboard. The team must confirm this mapping. |
 | FR-16 AI content review | Schedule alignment required | To be confirmed | No dedicated WBS implementation task identified | AI generation and interface tasks exist, but the review and edit requirement needs an explicit WBS mapping. |
-| FR-17 Data deletion | Schedule alignment required | To be confirmed | No dedicated WBS implementation task identified | The requirement needs explicit backend, interface, permission, and testing tasks in Microsoft Project. |
+| FR-17 Data deletion | Excluded from V1, 13 October 2026 | Not assigned for V1 | No V1 implementation WBS task | Original Must requirement retained for traceability. Project-lead exclusion recorded; written team approval pending. |
 | FR-18 Audit and error handling | Sprint 4 | Jerald | 7.4, 7.8, 7.9 | Jerald leads AI response validation and error handling plus role permissions and audit records. |
 
 ---
@@ -232,21 +232,45 @@ The team must explicitly map this requirement before declaring it complete.
 
 ### FR-17 Data Deletion
 
-FR-17 remains part of V1.
+**Original priority:** Must.
 
-The revised schedule does not currently identify dedicated deletion implementation work.
+**Original scope:** Students delete saved generated documents and request deletion of their profile.
 
-The team must confirm:
+**Final Version 1 scope:** Excluded by project-lead decision on 13 October 2026.
 
-- Backend deletion behaviour.
-- Profile deletion request behaviour.
-- Generated document deletion.
-- Required frontend controls.
-- Permission rules.
-- Audit requirements.
-- Acceptance tests.
-- Sprint placement.
-- Task ownership.
+FR-17 was originally included in the proposed Version 1 requirements.
+
+The Microsoft Project schedule did not identify a dedicated implementation task for FR-17. No confirmed Sprint, implementation owner, or acceptance test was assigned.
+
+The project lead subsequently confirmed that FR-17 is excluded from the final Version 1 delivery scope.
+
+This is a scope decision, not evidence of implementation or successful acceptance testing.
+
+### FR-17 Final Assignment Record
+
+| Field | Final V1 Record |
+| --- | --- |
+| Requirement | FR-17 Data Deletion |
+| Original priority | Must |
+| V1 disposition | Excluded from V1 |
+| Decision date | 13 October 2026 |
+| Decision source | Project-lead confirmation |
+| Planned Sprint | None for V1 |
+| Implementation lead | Not assigned for V1 |
+| WBS mapping | No V1 implementation task |
+| Backend and frontend implementation | Not claimed as completed under FR-17 |
+| Acceptance evidence | No FR-17 acceptance PASS claimed |
+| Formal written team approval | Pending confirmation |
+
+The original requirement and historical schedule gap are retained for traceability.
+
+Future implementation requires an approved scope change, defined ownership, scheduled tasks, security checks, and acceptance tests.
+
+Related records:
+
+- `docs/requirements/functional-requirements.md`
+- `docs/project-management/product-backlog.md`
+- `docs/project-management/sprint-5-closeout.md`
 
 ---
 

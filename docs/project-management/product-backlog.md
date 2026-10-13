@@ -39,7 +39,7 @@ Execution status should reflect actual team progress. Planned dates alone do not
 | FR-14 | Basic administration | Authorised administrators manage users, careers, skills, and learning resources | Must | Sprint 4 | MD, Joyee, Jerald | 7.6, 7.7, 7.8, 7.9 | In Progress |
 | FR-15 | Admin analytics | Administrators view aggregated statistics such as popular careers and common skill gaps | Should | Sprint 4, provisional mapping | MD, Joyee | 7.6, 7.7 | In Progress |
 | FR-16 | AI content review | Students review and edit generated AI-supported content before saving | Must | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Backlog |
-| FR-17 | Data deletion | Students delete saved generated documents and request deletion of their profile | Must | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Backlog |
+| FR-17 | Data deletion | Students delete saved generated documents and request deletion of their profile | Must | Not scheduled for V1 | Not assigned | No dedicated V1 WBS task | Excluded from V1 (project-lead decision; written approval pending) |
 | FR-18 | Audit and error handling | The system records critical actions and returns controlled errors for external-service failures | Must | Sprint 4 | Jerald | 7.4, 7.8, 7.9 | Testing |
 
 ## Sprint 1 Backlog
@@ -224,16 +224,26 @@ The team should explicitly map FR-16 to the appropriate Sprint 3 and Sprint 4 ta
 
 ### FR-17 Data Deletion
 
-The functional requirement remains in the approved requirements list, but the revised Microsoft Project schedule does not identify a dedicated deletion implementation task.
+**Version 1 status:** Excluded from V1 by project-lead decision on 13 October 2026.
 
-The team should assign:
+**Original requirement priority:** Must.
 
-- Sprint.
-- Owner.
-- Backend task.
-- Frontend task where required.
-- Permission testing.
-- Acceptance evidence.
+**Original requirement:** Students delete saved generated documents and request deletion of their profile.
+
+The original Product Backlog recorded FR-17 as Backlog, with no dedicated Microsoft Project implementation task. The requirement was not assigned a confirmed Sprint or owner.
+
+The project lead confirmed that FR-17 is outside the final Version 1 delivery scope.
+
+This decision does not mean that FR-17 was implemented, tested, or passed during User Acceptance Testing.
+
+**Historical planning gap:** The original schedule did not assign a Sprint, owner, backend implementation, frontend implementation, permission tests, or acceptance evidence for FR-17.
+
+**Outstanding approval:** Formal written team approval of the Version 1 scope exclusion has not been independently confirmed.
+
+**Traceability:** Preserve FR-17 in the Functional Requirements and Requirements Assignment Matrix, with its original Must priority and the Version 1 exclusion clearly recorded.
+
+Future implementation requires separate scope approval, ownership, scheduling, and acceptance criteria.
+
 
 ### FR-15 Admin Analytics
 

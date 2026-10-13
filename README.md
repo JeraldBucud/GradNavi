@@ -4,7 +4,7 @@ GradNavi is an AI-powered Career Guidance System developed for the COIT20273 / C
 
 The responsive web application helps students explore careers, compare their current profile with career requirements, plan skill development, prepare application documents, and practise interviews. Student and administrator workflows are implemented in the React frontend and Django REST Framework backend.
 
-**Repository status (12 October 2026):** The Sprint 5 integration branch was merged into `main` through [PR #101](https://github.com/JeraldBucud/GradNavi/pull/101) on 11 October 2026. The repository contains the feature-complete Sprint 4 baseline, Sprint 5 deployment configuration, and recorded staging and regression evidence. A merge into `main` does not by itself establish that every production verification or project-closeout task has been signed off.
+**Repository status (13 October 2026):** Sprint 5 implementation was merged into `main` through [PR #101](https://github.com/JeraldBucud/GradNavi/pull/101). Final closeout evidence records 11/11 internal UAT cases and 21/21 Production verification cases as PASS, based on team execution reported by the project lead. The final presentation was delivered on 12 October 2026. Supporting evidence and the closeout record are being reconciled on the final acceptance branch. Formal delivery approval is tracked separately.
 
 ## Project overview
 
@@ -157,6 +157,13 @@ Note: the current repository filename for the ER diagram is `GrandNavi ER diagra
 - [Security and Permission Test Cases](docs/testing/sprint-5-security-permission-test-cases.xlsx)
 - [Security Execution Matrix](docs/testing/sprint-5-security-permission-execution-matrix.md)
 - [Integration Regression Review](docs/testing/sprint-5-wbs-8.2-integration-regression-review.md)
+- [Reconciled Sprint 5 Plan](docs/project-management/sprint-5-plan.md)
+- [Sprint 5 Formal Closeout](docs/project-management/sprint-5-closeout.md)
+- [Detailed UAT Test Plan](docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_Test_Plan.md)
+- [Detailed UAT Execution Workbook](docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_Execution_Results.xlsx)
+- [UAT Screenshot Evidence](docs/testing/evidence/sprint-5/uat/)
+- [Production Verification Evidence](docs/testing/evidence/sprint-5/production-verification/)
+- [Final User Guide](docs/user-guide/GradNavi-User-Guide-final.docx)
 
 Testing evidence is stored under:
 
@@ -209,7 +216,7 @@ The project proposal and integrated implementation cover these student use cases
 14. Review, edit, and save generated content
 15. Manage saved document drafts where supported
 
-**Scope qualification:** FR-17 (data deletion, including a profile-deletion request) is still marked Backlog in the project records. Deleting browser-stored Resume or Cover Letter draft versions is not equivalent to the full FR-17 requirement. FR-16 (AI content review) has related editing and review behaviour, but its formal WBS mapping and final backlog status still require reconciliation. See the [Product Backlog](docs/project-management/product-backlog.md).
+**Version 1 scope decision (13 October 2026):** FR-17 Data Deletion is excluded from Version 1, as confirmed by the project lead. The original requirement is retained for historical traceability. Full FR-17 functionality is not claimed as implemented or tested. Formal written scope approval and updates to the Product Backlog, Functional Requirements and Requirements Assignment Matrix are pending reconciliation. FR-16 AI Content Review has supporting implemented behaviour, but its final requirements mapping also needs review.
 
 The visual use case diagram is stored in the project-management folder.
 
@@ -403,7 +410,9 @@ Other recorded results:
 | --- | --- | --- |
 | Sprint 3 tracker | 100/100 PASS | Final formal closeout reconciliation |
 | Sprint 4 tracker | 129/129 PASS | Formal Sprint 4 closeout |
-| Sprint 5 local security and permission tests | 30 PASS, 0 FAIL, 2 deferred | Two deployment-specific checks were still deferred in the committed execution matrix |
+| Sprint 5 security and permission testing | 30 local PASS; 2 deployment PASS reported | Deployment-check results require reconciliation into the official security workbook and matrix |
+| Sprint 5 internal UAT | 11/11 PASS reported | Jerald, Joyee and MD executed their assigned scenarios; screenshots and execution workbook retained |
+| Sprint 5 Production verification | 21/21 PASS reported | Production workflow evidence retained; this does not establish acceptance of excluded or unverified requirements |
 | Sprint 5 frontend lint | PASS, zero warnings/errors | Recorded in frontend regression evidence and release PR |
 | Sprint 5 frontend production build | PASS | Build included a non-blocking Vite large-chunk advisory |
 | Staging Student smoke test | PASS reported on 11 October 2026 | Manual tester report for Vercel Staging + Railway Staging; not a substitute for Production verification |
@@ -430,7 +439,7 @@ GradNavi followed a five-Sprint Scrum implementation schedule. These are the app
 | Sprint 3 | 7 September to 18 September 2026 | Resume, cover-letter, and interview-preparation functions |
 | Sprint 4 | 21 September to 2 October 2026 | Job matching, administration, permissions, audit behaviour, and AI integration |
 | Sprint 5 | 5 October to 9 October 2026 | Stabilisation, regression testing, deployment, documentation, and closure |
-| Final Presentation | 12 October 2026 | Scheduled final demonstration and presentation |
+| Final Presentation | 12 October 2026 | Delivered at CQU Brisbane by Jerald and Joyee, and at CQU Melbourne by MD, as confirmed by the project lead |
 
 The Microsoft Project schedule is the authoritative planning baseline.
 
@@ -451,7 +460,7 @@ When Sprint dates, ownership, dependencies, or milestones change, Microsoft Proj
 - **Frontend:** Vercel SPA rewrite and configurable `VITE_API_BASE_URL` are tracked in [PR #92](https://github.com/JeraldBucud/GradNavi/pull/92) and `frontend/vercel.json`.
 - **Backend:** Railway deployment preparation uses a root-level `Dockerfile`, Gunicorn, environment-based Django settings, and PostgreSQL configuration. See [PR #93](https://github.com/JeraldBucud/GradNavi/pull/93) and the staging packaging fixes in PRs #98 through #100.
 - **Release:** [PR #101](https://github.com/JeraldBucud/GradNavi/pull/101) merged `feature/sprint-5` into `main` on 11 October 2026 and records a checked Production release checklist, including the production domain and smoke-test tasks.
-- **Evidence boundary:** The release PR reports Production checklist completion. The committed WBS 8.2 regression review and WBS 8.3 matrix still distinguish local/Staging checks from Production-specific verification. A current live health or uptime guarantee is **not** established by this README.
+- **Evidence boundary:** Sprint 5 Production verification records 21/21 reported PASS results with retained screenshots and an execution workbook. Security deployment checks were subsequently reported PASS but require formal workbook reconciliation. A current live uptime guarantee is not established by historical verification evidence.
 
 Configuration values and credentials belong in the respective service environments. Do not commit real API keys, database passwords, or Django secrets.
 

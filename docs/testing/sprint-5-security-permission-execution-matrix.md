@@ -342,3 +342,51 @@ Representative final evidence includes:
 - S5-SEC-FE-01 manual browser permission verification recorded in `sprint-5-security-permission-test-cases.xlsx`. No screenshot was retained.
 
 Security evidence was retained without real passwords, access tokens, refresh tokens, API keys, database credentials, or Django secret values.
+
+## 21. Deployment Security Follow-Up Reconciliation
+
+Reconciliation date: 13 October 2026
+
+This section records the deployment-stage follow-up reported after the original WBS 8.3 local security execution.
+
+Sections 2, 12 and 19 preserve the earlier checkpoint of 30 Pass and 2 Deferred. Their historical results are not overwritten.
+
+### 21.1 Deployment Follow-Up Results
+
+| Test ID | Original status | Subsequent reported result | Verification scope |
+| --- | --- | --- | --- |
+| S5-SEC-DEP-01 | Deferred | PASS, project-lead reported | Production security configuration, including Debug, Allowed Hosts, CORS, HTTPS, environment secrets and controlled errors |
+| S5-SEC-DEP-02 | Deferred | PASS, project-lead reported | Frontend and backend secret exposure review and approved Production communication paths |
+
+The project lead confirmed that both deployment-stage checks passed following deployment.
+
+This confirmation is recorded as a reported execution result. Individual configuration findings, execution timestamps and supporting deployment-security evidence have not been independently reconciled in this matrix.
+
+### 21.2 Reconciled Summary
+
+- Total approved security cases: 32.
+- Original local execution: 30 Pass.
+- Deployment follow-up: 2 Pass reported by project lead.
+- Combined reported outcome: 32 Pass.
+- Reported failures: 0.
+- Original Deferred statuses: retained as historical checkpoints.
+
+The final deployment results must also be entered into the official security test-case workbook.
+
+Production screenshots demonstrate selected user workflows. They do not independently prove every backend configuration, secret-protection or deployment-security requirement.
+
+### 21.3 Evidence and Acceptance
+
+Related evidence:
+
+- `docs/testing/sprint-5-security-permission-test-cases.xlsx`
+- `docs/testing/evidence/sprint-5/production-verification/`
+- `docs/project-management/sprint-5-closeout.md`
+
+Outstanding record reconciliation:
+
+- Record the two reported PASS outcomes in the official security workbook.
+- Confirm individual execution details and evidence references where available.
+- Preserve the distinction between original local testing and later deployment verification.
+
+No new automated test execution is claimed in this follow-up record.
