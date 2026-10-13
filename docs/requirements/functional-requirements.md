@@ -2,7 +2,7 @@
 
 Status: Draft for team review
 
-These requirements describe the planned V1 behaviour of GradNavi.
+These requirements describe the original proposed V1 behaviour of GradNavi. Subsequent scope decisions are recorded below. Formal team approval remains subject to the documented approval rule.
 
 | ID | Requirement | Statement | Priority | Status |
 |---|---|---|---|---|
@@ -22,8 +22,44 @@ These requirements describe the planned V1 behaviour of GradNavi.
 | FR-14 | Basic administration | The system shall let authorised administrators manage users, careers, skills, and learning resources. | Must | Draft for approval |
 | FR-15 | Admin analytics | The system shall show basic aggregated statistics such as popular careers and common skill gaps. | Should | Draft for approval |
 | FR-16 | AI content review | The system shall allow users to review and edit generated content before saving. | Must | Draft for approval |
-| FR-17 | Data deletion | The system shall let students delete saved generated documents and request deletion of their profile. | Must | Draft for approval |
+| FR-17 | Data deletion | The system shall let students delete saved generated documents and request deletion of their profile. | Must | Excluded from V1 by project-lead decision; written team approval pending |
 | FR-18 | Audit and error handling | The system shall record critical system actions and return clear errors when AI or external services fail. | Must | Draft for approval |
+
+## Version 1 Scope Reconciliation
+
+Decision recorded: 13 October 2026
+
+### FR-17 Data Deletion
+
+The project lead confirmed that FR-17 Data Deletion is excluded from the final GradNavi Version 1 scope.
+
+The original requirement statement and Must priority are retained in the requirements table for historical traceability.
+
+The exclusion does not establish that the deletion functionality was implemented, tested, or accepted.
+
+### Change Control Record
+
+| Field | Record |
+| --- | --- |
+| Requirement ID | FR-17 |
+| Original priority | Must |
+| Decision | Exclude FR-17 from Version 1 |
+| Decision source | Project-lead confirmation, 13 October 2026 |
+| Reason for change | Formal reason not recorded; the original project schedule had no dedicated FR-17 implementation task |
+| Scope effect | Saved generated-document deletion and profile-deletion requests are outside Version 1 acceptance scope |
+| Schedule effect | No FR-17 implementation task is scheduled for Version 1 |
+| Risk effect | FR-17 deletion workflows are unavailable under the recorded Version 1 scope |
+| Quality effect | No claim of FR-17 implementation or acceptance testing |
+| Updated implementation owner | Not assigned |
+| Formal team approval date | Pending written confirmation from all three members |
+
+FR-17 implementation in a later version requires a separate scope decision, assigned ownership, implementation tasks, and acceptance criteria.
+
+Related records:
+
+- `docs/project-management/product-backlog.md`
+- `docs/requirements/requirements-assignment-matrix.md`
+- `docs/project-management/sprint-5-closeout.md`
 
 ## Approval rule
 
