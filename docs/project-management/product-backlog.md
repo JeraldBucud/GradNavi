@@ -25,16 +25,16 @@ Execution status should reflect actual team progress. Planned dates alone do not
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | FR-01 | Account registration and authentication | Students create accounts, sign in, sign out, and recover access | Must | Sprint 1 | Jerald, Joyee | 4.4, 4.5, 4.8, 4.9 | Done |
 | FR-02 | Student profile | Students create and update skills, interests, education, experience, projects, goals, and personality responses | Must | Sprint 1 | MD, Joyee, Jerald | 4.6, 4.7, 4.8, 4.9 | Done |
-| FR-03 | Career recommendations | Students receive ranked career recommendations from profile data | Must | Sprint 2 | MD, Jerald, Joyee | 5.2, 5.3, 5.4, 5.6, 5.9 | Review |
-| FR-04 | Recommendation explanation | Students see recommendation scores and understandable reasons for each result | Must | Sprint 2 | Jerald, MD, Joyee | 5.3, 5.4, 5.6, 5.9 | Review |
-| FR-05 | Skill-gap analysis | Students compare current skills with selected career requirements | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Review |
-| FR-06 | Career-readiness score | Students receive a readiness score based on documented weighted criteria | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Review |
+| FR-03 | Career recommendations | Students receive ranked career recommendations from profile data | Must | Sprint 2 | MD, Jerald, Joyee | 5.2, 5.3, 5.4, 5.6, 5.9 | Done |
+| FR-04 | Recommendation explanation | Students see recommendation scores and understandable reasons for each result | Must | Sprint 2 | Jerald, MD, Joyee | 5.3, 5.4, 5.6, 5.9 | Done |
+| FR-05 | Skill-gap analysis | Students compare current skills with selected career requirements | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Done |
+| FR-06 | Career-readiness score | Students receive a readiness score based on documented weighted criteria | Must | Sprint 2 | Jerald, Joyee | 5.5, 5.6, 5.9 | Done |
 | FR-07 | Job-description matching | Students paste one job description and see matched and missing requirements | Must | Sprint 4 | Jerald, Joyee | 7.2, 7.5, 7.9 | Testing |
 | FR-08 | Resume builder | Students generate and edit a resume draft from profile data | Must | Sprint 3 | MD, Joyee | 6.3, 6.5, 6.8, 6.9 | Testing |
 | FR-09 | Cover-letter builder | Students generate and edit a cover letter for a selected job description | Must | Sprint 3 | MD, Joyee | 6.4, 6.5, 6.8, 6.9 | Testing |
 | FR-10 | Interview preparation | Students receive interview questions and feedback on typed answers | Must | Sprint 3 | Jerald, Joyee | 6.2, 6.6, 6.7, 6.8, 6.9 | Testing |
-| FR-11 | Learning suggestions | Students receive learning resources linked to identified skill gaps | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Testing |
-| FR-12 | Career roadmap | Students receive ordered development steps for a selected career | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Testing |
+| FR-11 | Learning suggestions | Students receive learning resources linked to identified skill gaps | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Done |
+| FR-12 | Career roadmap | Students receive ordered development steps for a selected career | Must | Sprint 2 | MD, Joyee | 5.7, 5.8, 5.9 | Done |
 | FR-13 | Progress dashboard | Students view saved careers, gaps, readiness, roadmap progress, and interview history | Should | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Testing |
 | FR-14 | Basic administration | Authorised administrators manage users, careers, skills, and learning resources | Must | Sprint 4 | MD, Joyee, Jerald | 7.6, 7.7, 7.8, 7.9 | In Progress |
 | FR-15 | Admin analytics | Administrators view aggregated statistics such as popular careers and common skill gaps | Should | Sprint 4, provisional mapping | MD, Joyee | 7.6, 7.7 | In Progress |
@@ -115,18 +115,20 @@ Historical closeout position - 20 September 2026:
 
 Sprint 2 retrospective actions carried forward into Sprint 3 include earlier frontend/backend integration, earlier ownership confirmation for test execution, faster documentation updates after merges, and earlier responsive, error-state, empty-state, and browser testing.
 
-### Sprint 2 final test reconciliation - 13 October 2026
+### Sprint 2 final testing and team-approved closeout - 13 October 2026
 
 The historical 20 September checkpoint above records 72 Pass and eight blocked WBS 5.7 cases. The later [Sprint 2 Test Plan](../testing/sprint-2-test-plan.md), updated through the 23 September testing checkpoint, records **80 Pass, 0 Fail, 0 Blocked**. The eight MD-assigned cases `S2-LEARN-01` through `S2-LEARN-08` are recorded as Pass, with evidence identifiers `S2-EV-038` through `S2-EV-045`.
 
 - WBS 5.2 to 5.8 implementation and the planned Career Analysis flow are reported integrated in the test plan.
-- WBS 5.9 test execution is reported complete (80/80 Pass). Final test-case/evidence acceptance by the team has not been documented.
-- WBS 5.10 formal review and retrospective remains pending an actual recorded team decision. The preliminary retrospective in the integration plan is not a substitute.
-- WBS 5.11 Sprint 2 Complete remains **pending formal sign-off**.
-- The original `Testing` / `Review` backlog states are retained until the requirements and milestone statuses receive the required approval, rather than being silently changed to `Done`.
-- The proposed [Sprint 2 Closeout Review and Acceptance Record](sprint-2-closeout.md) consolidates the latest test result, issues, retrospective agenda, and approvals still required.
+- **WBS 5.9 COMPLETE:** Sprint 2 test plan reports 80/80 Pass. The project lead confirmed all three team members agreed to the Sprint 2 formal closeout.
+- **WBS 5.10 COMPLETE, project-lead confirmed:** The integration plan's preliminary retrospective is consolidated in the formal closeout record. All members agreed to close Sprint 2 according to the project lead; independent meeting minutes were not supplied.
+- **WBS 5.11 COMPLETE, project-lead confirmed:** The project lead confirmed unanimous team agreement on 13 October 2026. The date identifies when confirmation was recorded, not necessarily the individual agreement dates.
+- **FR-03, FR-04, FR-05, FR-06, FR-11 and FR-12 are now marked Done for their approved Sprint 2 scope**, based on the later test results and reported team acceptance. The earlier `Review` / `Testing` statuses remain visible in the dated 20 September historical checkpoint above.
+- [Sprint 2 Closeout Review and Acceptance Record](sprint-2-closeout.md) documents the basis, evidence limitations and post-closeout record-maintenance work.
 
-This addendum corrects the reader's current-state interpretation while preserving the 20 September status as a dated historical snapshot. It does not change the Microsoft Project baseline or represent retrospective team acceptance.
+Written acknowledgements, meeting minutes and confirmation that the authoritative Microsoft Project schedule reflects these decisions remain documentation follow-ups; no missing signature or schedule update is invented.
+
+This addendum records the later reported team acceptance while preserving 20 September as a dated historical snapshot. The underlying Microsoft Project schedule is not modified by this GitHub documentation change; it must be reconciled separately if needed.
 
 Main implementation sequence:
 
