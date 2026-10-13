@@ -1,6 +1,6 @@
 # GradNavi Sprint 5 Plan
 
-Status: ACTIVE
+Status: RECONCILED - 13 October 2026. Formal delivery acceptance pending.
 
 WBS: 8.1 Sprint 5 Planning and Defect Triage
 
@@ -38,7 +38,7 @@ Sprint 4 was still open at that planning checkpoint.
 
 Sprint 4 is now formally complete and reconciled into Sprint 5.
 
-Section 18 records the current authoritative execution baseline.
+Section 18 preserves the earlier execution checkpoint. Section 19 records the final evidence reconciliation as of 13 October 2026.
 
 Sprint 5 planning has started before formal Sprint 4 closeout because the project has a fixed final presentation date of 12 October 2026 and only one scheduled week for Sprint 5.
 
@@ -862,3 +862,104 @@ The current execution order is:
 11. Complete WBS 8.13 Project Delivery.
 12. Complete WBS 8.14 Final Presentation Preparation.
 13. Deliver WBS 8.15 Final Presentation.
+
+## 19. Final Sprint 5 Evidence Reconciliation
+
+Reconciliation date: 13 October 2026
+
+This section supersedes the earlier Sprint 5 status checkpoints in Sections 5 and 18. Those sections are retained as historical planning and execution records.
+
+The project lead reports 100% progress in the revised Microsoft Project schedule. Schedule progress does not replace formal acceptance evidence or individual approval.
+
+### 19.1 Final WBS Status Review
+
+| WBS | Deliverable | Reconciled Status |
+| --- | --- | --- |
+| 8.1 | Sprint 5 Planning and Defect Triage | Planning and baseline reconciliation completed |
+| 8.2 | Full Regression Testing | Backend regression 1,069/1,069 PASS on recorded baseline; final combined regression sign-off not independently confirmed |
+| 8.3 | Security and Permission Testing | 30 local PASS and 2 deployment checks originally deferred; project lead reports both deployment checks passed; official execution records require reconciliation |
+| 8.4 | Performance and Usability Review | Performance evidence and Lighthouse screenshots retained |
+| 8.5 | Bug Fixing and Final Refinement | Sprint 5 corrections merged; remaining observations tracked separately |
+| 8.6 | User Acceptance Testing | 11/11 PASS reported by the project lead; Jerald, Joyee and MD personally executed assigned scenarios |
+| 8.7 | Backend and Database Deployment | Railway deployment included in the Sprint 5 release; formal deployment acceptance subject to the closeout record |
+| 8.8 | Frontend Deployment | Vercel deployment included in the Sprint 5 release |
+| 8.9 | Production Verification | 21/21 PASS reported with screenshots and execution workbook |
+| 8.10 | Technical Documentation Finalisation | Technical records present; final MD documentation approval not confirmed |
+| 8.11 | User Guide Finalisation | Final User Guide DOCX supplied and committed; formal approval not confirmed |
+| 8.12 | Final Report and GitHub Review | Closeout branch documentation assembled; final report approval and GitHub review pending confirmation |
+| 8.13 | Project Delivery Complete | Formal delivery acceptance pending outstanding documentation and approval reconciliation |
+| 8.14 | Final Presentation Preparation | Preparation reported complete; presentation delivered |
+| 8.15 | Final Presentation | COMPLETE, 12 October 2026, as confirmed by project lead |
+
+### 19.2 Release and Testing Evidence
+
+Sprint 5 was integrated into main through PR #101. README updates followed through PR #102.
+
+The latest recorded full local backend regression returned 1,069 PASS and zero failures. This result applies to its tested code baseline and is not a claim of a new test execution against every later commit.
+
+Internal UAT results:
+- 11 scenarios reported PASS.
+- No blocking issues reported.
+- All three team members personally executed their assigned scenarios, according to the project lead.
+- Ten additional UAT screenshots retained.
+- Production verification screenshots reused as supporting UAT evidence.
+
+Production verification:
+- 21 test cases reported PASS.
+- Supporting screenshots and workbook retained.
+- Production verification does not independently establish full compliance with every original functional requirement.
+
+Security:
+- Original committed execution records show 30 PASS and two deployment checks deferred.
+- The project lead subsequently reported PASS for S5-SEC-DEP-01 and S5-SEC-DEP-02.
+- The final 32/32 reported result needs reconciliation into the official security workbook and matrix.
+
+### 19.3 Evidence Locations
+
+- UAT plan and execution workbook: docs/testing/evidence/sprint-5/uat/
+- UAT screenshots: docs/testing/evidence/sprint-5/uat/
+- Production verification: docs/testing/evidence/sprint-5/production-verification/
+- User Guide: docs/user-guide/GradNavi-User-Guide-final.docx
+- Final project schedule: docs/project-management/GradNavi_Final_Project_Plan.mpp
+- Formal Sprint 5 closeout: docs/project-management/sprint-5-closeout.md
+
+### 19.4 Functional Requirement Scope Reconciliation
+
+FR-17 Data Deletion is excluded from GradNavi Version 1 according to the project lead's final scope decision.
+
+The original requirement remains part of the historical requirements baseline. Its exclusion is not recorded as implemented, tested, or passed.
+
+The team should reconcile the Product Backlog, Functional Requirements and Requirements Assignment Matrix to reflect this Version 1 scope decision. Formal written scope approval has not been independently verified.
+
+FR-04 recommendation explanation completeness, and FR-13, FR-15 and FR-16 requirement-to-WBS mapping, also require final documentation reconciliation where applicable.
+
+### 19.5 Recorded Production Observations
+
+- Administrator User Management displayed "Never" for Last Login in the reviewed baseline.
+- The learning-resource broken-link reporting workflow has an outstanding observation.
+
+These observations are not represented as fixed without verified retest evidence.
+
+### 19.6 Final Presentation
+
+The project lead confirmed the final presentation was delivered on 12 October 2026.
+
+- Jerald Christopher Bucud: CQU Brisbane.
+- Joyee Chakraborty: CQU Brisbane.
+- Md Enamul Haque: CQU Melbourne.
+
+WBS 8.15 is complete based on that confirmation.
+
+### 19.7 Final Acceptance Boundary
+
+The implementation was deployed and the reported UAT and Production verification exercises passed.
+
+Formal project-delivery acceptance remains separate from the reported test outcomes.
+
+Outstanding administrative reconciliation includes:
+- Official security deployment-check records.
+- Technical documentation approval.
+- Final report and GitHub review.
+- Final Version 1 scope records and team acceptance.
+
+The formal Sprint 5 closeout document remains the central reference for final evidence, decisions and outstanding approvals.
