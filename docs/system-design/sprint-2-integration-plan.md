@@ -1,6 +1,6 @@
 # GradNavi Sprint 2 Integration Plan
 
-Status: Sprint 2 integration closeout plan reflecting the verified integration checkpoint through 20 September 2026. The historical integration baseline is retained, while the current status records 72 Pass and 8 Blocked test cases. The remaining Blocked cases are the MD-assigned WBS 5.7 Learning Suggestions and Roadmap API tests.
+Status: Historical 20 September integration checkpoint retained (72 Pass, 8 Blocked). The later Sprint 2 Test Plan records 80 Pass, 0 Fail and 0 Blocked after WBS 5.7 testing. Formal team review and Sprint 2 closeout approval remain pending; see Section 22.
 
 ## 1. Purpose
 
@@ -588,3 +588,29 @@ For Sprint 3:
 - Keep defect fixes on focused branches with targeted regression tests.
 - Preserve evidence during testing rather than reconstructing evidence during closeout.
 - Continue development on available Sprint 3 work while unrelated Sprint 1 and Sprint 2 owner-specific testing is completed.
+
+## 22. Final test status and closeout reconciliation - 13 October 2026
+
+Sections 5, 5A, 20 and 21 above preserve the original September repository and test execution checkpoints. They should be read as historical records, not as the latest execution state.
+
+The [Sprint 2 Test Plan](../testing/sprint-2-test-plan.md), updated through the 23 September testing checkpoint, reports the following final **test-execution** outcome:
+
+| Metric | Recorded final result |
+| --- | ---: |
+| Planned cases | 80 |
+| Pass | 80 |
+| Fail | 0 |
+| Blocked | 0 |
+| Not Run | 0 |
+
+The eight previously blocked MD-owned `S2-LEARN-01` to `S2-LEARN-08` cases now report Pass with evidence IDs `S2-EV-038` to `S2-EV-045`. The three recorded Sprint 2 defects (`DEF-S2-003`, `DEF-S2-004`, `DEF-S2-005`) are described as fixed and successfully retested in the test plan.
+
+This supersedes the **72 Pass / 8 Blocked** count solely as a current test-execution checkpoint. It does not rewrite that historical observation, reassign original WBS ownership, or by itself establish formal sprint acceptance.
+
+**WBS closeout gates:**
+
+- **5.9 Integration and Testing:** Planned test cases reported executed, 80/80 Pass. Verify final tracker/evidence links and record the team's acceptance decision.
+- **5.10 Review and Retrospective:** Preliminary observations are documented in Section 21. The final team review, participants, acceptance and actions have not yet been independently documented.
+- **5.11 Sprint 2 Complete:** Pending the required approval of WBS 5.9 and 5.10. Do not mark complete without formal confirmation.
+
+The proposed [Sprint 2 Closeout Review and Acceptance Record](../project-management/sprint-2-closeout.md) provides a structured agenda, evidence summary, unresolved sign-off requirements and acknowledgement table. The approved Microsoft Project schedule remains the authoritative planning record.
