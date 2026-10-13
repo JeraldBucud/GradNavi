@@ -85,7 +85,7 @@ Related requirements:
 - FR-11 Learning suggestions.
 - FR-12 Career roadmap.
 
-Current Sprint 2 execution update - 20 September 2026:
+Historical Sprint 2 execution update - 20 September 2026 (retained for traceability):
 
 - WBS 5.2 Career and Skill Reference Data is implemented.
 - WBS 5.3 Weighted Recommendation Engine is implemented.
@@ -105,7 +105,7 @@ Closeout testing identified and resolved:
 - DEF-S2-004: `NaN` displayed in the Learning Resources empty state.
 - DEF-S2-005: ranked Career Recommendations returned when Student Skills were empty.
 
-Current closeout position:
+Historical closeout position - 20 September 2026:
 
 - Core Career Analysis integration is working.
 - Recommendation, readiness, Skill Gap, roadmap, ownership, responsive, keyboard, and browser checks have been completed in the integrated flow.
@@ -114,6 +114,19 @@ Current closeout position:
 - WBS 5.11 Sprint 2 Complete must not be recorded until the remaining tests and team review are finished.
 
 Sprint 2 retrospective actions carried forward into Sprint 3 include earlier frontend/backend integration, earlier ownership confirmation for test execution, faster documentation updates after merges, and earlier responsive, error-state, empty-state, and browser testing.
+
+### Sprint 2 final test reconciliation - 13 October 2026
+
+The historical 20 September checkpoint above records 72 Pass and eight blocked WBS 5.7 cases. The later [Sprint 2 Test Plan](../testing/sprint-2-test-plan.md), updated through the 23 September testing checkpoint, records **80 Pass, 0 Fail, 0 Blocked**. The eight MD-assigned cases `S2-LEARN-01` through `S2-LEARN-08` are recorded as Pass, with evidence identifiers `S2-EV-038` through `S2-EV-045`.
+
+- WBS 5.2 to 5.8 implementation and the planned Career Analysis flow are reported integrated in the test plan.
+- WBS 5.9 test execution is reported complete (80/80 Pass). Final test-case/evidence acceptance by the team has not been documented.
+- WBS 5.10 formal review and retrospective remains pending an actual recorded team decision. The preliminary retrospective in the integration plan is not a substitute.
+- WBS 5.11 Sprint 2 Complete remains **pending formal sign-off**.
+- The original `Testing` / `Review` backlog states are retained until the requirements and milestone statuses receive the required approval, rather than being silently changed to `Done`.
+- The proposed [Sprint 2 Closeout Review and Acceptance Record](sprint-2-closeout.md) consolidates the latest test result, issues, retrospective agenda, and approvals still required.
+
+This addendum corrects the reader's current-state interpretation while preserving the 20 September status as a dated historical snapshot. It does not change the Microsoft Project baseline or represent retrospective team acceptance.
 
 Main implementation sequence:
 
