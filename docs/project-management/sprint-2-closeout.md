@@ -31,11 +31,11 @@ The [Sprint 2 test plan](../testing/sprint-2-test-plan.md) subsequently recorded
 | 5.6 | Recommendation and Readiness Interface | Joyee | Final interface reported integrated; Jerald's recovery/implementation support recorded separately in [contribution log](contribution-log.md) and [PR #44](https://github.com/JeraldBucud/GradNavi/pull/44) |
 | 5.7 | Learning Suggestions and Roadmap API | MD | Implemented and eight formerly blocked API cases recorded as Pass |
 | 5.8 | Learning Roadmap Interface | Joyee | Reported integrated into the Student flow |
-| 5.9 | Sprint 2 Integration and Testing | All Members | **Test-execution evidence reports 80/80 Pass**; formal team review of evidence and acceptance criteria pending |
-| 5.10 | Sprint 2 Review and Retrospective | All Members | Preliminary review exists; final team review and actual acceptance record **pending** |
-| 5.11 | Sprint 2 Complete | All Members | **Not formally confirmed**; depends on approved completion of WBS 5.9 and WBS 5.10 |
+| 5.9 | Sprint 2 Integration and Testing | All Members | **COMPLETE, project-lead-confirmed acceptance**; 80/80 test cases reported Pass |
+| 5.10 | Sprint 2 Review and Retrospective | All Members | **COMPLETE, project-lead-confirmed acceptance**; consolidated preliminary retrospective retained; no separate meeting minutes provided |
+| 5.11 | Sprint 2 Complete | All Members | **COMPLETE, project-lead-confirmed unanimous team agreement**; individual acknowledgement documents not supplied |
 
-The table distinguishes documented development/testing progress from formal WBS acceptance. It does not retroactively reassign WBS 5.6 or change the approved Microsoft Project schedule.
+The table distinguishes documented development/testing progress and the project-lead-reported team closeout decision. It does not retroactively reassign WBS 5.6 or modify the approved Microsoft Project schedule.
 
 ## 3. Testing reconciliation (WBS 5.9)
 
@@ -48,7 +48,7 @@ The table distinguishes documented development/testing progress from formal WBS 
 
 **Source:** [Sprint 2 Test Plan, Sections 10, 28 and 29](../testing/sprint-2-test-plan.md); [Sprint 2 Integration Plan, Sections 20 and 21](../system-design/sprint-2-integration-plan.md). The detailed row-by-row source is the [Sprint 2 Test Case Tracker](../testing/sprint-2-test-cases.xlsx).
 
-The published test plan describes the final tracker result. This review has **not** independently re-executed all 80 cases or audited every tracker row and evidence attachment. Team sign-off should confirm the tracker, case ownership, evidence references, and final results.
+The published test plan describes the final tracker result. This review has **not** independently re-executed all 80 cases or audited every tracker row and evidence attachment. The project lead confirmed unanimous team acceptance; direct tracker-row and evidence-link sampling remains an optional post-closure audit action.
 
 ### 3.2 Previously blocked WBS 5.7 cases
 
