@@ -126,7 +126,7 @@ The following are *not* counted as blocking UAT failures without a relevant fail
 | OBS-S5-002 | One learning-resource report was open for a purported broken link | Visible in `S5-PROD-EV-020`; report workflow visible | Normal administrator review, verify external URL and record Resolve/Dismiss decision |
 | SCOPE-FR-13 | Progress Dashboard implemented but approved WBS assignment mapping remains outdated | Backlog and assignment matrix show schedule-alignment gap | Confirm approved mapping rather than silently editing WBS ownership |
 | SCOPE-FR-16 | Editable AI output is evidenced in Resume and Cover Letter Builder | Requirement still in Backlog in published product backlog | Confirm acceptance criteria, approved WBS mapping and status |
-| SCOPE-FR-17 | Data deletion (saved generated documents and profile deletion request) is a Must requirement | Published backlog still shows Backlog and no dedicated WBS mapping | Verify implementation and testing, or record a properly approved scope exclusion/change before claiming 100% accepted requirements |
+| SCOPE-FR-17 | Data deletion was originally classified as Must | Original backlog retains historical Backlog status | Excluded from Version 1 by project-lead decision on 13 October 2026. Not implemented or tested as an accepted Version 1 requirement. Formal written scope approval and requirements updates remain pending |
 | SCOPE-FR-15 | Admin Analytics shown in Production | Published assignment mapping provisional | Approve final mapping and acceptance status |
 
 No unresolved Critical or High defect should be asserted without checking the actual defect register and completed execution logs. Similarly, a resource report still marked Open should not be described as resolved.
@@ -163,7 +163,7 @@ The project lead confirms that the revised Microsoft Project `.mpp` reports **10
 
 - Sprint 5 and some completion evidence extended beyond the planned 9 October end date. Record the actual completion sequence rather than changing historical planned dates.
 - Published testing and planning documents retain earlier statuses. Reconcile later verified results while retaining prior checkpoints.
-- Requirement assignment and data-deletion scope need explicit decisions.
+- FR-17 Data Deletion was excluded from Version 1 by the project lead on 13 October 2026. Formal written scope approval and requirements traceability updates remain outstanding.
 - Production configuration/security verification should have traceable execution evidence, not only a PASS count.
 - Reused screenshots are legitimate supporting evidence but should not be represented as independently captured by every UAT participant.
 
@@ -209,7 +209,9 @@ The final acceptance decision must consider the definition of done and release c
 - [ ] Confirm WBS 8.10 final technical documentation is approved.
 - [ ] Confirm WBS 8.11 User Guide review and acceptance.
 - [ ] Confirm WBS 8.12 final report/GitHub review acceptance, without committing private Assessment 3 drafts.
-- [ ] Resolve approved requirement/scope mapping, especially FR-17.
+- [x] Record project-lead decision to exclude FR-17 Data Deletion from Version 1.
+- [ ] Obtain formal written scope approval and reconcile FR-17 in the Product Backlog, Functional Requirements and Requirements Assignment Matrix.
+- [ ] Complete remaining requirement-to-WBS mapping and acceptance review.
 - [ ] Record final disposition of the Last Login observation and open resource report.
 - [ ] Obtain actual formal delivery acceptance acknowledgement from the three members.
 - [x] WBS 8.15 final presentation delivered on 12 October 2026 at CQU Brisbane and CQU Melbourne, confirmed by the project lead.
