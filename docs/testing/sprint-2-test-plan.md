@@ -1,6 +1,6 @@
 # GradNavi Sprint 2 Test Plan
 
-Status: Active Sprint 2 closeout test plan reflecting the verified testing checkpoint through 23 September 2026. The integrated Career Analysis flow has been tested across recommendations, readiness, Skill Gap Analysis, Learning Resources, Career Roadmap, responsive layouts, keyboard behaviour, Student ownership isolation, browser compatibility, and the dedicated WBS 5.7 Learning Suggestions and Roadmap API scenarios. The tracker now records 80 Pass, 0 Fail, and 0 Blocked cases. Final Sprint 2 closure remains subject to the team closeout review.
+Status: Sprint 2 test execution complete (80 Pass, 0 Fail, 0 Blocked) at 23 September 2026 checkpoint. **Sprint 2 formally closed on project-lead-confirmed agreement of all three members, confirmation recorded 13 October 2026.** Sections 28 and 29 preserve the historical pending-review checkpoint; Section 31 records final acceptance.
 
 ## 1. Purpose
 
@@ -618,3 +618,17 @@ Update this plan when:
 - Test execution produces new verified results.
 
 The Sprint 2 Test Case Tracker should reflect implemented and verified behaviour rather than outdated expectations.
+
+## 31. Formal Sprint 2 closure - confirmation recorded 13 October 2026
+
+The 23 September testing checkpoint in Sections 28 and 29 recorded **80 Pass, 0 Fail, 0 Blocked**, including MD's eight formerly blocked WBS 5.7 tests. At that checkpoint, formal closeout review was still pending.
+
+On 13 October 2026, the project lead confirmed that **all three members agreed to close Sprint 2**. The formal decision is documented in [Sprint 2 Closeout Review and Acceptance Record](../project-management/sprint-2-closeout.md).
+
+The final status is:
+
+- **WBS 5.9, Sprint 2 Integration and Testing:** COMPLETE on documented test-execution results and project-lead-reported team acceptance.
+- **WBS 5.10, Sprint 2 Review and Retrospective:** COMPLETE on the project-lead-reported team agreement and consolidated retrospective. An independent meeting record has not been supplied.
+- **WBS 5.11, Sprint 2 Complete:** COMPLETE on project-lead-confirmed unanimous team acceptance.
+
+The confirmation was recorded on 13 October; the original dates, medium and independent written acknowledgements of each member's acceptance have not been supplied. No new test execution, new test count or retroactive change to the September testing checkpoint is asserted by this addendum.

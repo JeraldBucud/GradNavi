@@ -1,6 +1,6 @@
 # GradNavi Sprint 2 Integration Plan
 
-Status: Historical 20 September integration checkpoint retained (72 Pass, 8 Blocked). The later Sprint 2 Test Plan records 80 Pass, 0 Fail and 0 Blocked after WBS 5.7 testing. Formal team review and Sprint 2 closeout approval remain pending; see Section 22.
+Status: **SPRINT 2 FORMALLY CLOSED, project-lead-confirmed unanimous team acceptance on 13 October 2026**. Historical 20 September integration checkpoint retained (72 Pass, 8 Blocked); final test plan reports 80 Pass, 0 Fail, 0 Blocked. See Sections 22 and 23.
 
 ## 1. Purpose
 
@@ -614,3 +614,21 @@ This supersedes the **72 Pass / 8 Blocked** count solely as a current test-execu
 - **5.11 Sprint 2 Complete:** Pending the required approval of WBS 5.9 and 5.10. Do not mark complete without formal confirmation.
 
 The proposed [Sprint 2 Closeout Review and Acceptance Record](../project-management/sprint-2-closeout.md) provides a structured agenda, evidence summary, unresolved sign-off requirements and acknowledgement table. The approved Microsoft Project schedule remains the authoritative planning record.
+
+## 23. Final Sprint 2 team acceptance - confirmation recorded 13 October 2026
+
+The project lead confirmed that **Jerald Christopher Bucud, Md Enamul Haque and Joyee Chakraborty all agreed to close Sprint 2**. This confirmation supersedes the *pending formal acceptance* statements in the earlier historical checkpoints, but does not rewrite the dates or results of those checkpoints.
+
+**Final WBS disposition (project-lead-confirmed):**
+
+| WBS | Final status | Basis |
+| --- | --- | --- |
+| 5.9, Sprint 2 Integration and Testing | **COMPLETE** | Final Sprint 2 test plan reports 80/80 Pass; project lead confirms team acceptance |
+| 5.10, Sprint 2 Review and Retrospective | **COMPLETE** | Preliminary retrospective in Section 21 consolidated in the [formal closeout record](../project-management/sprint-2-closeout.md); project lead confirms unanimous closure agreement |
+| 5.11, Sprint 2 Complete | **COMPLETE** | Project lead confirms all three members agreed to close Sprint 2 |
+
+The **13 October 2026 date marks the recording of the project lead's confirmation**, not a verified date of an individual vote or a particular meeting. Separate signed acknowledgements, meeting minutes and the exact dates/medium of individual agreement have not been independently provided.
+
+This record does not claim that a new test run occurred on 13 October. The underlying published [Sprint 2 Test Plan](../testing/sprint-2-test-plan.md) documents the technical execution status; the [Sprint 2 Closeout Record](../project-management/sprint-2-closeout.md) records the formal decision basis and outstanding traceability follow-ups.
+
+No change is made to the historical planned Sprint end date or to the Microsoft Project schedule by this addendum.
