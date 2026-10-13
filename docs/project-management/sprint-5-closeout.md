@@ -1,17 +1,17 @@
 # GradNavi Sprint 5 Closeout and Project Acceptance Record
 
-**Document status:** Final closeout draft, pending evidence reconciliation and formal team approval  
-**Project:** GradNavi, AI-Powered Career Guidance System  
-**Sprint:** Sprint 5, Stabilisation, Deployment and Closure  
-**WBS:** 8.1 to 8.15  
-**Planned Sprint:** 5 to 9 October 2026  
-**Presentation date in approved schedule:** 12 October 2026  
-**Actual final presentation (project-lead confirmation):** Delivered on 12 October 2026 at CQU Brisbane and CQU Melbourne  
-**Evidence reconciliation date:** 13 October 2026  
-**Project schedule:** The project lead reports 100% completion in the revised `GradNavi_Final_Project_Plan.mpp`. This is a schedule-progress statement, distinct from formal acceptance of each deliverable.  
-**Release baseline:** `main`, incorporating Sprint 5 PR #101 and README PR #102, prior to this closeout branch  
-**Closeout branch:** `jerald/sprint-5-final-acceptance-closeout`  
-**Closeout evidence commits (local):** `a33605d`, `0545f25`  
+- **Document status:** Final closeout draft, pending evidence reconciliation and formal team approval
+- **Project:** GradNavi, AI-Powered Career Guidance System
+- **Sprint:** Sprint 5, Stabilisation, Deployment and Closure
+- **WBS:** 8.1 to 8.15
+- **Planned Sprint:** 5 to 9 October 2026
+- **Presentation date in approved schedule:** 12 October 2026
+- **Actual final presentation (project-lead confirmation):** Delivered on 12 October 2026 at CQU Brisbane and CQU Melbourne
+- **Evidence reconciliation date:** 13 October 2026
+- **Project schedule:** The project lead reports 100% completion in the revised `GradNavi_Final_Project_Plan.mpp`. This is a schedule-progress statement, distinct from formal acceptance of each deliverable.
+- **Release baseline:** `main`, incorporating Sprint 5 PR #101 and README PR #102, prior to this closeout branch
+- **Closeout branch:** `jerald/sprint-5-final-acceptance-closeout`
+- **Closeout evidence commits (local):** `a33605d`, `0545f25`
 
 ## 1. Purpose
 
@@ -176,13 +176,13 @@ The project lead confirms that the revised Microsoft Project `.mpp` reports **10
 
 ## 8. Delivery and Acceptance Decision
 
-**Technical release:** Sprint 5 release merged into `main` and Production reported operational.  
-**Automated regression:** Latest documented backend full run: 1,069/1,069 PASS.  
-**Security testing:** 32/32 PASS reported; deployment results still need reconciliation into official records.  
-**Internal UAT:** 11/11 PASS reported; no blockers reported.  
-**Production verification:** 21/21 PASS reported; screenshot/workbook evidence retained.  
-**Schedule:** 100% complete, according to the project lead's updated `.mpp`.  
-**Final presentation (WBS 8.15):** Complete, delivered 12 October 2026 at CQU Brisbane and CQU Melbourne, per project-lead confirmation.  
+- **Technical release:** Sprint 5 release merged into `main` and Production reported operational.
+- **Automated regression:** Latest documented backend full run: 1,069/1,069 PASS.
+- **Security testing:** 32/32 PASS reported; deployment results still need reconciliation into official records.
+- **Internal UAT:** 11/11 PASS reported; no blockers reported.
+- **Production verification:** 21/21 PASS reported; screenshot/workbook evidence retained.
+- **Schedule:** 100% complete, according to the project lead's updated `.mpp`.
+- **Final presentation (WBS 8.15):** Complete, delivered 12 October 2026 at CQU Brisbane and CQU Melbourne, per project-lead confirmation.
 **Formal project acceptance:** **Pending final documentation review, scope disposition and member acceptance acknowledgements.**
 
 The final acceptance decision must consider the definition of done and release conditions in `docs/project-management/quality-plan.md`, including documentation, security, required scope and team review.
