@@ -963,3 +963,9 @@ Outstanding administrative reconciliation includes:
 - Final Version 1 scope records and team acceptance.
 
 The formal Sprint 5 closeout document remains the central reference for final evidence, decisions and outstanding approvals.
+
+### 19.8 WBS 8.6 Primary UAT Evidence Reconciliation (14 October 2026)
+
+The project lead selected a twelve-case Student and Administrator UAT execution register as the primary closeout reference. GitHub now retains `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_12_Scenario_Execution_Results.xlsx` and ten extracted screenshots plus `12-case/evidence-index.csv`, verified in closeout-branch commit `66d7e2f`. The selected register records **12/12 PASS reported**, with case-level expected results, actual-result narratives, evidence links and verification limits. Individual tester execution dates and formal acceptance approvals remain pending.
+
+The earlier eleven-case, **11/11 PASS team-reported** results in Section 19 and the original workbook remain historical checkpoints and supporting evidence. Do not add the two totals. Production verification (21/21 reported PASS) is a separate WBS 8.9 result. Original report documents remain outside the GitHub repository.
