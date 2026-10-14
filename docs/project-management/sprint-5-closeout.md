@@ -44,7 +44,7 @@ The following status is **evidence-based closeout status**, not an overwrite of 
 | 8.3 | Security and permission testing | Jerald | **32/32 PASS reported** after two Production deployment checks; previous published documentation still records 30 PASS, 2 Deferred | Update approved security execution workbook and matrix for `S5-SEC-DEP-01`, `S5-SEC-DEP-02` with execution method, result and evidence |
 | 8.4 | Performance and usability review | Joyee | Six performance/usability evidence images supplied; performance findings and acceptance still need summary | `docs/testing/evidence/sprint-5/wbs-8.4/performance-usability/`; capture actual Lighthouse measurements from images and review outcome before final mark Complete |
 | 8.5 | Bug fixing and final refinement | All Members | Fix work integrated and visual evidence supplied; defect disposition reconciliation required | PR #81, resume correction PR #90 and mobile admin heading PR #95; `docs/testing/evidence/sprint-5/wbs-8.5/`; review non-blocking observations |
-| 8.6 | User acceptance testing | All Members | **11/11 PASS reported**, 0 blocking issues reported; three participants identified by project lead | `docs/testing/evidence/sprint-5/uat/`; formal individual acceptance acknowledgements not independently supplied |
+| 8.6 | User acceptance testing | All Members | **12/12 PASS reported** in selected primary case register; prior 11/11 team-reported register preserved as historical evidence; formal acceptance pending | `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_12_Scenario_Execution_Results.xlsx`; `12-case/` screenshot index |
 | 8.7 | Backend and database deployment | MD | Deployment configuration merged; Production reported operational | PR #93; Railway Production configuration and operational verification; record final backend/database operational evidence |
 | 8.8 | Frontend deployment | Joyee | Frontend deployment configuration merged; Production reported operational | PR #92; Vercel Production and `docs/testing/evidence/sprint-5/wbs-8.8/` |
 | 8.9 | Production verification | Jerald | **21/21 PASS reported** following interaction testing in Production | `docs/testing/evidence/sprint-5/production-verification/` contains workbook and 21 screenshot records |
@@ -107,10 +107,10 @@ For all outstanding closeout tasks, see the [Sprint 5 formal closeout action reg
 
 ### 4.3 WBS 8.6 Internal Team UAT
 
-**Selected twelve-case closeout register (14 October 2026):** The project lead requested a twelve-scenario WBS 8.6 register based on real Student and Administrator testing evidence. Its dedicated Excel workbook and extracted redacted screenshots are prepared under `docs/testing/evidence/sprint-5/uat/`. The result is twelve PASS **as reported**, not independently witnessed. The original eleven-case test plan and workbook stay unchanged as historical records. No counts are added across the two overlapping scenario lists. Complete file upload and case-level review remain pending. Formal WBS 8.6 group acceptance remains pending.
+**Primary twelve-case UAT register (14 October 2026):** The project lead selected the twelve-scenario Student/Administrator checklist for the Sprint 5 closeout narrative. GitHub contains its [Excel execution register](../testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_12_Scenario_Execution_Results.xlsx) and [evidence index](../testing/evidence/sprint-5/uat/12-case/evidence-index.csv), plus ten extracted screenshots in `12-case/`, verified on closeout branch at commit `66d7e2f`. All twelve cases are **PASS as reported**, not independently witnessed. The workbook maps steps, expected/actual outcomes, case notes, issue dispositions and screenshot limits; tester names, individual execution dates and formal written acceptance are not supplied for these twelve cases. The earlier eleven-case plan and workbook remain as **historical supporting records**; do not add the two overlapping totals. Final group case-level review and sign-off remain pending.
 
 
-The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and Md Enamul Haque personally executed their allocated scenarios, with **no blocking issues reported**. The detailed case register records **11 scenarios, 11 team-reported PASS results** and references to the original Production screenshots plus additional UAT screenshots. Screenshots originally captured by one user are reused as product-state evidence, not attributed as a separate tester's capture.
+**Historical eleven-case record:** The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and Md Enamul Haque personally executed their allocated scenarios, with **no blocking issues reported**. That earlier case register records **11 scenarios, 11 team-reported PASS results** and references to the original Production screenshots plus additional UAT screenshots. Screenshots originally captured by one user are reused as product-state evidence, not attributed as a separate tester's capture.
 
 | Tester | Scenarios | Reported outcome |
 | --- | --- | --- |
@@ -118,7 +118,7 @@ The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and 
 | Joyee Chakraborty | S5-UAT-05, S5-UAT-07, S5-UAT-08, S5-UAT-09 | 4/4 PASS reported |
 | Md Enamul Haque | S5-UAT-06, S5-UAT-10, S5-UAT-11 | 3/3 PASS reported |
 
-**UAT records:**
+**Historical eleven-case UAT records (retained for traceability):**
 
 - `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_Execution_Results.xlsx`
 - `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_Test_Plan.md`
@@ -199,7 +199,7 @@ The project lead confirms that the revised Microsoft Project `.mpp` reports **10
 - **Technical release:** Sprint 5 release merged into `main` and Production reported operational.
 - **Automated regression:** Latest documented backend full run: 1,069/1,069 PASS.
 - **Security testing:** 32/32 PASS reported; deployment results still need reconciliation into official records.
-- **Internal UAT:** 11/11 PASS reported; no blockers reported.
+- **Internal UAT:** Primary 12/12 PASS reported in the uploaded case register; the previous 11/11 team-reported register is retained as historical supporting evidence; individual formal acceptance remains pending.
 - **Production verification:** 21/21 PASS reported; screenshot/workbook evidence retained.
 - **Schedule:** 100% complete, according to the project lead's updated `.mpp`.
 - **Final presentation (WBS 8.15):** Complete, delivered 12 October 2026 at CQU Brisbane and CQU Melbourne, per project-lead confirmation.
