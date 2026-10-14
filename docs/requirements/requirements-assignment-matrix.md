@@ -47,7 +47,7 @@ If ownership or Sprint placement changes, Microsoft Project must be updated firs
 | FR-14 Basic administration | Sprint 4 | MD, Joyee, Jerald | 7.6, 7.7, 7.8, 7.9 | MD leads admin models and API. Joyee leads the admin dashboard. Jerald leads role permissions and audit records. |
 | FR-15 Admin analytics | Sprint 4, provisional | MD, Joyee | 7.6, 7.7 | Current mapping places backend aggregation with admin API work and display with the admin dashboard. The team must confirm this mapping. |
 | FR-16 AI content review | Schedule alignment required | To be confirmed | No dedicated WBS implementation task identified | AI generation and interface tasks exist, but the review and edit requirement needs an explicit WBS mapping. |
-| FR-17 Data deletion | Excluded from V1, 13 October 2026 | Not assigned for V1 | No V1 implementation WBS task | Original Must requirement retained for traceability. Project-lead exclusion recorded; written team approval pending. |
+| FR-17 Data deletion | Excluded from V1, 13 October 2026 | Not assigned for V1 | No V1 implementation WBS task | Original Must requirement retained for traceability. Project-lead-reported verbal approval by all three members recorded 14 October 2026; no individual written sign-off supplied. |
 | FR-18 Audit and error handling | Sprint 4 | Jerald | 7.4, 7.8, 7.9 | Jerald leads AI response validation and error handling plus role permissions and audit records. |
 
 ---
@@ -260,7 +260,8 @@ This is a scope decision, not evidence of implementation or successful acceptanc
 | WBS mapping | No V1 implementation task |
 | Backend and frontend implementation | Not claimed as completed under FR-17 |
 | Acceptance evidence | No FR-17 acceptance PASS claimed |
-| Formal written team approval | Pending confirmation |
+| Verbal team approval | Project lead reports approval by Jerald, Joyee and MD; recorded 14 October 2026 |
+| Independent written approval | Not supplied |
 
 The original requirement and historical schedule gap are retained for traceability.
 
@@ -321,6 +322,10 @@ The following quality ownership remains the working assignment unless an explici
 | NFR-15 Recoverability | 8.7, 8.9, 8.10 |
 
 ---
+
+## Sprint 5 FR-17 Scope Sign-Off Reconciliation (recorded 14 October 2026)
+
+The project lead confirmed that all three members agreed by telephone to exclude FR-17 from GradNavi Version 1. The exact discussion date was not supplied. This is a verbal team-approval report, not a separately witnessed or signed decision. The original Must priority, excluded V1 status and absent implementation/test evidence are preserved. FR-13, FR-15 and FR-16 WBS traceability work remains separate and is not considered complete by this FR-17 agreement.
 
 ## Shared Approval
 
