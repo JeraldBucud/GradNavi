@@ -1,6 +1,6 @@
 # GradNavi Sprint 5 Plan
 
-Status: RECONCILED - 13 October 2026. Formal delivery acceptance pending.
+Status: RECONCILED. Delivered Sprint 5 Version 1 accepted verbally by the team, per project-lead report recorded 14 October 2026; documentary follow-ups remain.
 
 WBS: 8.1 Sprint 5 Planning and Defect Triage
 
@@ -969,3 +969,14 @@ The formal Sprint 5 closeout document remains the central reference for final ev
 The project lead selected a twelve-case Student and Administrator UAT execution register as the primary closeout reference. GitHub now retains `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_12_Scenario_Execution_Results.xlsx` and ten extracted screenshots plus `12-case/evidence-index.csv`, verified in closeout-branch commit `66d7e2f`. The selected register records **12/12 PASS reported**, with case-level expected results, actual-result narratives, evidence links and verification limits. Individual tester execution dates and formal acceptance approvals remain pending.
 
 The earlier eleven-case, **11/11 PASS team-reported** results in Section 19 and the original workbook remain historical checkpoints and supporting evidence. Do not add the two totals. Production verification (21/21 reported PASS) is a separate WBS 8.9 result. Original report documents remain outside the GitHub repository.
+
+### 19.9 Reported Team Approval and Remaining Administrative Tasks (14 October 2026)
+
+The project lead confirmed that all three members, Jerald, Joyee and MD, agreed verbally to close Sprint 5 for the delivered V1 release in a telephone discussion. Approval was reported and recorded 14 October 2026. The actual telephone discussion date and separately signed individual approvals were not supplied.
+
+The team-reported agreement includes:
+- Acceptance of the deployed V1 release and documented Sprint 5 verification evidence without asserting additional unperformed tests.
+- The **FR-17 Data Deletion** exclusion from V1. The original Must requirement stays in the historical backlog. Functional Requirements, Product Backlog and Assignment Matrix now record the project-lead-reported verbal approval.
+- Release acceptance with the known Administrator Last Login display issue, the still-open learning-resource report, and the previously observed staging AI narrative number mismatch. Those are not claimed resolved or retested.
+
+WBS 8.13 release-delivery acceptance is recorded in `docs/project-management/sprint-5-closeout.md`. Older plan sections describing pending final approval remain historical checkpoints, not the current team decision. Requirements mapping for FR-13/FR-15/FR-16, documentation/evidence checks, independent member signatures and external academic report submission remain separate follow-up work. This record does not imply the external academic report was submitted.
