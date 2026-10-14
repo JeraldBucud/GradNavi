@@ -290,3 +290,11 @@ The [frontend deployment verification comment](https://github.com/JeraldBucud/Gr
 These checks support WBS 8.2 staging integration coverage. They are separate from the WBS 8.9 production verification results and do not constitute a new final production smoke run or team sign-off.
 
 For the selected twelve-case WBS 8.6 UAT register and its captured images, see `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_12_Scenario_Execution_Results.xlsx` and `docs/testing/evidence/sprint-5/uat/12-case/`. The evidence package is verified in GitHub at closeout-branch commit `66d7e2f`: the Excel workbook, ten JPG screenshots and `12-case/evidence-index.csv`. The original eleven-case register remains historical. The twelve reported scenarios are not additive to the eleven-case set. Screenshots support visual states and selected interactions; not every scenario step or data persistence claim is independently demonstrated. The final integrated evidence review and written team sign-off remain pending.
+
+## Group Verbal Release Acceptance and Regression Evidence Boundary (recorded 14 October 2026)
+
+The project lead reports that Jerald, Joyee and MD **verbally accepted the delivered Sprint 5 V1 release** in a telephone discussion, including the recorded regression/UAT/production evidence and known limitations. The report of agreement was recorded 14 October 2026; separate participant signatures or the exact call date were not supplied.
+
+This updates the prior **team approval pending** checkpoint for release-level acceptance. It does not establish a newly executed final Sprint 5 integrated smoke run, independent verification of each UAT step or independently observed full Production regression. The documented 1,069 passing backend tests, frontend regression evidence, 12/12 reported UAT and 21/21 reported Production checks retain their original execution dates, scopes and verification boundaries.
+
+**Final interpretation:** Reported team approval of the V1 delivery and documented regression coverage. Any unexecuted combined-smoke steps or extra verification should be tracked as additional checks, not silently reported PASS.
