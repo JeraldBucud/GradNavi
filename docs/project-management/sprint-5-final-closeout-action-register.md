@@ -10,7 +10,7 @@ This record identifies the remaining work without overriding historical sprint s
 | --- | --- | --- | --- |
 | 8.1 Sprint planning | Final evidence reconciliation appended to the plan | Preserve historical checkpoints; confirm final review | All members |
 | 8.2 Regression | Backend 1,069 tests OK at `b81fa7e`; frontend and targeted evidence filed | Combined integration/API/database/frontend evidence review, final integrated smoke and sign-off | All members; Jerald coordinates |
-| 8.3 Security | 30 local PASS plus two project-lead-reported deployment PASS | Upload prepared production screenshots; reconcile case-level method/result into security workbook and matrix, with scope limitations | Jerald; deployment configuration owner where needed |
+| 8.3 Security | 30 local PASS plus two project-lead-reported deployment PASS | Six production PNG screenshots uploaded in commit `070bbb8`; reconcile case-level method/result into official security workbook and review unverified production settings, retaining reported-versus-observed limitations | Jerald; deployment configuration owner where needed |
 | 8.4 Performance/usability | Evidence images retained | Extract measured results and acceptance statement; distinguish measured versus untested targets | Assigned owner and team review |
 | 8.5 Defects/refinement | Fix PRs and production observations documented | Confirm disposition/retests for OBS-S5-001 Last Login and OBS-S5-002 learning-resource report | Assigned owners; team review |
 | 8.6 UAT | 11/11 reported PASS | Case-level acceptance acknowledgements and final review where required | All members |
@@ -27,7 +27,7 @@ This record identifies the remaining work without overriding historical sprint s
 
 ## Current production-security evidence scope
 
-The project lead supplied masked Railway variable names, HTTPS 401 controlled-authentication response, approved- and unapproved-origin CORS results, Vercel public API base URL, and authenticated production HTTPS 200 browser headers. The screenshot package has been prepared locally but images are not yet committed. The evidence index is at `docs/testing/evidence/sprint-5/deployment-security/README.md`.
+The project lead supplied masked Railway variable names, HTTPS 401 controlled-authentication response, approved- and unapproved-origin CORS results, Vercel public API base URL, and authenticated production HTTPS 200 browser headers. All six PNG screenshots have been committed to GitHub in commit `070bbb8`. The evidence index is at `docs/testing/evidence/sprint-5/deployment-security/README.md`.
 
 This supports observable DEP-01/02 subchecks. Production DEBUG, allowed-host values, complete secret-exposure review and all deployment criteria are **not** independently verified from the supplied screenshots. The original 30 local PASS and two later reported deployment PASS statuses are retained.
 
