@@ -124,6 +124,10 @@ The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and 
 
 The provided records do not contain independently supplied handwritten or electronic acceptance signatures from each member. Obtain or record each member's acceptance acknowledgement before describing formal individual sign-off as complete.
 
+**Joyee supplementary evidence cross-check (14 October 2026):** Joyee's separately supplied Assessment 3 Section 7 describes twelve UAT scenarios passing after staging and a final production smoke. This differs in numbering and coverage from the official eleven-case `S5-UAT` record; the counts must not be added or overwritten. Her 11 October [PR #92 staging smoke comment](https://github.com/JeraldBucud/GradNavi/pull/92#issuecomment-6107719099) and [staging screenshots](https://github.com/JeraldBucud/GradNavi/pull/92#issuecomment-6107737018) corroborate a **staging** end-to-end run, not the later production report in full. See [WBS 8.2 supplementary evidence review](../testing/sprint-5-wbs-8.2-integration-regression-review.md). The academic draft remains outside the public repository, and official WBS 8.6 remains **11/11 team-reported PASS, formal acceptance pending**.
+
+Joyee also reports an unreconciled **staging** Skill Gap AI summary inconsistency (5.54 compared with the rounded 6% display), previously described on PR #92. Whether it reproduced on final Production is not confirmed. Retain this as a recorded observation, not a newly established production blocker or fixed defect.
+
 ### 4.4 WBS 8.9 Production Verification
 
 The project lead confirmed that the visible controls and workflows were exercised after completing a populated Student Profile. The production verification workbook records **21/21 PASS reported**. Twenty-one uniquely named screenshots cover public, Student and Administrator screens, and additional UAT screenshots record save, progress, generation, edit and download states.
