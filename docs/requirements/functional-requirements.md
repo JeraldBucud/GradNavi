@@ -1,8 +1,8 @@
 # Functional Requirements
 
-Status: Draft for team review
+Status: Original functional requirements baseline with Version 1 change-control reconciliation
 
-These requirements describe the original proposed V1 behaviour of GradNavi. Subsequent scope decisions are recorded below. Formal team approval remains subject to the documented approval rule.
+These requirements describe the original proposed V1 behaviour of GradNavi. Subsequent scope decisions are recorded below. The FR-17 Version 1 exclusion has project-lead-reported verbal approval from the team, recorded 14 October 2026. All other baseline requirements retain their individually recorded statuses.
 
 | ID | Requirement | Statement | Priority | Status |
 |---|---|---|---|---|
@@ -22,7 +22,7 @@ These requirements describe the original proposed V1 behaviour of GradNavi. Subs
 | FR-14 | Basic administration | The system shall let authorised administrators manage users, careers, skills, and learning resources. | Must | Draft for approval |
 | FR-15 | Admin analytics | The system shall show basic aggregated statistics such as popular careers and common skill gaps. | Should | Draft for approval |
 | FR-16 | AI content review | The system shall allow users to review and edit generated content before saving. | Must | Draft for approval |
-| FR-17 | Data deletion | The system shall let students delete saved generated documents and request deletion of their profile. | Must | Excluded from V1 by project-lead decision; written team approval pending |
+| FR-17 | Data deletion | The system shall let students delete saved generated documents and request deletion of their profile. | Must | Excluded from V1; team verbal approval reported 14 October 2026 |
 | FR-18 | Audit and error handling | The system shall record critical system actions and return clear errors when AI or external services fail. | Must | Draft for approval |
 
 ## Version 1 Scope Reconciliation
@@ -51,7 +51,8 @@ The exclusion does not establish that the deletion functionality was implemented
 | Risk effect | FR-17 deletion workflows are unavailable under the recorded Version 1 scope |
 | Quality effect | No claim of FR-17 implementation or acceptance testing |
 | Updated implementation owner | Not assigned |
-| Formal team approval date | Pending written confirmation from all three members |
+| Team approval record | Project lead reports verbal approval by Jerald, Joyee and MD; confirmation recorded 14 October 2026, telephone discussion date not separately supplied |
+| Written approval | No individually signed or written acknowledgements supplied; verbal approval recorded from project-lead confirmation |
 
 FR-17 implementation in a later version requires a separate scope decision, assigned ownership, implementation tasks, and acceptance criteria.
 
@@ -77,3 +78,9 @@ Any proposed change must record:
 6. Quality effect
 7. Updated owner
 8. Team approval date
+
+## Sprint 5 FR-17 Team Approval Reconciliation (recorded 14 October 2026)
+
+The project lead confirmed that **Jerald Christopher Bucud, Joyee Chakraborty and Md Enamul Haque agreed verbally** to exclude FR-17 Data Deletion from GradNavi Version 1. The discussion occurred by telephone, according to the project lead; its exact date was not provided. This is a **project-lead-reported group decision**, not independently verified individual written approval.
+
+The original **Must** priority and requirement wording are retained as historical context. FR-17 was not implemented, tested, or accepted as a delivered Version 1 feature. Future deletion support requires its own scope approval, implementation and tests.
