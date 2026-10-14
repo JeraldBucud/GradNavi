@@ -1,6 +1,6 @@
 # Sprint 5 Deployment Security Evidence Register
 
-Status: Evidence index prepared, image upload and case-level reconciliation pending.
+Status: Six PNG screenshots uploaded and verified on GitHub; case-level acceptance and workbook reconciliation pending.
 Date: Screenshot evidence supplied 14 October 2026 (Brisbane local date).
 Scope: S5-SEC-DEP-01 and S5-SEC-DEP-02 under WBS 8.3.
 
@@ -30,7 +30,7 @@ Boundaries: Successful HTTPS traffic and visible frontend configuration do **not
 
 The approved WBS 8.3 record has 30 locally executed PASS cases and two deployment checks later reported PASS by the project lead. These images support specified observable subchecks only. Do not convert the project-lead report into a claim of full independent verification.
 
-Image files listed above are **prepared locally but not yet present in this Git branch** until uploaded and verified. Do not describe the evidence package as committed before those files exist.
+All six PNG files are committed to this closeout branch in commit `070bbb8` (14 October 2026). Each file is available in the same folder as this index. Their presence supports the described observable checks only. Formal case-level reconciliation and full deployment configuration verification are separate.
 
 Avoid committing tokens, passwords, environment-variable values, real account emails or unredacted session headers.
 
