@@ -13,13 +13,13 @@ This record identifies the remaining work without overriding historical sprint s
 | 8.3 Security | 30 local PASS plus two project-lead-reported deployment PASS | Six production PNG screenshots uploaded in commit `070bbb8`; reconcile case-level method/result into official security workbook and review unverified production settings, retaining reported-versus-observed limitations | Jerald; deployment configuration owner where needed |
 | 8.4 Performance/usability | Evidence images retained | Extract measured results and acceptance statement; distinguish measured versus untested targets | Assigned owner and team review |
 | 8.5 Defects/refinement | Fix PRs and production observations documented | Confirm disposition/retests for OBS-S5-001 Last Login and OBS-S5-002 learning-resource report | Assigned owners; team review |
-| 8.6 UAT | 11/11 reported PASS | Case-level acceptance acknowledgements and final review where required | All members |
+| 8.6 UAT | Original 11/11 reported PASS; selected 12-case register prepared for upload | Upload actual extracted UAT screenshots and mapped 12-case workbook; complete case-level group acceptance | All members |
 | 8.7 Backend deployment | Railway production operational, PR #93 | Confirm approved deployment/handover evidence and open configuration items | Assigned owner |
 | 8.8 Frontend deployment | Vercel production operational, PR #92 | Confirm final deployment and production-path records | Assigned owner |
 | 8.9 Production verification | 21/21 reported PASS and screenshots | Approve actual evidence scope; do not overclaim persistence/export verification | Jerald and team |
 | 8.10 Technical handover | Technical documents exist | Owner-approved configuration, migrations/reference-data, backup/restore and operational handover | Assigned owner |
 | 8.11 User Guide | Final-named user guide committed | Version/content review, link in README and acceptance | Assigned owner |
-| 8.12 Final report and GitHub review | Assessment 3 Word report remains outside public repository | Academic submission, final repository/evidence review and delivery record | Jerald |
+| 8.12 Final report and GitHub review | Final academic report remains outside public repository | Academic submission, final repository/evidence review and delivery record | Jerald |
 | 8.13 Project delivery complete | **Pending** | Actual group approval after dependent deliverables, scope and limitation decisions | All members |
 | 8.14–8.15 Presentation | Presentation delivered 12 October 2026, reported by project lead | Preserve available slides/acknowledgement if desired; do not invent assessor confirmation | All members |
 | FR-13 / FR-15 / FR-16 | Features evidenced; traceability or WBS alignment incomplete | Confirm authoritative mapping and acceptance without rewriting history | All members |
