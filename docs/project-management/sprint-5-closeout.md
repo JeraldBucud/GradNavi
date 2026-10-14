@@ -50,7 +50,7 @@ The following status is **evidence-based closeout status**, not an overwrite of 
 | 8.9 | Production verification | Jerald | **21/21 PASS reported** following interaction testing in Production | `docs/testing/evidence/sprint-5/production-verification/` contains workbook and 21 screenshot records |
 | 8.10 | Technical documentation finalisation | MD | Technical material exists, but final handover/document acceptance not established in this record | Confirm final MD technical documentation and setup/recovery instructions, then link the approved files |
 | 8.11 | User guide finalisation | Joyee | Final-named DOCX supplied and committed locally; review/acceptance needed | `docs/user-guide/GradNavi-User-Guide-final.docx`; link from README after review |
-| 8.12 | Final report and GitHub review | Jerald | GitHub review and final assessment report in progress | Assessment 3 report files are kept outside the GitHub release, by the project lead's decision |
+| 8.12 | Final report and GitHub review | Jerald | GitHub review and final assessment report in progress | Final academic report files are kept outside the GitHub release, by the project lead's decision |
 | 8.13 | Project delivery complete | All Members | **Formal delivery decision pending** | Requires accepted 8.9, 8.10, 8.11 and 8.12 deliverables and approved outstanding-scope disposition |
 | 8.14 | Final presentation preparation | All Members | Preparation reported complete in connection with the delivered 12 October presentation; supporting slides and rehearsal records not reviewed | Retain final slides or preparation evidence, if available |
 | 8.15 | Final presentation | All Members | **COMPLETE, project-lead reported**: delivered 12 October 2026 at two CQU campuses | Jerald Christopher Bucud and Joyee Chakraborty presented at CQU Brisbane; Md Enamul Haque presented at CQU Melbourne. Attendance/delivery confirmed by project lead; independent venue evidence not yet provided |
@@ -107,6 +107,9 @@ For all outstanding closeout tasks, see the [Sprint 5 formal closeout action reg
 
 ### 4.3 WBS 8.6 Internal Team UAT
 
+**Selected twelve-case closeout register (14 October 2026):** The project lead requested a twelve-scenario WBS 8.6 register based on real Student and Administrator testing evidence. Its dedicated Excel workbook and extracted redacted screenshots are prepared under `docs/testing/evidence/sprint-5/uat/`. The result is twelve PASS **as reported**, not independently witnessed. The original eleven-case test plan and workbook stay unchanged as historical records. No counts are added across the two overlapping scenario lists. Complete file upload and case-level review remain pending. Formal WBS 8.6 group acceptance remains pending.
+
+
 The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and Md Enamul Haque personally executed their allocated scenarios, with **no blocking issues reported**. The detailed case register records **11 scenarios, 11 team-reported PASS results** and references to the original Production screenshots plus additional UAT screenshots. Screenshots originally captured by one user are reused as product-state evidence, not attributed as a separate tester's capture.
 
 | Tester | Scenarios | Reported outcome |
@@ -123,10 +126,6 @@ The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and 
 - Reused Production evidence `S5-PROD-EV-001` through `S5-PROD-EV-021`, kept in their original Production verification folder
 
 The provided records do not contain independently supplied handwritten or electronic acceptance signatures from each member. Obtain or record each member's acceptance acknowledgement before describing formal individual sign-off as complete.
-
-**Joyee supplementary evidence cross-check (14 October 2026):** Joyee's separately supplied Assessment 3 Section 7 describes twelve UAT scenarios passing after staging and a final production smoke. This differs in numbering and coverage from the official eleven-case `S5-UAT` record; the counts must not be added or overwritten. Her 11 October [PR #92 staging smoke comment](https://github.com/JeraldBucud/GradNavi/pull/92#issuecomment-6107719099) and [staging screenshots](https://github.com/JeraldBucud/GradNavi/pull/92#issuecomment-6107737018) corroborate a **staging** end-to-end run, not the later production report in full. See [WBS 8.2 supplementary evidence review](../testing/sprint-5-wbs-8.2-integration-regression-review.md). The academic draft remains outside the public repository, and official WBS 8.6 remains **11/11 team-reported PASS, formal acceptance pending**.
-
-Joyee also reports an unreconciled **staging** Skill Gap AI summary inconsistency (5.54 compared with the rounded 6% display), previously described on PR #92. Whether it reproduced on final Production is not confirmed. Retain this as a recorded observation, not a newly established production blocker or fixed defect.
 
 ### 4.4 WBS 8.9 Production Verification
 
@@ -164,7 +163,7 @@ The repository includes architecture, security design, API and deployment materi
 
 ### 6.3 Final Report and GitHub Review
 
-The project lead keeps the Assessment 3 report in a local excluded workspace rather than the public GitHub repository. Final academic report submission and GitHub handover are separate deliverables. Record the external assessment-submission outcome in the project closeout without committing private drafts.
+The project lead keeps the final academic report in a local excluded workspace rather than the public GitHub repository. Final academic report submission and GitHub handover are separate deliverables. Record the external assessment-submission outcome in the project closeout without committing private drafts.
 
 ### 6.4 Project Schedule
 
@@ -229,7 +228,7 @@ The final acceptance decision must consider the definition of done and release c
 - [ ] Confirm WBS 8.4 performance/usability final acceptance and WBS 8.5 defect dispositions.
 - [ ] Confirm WBS 8.10 final technical documentation is approved.
 - [ ] Confirm WBS 8.11 User Guide review and acceptance.
-- [ ] Confirm WBS 8.12 final report/GitHub review acceptance, without committing private Assessment 3 drafts.
+- [ ] Confirm WBS 8.12 final report/GitHub review acceptance, without committing private academic drafts.
 - [x] Record project-lead decision to exclude FR-17 Data Deletion from Version 1.
 - [ ] Obtain formal written scope approval and reconcile FR-17 in the Product Backlog, Functional Requirements and Requirements Assignment Matrix.
 - [ ] Complete remaining requirement-to-WBS mapping and acceptance review.
