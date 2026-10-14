@@ -282,3 +282,29 @@ The named screenshot set broadly overlaps the feature families documented in the
 **Decision:** Reuse the existing reported 21/21 Production verification and 11/11 UAT evidence for consolidated Sprint 5 smoke **coverage review** rather than asserting a new test execution. The 1,069-test post-merge backend run and frontend evidence remain separately attributed to their recorded baseline and owners.
 
 **Formal WBS 8.2 status:** Final combined evidence review and explicit team sign-off remain pending. No new regression run, deploy check or formal acceptance is claimed by this cross-reference.
+
+
+## Joyee staging and production UAT supplementary evidence review (14 October 2026)
+
+Additional supporting input: Joyee's Assessment 3 report contribution, Section 7, received for final report consolidation on 14 October 2026. The report is an externally supplied academic draft, **not** a new repository test-plan baseline and not a new independently witnessed execution.
+
+### Independent repository corroboration
+
+Joyee's 11 October 2026 [PR #92 staging verification comment](https://github.com/JeraldBucud/GradNavi/pull/92#issuecomment-6107719099) reports a Vercel PR preview connected to Railway **staging** tested end to end. The comment identifies Student sign-up/login, saved profile, recommendations, skill gaps and live Administrator pages, including a test user role change recorded in Audit Records. A [separate PR #92 comment](https://github.com/JeraldBucud/GradNavi/pull/92#issuecomment-6107737018) attaches staging screenshots. This is tester-attributed evidence of a **staging** smoke test, not independent proof of the subsequent production run.
+
+### Additional report claims and comparison
+
+Joyee's Assessment 3 Section 7 reports **12/12 UAT scenarios PASS** after staging fixes and a final production smoke. Its unprefixed IDs `UAT-01`–`UAT-12` are a **different case list** from the authoritative GitHub record of **11/11 team-reported `S5-UAT-01`–`S5-UAT-11` PASS**. Joyee's list explicitly includes production sign-up/account creation, Administrator test-role change and mobile responsive use. Her Figures 7.1–7.4 show recommendation, skill-gap, Administrator Dashboard and Audit Records states. These report figures support visual states but do not independently authenticate all 12 executions or every persistence claim.
+
+Do **not** sum the two lists, overwrite 11/11 with 12/12, or describe PR #92 staging screenshots as proof of production execution. The report may be used as an explicitly attributed supplementary tester statement until each unique `UAT-xx` item is mapped to the official register or registered as an approved additional case.
+
+### Issues identified in Joyee's report
+
+- Missing skill/career reference data and missing O*NET demand snapshot initially blocked profile/recommendation use; Joyee reports both imports later fixed the cases, but the final staging/production sequence and independent retest evidence are not fully documented here.
+- Admin Dashboard mobile heading overlap was fixed under PR #95.
+- Staging Skill Gap AI narrative displayed 5.54 where the UI displayed 6%; PR #92 comment corroborates this staging observation. Production recurrence and fix status require verification before describing it as resolved or affecting final acceptance.
+- Administrator Last Login display showed `Never`; this overlaps existing `OBS-S5-001` and remains an open/accepted-limitation decision.
+
+### Reconciliation decision
+
+Retain the authoritative 11/11 WBS 8.6 count and existing 21/21 WBS 8.9 count until the test-case owner approves a crosswalk or controlled extension. PR #92 provides genuine additional **staging** smoke coverage, while the academic report provides Joyee-attributed **production UAT claims**. This strengthens the WBS 8.2 evidence narrative but does not replace the missing group consolidated review or approval. No new tests were executed or formal sign-offs obtained in this documentary review.
