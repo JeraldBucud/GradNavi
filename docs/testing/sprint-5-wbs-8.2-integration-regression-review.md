@@ -261,3 +261,24 @@ The approved Sprint 4 test plan's final execution record states **S4-REG-06 PASS
 The later **Sprint 5 final combined smoke and team WBS 8.2 sign-off** remain separate requirements. The recorded post-merge backend full suite (1,069 PASS, commit `b81fa7e`), Joyee's frontend checks, targeted integration retests, reported UAT (11/11 PASS) and reported production verification (21/21 PASS) support the review, but those records do not by themselves document a newly executed final Sprint 5 integrated smoke or a signed team consolidation. Do not rerun the already completed Sprint 4 S4-REG-06 merely to correct this record.
 
 Before claiming WBS 8.2 formally complete, identify an existing Sprint 5 integrated smoke execution record that maps to the approved workflows, or execute and document one, then obtain the team's consolidated review. No additional execution is claimed by this documentary reconciliation.
+
+
+## Production verification cross-reference for final integrated review (14 October 2026)
+
+The WBS 8.9 Production Verification workbook in `docs/testing/evidence/sprint-5/production-verification/GradNavi_Sprint5_Production_Product_Verification_Test_Cases_Updated.xlsx` records 21/21 PASS **as reported by the project lead**. The repository contains evidence images `S5-PROD-EV-001` through `S5-PROD-EV-021`. The existing project closeout explains that visible controls and workflows were exercised against Production after a populated Student Profile was prepared.
+
+The production set covers the following named screens and outputs:
+
+| Functional area | Production screenshot IDs | Reconciliation role |
+| --- | --- | --- |
+| Public and authentication pages | S5-PROD-EV-001–002 | Public entry and Login page evidence |
+| Student Dashboard/Profile/Recommendations/Explore Careers/Skill Gap | S5-PROD-EV-003–007 | Career and profile integration review |
+| Roadmap/Learning Resources/Job Matching | S5-PROD-EV-008–010 | Career-path and resource/job workflow review |
+| Resume/Cover Letter/Interview Preparation/Account Settings | S5-PROD-EV-011–014 | Application-tools and account workflows |
+| Administrator Dashboard/User/Career/Skill/Learning Resource/Reports/Audit | S5-PROD-EV-015–021 | Administrator workflow coverage |
+
+The named screenshot set broadly overlaps the feature families documented in the **completed** Sprint 4 `S4-REG-06` smoke test. It contributes Production interaction evidence for a Sprint 5 integrated review. A screenshot filename or page-load screenshot alone does **not** independently prove each mutation, persistence effect, export, authorization decision, or backend/database condition. Relevant retained UAT/functional evidence and the approved case register should support any stronger claims.
+
+**Decision:** Reuse the existing reported 21/21 Production verification and 11/11 UAT evidence for consolidated Sprint 5 smoke **coverage review** rather than asserting a new test execution. The 1,069-test post-merge backend run and frontend evidence remain separately attributed to their recorded baseline and owners.
+
+**Formal WBS 8.2 status:** Final combined evidence review and explicit team sign-off remain pending. No new regression run, deploy check or formal acceptance is claimed by this cross-reference.
