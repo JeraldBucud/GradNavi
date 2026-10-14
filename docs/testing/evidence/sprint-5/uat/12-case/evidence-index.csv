@@ -1,0 +1,11 @@
+Mapped Case,Evidence File,Observed Screen,Verification Limit
+UAT-02,S5-UAT12-02-signup-password-rules.jpg,Signup form displays password rules,No sign-up success is independently visible
+UAT-03,S5-UAT12-03-profile-structured-evidence.jpg,Student Profile shows evidence fields,No proof of every field persisted after refresh
+UAT-04,S5-UAT12-04-career-recommendations-production.jpg,Ranked recommendations visible on production,No direct scoring computation proof
+UAT-05,S5-UAT12-05-skill-gap-production.jpg,Skill Gap Analysis visible on production,No independent before/after mutation
+UAT-07,S5-UAT12-07-interview-feedback-existing-sprint4.jpg,Interview response and AI feedback visible,"Earlier sprint context, not new Sprint 5 run"
+UAT-08,S5-UAT12-08-admin-dashboard-production-redacted.jpg,Production administrator dashboard count cards visible,Account email redacted
+UAT-11,S5-UAT12-11-audit-role-change-production-redacted.jpg,Production audit entry shows role changed,Admin email redacted
+UAT-12,S5-UAT12-12-job-matching-mobile-existing.jpg,Mobile Job Matching viewport visible,Only one mobile viewport evidenced
+REFDATA-01,S5-UAT12-ISSUE-01-career-search-missing-reference-data.jpg,Pre-fix career search returned no results,"Reference data import fix is reported, not independently logged here"
+REFDATA-02,S5-UAT12-ISSUE-02-recommendations-missing-onet-import.jpg,Pre-fix recommendation unavailable warning,"O*NET snapshot import fix is reported, not independently logged here"
