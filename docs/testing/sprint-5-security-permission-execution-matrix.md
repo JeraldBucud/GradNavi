@@ -394,6 +394,8 @@ No new automated test execution is claimed in this follow-up record.
 
 ## 22. Additional production screenshot evidence (14 October 2026)
 
+Upload verification: All six indexed PNG files are present in the dedicated GitHub deployment-security folder as of commit `070bbb8`.
+
 This section supplements the original local 30 PASS / 2 Deferred checkpoint and the Section 21 project-lead-reported deployment PASS follow-up. It does not retroactively change an execution date or imply independent verification of every production setting.
 
 | Case | Actual observable check | Screenshot prepared locally | Verification boundary |
@@ -405,6 +407,6 @@ This section supplements the original local 30 PASS / 2 Deferred checkpoint and 
 | S5-SEC-DEP-02 | Production Vercel public API URL references HTTPS Railway | `deployment-security/S5-SEC-DEP-02A-vercel-public-api-base-url.png` | Public configuration path only |
 | S5-SEC-DEP-02 | Authenticated browser request used HTTPS Railway and returned 200 | `deployment-security/S5-SEC-DEP-02B-production-api-https-200-cropped.png` | Single observed API call; Admin Dashboard PII cropped |
 
-**Upload state:** These six image filenames are reserved in the [deployment-security evidence index](evidence/sprint-5/deployment-security/README.md), but the images have been prepared outside GitHub and must be uploaded before their repository links work. Do not claim they are present until the branch tree confirms the files.
+**Upload state:** All six PNG files were uploaded to GitHub and verified against the closeout branch tree at commit `070bbb8`. See the [deployment-security evidence index](evidence/sprint-5/deployment-security/README.md). Presence of these files does not establish full independent verification of masked settings or all production secret boundaries.
 
 **Reported outcome:** The two deployment cases retain their earlier project-lead-reported PASS outcome. Actual production DEBUG value, allowed hosts, comprehensive secret-exposure review and deployment error-handling breadth are not independently demonstrated by these screenshots. A fully witnessed configuration audit remains a separate activity. The approved security workbook still requires case-level reconciliation, not a new claim of 32 independently witnessed results.
