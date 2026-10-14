@@ -88,6 +88,21 @@ Do not treat the Production screenshots alone as proof of secret, header, debug 
 - [Published security execution matrix](https://github.com/JeraldBucud/GradNavi/blob/main/docs/testing/sprint-5-security-permission-execution-matrix.md)
 - [Published security test plan](https://github.com/JeraldBucud/GradNavi/blob/main/docs/testing/sprint-5-security-permission-test-plan.md)
 
+### 4.2.1 Production screenshot reconciliation preparation (14 October 2026)
+
+After the 13 October project-lead-reported DEP-01/02 PASS follow-up, additional screenshots were supplied showing masked Railway variable names, safe HTTPS HTTP 401 error response, approved/disallowed CORS examples, Vercel's public HTTPS Railway API URL, and an authenticated browser HTTPS HTTP 200 response.
+
+- Evidence index: [Sprint 5 deployment-security evidence](../testing/evidence/sprint-5/deployment-security/README.md).
+- Detailed observation boundaries: [security execution matrix, Section 22](../testing/sprint-5-security-permission-execution-matrix.md).
+- **Image upload pending:** the six sanitised screenshots are prepared outside GitHub and must be uploaded to the folder referenced by the evidence index before calling the record complete.
+- These screenshots support specified observable checks, **not** full verification of the masked DEBUG/host/secret settings or a complete production secret-exposure scan.
+- Retain original 30 local PASS plus two later project-lead-reported PASS totals. Do not convert the two reported results to independently witnessed cases merely because the screenshots were supplied.
+- Official workbook case-level evidence reconciliation and formal Sprint 5 sign-off remain pending.
+
+For all outstanding closeout tasks, see the [Sprint 5 formal closeout action register](sprint-5-final-closeout-action-register.md).
+
+
+
 ### 4.3 WBS 8.6 Internal Team UAT
 
 The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and Md Enamul Haque personally executed their allocated scenarios, with **no blocking issues reported**. The detailed case register records **11 scenarios, 11 team-reported PASS results** and references to the original Production screenshots plus additional UAT screenshots. Screenshots originally captured by one user are reused as product-state evidence, not attributed as a separate tester's capture.
