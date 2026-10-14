@@ -94,7 +94,7 @@ After the 13 October project-lead-reported DEP-01/02 PASS follow-up, additional 
 
 - Evidence index: [Sprint 5 deployment-security evidence](../testing/evidence/sprint-5/deployment-security/README.md).
 - Detailed observation boundaries: [security execution matrix, Section 22](../testing/sprint-5-security-permission-execution-matrix.md).
-- **Image upload pending:** the six sanitised screenshots are prepared outside GitHub and must be uploaded to the folder referenced by the evidence index before calling the record complete.
+- **Image upload verified:** all six sanitised deployment-security screenshots are committed in closeout-branch commit `070bbb8`. Official case-level workbook reconciliation and complete configuration verification remain pending.
 - These screenshots support specified observable checks, **not** full verification of the masked DEBUG/host/secret settings or a complete production secret-exposure scan.
 - Retain original 30 local PASS plus two later project-lead-reported PASS totals. Do not convert the two reported results to independently witnessed cases merely because the screenshots were supplied.
 - Official workbook case-level evidence reconciliation and formal Sprint 5 sign-off remain pending.
