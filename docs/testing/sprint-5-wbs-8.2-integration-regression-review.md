@@ -253,3 +253,11 @@ The local backend regression passed against commit b81fa7e.
 
 Deployed API verification, final integrated smoke testing,
 and complete WBS 8.2 sign-off are still pending.
+
+## Sprint 4 smoke historical reconciliation and Sprint 5 sign-off boundary (14 October 2026)
+
+The approved Sprint 4 test plan's final execution record states **S4-REG-06 PASS**, as part of Jerald's 46/46 passing Sprint 4 cases and 129/129 Sprint 4 total. That completed Sprint 4 smoke included Student Job Matching, Resume, Cover Letter, Interview Preparation, and Administrator workflows. The earlier `S4-REG-06: PENDING` in this WBS 8.2 review is a retained historical checkpoint, not the latest Sprint 4 result.
+
+The later **Sprint 5 final combined smoke and team WBS 8.2 sign-off** remain separate requirements. The recorded post-merge backend full suite (1,069 PASS, commit `b81fa7e`), Joyee's frontend checks, targeted integration retests, reported UAT (11/11 PASS) and reported production verification (21/21 PASS) support the review, but those records do not by themselves document a newly executed final Sprint 5 integrated smoke or a signed team consolidation. Do not rerun the already completed Sprint 4 S4-REG-06 merely to correct this record.
+
+Before claiming WBS 8.2 formally complete, identify an existing Sprint 5 integrated smoke execution record that maps to the approved workflows, or execute and document one, then obtain the team's consolidated review. No additional execution is claimed by this documentary reconciliation.
