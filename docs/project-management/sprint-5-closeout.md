@@ -1,6 +1,6 @@
 # GradNavi Sprint 5 Closeout and Project Acceptance Record
 
-- **Document status:** Final closeout draft, pending evidence reconciliation and formal team approval
+- **Document status:** Sprint 5 Version 1 delivery **verbally accepted by all three members, as reported by the project lead and recorded 14 October 2026**. Administrative and evidence follow-ups are documented. No independently authenticated signatures.
 - **Project:** GradNavi, AI-Powered Career Guidance System
 - **Sprint:** Sprint 5, Stabilisation, Deployment and Closure
 - **WBS:** 8.1 to 8.15
@@ -44,14 +44,14 @@ The following status is **evidence-based closeout status**, not an overwrite of 
 | 8.3 | Security and permission testing | Jerald | **32/32 PASS reported** after two Production deployment checks; previous published documentation still records 30 PASS, 2 Deferred | Update approved security execution workbook and matrix for `S5-SEC-DEP-01`, `S5-SEC-DEP-02` with execution method, result and evidence |
 | 8.4 | Performance and usability review | Joyee | Six performance/usability evidence images supplied; performance findings and acceptance still need summary | `docs/testing/evidence/sprint-5/wbs-8.4/performance-usability/`; capture actual Lighthouse measurements from images and review outcome before final mark Complete |
 | 8.5 | Bug fixing and final refinement | All Members | Fix work integrated and visual evidence supplied; defect disposition reconciliation required | PR #81, resume correction PR #90 and mobile admin heading PR #95; `docs/testing/evidence/sprint-5/wbs-8.5/`; review non-blocking observations |
-| 8.6 | User acceptance testing | All Members | **11/11 PASS reported**, 0 blocking issues reported; three participants identified by project lead | `docs/testing/evidence/sprint-5/uat/`; formal individual acceptance acknowledgements not independently supplied |
+| 8.6 | User acceptance testing | All Members | **12/12 PASS reported** in selected primary case register; previous 11/11 team-reported case list preserved. Group verbal release acceptance reported 14 October 2026; independent case-executor signatures unavailable | `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_12_Scenario_Execution_Results.xlsx`; `12-case/` screenshot index |
 | 8.7 | Backend and database deployment | MD | Deployment configuration merged; Production reported operational | PR #93; Railway Production configuration and operational verification; record final backend/database operational evidence |
 | 8.8 | Frontend deployment | Joyee | Frontend deployment configuration merged; Production reported operational | PR #92; Vercel Production and `docs/testing/evidence/sprint-5/wbs-8.8/` |
 | 8.9 | Production verification | Jerald | **21/21 PASS reported** following interaction testing in Production | `docs/testing/evidence/sprint-5/production-verification/` contains workbook and 21 screenshot records |
 | 8.10 | Technical documentation finalisation | MD | Technical material exists, but final handover/document acceptance not established in this record | Confirm final MD technical documentation and setup/recovery instructions, then link the approved files |
 | 8.11 | User guide finalisation | Joyee | Final-named DOCX supplied and committed locally; review/acceptance needed | `docs/user-guide/GradNavi-User-Guide-final.docx`; link from README after review |
-| 8.12 | Final report and GitHub review | Jerald | GitHub review and final assessment report in progress | Assessment 3 report files are kept outside the GitHub release, by the project lead's decision |
-| 8.13 | Project delivery complete | All Members | **Formal delivery decision pending** | Requires accepted 8.9, 8.10, 8.11 and 8.12 deliverables and approved outstanding-scope disposition |
+| 8.12 | Final report and GitHub review | Jerald | GitHub review and final assessment report in progress | Final academic report files are kept outside the GitHub release, by the project lead's decision |
+| 8.13 | Project delivery complete | All Members | **Delivered V1 release verbally accepted by the group, per project-lead confirmation recorded 14 October 2026** | Agreed scope excludes FR-17; open limitations accepted for release. Final external academic submission and documentary follow-ups tracked separately, not represented as completed |
 | 8.14 | Final presentation preparation | All Members | Preparation reported complete in connection with the delivered 12 October presentation; supporting slides and rehearsal records not reviewed | Retain final slides or preparation evidence, if available |
 | 8.15 | Final presentation | All Members | **COMPLETE, project-lead reported**: delivered 12 October 2026 at two CQU campuses | Jerald Christopher Bucud and Joyee Chakraborty presented at CQU Brisbane; Md Enamul Haque presented at CQU Melbourne. Attendance/delivery confirmed by project lead; independent venue evidence not yet provided |
 
@@ -76,6 +76,8 @@ The published WBS 8.2 regression review records a **post-merge backend suite of 
 - [Regression review](https://github.com/JeraldBucud/GradNavi/blob/main/docs/testing/sprint-5-wbs-8.2-integration-regression-review.md)
 - [Sprint 5 integration and regression PR #91](https://github.com/JeraldBucud/GradNavi/pull/91)
 
+**14 October 2026 cross-reference:** WBS 8.2 now maps the reported 21/21 WBS 8.9 Production verification screenshots (`S5-PROD-EV-001`–`021`) to the relevant Student, application and Administrator feature groups. This reuses existing evidence for final integrated smoke coverage review; it does not assert a newly run Sprint 5 smoke test. Explicit combined review and formal sign-off remain pending.
+
 ### 4.2 WBS 8.3 Security and Permissions
 
 The published matrix records **30 local PASS and two Deferred** deployment cases. The project lead subsequently confirmed both deferred deployment cases as PASS during Production testing. The final reported total is therefore **32 PASS / 32 planned**. This later result must be entered into the official workbook and execution matrix, with evidence of:
@@ -88,9 +90,27 @@ Do not treat the Production screenshots alone as proof of secret, header, debug 
 - [Published security execution matrix](https://github.com/JeraldBucud/GradNavi/blob/main/docs/testing/sprint-5-security-permission-execution-matrix.md)
 - [Published security test plan](https://github.com/JeraldBucud/GradNavi/blob/main/docs/testing/sprint-5-security-permission-test-plan.md)
 
+### 4.2.1 Production screenshot reconciliation preparation (14 October 2026)
+
+After the 13 October project-lead-reported DEP-01/02 PASS follow-up, additional screenshots were supplied showing masked Railway variable names, safe HTTPS HTTP 401 error response, approved/disallowed CORS examples, Vercel's public HTTPS Railway API URL, and an authenticated browser HTTPS HTTP 200 response.
+
+- Evidence index: [Sprint 5 deployment-security evidence](../testing/evidence/sprint-5/deployment-security/README.md).
+- Detailed observation boundaries: [security execution matrix, Section 22](../testing/sprint-5-security-permission-execution-matrix.md).
+- **Image upload verified:** all six sanitised deployment-security screenshots are committed in closeout-branch commit `070bbb8`. Official case-level workbook reconciliation and complete configuration verification remain pending.
+- These screenshots support specified observable checks, **not** full verification of the masked DEBUG/host/secret settings or a complete production secret-exposure scan.
+- Retain original 30 local PASS plus two later project-lead-reported PASS totals. Do not convert the two reported results to independently witnessed cases merely because the screenshots were supplied.
+- Official workbook case-level evidence reconciliation and formal Sprint 5 sign-off remain pending.
+
+For all outstanding closeout tasks, see the [Sprint 5 formal closeout action register](sprint-5-final-closeout-action-register.md).
+
+
+
 ### 4.3 WBS 8.6 Internal Team UAT
 
-The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and Md Enamul Haque personally executed their allocated scenarios, with **no blocking issues reported**. The detailed case register records **11 scenarios, 11 team-reported PASS results** and references to the original Production screenshots plus additional UAT screenshots. Screenshots originally captured by one user are reused as product-state evidence, not attributed as a separate tester's capture.
+**Primary twelve-case UAT register (14 October 2026):** The project lead selected the twelve-scenario Student/Administrator checklist for the Sprint 5 closeout narrative. GitHub contains its [Excel execution register](../testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_12_Scenario_Execution_Results.xlsx) and [evidence index](../testing/evidence/sprint-5/uat/12-case/evidence-index.csv), plus ten extracted screenshots in `12-case/`, verified on closeout branch at commit `66d7e2f`. All twelve cases are **PASS as reported**, not independently witnessed. The workbook maps steps, expected/actual outcomes, case notes, issue dispositions and screenshot limits; tester names, individual execution dates and formal written acceptance are not supplied for these twelve cases. The earlier eleven-case plan and workbook remain as **historical supporting records**; do not add the two overlapping totals. All three members' verbal acceptance of the final delivered V1 release was reported by the project lead and recorded 14 October 2026. Per-case independent tester signatures and execution timestamps have not been supplied.
+
+
+**Historical eleven-case record:** The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and Md Enamul Haque personally executed their allocated scenarios, with **no blocking issues reported**. That earlier case register records **11 scenarios, 11 team-reported PASS results** and references to the original Production screenshots plus additional UAT screenshots. Screenshots originally captured by one user are reused as product-state evidence, not attributed as a separate tester's capture.
 
 | Tester | Scenarios | Reported outcome |
 | --- | --- | --- |
@@ -98,14 +118,14 @@ The project lead confirmed that Jerald Christopher Bucud, Joyee Chakraborty and 
 | Joyee Chakraborty | S5-UAT-05, S5-UAT-07, S5-UAT-08, S5-UAT-09 | 4/4 PASS reported |
 | Md Enamul Haque | S5-UAT-06, S5-UAT-10, S5-UAT-11 | 3/3 PASS reported |
 
-**UAT records:**
+**Historical eleven-case UAT records (retained for traceability):**
 
 - `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_Execution_Results.xlsx`
 - `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_Test_Plan.md`
 - `docs/testing/evidence/sprint-5/uat/S5-UAT-EV-001-Student-Profile-Saved.png` through `S5-UAT-EV-010-Admin-Edit-Learning-Resource-Form.png`
 - Reused Production evidence `S5-PROD-EV-001` through `S5-PROD-EV-021`, kept in their original Production verification folder
 
-The provided records do not contain independently supplied handwritten or electronic acceptance signatures from each member. Obtain or record each member's acceptance acknowledgement before describing formal individual sign-off as complete.
+The original written records do not contain separately supplied individual signatures. The project lead subsequently confirmed on 14 October 2026 that all three members verbally approved final Sprint 5 acceptance in a telephone discussion. This is **reported verbal approval**, not independent verification of each member's signature or a rewrite of historical test executor attribution.
 
 ### 4.4 WBS 8.9 Production Verification
 
@@ -122,11 +142,11 @@ The following are *not* counted as blocking UAT failures without a relevant fail
 
 | Reference | Observation | Evidence status | Required disposition |
 | --- | --- | --- | --- |
-| OBS-S5-001 | Admin User Management displayed `Never` under Last Login for accounts shown | Visible in `S5-PROD-EV-016`; root cause and retest not established | Confirm whether documented authentication behaviour or a defect, then resolve or accept with rationale |
-| OBS-S5-002 | One learning-resource report was open for a purported broken link | Visible in `S5-PROD-EV-020`; report workflow visible | Normal administrator review, verify external URL and record Resolve/Dismiss decision |
+| OBS-S5-001 | Admin User Management displayed `Never` under Last Login for accounts shown | Visible in `S5-PROD-EV-016`; root cause and retest not established | **Accepted as a known V1 display limitation for release**, per project-lead-reported verbal group approval recorded 14 October. Future fix/retest remains open; not represented as resolved |
+| OBS-S5-002 | One learning-resource report was open for a purported broken link | Visible in `S5-PROD-EV-020`; report workflow visible | **Accepted as an operational follow-up for release**, per project-lead-reported verbal group approval. The report is **still open** until an administrator checks the URL and records Resolve/Dismiss |
 | SCOPE-FR-13 | Progress Dashboard implemented but approved WBS assignment mapping remains outdated | Backlog and assignment matrix show schedule-alignment gap | Confirm approved mapping rather than silently editing WBS ownership |
 | SCOPE-FR-16 | Editable AI output is evidenced in Resume and Cover Letter Builder | Requirement still in Backlog in published product backlog | Confirm acceptance criteria, approved WBS mapping and status |
-| SCOPE-FR-17 | Data deletion was originally classified as Must | Original backlog retains historical Backlog status | Excluded from Version 1 by project-lead decision on 13 October 2026. Not implemented or tested as an accepted Version 1 requirement. Formal written scope approval and requirements updates remain pending |
+| SCOPE-FR-17 | Data deletion was originally classified as Must | Original Must priority preserved; no V1 implementation or acceptance test | **Excluded from Version 1**, proposed 13 October and verbally approved by Jerald, Joyee and MD as reported by project lead on 14 October. Product Backlog, Functional Requirements and Assignment Matrix now record the exclusion. No separate written member signatures supplied |
 | SCOPE-FR-15 | Admin Analytics shown in Production | Published assignment mapping provisional | Approve final mapping and acceptance status |
 
 No unresolved Critical or High defect should be asserted without checking the actual defect register and completed execution logs. Similarly, a resource report still marked Open should not be described as resolved.
@@ -143,7 +163,7 @@ The repository includes architecture, security design, API and deployment materi
 
 ### 6.3 Final Report and GitHub Review
 
-The project lead keeps the Assessment 3 report in a local excluded workspace rather than the public GitHub repository. Final academic report submission and GitHub handover are separate deliverables. Record the external assessment-submission outcome in the project closeout without committing private drafts.
+The project lead keeps the final academic report in a local excluded workspace rather than the public GitHub repository. Final academic report submission and GitHub handover are separate deliverables. Record the external assessment-submission outcome in the project closeout without committing private drafts.
 
 ### 6.4 Project Schedule
 
@@ -163,13 +183,13 @@ The project lead confirms that the revised Microsoft Project `.mpp` reports **10
 
 - Sprint 5 and some completion evidence extended beyond the planned 9 October end date. Record the actual completion sequence rather than changing historical planned dates.
 - Published testing and planning documents retain earlier statuses. Reconcile later verified results while retaining prior checkpoints.
-- FR-17 Data Deletion was excluded from Version 1 by the project lead on 13 October 2026. Formal written scope approval and requirements traceability updates remain outstanding.
+- FR-17 Data Deletion was excluded from Version 1 by the project lead on 13 October 2026. The project lead reported verbal agreement of all three members on 14 October, now recorded in the three scope documents. No independently supplied written signatures.
 - Production configuration/security verification should have traceable execution evidence, not only a PASS count.
 - Reused screenshots are legitimate supporting evidence but should not be represented as independently captured by every UAT participant.
 
 ### Improvement actions
 
-1. Complete formal acceptance and requirements traceability before changing the project-delivery milestone to formally Accepted.
+1. Retain this recorded verbal group acceptance of the V1 release and complete any remaining administrative requirements traceability without changing historical WBS ownership.
 2. Use one evidence index linking WBS, requirement, test case, result, responsible tester and retained screenshot/log.
 3. Keep production secrets, real user details and credentials out of public Git history. Review current uploaded evidence for privacy before pushing.
 4. Preserve historical schedule and issue-state snapshots rather than overwriting retrospective context.
@@ -179,21 +199,21 @@ The project lead confirms that the revised Microsoft Project `.mpp` reports **10
 - **Technical release:** Sprint 5 release merged into `main` and Production reported operational.
 - **Automated regression:** Latest documented backend full run: 1,069/1,069 PASS.
 - **Security testing:** 32/32 PASS reported; deployment results still need reconciliation into official records.
-- **Internal UAT:** 11/11 PASS reported; no blockers reported.
+- **Internal UAT:** Primary 12/12 PASS reported in the uploaded case register; previous 11/11 team-reported record retained as historical. Verbal release acceptance reported by project lead; case-executor signatures not independently supplied.
 - **Production verification:** 21/21 PASS reported; screenshot/workbook evidence retained.
 - **Schedule:** 100% complete, according to the project lead's updated `.mpp`.
 - **Final presentation (WBS 8.15):** Complete, delivered 12 October 2026 at CQU Brisbane and CQU Melbourne, per project-lead confirmation.
-**Formal project acceptance:** **Pending final documentation review, scope disposition and member acceptance acknowledgements.**
+**Sprint 5 V1 delivery acceptance:** **Approved verbally by the three members, per the project lead's confirmation recorded 14 October 2026.** This records an actual reported team decision, not independent written sign-off, independent verification of every test assertion, or completion of external academic submission. Known limitations and remaining documentary follow-ups are accepted as part of the delivery decision.
 
 The final acceptance decision must consider the definition of done and release conditions in `docs/project-management/quality-plan.md`, including documentation, security, required scope and team review.
 
-### Acceptance acknowledgements (complete using actual confirmations)
+### Reported verbal team acceptance (project-lead confirmation recorded 14 October 2026)
 
-| Member | Role | UAT reported | Final delivery acceptance | Confirmation reference/date |
+| Member | Role | Historical eleven-case UAT allocation | V1 delivery decision | Evidence source and date recorded |
 | --- | --- | --- | --- | --- |
-| Jerald Christopher Bucud | Project lead | 4/4 PASS reported | Awaiting explicit formal acknowledgement | To be recorded |
-| Joyee Chakraborty | Team member | 4/4 PASS reported | Awaiting explicit formal acknowledgement | To be recorded |
-| Md Enamul Haque | Team member | 3/3 PASS reported | Awaiting explicit formal acknowledgement | To be recorded |
+| Jerald Christopher Bucud | Project lead | 4/4 PASS reported | Verbally accepted (self-confirmed) | Project-lead confirmation, recorded 14 October 2026 |
+| Joyee Chakraborty | Team member | 4/4 PASS reported | Verbally accepted (as reported by Jerald) | Project-lead confirmation of prior telephone discussion, recorded 14 October 2026 |
+| Md Enamul Haque | Team member | 3/3 PASS reported | Verbally accepted (as reported by Jerald) | Project-lead confirmation of prior telephone discussion, recorded 14 October 2026 |
 
 ### Final gate checklist
 
@@ -208,17 +228,30 @@ The final acceptance decision must consider the definition of done and release c
 - [ ] Confirm WBS 8.4 performance/usability final acceptance and WBS 8.5 defect dispositions.
 - [ ] Confirm WBS 8.10 final technical documentation is approved.
 - [ ] Confirm WBS 8.11 User Guide review and acceptance.
-- [ ] Confirm WBS 8.12 final report/GitHub review acceptance, without committing private Assessment 3 drafts.
+- [ ] Confirm WBS 8.12 final report/GitHub review acceptance, without committing private academic drafts.
 - [x] Record project-lead decision to exclude FR-17 Data Deletion from Version 1.
-- [ ] Obtain formal written scope approval and reconcile FR-17 in the Product Backlog, Functional Requirements and Requirements Assignment Matrix.
+- [x] Record project-lead-reported verbal group approval of FR-17 V1 exclusion in Product Backlog, Functional Requirements and Requirements Assignment Matrix. No individual written signatures supplied.
 - [ ] Complete remaining requirement-to-WBS mapping and acceptance review.
-- [ ] Record final disposition of the Last Login observation and open resource report.
-- [ ] Obtain actual formal delivery acceptance acknowledgement from the three members.
+- [x] Record release-level acceptance of Last Login display limitation and open learning-resource report for follow-up; neither issue is marked fixed or resolved.
+- [x] Record project-lead-reported verbal delivery approval from Jerald, Joyee and MD, with no invented signatures or telephone date.
 - [x] WBS 8.15 final presentation delivered on 12 October 2026 at CQU Brisbane and CQU Melbourne, confirmed by the project lead.
 - [ ] File final presentation materials or independent delivery acknowledgement if required for WBS 8.14 evidence.
-- [ ] Confirm WBS 8.13 Project Delivery Complete after predecessor acceptance.
+- [x] Record WBS 8.13 **V1 delivery verbally accepted** as reported by the project lead, with final academic submission and documentation follow-ups explicitly tracked.
 
-**Proposed closeout status:** Ready for final evidence reconciliation and formal team decision. Do not present as fully signed off until the remaining gate items are addressed.
+**Closeout decision:** Sprint 5 delivered Version 1 is **team-accepted verbally**, as reported by the project lead on 14 October 2026. Team acceptance of known V1 limitations and FR-17 exclusion is recorded. This is **not** independently signed written acceptance or evidence that every administrative gate or academic submission has been completed.
+
+
+## 8.1 Project-Lead-Reported Verbal Closeout and Exception Register (recorded 14 October 2026)
+
+The project lead confirmed that Joyee Chakraborty and Md Enamul Haque **both verbally approved** final Sprint 5 closeout in a telephone discussion, including the documented outstanding issues and exclusion of FR-17 from Version 1. Jerald also confirmed the decision. The discussion's exact date, duration and individual written signatures were not supplied. The **record date** of this decision is 14 October 2026.
+
+**Accepted deliverable:** The GradNavi Version 1 release and recorded Sprint 5 testing, deployment and handover deliverables, subject to the verification boundaries already documented. A verbal decision does not create an unexecuted test, supply missing production configuration values or prove independent case-executor sign-off.
+
+**Agreed scope and exceptions:** FR-17 Data Deletion is outside V1 and is not claimed implemented. The Administrator Last Login `Never` display is an accepted release limitation with future follow-up. The learning-resource report visible as Open is accepted as an outstanding operational item, not marked Resolved. The staging Skill Gap AI summary 5.54-versus-6% discrepancy is accepted for release as a previously recorded staging-only observation, without asserting recurrence or resolution in Production. FR-13/FR-15/FR-16 assignment and backlog mapping needs administrative reconciliation without changing implementation history.
+
+**Outstanding post-acceptance records:** Complete technical handover detail verification, User Guide linking, WBS 8.4 measured-evidence review, final requirement-to-WBS mapping, any remaining security configuration subchecks, academic report submission record outside GitHub, and owner-specific follow-up for known defects. These tasks are tracked as administrative/maintenance work. They do not change the reported verbal team decision, and they must not be described as independently complete.
+
+**Acceptance basis:** Project-lead statement recorded in the closeout discussion on 14 October 2026. No direct messages or signed approvals from Joyee or MD were supplied in the repository.
 
 ## 9. Source and Evidence Index
 

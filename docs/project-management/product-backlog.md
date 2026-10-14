@@ -39,7 +39,7 @@ Execution status should reflect actual team progress. Planned dates alone do not
 | FR-14 | Basic administration | Authorised administrators manage users, careers, skills, and learning resources | Must | Sprint 4 | MD, Joyee, Jerald | 7.6, 7.7, 7.8, 7.9 | In Progress |
 | FR-15 | Admin analytics | Administrators view aggregated statistics such as popular careers and common skill gaps | Should | Sprint 4, provisional mapping | MD, Joyee | 7.6, 7.7 | In Progress |
 | FR-16 | AI content review | Students review and edit generated AI-supported content before saving | Must | Schedule alignment required | To be confirmed | No dedicated Microsoft Project task identified | Backlog |
-| FR-17 | Data deletion | Students delete saved generated documents and request deletion of their profile | Must | Not scheduled for V1 | Not assigned | No dedicated V1 WBS task | Excluded from V1 (project-lead decision; written approval pending) |
+| FR-17 | Data deletion | Students delete saved generated documents and request deletion of their profile | Must | Not scheduled for V1 | Not assigned | No dedicated V1 WBS task | Excluded from V1 (team verbal approval reported 14 Oct 2026) |
 | FR-18 | Audit and error handling | The system records critical actions and returns controlled errors for external-service failures | Must | Sprint 4 | Jerald | 7.4, 7.8, 7.9 | Testing |
 
 ## Sprint 1 Backlog
@@ -253,7 +253,7 @@ This decision does not mean that FR-17 was implemented, tested, or passed during
 
 **Historical planning gap:** The original schedule did not assign a Sprint, owner, backend implementation, frontend implementation, permission tests, or acceptance evidence for FR-17.
 
-**Outstanding approval:** Formal written team approval of the Version 1 scope exclusion has not been independently confirmed.
+**Approval reconciliation, recorded 14 October 2026:** The project lead reports that all three members (Jerald, Joyee and MD) approved the FR-17 Version 1 exclusion verbally in a telephone discussion. Independent written sign-off was not supplied. The historical Must priority and original requirement remain visible.
 
 **Traceability:** Preserve FR-17 in the Functional Requirements and Requirements Assignment Matrix, with its original Must priority and the Version 1 exclusion clearly recorded.
 

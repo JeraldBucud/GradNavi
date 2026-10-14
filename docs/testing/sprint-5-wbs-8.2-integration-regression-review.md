@@ -253,3 +253,48 @@ The local backend regression passed against commit b81fa7e.
 
 Deployed API verification, final integrated smoke testing,
 and complete WBS 8.2 sign-off are still pending.
+
+## Sprint 4 smoke historical reconciliation and Sprint 5 sign-off boundary (14 October 2026)
+
+The approved Sprint 4 test plan's final execution record states **S4-REG-06 PASS**, as part of Jerald's 46/46 passing Sprint 4 cases and 129/129 Sprint 4 total. That completed Sprint 4 smoke included Student Job Matching, Resume, Cover Letter, Interview Preparation, and Administrator workflows. The earlier `S4-REG-06: PENDING` in this WBS 8.2 review is a retained historical checkpoint, not the latest Sprint 4 result.
+
+The later **Sprint 5 final combined smoke and team WBS 8.2 sign-off** remain separate requirements. The recorded post-merge backend full suite (1,069 PASS, commit `b81fa7e`), Joyee's frontend checks, targeted integration retests, selected UAT (12/12 PASS reported, with historical 11-case record preserved) and reported production verification (21/21 PASS) support the review, but those records do not by themselves document a newly executed final Sprint 5 integrated smoke or a signed team consolidation. Do not rerun the already completed Sprint 4 S4-REG-06 merely to correct this record.
+
+Before claiming WBS 8.2 formally complete, identify an existing Sprint 5 integrated smoke execution record that maps to the approved workflows, or execute and document one, then obtain the team's consolidated review. No additional execution is claimed by this documentary reconciliation.
+
+
+## Production verification cross-reference for final integrated review (14 October 2026)
+
+The WBS 8.9 Production Verification workbook in `docs/testing/evidence/sprint-5/production-verification/GradNavi_Sprint5_Production_Product_Verification_Test_Cases_Updated.xlsx` records 21/21 PASS **as reported by the project lead**. The repository contains evidence images `S5-PROD-EV-001` through `S5-PROD-EV-021`. The existing project closeout explains that visible controls and workflows were exercised against Production after a populated Student Profile was prepared.
+
+The production set covers the following named screens and outputs:
+
+| Functional area | Production screenshot IDs | Reconciliation role |
+| --- | --- | --- |
+| Public and authentication pages | S5-PROD-EV-001–002 | Public entry and Login page evidence |
+| Student Dashboard/Profile/Recommendations/Explore Careers/Skill Gap | S5-PROD-EV-003–007 | Career and profile integration review |
+| Roadmap/Learning Resources/Job Matching | S5-PROD-EV-008–010 | Career-path and resource/job workflow review |
+| Resume/Cover Letter/Interview Preparation/Account Settings | S5-PROD-EV-011–014 | Application-tools and account workflows |
+| Administrator Dashboard/User/Career/Skill/Learning Resource/Reports/Audit | S5-PROD-EV-015–021 | Administrator workflow coverage |
+
+The named screenshot set broadly overlaps the feature families documented in the **completed** Sprint 4 `S4-REG-06` smoke test. It contributes Production interaction evidence for a Sprint 5 integrated review. A screenshot filename or page-load screenshot alone does **not** independently prove each mutation, persistence effect, export, authorization decision, or backend/database condition. Relevant retained UAT/functional evidence and the approved case register should support any stronger claims.
+
+**Decision:** Reuse existing 21/21 Production verification, historical 11-case UAT evidence and the selected twelve-case UAT mapping for consolidated Sprint 5 smoke **coverage review**, without asserting a new test execution. The selected twelve-case workbook and extracted images are now committed to the closeout branch at `66d7e2f`; the [evidence index](evidence/sprint-5/uat/12-case/evidence-index.csv) records what each image does and does not demonstrate. The 1,069-test post-merge backend run and frontend evidence remain separately attributed to their recorded baseline and owners.
+
+**Formal WBS 8.2 status:** Final combined evidence review and explicit team sign-off remain pending. No new regression run, deploy check or formal acceptance is claimed by this cross-reference.
+
+## Staging deployment smoke evidence from PR #92
+
+The [frontend deployment verification comment](https://github.com/JeraldBucud/GradNavi/pull/92#issuecomment-6107719099) and [attached staging screenshots](https://github.com/JeraldBucud/GradNavi/pull/92#issuecomment-6107737018) document Student sign-up/login, saved profile evidence, recommendations, skill gaps, Administrator page access and a logged role change on Vercel preview against Railway staging.
+
+These checks support WBS 8.2 staging integration coverage. They are separate from the WBS 8.9 production verification results and do not constitute a new final production smoke run or team sign-off.
+
+For the selected twelve-case WBS 8.6 UAT register and its captured images, see `docs/testing/evidence/sprint-5/uat/GradNavi_Sprint5_UAT_12_Scenario_Execution_Results.xlsx` and `docs/testing/evidence/sprint-5/uat/12-case/`. The evidence package is verified in GitHub at closeout-branch commit `66d7e2f`: the Excel workbook, ten JPG screenshots and `12-case/evidence-index.csv`. The original eleven-case register remains historical. The twelve reported scenarios are not additive to the eleven-case set. Screenshots support visual states and selected interactions; not every scenario step or data persistence claim is independently demonstrated. The final integrated evidence review and written team sign-off remain pending.
+
+## Group Verbal Release Acceptance and Regression Evidence Boundary (recorded 14 October 2026)
+
+The project lead reports that Jerald, Joyee and MD **verbally accepted the delivered Sprint 5 V1 release** in a telephone discussion, including the recorded regression/UAT/production evidence and known limitations. The report of agreement was recorded 14 October 2026; separate participant signatures or the exact call date were not supplied.
+
+This updates the prior **team approval pending** checkpoint for release-level acceptance. It does not establish a newly executed final Sprint 5 integrated smoke run, independent verification of each UAT step or independently observed full Production regression. The documented 1,069 passing backend tests, frontend regression evidence, 12/12 reported UAT and 21/21 reported Production checks retain their original execution dates, scopes and verification boundaries.
+
+**Final interpretation:** Reported team approval of the V1 delivery and documented regression coverage. Any unexecuted combined-smoke steps or extra verification should be tracked as additional checks, not silently reported PASS.
