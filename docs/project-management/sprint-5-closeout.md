@@ -76,6 +76,8 @@ The published WBS 8.2 regression review records a **post-merge backend suite of 
 - [Regression review](https://github.com/JeraldBucud/GradNavi/blob/main/docs/testing/sprint-5-wbs-8.2-integration-regression-review.md)
 - [Sprint 5 integration and regression PR #91](https://github.com/JeraldBucud/GradNavi/pull/91)
 
+**14 October 2026 cross-reference:** WBS 8.2 now maps the reported 21/21 WBS 8.9 Production verification screenshots (`S5-PROD-EV-001`–`021`) to the relevant Student, application and Administrator feature groups. This reuses existing evidence for final integrated smoke coverage review; it does not assert a newly run Sprint 5 smoke test. Explicit combined review and formal sign-off remain pending.
+
 ### 4.2 WBS 8.3 Security and Permissions
 
 The published matrix records **30 local PASS and two Deferred** deployment cases. The project lead subsequently confirmed both deferred deployment cases as PASS during Production testing. The final reported total is therefore **32 PASS / 32 planned**. This later result must be entered into the official workbook and execution matrix, with evidence of:
